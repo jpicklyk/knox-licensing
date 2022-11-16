@@ -1,0 +1,92 @@
+plugins {
+
+       id("com.android.application")
+       id("org.jetbrains.kotlin.android")
+       id("kotlin-kapt")
+       id("dagger.hilt.android.plugin")
+
+       //id("sfelabs.android.application")
+       //id("sfelabs.android.application.compose")
+       id("sfelabs.android.hilt")
+
+
+}
+
+android {
+    namespace "net.sfelabs.knoxmoduleshowcase"
+    compileSdk = 33
+    defaultConfig {
+
+        applicationId "net.sfelabs.knoxmoduleshowcase"
+        targetSdk = 33
+        minSdk = 29
+        versionCode 1
+        versionName "0.0.1"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.kotlin.compiler.get()
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+dependencies {
+    def composeBom = platform(libs.androidx.composeBom)
+    implementation composeBom
+    androidTestImplementation composeBom
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.bundles.androidx.compose)
+    implementation(libs.bundles.androidx.compose.materialIcon)
+    implementation(libs.androidx.navigation)
+
+    //DI
+    implementation(libs.hilt.android)
+    //implementation 'androidx.appcompat:appcompat:1.4.1'
+    kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.accompanist)
+    implementation(libs.composeNumberPicker)
+    implementation project(path: ':android-log-wrapper')
+    implementation project(path: ':core:common')
+
+    implementation(project(":knox-common"))
+    implementation(project(":knox-tactical"))
+
+    testImplementation(libs.testing.kotlin.coroutines)
+    androidTestImplementation(libs.testing.kotlin.coroutines)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.espresso)
+}
+
+kapt {
+    correctErrorTypes true
+}

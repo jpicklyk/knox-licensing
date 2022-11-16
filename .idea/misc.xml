@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/java/net/sfelabs/knoxmoduleshowcase/features/multi_ethernet/presentation/EthernetConfiguration.kt" value="0.20777027027027026" />
+        <entry key="app/src/main/java/net/sfelabs/knoxmoduleshowcase/features/skydio/presentation/components/KnoxApiSwitchComponent.kt" value="0.9" />
+        <entry key="app/src/main/java/net/sfelabs/knoxmoduleshowcase/features/skydio/presentation/components/TacticalDeviceModeComponent.kt" value="0.7842592592592592" />
+        <entry key="app/src/main/java/net/sfelabs/knoxmoduleshowcase/features/tactical/presentation/components/KnoxApiSwitchComponent.kt" value="0.75" />
+        <entry key="app/src/main/java/net/sfelabs/knoxmoduleshowcase/presentation/AnimatedSplashScreen.kt" value="0.26919831223628693" />
+        <entry key="app/src/main/java/net/sfelabs/knoxmoduleshowcase/presentation/MainActivity.kt" value="0.9663299663299664" />
+        <entry key="app/src/main/java/net/sfelabs/knoxmoduleshowcase/presentation/screens/AboutScreen.kt" value="0.5402985074626866" />
+        <entry key="app/src/main/java/net/sfelabs/knoxmoduleshowcase/presentation/screens/AnimatedSplashScreen.kt" value="0.4772151898734177" />
+        <entry key="app/src/main/java/net/sfelabs/knoxmoduleshowcasee/AnimatedSplashScreen.kt" value="0.33544303797468356" />
+        <entry key="app/src/main/res/drawable/bg_splash.xml" value="0.4235" />
+        <entry key="app/src/main/res/drawable/bg_splash_12.xml" value="0.4235" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.323" />
+        <entry key="app/src/main/res/drawable/knox_shield_white.xml" value="0.4575" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17_PREVIEW" project-jdk-name="Embedded JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

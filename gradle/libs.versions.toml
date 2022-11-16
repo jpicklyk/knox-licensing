@@ -1,0 +1,122 @@
+[versions]
+accompanist = "0.24.8-beta"
+androidGradlePlugin = "7.3.1"
+
+androidx-activity = "1.6.0"
+androidx-appcompat = "1.5.1"
+androidx-core = "1.9.0"
+androidx-datastore = "1.0.0"
+androidx-lifecycle = "2.6.0-alpha01"
+androidx-navigation = "2.5.2"
+chargemap-numberpicker = "1.0.3"
+collections-kotlin = "1.2.0"
+compose-kotlin-compiler = "1.3.2"
+compose-bom = "2022.10.00"
+hilt-core = "2.44"
+hilt-navigation = "1.0.0"
+kotlin = "1.7.20"
+kotlin-reflect = "1.7.10"
+kotlinx-collections-immutable = "0.3.5"
+kotlinx-coroutines-core-jvm = "1.6.4"
+kotlinx-serialization-json = "1.4.1"
+ksp = "1.7.20-1.0.7"
+
+detekt = "1.17.0"
+ktlint = "10.0.0"
+
+#material = "1.1.1"
+#material3 = "1.0.0-alpha11"
+#ui = "1.1.1"
+splashscreen = "1.0.0-beta02"
+
+
+testing-androidx = "1.5.0-rc01"
+testing-junit = "4.13.2"
+testing-androidx-junit = "1.1.4-rc01"
+testing-androidx-espresso = "3.5.0-rc01"
+testing-androidx-orchestrator = "1.4.2-rc01"
+testing-kotlin-coroutines = "1.6.4"
+
+[libraries]
+accompanist = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist"}
+androidx-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity"}
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat"}
+androidx-collections = { module = "androidx.collection:collection-ktx", version.ref = "collections-kotlin"}
+androidx-composeBom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom"}
+androidx-composeFoundation = { module = "androidx.compose.foundation:foundation" }
+androidx-composeMaterial = { module = "androidx.compose.material:material"}
+androidx-composeMaterial3 = { module = "androidx.compose.material3:material3"}
+androidx-composeMaterial3Window = { module = "androidx.compose.material3:material3-window-size-class"}
+androidx-composeMaterialIcons = { module = "androidx.compose.material:material-icons-core" }
+androidx-composeMaterialIconsExt = { module = "androidx.compose.material:material-icons-extended" }
+androidx-composeLiveData = { module = "androidx.compose.runtime:runtime-livedata" }
+androidx-composeRxJava = { module = "androidx.compose.runtime:runtime-rxjava2" }
+androidx-composeUi = { module = "androidx.compose.ui:ui"}
+androidx-composeUiTooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "androidx-datastore" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-vm-comp = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
+androidx-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "testing-androidx-espresso" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "testing-androidx" }
+androidx-test-core-ktx = { module = "androidx.test:core-ktx", version.ref = "testing-androidx" }
+androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "testing-androidx-junit" }
+androidx-test-ext-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "testing-androidx-junit" }
+androidx-test-ext-truth = { module = "androidx.test.ext:truth", version.ref = "testing-androidx" }
+androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "testing-androidx-orchestrator" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "testing-androidx" }
+composeNumberPicker = { module = "com.chargemap.compose:numberpicker", version.ref = "chargemap-numberpicker"}
+detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+google-acc = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist"}
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-core" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-core" }
+hilt-gradleplugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt-core" }
+
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation"}
+kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin-reflect"}
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core-jvm" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+ktlintPlugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint" }
+
+
+
+testing-compose-ui = { module = "androidx.compose.ui:ui-test-junit4"}
+testing-compose-manifest = { module = "androidx.compose.ui:ui-test-manifest"}
+testing-hilt-android = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt-core"}
+testing-kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "testing-kotlin-coroutines" }
+
+
+# Dependencies of the included build-logic
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+
+[bundles]
+androidx-compose = [
+    "androidx-activity","androidx-composeUi", "androidx-composeMaterial",
+    "androidx-composeMaterial3", "androidx-composeFoundation", "androidx-composeLiveData",
+    "androidx-composeUiTooling"
+]
+androidx-compose-materialIcon = [
+    "androidx-composeMaterialIcons", "androidx-composeMaterialIconsExt"
+]
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
+#hilt = { id = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt-core" }
+#kapt = { id = "kotlin-kapt", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+#ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-core" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+#protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+#secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }

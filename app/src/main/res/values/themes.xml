@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.KnoxModuleShowcase" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="SplashScreenTheme" parent="Theme.KnoxModuleShowcase">
+        <item name="android:windowBackground" height="288dp" width="288dp">@drawable/knox_shield_white</item>
+    </style>
+</resources>
