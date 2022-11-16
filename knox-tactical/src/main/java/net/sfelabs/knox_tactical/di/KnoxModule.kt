@@ -19,6 +19,11 @@ object KnoxModule {
     @Provides
     @TacticalSdk
     @Singleton
+    fun provideKnoxCustomDeviceManager() =
+        CustomDeviceManager.getInstance()!!
+    @Provides
+    @TacticalSdk
+    @Singleton
     fun provideKnoxEnterpriseDeviceManager(@ApplicationContext context: Context) =
         EnterpriseDeviceManager.getInstance(context)!!
 
@@ -26,14 +31,14 @@ object KnoxModule {
     @TacticalSdk
     @Singleton
     fun provideKnoxSettingsManager(): SettingsManager =
-        CustomDeviceManager.getInstance().settingsManager
+        CustomDeviceManager.getInstance().settingsManager!!
 
 
     @Provides
     @TacticalSdk
     @Singleton
     fun provideKnoxSystemManager(): SystemManager =
-        CustomDeviceManager.getInstance().systemManager
+        CustomDeviceManager.getInstance().systemManager!!
 
     @Provides
     @TacticalSdk

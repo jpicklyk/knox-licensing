@@ -1,4 +1,4 @@
-package net.sfelabs.knox_tactical.domain.use_cases.tactical.band_lock
+package net.sfelabs.knox_tactical.domain.use_cases.tactical.lte
 
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager

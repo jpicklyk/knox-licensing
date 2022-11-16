@@ -1,30 +1,21 @@
-package net.sfelabs.knox_tactical.domain.use_cases.tactical.band_lock
+package net.sfelabs.knox_tactical.domain.use_cases.tactical.lte
 
-import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.common.core.ui.UiText
-import net.sfelabs.common.core.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
-class EnableBandLockingUseCase @Inject constructor(
+class GetBandLockingStateUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
 
-    suspend operator fun invoke(lteBand: Int): UnitApiCall {
+    suspend operator fun invoke(): ApiCall<Int> {
         return coroutineScope {
             try {
-                val result = systemManager.enableLteBandLocking(lteBand)
-                if( result != CustomDeviceManager.SUCCESS ) {
-                    ApiCall.Error(
-                        UiText.DynamicString(
-                        "EnableLteBandLocking error: $result"
-                    ))
-                } else {
-                    ApiCall.Success(Unit)
-                }
+                val result = systemManager.lteBandLocking
+                ApiCall.Success(result)
             } catch (se: SecurityException) {
                 ApiCall.Error(
                     UiText.DynamicString(
