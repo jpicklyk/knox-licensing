@@ -1,17 +1,17 @@
 package net.sfelabs.knoxmoduleshowcase
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SystemManager
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
+import net.sfelabs.knox_tactical.di.KnoxModule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LcdBacklightStateTest {
-    private val cdm: CustomDeviceManager = CustomDeviceManager.getInstance()
-    private val sm: SystemManager = cdm.systemManager
+    private val sm = KnoxModule.provideKnoxSystemManager()
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun disableLcdBacklightTest() = runTest {
 

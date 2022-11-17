@@ -3,6 +3,7 @@ package net.sfelabs.knoxmoduleshowcase
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.custom.CustomDeviceManager
+import net.sfelabs.knox_tactical.di.KnoxModule
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
