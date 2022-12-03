@@ -1,0 +1,57 @@
+#######################################################################
+
+# Simple PPP Settings for testing, more complex options are required
+# for production use cases.  This file is provided as is and has no
+# attempt to support any specific ppp modem endpoints which would require
+# further settings/options to be configured to operate correctly.
+
+#######################################################################
+
+# Speed
+115200
+
+# Don't use the modem control lines.
+local
+
+# Disable flow control
+nocrtscts
+nocdtrcts
+
+# If this option is given, pppd will send an LCP echo-request frame to the
+# peer every n seconds. Normally the peer should respond to the echo-request
+# by sending an echo-reply. This option can be used with the
+# lcp-echo-failure option to detect that the peer is no longer connected.
+lcp-echo-interval 3
+
+# If this option is given, pppd will presume the peer to be dead if n
+# LCP echo-requests are sent without receiving a valid LCP echo-reply.
+# If this happens, pppd will terminate the connection.  Use of this
+# option requires a non-zero value for the lcp-echo-interval parameter.
+# This option can be used to enable pppd to terminate after the physical
+# connection has been broken (e.g., the modem has hung up) in
+# situations where no hardware modem control lines are available.
+lcp-echo-failure 2
+
+# Set the LCP restart interval (retransmission timeout) to <n> seconds
+# (default 3).
+lcp-restart 3
+
+# Set the maximum number of LCP terminate-request transmissions to <n>
+# (default 3).
+lcp-max-terminate 3
+
+# Set the maximum number of LCP configure-request transmissions to <n>
+# (default 10).
+lcp-max-configure 10
+
+# Set the maximum number of LCP configure-NAKs returned before starting
+# to send configure-Rejects instead to <n> (default 10).
+lcp-max-failure 10
+
+# Specifies that pppd should disconnect if the link is idle for <n> seconds.
+# The link is idle when no data packets (i.e. IP packets) are being sent or
+# received.  Note: it is not advisable to use this option with the persist
+# option without the demand option.  If the active-filter option is given,
+# data packets which are rejected by the specified activity filter also
+# count as the link being idle.
+idle 3600
