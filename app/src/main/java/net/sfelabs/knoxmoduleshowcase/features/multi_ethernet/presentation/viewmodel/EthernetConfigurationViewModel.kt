@@ -5,6 +5,7 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.LinkProperties
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -132,38 +133,39 @@ class EthernetConfigurationViewModel @Inject constructor(
     }
 
     private fun getNetworkCallback(): NetworkCallback {
+        val tag = "NETWORKCALLBACK"
         return object: NetworkCallback() {
             override fun onAvailable(network : Network) {
                 super.onAvailable(network)
-                log.d("Network available: $network")
+                Log.d(tag,"Network available: $network")
                 showToast("Network available: $network")
             }
 
             override fun onUnavailable() {
-                log.d("Network unavailable")
+                Log.d(tag,"Network unavailable")
                 showToast("Network unavailable")
                 super.onUnavailable()
             }
 
             override fun onLosing(network: Network, maxMsToLive: Int) {
-                log.w("Losing network: $network")
+                Log.w(tag,"Losing network: $network")
                 super.onLosing(network, maxMsToLive)
             }
 
             override fun onLost(network : Network) {
                 showToast("Lost network: $network")
-                log.w("Lost network: $network")
+                Log.w(tag,"Lost network: $network")
                 super.onLost(network)
             }
 
             override fun onCapabilitiesChanged(network : Network, networkCapabilities : NetworkCapabilities) {
                 super.onCapabilitiesChanged(network, networkCapabilities)
-                log.d("The network changed capabilities: $networkCapabilities")
+                Log.d(tag,"The network changed capabilities: $networkCapabilities")
             }
 
             override fun onLinkPropertiesChanged(network : Network, linkProperties : LinkProperties) {
                 super.onLinkPropertiesChanged(network, linkProperties)
-                log.d("The default network changed link properties: $linkProperties")
+                Log.d(tag,"The default network changed link properties: $linkProperties")
             }
         }
     }

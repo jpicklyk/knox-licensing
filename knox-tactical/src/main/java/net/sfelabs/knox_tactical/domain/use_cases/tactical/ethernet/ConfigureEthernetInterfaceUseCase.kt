@@ -60,6 +60,7 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
 
         if(success) {
             //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                //TODO - Look into this more, it may not be required but I do not need it right now
                 //requestNetwork(ethernetInterface.name, callback)
             //else
                 registerNetworkCallback(ethernetInterface.name, callback)
@@ -88,7 +89,7 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
     }
 
     @RequiresPermission(value = "android.permission.ACCESS_NETWORK_STATE")
-    private fun registerNetworkCallback(interfaceName: String, callback: ConnectivityManager.NetworkCallback) {
+    private fun registerNetworkCallback(interfaceName: String, callback: NetworkCallback) {
         val networkRequest = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             buildNetworkRequestTiramisu(interfaceName)
         } else {

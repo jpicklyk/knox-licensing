@@ -33,6 +33,46 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-1096927903">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="192.168.2.34:33897" value="120" />
+                  <entry key="192.168.2.34:39631" value="120" />
+                  <entry key="192.168.2.34:46801" value="120" />
+                  <entry key="192.168.2.50:40875" value="120" />
+                  <entry key="192.168.2.50:42899" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="adb-RFCR316XJ1X-eKTvF6._adb-tls-connect._tcp" value="120" />
+                  <entry key="samsung&#10; SM-G981U1" value="120" />
+                  <entry key="samsung&#10; SM-G996U1" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="-616080262">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="192.168.2.34:33897" value="120" />
+                  <entry key="192.168.2.34:39631" value="120" />
+                  <entry key="192.168.2.34:46801" value="120" />
+                  <entry key="192.168.2.34:5555" value="120" />
+                  <entry key="192.168.2.50:40875" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="adb-RFCR316XJ1X-eKTvF6._adb-tls-connect._tcp" value="120" />
+                  <entry key="samsung&#10; SM-G981U1" value="120" />
+                  <entry key="samsung&#10; SM-G996U1" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-392788845">
           <value>
             <AndroidTestResultsTableState>
@@ -124,6 +164,24 @@
                   <entry key="Tests" value="360" />
                   <entry key="adb-RFCR605H7BY-2zMuyw._adb-tls-connect._tcp" value="120" />
                   <entry key="samsung&#10; SM-G981U1" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1228655660">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="192.168.2.34:5555" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="RFCR605H7BY" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="adb-RFCR316XJ1X-eKTvF6._adb-tls-connect._tcp" value="120" />
+                  <entry key="adb-RFCR605H7BY-2zMuyw._adb-tls-connect._tcp" value="120" />
+                  <entry key="samsung&#10; SM-G981U1" value="120" />
+                  <entry key="samsung&#10; SM-G996U1" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class AutoTouchSensitivityTest {
-    private val sm = KnoxModule.provideKnoxSystemManager()
+    private val sm = KnoxModule.provideKnoxSettingsManager()
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun enableAutoTouchSensitivity() = runTest {
