@@ -108,7 +108,9 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
     private fun buildNetworkRequest(interfaceName: String): NetworkRequest {
         return NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
-            .setNetworkSpecifier(interfaceName)
+            // This doesn't seem to be working in either 10 or 11.  If I comment this out it fixes
+            // Android 10 but not 11.
+            //.setNetworkSpecifier(interfaceName)
             .build()
     }
 }
