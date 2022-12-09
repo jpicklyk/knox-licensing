@@ -34,6 +34,8 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
      * greater than 2 ethernet connections) so I will expose this as a flow scoped to the ViewScope
      * for efficiency reasons.
      *
+     * To remove a particular eth interface all you need to do is unregister the NetworkCallback
+     * that was used for it.
      */
     @SuppressLint("MissingPermission")
     operator fun invoke(
@@ -59,10 +61,10 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
 
 
         if(success) {
-            //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                //TODO - Look into this more, it may not be required but I do not need it right now
-                //requestNetwork(ethernetInterface.name, callback)
-            //else
+            //Android 12 changed the way permissions work and now we need to request each network
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                requestNetwork(ethernetInterface.name, callback)
+            else
                 registerNetworkCallback(ethernetInterface.name, callback)
 
             emit(ApiCall.Success(Unit))
@@ -108,9 +110,8 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
     private fun buildNetworkRequest(interfaceName: String): NetworkRequest {
         return NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
-            // This doesn't seem to be working in either 10 or 11.  If I comment this out it fixes
-            // Android 10 but not 11.
-            //.setNetworkSpecifier(interfaceName)
+            // You need to specify the ethernet interface name to associate
+            .setNetworkSpecifier(interfaceName)
             .build()
     }
 }
