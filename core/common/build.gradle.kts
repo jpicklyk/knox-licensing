@@ -43,6 +43,7 @@ android {
 dependencies {
     val composeBom = platform(libs.androidx.composeBom)
     implementation(composeBom)
+    implementation(libs.accompanist.permissions)
     androidTestImplementation(composeBom)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.collections)

@@ -1,6 +1,6 @@
 package net.sfelabs.knox_tactical.domain.model
 
-interface EthernetInterface {
+sealed interface EthernetInterface {
     val name: String
     val type: EthernetInterfaceType
 }

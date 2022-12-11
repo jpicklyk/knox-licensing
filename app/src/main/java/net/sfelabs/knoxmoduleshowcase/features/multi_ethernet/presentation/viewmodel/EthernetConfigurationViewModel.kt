@@ -9,14 +9,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.samsung.android.knox.custom.SettingsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import net.sfelabs.knox_tactical.domain.model.DhcpEthernetInterface
@@ -25,7 +26,9 @@ import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
 import net.sfelabs.knox_tactical.domain.model.StaticEthernetInterface
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.CheckInterfacesUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.ConfigureEthernetInterfaceUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.GetEthernetAutoConnection
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.SetEthernetAutoConnection
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.services.EthernetNetworkMonitor
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationEvents
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationState
 import javax.inject.Inject
@@ -36,12 +39,16 @@ class EthernetConfigurationViewModel @Inject constructor(
     private val context: Context,
     private val configureEthernetInterfaceUseCase: ConfigureEthernetInterfaceUseCase,
     private val setEthernetAutoConnection: SetEthernetAutoConnection,
+    private val getEthernetAutoConnection: GetEthernetAutoConnection,
     private val checkInterfacesUseCase: CheckInterfacesUseCase,
-    private val settingsManager: SettingsManager,
-    private val log: net.sfelabs.android_log_wrapper.Log
+    private val log: net.sfelabs.android_log_wrapper.Log,
+    private val ethernetMonitor: EthernetNetworkMonitor
 ): ViewModel() {
     private val _state = MutableStateFlow(EthernetConfigurationState(isLoading = true))
     val stateFlow: StateFlow<EthernetConfigurationState> = _state.asStateFlow()
+    private lateinit var connected: EthernetNetworkMonitor.EthernetConnectionState
+    private val _ethernetState = MutableStateFlow(mapOf<String,EthernetInterface>())
+    val interfaces: StateFlow<Map<String,EthernetInterface>> get() = _ethernetState
 
     init {
         _state.update{ EthernetConfigurationState(
@@ -53,6 +60,20 @@ class EthernetConfigurationViewModel @Inject constructor(
             gateway = "192.168.2.1",
             dnsList = "192.168.2.1, 8.8.8.8"
         )}
+
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                _ethernetState.emit(hashMapOf(Pair("eth0", DhcpEthernetInterface("eth0"))))
+            }
+        }
+
+        viewModelScope.launch {
+            ethernetMonitor.ethernetState
+                //.catch { exception -> doSomething(exception) }
+                .collect {stateUpdate ->
+                                connected = stateUpdate
+            }
+        }
     }
 
     private fun showToast(message: String) {
@@ -128,7 +149,7 @@ class EthernetConfigurationViewModel @Inject constructor(
     private fun getAutoEthernetConnectionState(): AutoConnectionState {
         return AutoConnectionState(0)
     //TODO - Put this back
-    //return AutoConnectionState(settingsManager.ethernetAutoConnectionState)
+    //return getEthernetAutoConnection()
 
     }
 
@@ -179,6 +200,10 @@ class EthernetConfigurationViewModel @Inject constructor(
                 when(result) {
                     is ApiCall.Success -> {
                         log.d("Successfully configured ${ethInterface.name}")
+                        //ethernetInterfaceRepository.saveInterface(ethInterface)
+                        _ethernetState.update { _ethernetState.value.toMutableMap().also { ethMap ->
+                            ethMap.put(ethInterface.name, ethInterface) }
+                        }
                     }
                     is ApiCall.Error -> {
                         log.e("Error occurred while creating ${ethInterface.name} configuration")

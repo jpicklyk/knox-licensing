@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import net.sfelabs.android_log_wrapper.presentation.LogViewer
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.components.EthernetConfiguration
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.components.EthernetList
 
 @Composable
 fun EthernetConfigurationScreen(
@@ -14,7 +15,8 @@ fun EthernetConfigurationScreen(
     val configuration = LocalConfiguration.current
     Column() {
         EthernetConfiguration()
-        LogViewer()
+        //LogViewer()
+        EthernetList()
         /*
         when (configuration.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {

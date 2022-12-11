@@ -1,5 +1,5 @@
 [versions]
-accompanist = "0.24.8-beta"
+accompanist = "0.28.0"
 androidGradlePlugin = "7.3.1"
 
 androidx-activity = "1.6.0"
@@ -11,7 +11,7 @@ androidx-navigation = "2.5.2"
 chargemap-numberpicker = "1.0.3"
 collections-kotlin = "1.2.0"
 compose-kotlin-compiler = "1.3.2"
-compose-bom = "2022.11.00"
+compose-bom = "2022.12.00"
 hilt-core = "2.44"
 hilt-navigation = "1.0.0"
 kotlin = "1.7.20"
@@ -38,7 +38,7 @@ testing-androidx-orchestrator = "1.4.2-rc01"
 testing-kotlin-coroutines = "1.6.4"
 
 [libraries]
-accompanist = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist"}
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist"}
 androidx-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity"}
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat"}
 androidx-collections = { module = "androidx.collection:collection-ktx", version.ref = "collections-kotlin"}
@@ -68,6 +68,7 @@ androidx-test-ext-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = 
 androidx-test-ext-truth = { module = "androidx.test.ext:truth", version.ref = "testing-androidx" }
 androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "testing-androidx-orchestrator" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "testing-androidx" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "testing-androidx" }
 composeNumberPicker = { module = "com.chargemap.compose:numberpicker", version.ref = "chargemap-numberpicker"}
 detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 google-acc = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist"}

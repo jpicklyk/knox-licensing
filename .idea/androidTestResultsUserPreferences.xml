@@ -60,6 +60,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="192.168.2.34:33897" value="120" />
+                  <entry key="192.168.2.34:38887" value="120" />
                   <entry key="192.168.2.34:39631" value="120" />
                   <entry key="192.168.2.34:46801" value="120" />
                   <entry key="192.168.2.34:5555" value="120" />

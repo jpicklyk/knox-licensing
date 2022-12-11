@@ -72,7 +72,6 @@ dependencies {
     //implementation 'androidx.appcompat:appcompat:1.4.1'
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
-    implementation(libs.accompanist)
     implementation(libs.composeNumberPicker)
     implementation project(path: ':android-log-wrapper')
     implementation project(path: ':core:common')
@@ -83,6 +82,7 @@ dependencies {
     testImplementation(libs.testing.kotlin.coroutines)
     androidTestImplementation(libs.testing.kotlin.coroutines)
     androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.espresso)
 }
