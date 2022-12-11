@@ -1,14 +1,17 @@
 package net.sfelabs.knoxmoduleshowcase
 
+import android.Manifest
 import android.content.Context
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import org.junit.Before
 import org.junit.FixMethodOrder
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
@@ -17,7 +20,9 @@ import java.net.NetworkInterface
 
 /**
  * This test class requires that the device be setup to communicate over a null modem cable in the
- * ttyUSB mode.  Having the connections the wrong way will setup ttyACM0 instead of USB.
+ * ttyUSB mode.  Having the connections the wrong way will setup ttyACM0 instead of USB.  For testing
+ * please ensure you have copied the options file in the res folder to /sdcard/options to pass to the
+ * ppp command.
  *
  * Tests will be run in ascending order based on the function name.  Be careful inserting new tests
  * and ensure naming is correctly ordered to properly clean up or undo changes.
@@ -28,6 +33,10 @@ import java.net.NetworkInterface
 class PppdTtyUsbTests {
     private val tag = "TTYUSBTEST"
     private lateinit var context: Context
+
+    @Rule @JvmField
+    val mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule
+        .grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     @Before
     fun setup() {
