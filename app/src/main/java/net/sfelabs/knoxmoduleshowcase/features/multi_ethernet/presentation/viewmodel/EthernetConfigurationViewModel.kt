@@ -53,14 +53,14 @@ class EthernetConfigurationViewModel @Inject constructor(
     init {
         _state.update{ EthernetConfigurationState(
             isLoading = false,
-            autoConnectionState = getAutoEthernetConnectionState(),
+            autoConnectionState = AutoConnectionState.OFF,
             interfaceName = "eth0",
             ipAddress = "192.168.2.123",
             netmask = "255.255.255.0",
             gateway = "192.168.2.1",
             dnsList = "192.168.2.1, 8.8.8.8"
         )}
-
+        getAutoEthernetConnectionState()
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 _ethernetState.emit(hashMapOf(Pair("eth0", DhcpEthernetInterface("eth0"))))
@@ -146,11 +146,15 @@ class EthernetConfigurationViewModel @Inject constructor(
 
     }
 
-    private fun getAutoEthernetConnectionState(): AutoConnectionState {
-        return AutoConnectionState(0)
-    //TODO - Put this back
-    //return getEthernetAutoConnection()
-
+    private fun getAutoEthernetConnectionState() {
+        when(val result: ApiCall<AutoConnectionState> = getEthernetAutoConnection()) {
+            is ApiCall.Success -> {
+                _state.update{_state.value.copy(autoConnectionState = result.data)}
+            }
+            is ApiCall.Error -> {
+                log.e(result.uiText.toString())
+            }
+        }
     }
 
     private fun getNetworkCallback(): NetworkCallback {
