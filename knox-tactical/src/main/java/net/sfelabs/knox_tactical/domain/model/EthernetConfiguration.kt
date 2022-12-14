@@ -1,24 +1,24 @@
 package net.sfelabs.knox_tactical.domain.model
 
-sealed interface EthernetInterface {
+sealed interface EthernetConfiguration {
     val name: String
     val type: EthernetInterfaceType
 }
 
-data class DhcpEthernetInterface(
+data class DhcpConfiguration(
     override val name: String
-): EthernetInterface {
+): EthernetConfiguration {
     override val type: EthernetInterfaceType
         get() = EthernetInterfaceType.DHCP
 }
 
-data class StaticEthernetInterface(
+data class StaticConfiguration(
     override val name: String,
     val ipAddress: String,
     val gateway: String? = null,
     val netmask: String,
     val dnsList: List<String> = emptyList()
-): EthernetInterface {
+): EthernetConfiguration {
     override val type: EthernetInterfaceType
         get() = EthernetInterfaceType.STATIC
 }

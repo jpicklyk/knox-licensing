@@ -12,8 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import net.sfelabs.knox_tactical.domain.model.DhcpEthernetInterface
-import net.sfelabs.knox_tactical.domain.model.StaticEthernetInterface
+import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
+
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.viewmodel.EthernetConfigurationViewModel
 
 
@@ -35,18 +35,18 @@ fun EthernetList(
        }
        items(ethernetMap.values.toList(), key = {it.name}) {
            //val connected: Boolean = it.connectivity == ConnectivityState.Available
-           when(it) {
-               is DhcpEthernetInterface -> {
+           when(it.type) {
+               is EthernetInterfaceType.DHCP -> {
                    EthernetInterfaceCard(
                        name = it.name,
-                       connected = true
+                       connected = it.connectivity
                    )
                }
-               is StaticEthernetInterface -> {
+               is EthernetInterfaceType.STATIC -> {
                    EthernetInterfaceCard(
                        name = it.name,
                        ipAddresses = it.ipAddress,
-                       connected = true
+                       connected = it.connectivity
                    )
                }
            }

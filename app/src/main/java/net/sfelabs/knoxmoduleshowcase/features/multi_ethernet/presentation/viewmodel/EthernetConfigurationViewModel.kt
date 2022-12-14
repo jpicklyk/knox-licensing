@@ -20,14 +20,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
-import net.sfelabs.knox_tactical.domain.model.DhcpEthernetInterface
-import net.sfelabs.knox_tactical.domain.model.EthernetInterface
+import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration
+import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
-import net.sfelabs.knox_tactical.domain.model.StaticEthernetInterface
+import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
+
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.CheckInterfacesUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.ConfigureEthernetInterfaceUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.GetEthernetAutoConnection
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.SetEthernetAutoConnection
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.EthernetInterface
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.services.EthernetNetworkMonitor
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationEvents
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationState
@@ -47,33 +49,42 @@ class EthernetConfigurationViewModel @Inject constructor(
     private val _state = MutableStateFlow(EthernetConfigurationState(isLoading = true))
     val stateFlow: StateFlow<EthernetConfigurationState> = _state.asStateFlow()
     private lateinit var connected: EthernetNetworkMonitor.EthernetConnectionState
-    private val _ethernetState = MutableStateFlow(mapOf<String,EthernetInterface>())
+    private val _ethernetState = MutableStateFlow(mapOf<String, EthernetInterface>())
     val interfaces: StateFlow<Map<String,EthernetInterface>> get() = _ethernetState
 
     init {
         _state.update{ EthernetConfigurationState(
             isLoading = false,
             autoConnectionState = AutoConnectionState.OFF,
-            interfaceName = "eth0",
-            ipAddress = "192.168.2.123",
-            netmask = "255.255.255.0",
-            gateway = "192.168.2.1",
-            dnsList = "192.168.2.1, 8.8.8.8"
+            ethInterface = EthernetInterface(
+                name = "eth0",
+                ipAddress = "192.168.2.123",
+                netmask = "255.255.255.0",
+                gateway = "192.168.2.1",
+                dnsList = "192.168.2.1, 8.8.8.8"
+            )
         )}
         getAutoEthernetConnectionState()
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                _ethernetState.emit(hashMapOf(Pair("eth0", DhcpEthernetInterface("eth0"))))
+                _ethernetState.emit(hashMapOf(
+                    Pair("eth0", EthernetInterface("eth0", EthernetInterfaceType.DHCP)))
+                )
             }
         }
 
         viewModelScope.launch {
-            ethernetMonitor.ethernetState
-                //.catch { exception -> doSomething(exception) }
-                .collect {stateUpdate ->
-                                connected = stateUpdate
+            withContext(Dispatchers.Default) {
+                ethernetMonitor.ethernetState.collect { connectionState ->
+                    _ethernetState.update {
+                        val ethInterface = _ethernetState.value.toMutableMap()[connectionState.name]
+                        ethInterface.
+                    }
+                }
             }
         }
+
+
     }
 
     private fun showToast(message: String) {
@@ -198,7 +209,7 @@ class EthernetConfigurationViewModel @Inject constructor(
     private fun configureEthernet(ethInterface: EthernetInterface) {
         viewModelScope.launch {
             configureEthernetInterfaceUseCase(
-                ethernetInterface = ethInterface,
+                ethernetInterface = toEthernetConfiguration(ethInterface),
                 callback = getNetworkCallback()
             ).collect { result ->
                 when(result) {
@@ -206,7 +217,8 @@ class EthernetConfigurationViewModel @Inject constructor(
                         log.d("Successfully configured ${ethInterface.name}")
                         //ethernetInterfaceRepository.saveInterface(ethInterface)
                         _ethernetState.update { _ethernetState.value.toMutableMap().also { ethMap ->
-                            ethMap.put(ethInterface.name, ethInterface) }
+                            ethMap[ethInterface.name] = ethInterface
+                        }
                         }
                     }
                     is ApiCall.Error -> {
@@ -222,12 +234,12 @@ class EthernetConfigurationViewModel @Inject constructor(
         val ethernet = _state.value
         return when(ethernet.interfaceType) {
             is EthernetInterfaceType.DHCP -> {
-                DhcpEthernetInterface(
+                DhcpConfiguration(
                     name = ethernet.interfaceName
                 )
             }
             is EthernetInterfaceType.STATIC -> {
-                StaticEthernetInterface(
+                StaticConfiguration(
                     name = ethernet.interfaceName,
                     ipAddress = ethernet.ipAddress!!,
                     netmask = ethernet.netmask!!,
@@ -238,6 +250,23 @@ class EthernetConfigurationViewModel @Inject constructor(
                                     ethernet.dnsList.split(",").map { it.trim() }
                 )
             }
+        }
+    }
+
+    private fun toEthernetConfiguration(eth: EthernetInterface): EthernetConfiguration {
+        return when(eth.type) {
+            is EthernetInterfaceType.DHCP ->
+                DhcpConfiguration(
+                    name = eth.name
+                )
+            is EthernetInterfaceType.STATIC ->
+                StaticConfiguration(
+                    name = eth.name,
+                    ipAddress = eth.ipAddress?: "Unknown",
+                    gateway = eth.gateway,
+                    netmask = eth.netmask?: "Unknown",
+                    dnsList = eth.dnsList
+                )
         }
     }
 }

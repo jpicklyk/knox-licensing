@@ -1,14 +1,11 @@
 package net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
-import net.sfelabs.knox_tactical.domain.model.DhcpEthernetInterface
+import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetInterface
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
-import net.sfelabs.knox_tactical.domain.model.StaticEthernetInterface
+import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.EthernetInterfaceEntity
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.store.EthernetInterfaceDataStore
 import javax.inject.Inject
@@ -22,9 +19,9 @@ class EthernetInterfaceRepository @Inject constructor(
             val interfaces: MutableList<EthernetInterface> = mutableListOf()
             entities.forEach {
                 when (EthernetInterfaceType(it.type)) {
-                    is EthernetInterfaceType.DHCP -> interfaces.add(DhcpEthernetInterface(it.name))
+                    is EthernetInterfaceType.DHCP -> interfaces.add(DhcpConfiguration(it.name))
                     is EthernetInterfaceType.STATIC -> interfaces.add(
-                        StaticEthernetInterface(
+                        StaticConfiguration(
                             name = it.name,
                             ipAddress = it.ip,
                             gateway = it.gateway,
@@ -41,8 +38,8 @@ class EthernetInterfaceRepository @Inject constructor(
     fun fetchInterface(name: String): EthernetInterface? {
         val entity = dataStore.getByName(name) ?: return null
         return when (EthernetInterfaceType(entity.type)) {
-            is EthernetInterfaceType.DHCP -> DhcpEthernetInterface(entity.name)
-            is EthernetInterfaceType.STATIC -> StaticEthernetInterface(
+            is EthernetInterfaceType.DHCP -> DhcpConfiguration(entity.name)
+            is EthernetInterfaceType.STATIC -> StaticConfiguration(
                 name = entity.name,
                 ipAddress = entity.ip,
                 gateway = entity.gateway,
@@ -58,7 +55,7 @@ class EthernetInterfaceRepository @Inject constructor(
 
     private fun EthernetInterface.toEntity(): EthernetInterfaceEntity {
         return when (this) {
-            is DhcpEthernetInterface -> {
+            is DhcpConfiguration -> {
                 EthernetInterfaceEntity(
                     id = 0,
                     name = this.name,
@@ -71,7 +68,7 @@ class EthernetInterfaceRepository @Inject constructor(
                 )
             }
 
-            is StaticEthernetInterface -> {
+            is StaticConfiguration -> {
                 EthernetInterfaceEntity(
                     id = 0,
                     name = this.name,
