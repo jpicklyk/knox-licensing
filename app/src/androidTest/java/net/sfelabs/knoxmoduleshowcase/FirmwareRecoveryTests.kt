@@ -1,0 +1,69 @@
+package net.sfelabs.knoxmoduleshowcase
+
+import android.content.Context
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import kotlinx.coroutines.test.runTest
+import net.sfelabs.common.core.ApiCall
+import net.sfelabs.knox_common.di.KnoxModule
+import net.sfelabs.knox_common.domain.use_cases.AllowFirmwareRecoveryUseCase
+import net.sfelabs.knox_common.domain.use_cases.IsFirmwareRecoveryAllowedUseCase
+import org.junit.After
+import org.junit.AfterClass
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.FixMethodOrder
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
+
+@RunWith(AndroidJUnit4::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+class FirmwareRecoveryTests {
+
+    private lateinit var context: Context
+
+    @Before
+    fun setup() {
+        context = InstrumentationRegistry.getInstrumentation().context
+    }
+
+    @Test
+    fun test1AllowRecovery() = runTest {
+        val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
+        val useCase = AllowFirmwareRecoveryUseCase(edm)
+        val result = useCase.invoke(true)
+        assert(result is ApiCall.Success)
+    }
+
+    @Test
+    fun test2ConfirmRecoveryModeAllowed() = runTest {
+        val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
+        val useCase = IsFirmwareRecoveryAllowedUseCase(edm)
+        val result = useCase.invoke(true)
+        assert(result is ApiCall.Success && result.data)
+    }
+
+    @Test
+    fun test3DisableRecovery() = runTest {
+        val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
+        val useCase = AllowFirmwareRecoveryUseCase(edm)
+        val result = useCase.invoke(false)
+        assert(result is ApiCall.Success)
+    }
+
+    @Test
+    fun test4ConfirmRecoveryModeDisabled() = runTest {
+        val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
+        val useCase = IsFirmwareRecoveryAllowedUseCase(edm)
+        val result = useCase.invoke(true)
+        assert(result is ApiCall.Success && !result.data)
+    }
+
+    @Test
+    fun test5Cleanup() = runTest {
+        val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
+        val useCase = AllowFirmwareRecoveryUseCase(edm)
+        val result = useCase.invoke(true)
+    }
+}
