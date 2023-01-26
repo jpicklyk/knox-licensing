@@ -58,6 +58,7 @@ class EthernetConfigurationViewModel @Inject constructor(
             autoConnectionState = AutoConnectionState.OFF,
             ethInterface = EthernetInterface(
                 name = "eth0",
+                type = EthernetInterfaceType.STATIC,
                 ipAddress = "192.168.2.123",
                 netmask = "255.255.255.0",
                 gateway = "192.168.2.1",
@@ -73,16 +74,22 @@ class EthernetConfigurationViewModel @Inject constructor(
             }
         }
 
+        //Collect the connection state updates
+        /*
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 ethernetMonitor.ethernetState.collect { connectionState ->
                     _ethernetState.update {
+                        _ethernetState.value.
                         val ethInterface = _ethernetState.value.toMutableMap()[connectionState.name]
-                        ethInterface.
+                        ethInterface.connectivity = connectionState.connectivity
+                        return@collect it
                     }
                 }
             }
         }
+
+         */
 
 
     }
@@ -104,24 +111,35 @@ class EthernetConfigurationViewModel @Inject constructor(
 
                 is EthernetConfigurationEvents.EnteredDefaultGateway -> {
                     _state.update{_state.value.copy(
-                        gateway = event.value.ifEmpty { null }
+                        ethInterface = _state.value.ethInterface
+                            .copy(gateway = event.value.ifEmpty { null })
                     )}
                 }
                 is EthernetConfigurationEvents.EnteredDnsList -> {
-                        _state.update{_state.value.copy(dnsList = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(dnsList = event.value)
+                        )}
                 }
                 is EthernetConfigurationEvents.EnteredInterfaceName -> {
-                        _state.update{_state.value.copy(interfaceName = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(name = event.value)
+                        )}
                 }
                 is EthernetConfigurationEvents.EnteredIpAddress -> {
-                        _state.update{_state.value.copy(ipAddress = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(ipAddress = event.value)
+                        )}
                 }
                 is EthernetConfigurationEvents.EnteredNetmask -> {
-                        _state.update{_state.value.copy(netmask = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(netmask = event.value)
+                        )}
                 }
 
                 is EthernetConfigurationEvents.SelectedInterfaceType -> {
-                        _state.update{_state.value.copy(interfaceType = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(type = event.value)
+                        )}
                 }
                 EthernetConfigurationEvents.CheckEthernetInterfaces ->
                     checkInterfacesUseCase()
@@ -169,7 +187,7 @@ class EthernetConfigurationViewModel @Inject constructor(
     }
 
     private fun getNetworkCallback(): NetworkCallback {
-        val tag = "NETWORKCALLBACK"
+        val tag = "NETWORK-CALLBACK"
         return object: NetworkCallback() {
             override fun onAvailable(network : Network) {
                 super.onAvailable(network)
@@ -216,9 +234,10 @@ class EthernetConfigurationViewModel @Inject constructor(
                     is ApiCall.Success -> {
                         log.d("Successfully configured ${ethInterface.name}")
                         //ethernetInterfaceRepository.saveInterface(ethInterface)
-                        _ethernetState.update { _ethernetState.value.toMutableMap().also { ethMap ->
-                            ethMap[ethInterface.name] = ethInterface
-                        }
+                        _ethernetState.update {
+                            _ethernetState.value.toMutableMap().also {
+                                    ethMap -> ethMap[ethInterface.name] = ethInterface
+                            }
                         }
                     }
                     is ApiCall.Error -> {
@@ -231,26 +250,7 @@ class EthernetConfigurationViewModel @Inject constructor(
     }
 
     private fun convertStateToEthernetInterface(): EthernetInterface {
-        val ethernet = _state.value
-        return when(ethernet.interfaceType) {
-            is EthernetInterfaceType.DHCP -> {
-                DhcpConfiguration(
-                    name = ethernet.interfaceName
-                )
-            }
-            is EthernetInterfaceType.STATIC -> {
-                StaticConfiguration(
-                    name = ethernet.interfaceName,
-                    ipAddress = ethernet.ipAddress!!,
-                    netmask = ethernet.netmask!!,
-                    gateway = if(ethernet.gateway?.isBlank() == true) null else ethernet.gateway,
-                    dnsList = if(ethernet.dnsList.trim().isBlank())
-                                    emptyList()
-                                else
-                                    ethernet.dnsList.split(",").map { it.trim() }
-                )
-            }
-        }
+        return _state.value.ethInterface
     }
 
     private fun toEthernetConfiguration(eth: EthernetInterface): EthernetConfiguration {
@@ -265,7 +265,7 @@ class EthernetConfigurationViewModel @Inject constructor(
                     ipAddress = eth.ipAddress?: "Unknown",
                     gateway = eth.gateway,
                     netmask = eth.netmask?: "Unknown",
-                    dnsList = eth.dnsList
+                    dnsList = eth.dnsList?.split(",")?.map { it.trim() } ?: emptyList()
                 )
         }
     }
