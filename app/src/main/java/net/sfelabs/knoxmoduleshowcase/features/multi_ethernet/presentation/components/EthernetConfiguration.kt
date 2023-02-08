@@ -75,8 +75,8 @@ fun EthernetConfiguration(
 
         EthernetTypeComponent(
             radioOptions = listOf(EthernetInterfaceType.DHCP, EthernetInterfaceType.STATIC),
-            interfaceName = state.interfaceName,
-            selectedInterfaceType = state.interfaceType,
+            interfaceName = state.ethInterface.name,
+            selectedInterfaceType = state.ethInterface.type,
             onInterfaceNameChange = { name ->
                 viewModel.onEvent(EthernetConfigurationEvents.EnteredInterfaceName(name))
             },
@@ -209,22 +209,22 @@ fun StaticIPFieldsComponent(
                     .padding(10.dp)
             ) {
                 OutlinedTextField(
-                    value = state.ipAddress ?: "",
+                    value = state.ethInterface.ipAddress ?: "",
                     onValueChange = onIpAddressChanged,
                     label = { Text(text = "IP Address") }
                 )
                 OutlinedTextField(
-                    value = state.netmask ?: "",
+                    value = state.ethInterface.netmask ?: "",
                     onValueChange = onNetmaskChanged,
                     label = { Text(text = "Netmask") }
                 )
                 OutlinedTextField(
-                    value = state.gateway ?: "",
+                    value = state.ethInterface.gateway ?: "",
                     onValueChange = onGatewayChanged,
                     label = { Text(text = "Default Gateway") }
                 )
                 OutlinedTextField(
-                    value = state.dnsList,
+                    value = state.ethInterface.dnsList?: "",
                     onValueChange = onDnsListChanged,
                     label = { Text(text = "DNS List") }
                 )

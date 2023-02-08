@@ -9,23 +9,28 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.samsung.android.knox.custom.SettingsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
-import net.sfelabs.knox_tactical.domain.model.DhcpEthernetInterface
-import net.sfelabs.knox_tactical.domain.model.EthernetInterface
+import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration
+import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
-import net.sfelabs.knox_tactical.domain.model.StaticEthernetInterface
+import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
+
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.CheckInterfacesUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.ConfigureEthernetInterfaceUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.GetEthernetAutoConnection
 import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.SetEthernetAutoConnection
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.EthernetInterface
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.services.EthernetNetworkMonitor
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationEvents
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationState
 import javax.inject.Inject
@@ -36,23 +41,57 @@ class EthernetConfigurationViewModel @Inject constructor(
     private val context: Context,
     private val configureEthernetInterfaceUseCase: ConfigureEthernetInterfaceUseCase,
     private val setEthernetAutoConnection: SetEthernetAutoConnection,
+    private val getEthernetAutoConnection: GetEthernetAutoConnection,
     private val checkInterfacesUseCase: CheckInterfacesUseCase,
-    private val settingsManager: SettingsManager,
-    private val log: net.sfelabs.android_log_wrapper.Log
+    private val log: net.sfelabs.android_log_wrapper.Log,
+    private val ethernetMonitor: EthernetNetworkMonitor
 ): ViewModel() {
     private val _state = MutableStateFlow(EthernetConfigurationState(isLoading = true))
     val stateFlow: StateFlow<EthernetConfigurationState> = _state.asStateFlow()
+    private lateinit var connected: EthernetNetworkMonitor.EthernetConnectionState
+    private val _ethernetState = MutableStateFlow(mapOf<String, EthernetInterface>())
+    val interfaces: StateFlow<Map<String,EthernetInterface>> get() = _ethernetState
 
     init {
         _state.update{ EthernetConfigurationState(
             isLoading = false,
-            autoConnectionState = getAutoEthernetConnectionState(),
-            interfaceName = "eth0",
-            ipAddress = "192.168.2.123",
-            netmask = "255.255.255.0",
-            gateway = "192.168.2.1",
-            dnsList = "192.168.2.1, 8.8.8.8"
+            autoConnectionState = AutoConnectionState.OFF,
+            ethInterface = EthernetInterface(
+                name = "eth0",
+                type = EthernetInterfaceType.STATIC,
+                ipAddress = "192.168.2.123",
+                netmask = "255.255.255.0",
+                gateway = "192.168.2.1",
+                dnsList = "192.168.2.1, 8.8.8.8"
+            )
         )}
+        getAutoEthernetConnectionState()
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                _ethernetState.emit(hashMapOf(
+                    Pair("eth0", EthernetInterface("eth0", EthernetInterfaceType.DHCP)))
+                )
+            }
+        }
+
+        //Collect the connection state updates
+        /*
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                ethernetMonitor.ethernetState.collect { connectionState ->
+                    _ethernetState.update {
+                        _ethernetState.value.
+                        val ethInterface = _ethernetState.value.toMutableMap()[connectionState.name]
+                        ethInterface.connectivity = connectionState.connectivity
+                        return@collect it
+                    }
+                }
+            }
+        }
+
+         */
+
+
     }
 
     private fun showToast(message: String) {
@@ -72,24 +111,35 @@ class EthernetConfigurationViewModel @Inject constructor(
 
                 is EthernetConfigurationEvents.EnteredDefaultGateway -> {
                     _state.update{_state.value.copy(
-                        gateway = event.value.ifEmpty { null }
+                        ethInterface = _state.value.ethInterface
+                            .copy(gateway = event.value.ifEmpty { null })
                     )}
                 }
                 is EthernetConfigurationEvents.EnteredDnsList -> {
-                        _state.update{_state.value.copy(dnsList = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(dnsList = event.value)
+                        )}
                 }
                 is EthernetConfigurationEvents.EnteredInterfaceName -> {
-                        _state.update{_state.value.copy(interfaceName = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(name = event.value)
+                        )}
                 }
                 is EthernetConfigurationEvents.EnteredIpAddress -> {
-                        _state.update{_state.value.copy(ipAddress = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(ipAddress = event.value)
+                        )}
                 }
                 is EthernetConfigurationEvents.EnteredNetmask -> {
-                        _state.update{_state.value.copy(netmask = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(netmask = event.value)
+                        )}
                 }
 
                 is EthernetConfigurationEvents.SelectedInterfaceType -> {
-                        _state.update{_state.value.copy(interfaceType = event.value)}
+                        _state.update{_state.value.copy(
+                            ethInterface = _state.value.ethInterface.copy(type = event.value)
+                        )}
                 }
                 EthernetConfigurationEvents.CheckEthernetInterfaces ->
                     checkInterfacesUseCase()
@@ -125,15 +175,19 @@ class EthernetConfigurationViewModel @Inject constructor(
 
     }
 
-    private fun getAutoEthernetConnectionState(): AutoConnectionState {
-        return AutoConnectionState(0)
-    //TODO - Put this back
-    //return AutoConnectionState(settingsManager.ethernetAutoConnectionState)
-
+    private fun getAutoEthernetConnectionState() {
+        when(val result: ApiCall<AutoConnectionState> = getEthernetAutoConnection()) {
+            is ApiCall.Success -> {
+                _state.update{_state.value.copy(autoConnectionState = result.data)}
+            }
+            is ApiCall.Error -> {
+                log.e(result.uiText.toString())
+            }
+        }
     }
 
     private fun getNetworkCallback(): NetworkCallback {
-        val tag = "NETWORKCALLBACK"
+        val tag = "NETWORK-CALLBACK"
         return object: NetworkCallback() {
             override fun onAvailable(network : Network) {
                 super.onAvailable(network)
@@ -173,12 +227,18 @@ class EthernetConfigurationViewModel @Inject constructor(
     private fun configureEthernet(ethInterface: EthernetInterface) {
         viewModelScope.launch {
             configureEthernetInterfaceUseCase(
-                ethernetInterface = ethInterface,
+                ethernetInterface = toEthernetConfiguration(ethInterface),
                 callback = getNetworkCallback()
             ).collect { result ->
                 when(result) {
                     is ApiCall.Success -> {
                         log.d("Successfully configured ${ethInterface.name}")
+                        //ethernetInterfaceRepository.saveInterface(ethInterface)
+                        _ethernetState.update {
+                            _ethernetState.value.toMutableMap().also {
+                                    ethMap -> ethMap[ethInterface.name] = ethInterface
+                            }
+                        }
                     }
                     is ApiCall.Error -> {
                         log.e("Error occurred while creating ${ethInterface.name} configuration")
@@ -190,25 +250,23 @@ class EthernetConfigurationViewModel @Inject constructor(
     }
 
     private fun convertStateToEthernetInterface(): EthernetInterface {
-        val ethernet = _state.value
-        return when(ethernet.interfaceType) {
-            is EthernetInterfaceType.DHCP -> {
-                DhcpEthernetInterface(
-                    name = ethernet.interfaceName
+        return _state.value.ethInterface
+    }
+
+    private fun toEthernetConfiguration(eth: EthernetInterface): EthernetConfiguration {
+        return when(eth.type) {
+            is EthernetInterfaceType.DHCP ->
+                DhcpConfiguration(
+                    name = eth.name
                 )
-            }
-            is EthernetInterfaceType.STATIC -> {
-                StaticEthernetInterface(
-                    name = ethernet.interfaceName,
-                    ipAddress = ethernet.ipAddress!!,
-                    netmask = ethernet.netmask!!,
-                    gateway = if(ethernet.gateway?.isBlank() == true) null else ethernet.gateway,
-                    dnsList = if(ethernet.dnsList.trim().isBlank())
-                                    emptyList()
-                                else
-                                    ethernet.dnsList.split(",").map { it.trim() }
+            is EthernetInterfaceType.STATIC ->
+                StaticConfiguration(
+                    name = eth.name,
+                    ipAddress = eth.ipAddress?: "Unknown",
+                    gateway = eth.gateway,
+                    netmask = eth.netmask?: "Unknown",
+                    dnsList = eth.dnsList?.split(",")?.map { it.trim() } ?: emptyList()
                 )
-            }
         }
     }
 }

@@ -20,9 +20,9 @@ import net.sfelabs.common.core.UnitApiCall
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureDhcpEthernetInterface
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureStaticEthernetInterface
 import net.sfelabs.knox_tactical.di.TacticalSdk
-import net.sfelabs.knox_tactical.domain.model.EthernetInterface
+import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
-import net.sfelabs.knox_tactical.domain.model.StaticEthernetInterface
+import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
 import javax.inject.Inject
 
 class ConfigureEthernetInterfaceUseCase @Inject constructor(
@@ -39,7 +39,7 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
      */
     @SuppressLint("MissingPermission")
     operator fun invoke(
-        ethernetInterface: EthernetInterface,
+        ethernetInterface: EthernetConfiguration,
         callback: NetworkCallback
     ): Flow<UnitApiCall> = flow {
         val success: Boolean =
@@ -48,7 +48,7 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
                     systemManager.configureDhcpEthernetInterface(ethernetInterface.name)
                 }
                 is EthernetInterfaceType.STATIC -> {
-                    val static = ethernetInterface as StaticEthernetInterface
+                    val static = ethernetInterface as StaticConfiguration
                     systemManager.configureStaticEthernetInterface(
                         static.name,
                         static.ipAddress,
