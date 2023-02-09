@@ -17,7 +17,9 @@ class ExecuteAdbCommandTest {
     @Test
     fun testIpCommand() = runTest {
         val useCase =
-            net.sfelabs.knox_tactical.domain.use_cases.tactical.adb.ExecuteAdbCommandUseCase(sm)
+            _root_ide_package_.net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase(
+                sm
+            )
 
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.IP, "ip rule flush")
         assert(result is ApiCall.Success)
@@ -26,7 +28,9 @@ class ExecuteAdbCommandTest {
     @Test
     fun testDhcpDbgCommand() = runTest {
         val useCase =
-            net.sfelabs.knox_tactical.domain.use_cases.tactical.adb.ExecuteAdbCommandUseCase(sm)
+            _root_ide_package_.net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase(
+                sm
+            )
 
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.DHCPDBG, "eth0")
         assert(result is ApiCall.Success)
@@ -35,7 +39,9 @@ class ExecuteAdbCommandTest {
     @Test
     fun testPppdCommand() = runTest {
         val useCase =
-            net.sfelabs.knox_tactical.domain.use_cases.tactical.adb.ExecuteAdbCommandUseCase(sm)
+            _root_ide_package_.net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase(
+                sm
+            )
 
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM2 file /storage/emulated/0/atak/tools/.options.new")
         assert(result is ApiCall.Success)

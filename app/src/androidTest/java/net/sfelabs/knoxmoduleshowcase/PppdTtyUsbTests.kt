@@ -65,7 +65,9 @@ class PppdTtyUsbTests {
     fun setupPpp() = runBlocking<Unit> {
         val sm = KnoxModule.provideKnoxSystemManager()
         val useCase =
-            net.sfelabs.knox_tactical.domain.use_cases.tactical.adb.ExecuteAdbCommandUseCase(sm)
+            _root_ide_package_.net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase(
+                sm
+            )
 
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
