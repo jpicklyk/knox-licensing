@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
+import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -17,7 +18,7 @@ class ExecuteAdbCommandTest {
     @Test
     fun testIpCommand() = runTest {
         val useCase =
-            _root_ide_package_.net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase(
+            ExecuteAdbCommandUseCase(
                 sm
             )
 
@@ -28,7 +29,7 @@ class ExecuteAdbCommandTest {
     @Test
     fun testDhcpDbgCommand() = runTest {
         val useCase =
-            _root_ide_package_.net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase(
+            ExecuteAdbCommandUseCase(
                 sm
             )
 
@@ -39,7 +40,7 @@ class ExecuteAdbCommandTest {
     @Test
     fun testPppdCommand() = runTest {
         val useCase =
-            _root_ide_package_.net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase(
+            ExecuteAdbCommandUseCase(
                 sm
             )
 

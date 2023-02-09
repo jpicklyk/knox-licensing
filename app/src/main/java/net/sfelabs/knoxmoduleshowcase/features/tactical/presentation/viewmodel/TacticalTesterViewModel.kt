@@ -14,10 +14,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TacticalTesterViewModel @Inject constructor(
-    private val setTacticalDeviceModeUseCase: net.sfelabs.knox_tactical.domain.use_cases.tactical.tdm.SetTacticalDeviceModeUseCase,
-    private val getTacticalDeviceModeUseCase: net.sfelabs.knox_tactical.domain.use_cases.tactical.tdm.GetTacticalDeviceModeUseCase,
-    private val setAutoTouchSensitivityUseCase: net.sfelabs.knox_tactical.domain.use_cases.tactical.auto_touch.SetAutoTouchSensitivityUseCase,
-    private val getAutoTouchSensitivityUseCase: net.sfelabs.knox_tactical.domain.use_cases.tactical.auto_touch.GetAutoTouchSensitivityUseCase,
+    private val setTacticalDeviceModeUseCase: net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeUseCase,
+    private val getTacticalDeviceModeUseCase: net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeUseCase,
+    private val setAutoTouchSensitivityUseCase: net.sfelabs.knox_tactical.domain.use_cases.auto_touch.SetAutoTouchSensitivityUseCase,
+    private val getAutoTouchSensitivityUseCase: net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensitivityUseCase,
     private val log: Log
 ): ViewModel(){
     private val _state = MutableStateFlow(TacticalKnoxState(isLoading = true))

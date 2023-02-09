@@ -25,10 +25,10 @@ import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
 import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
 
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.CheckInterfacesUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.ConfigureEthernetInterfaceUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.GetEthernetAutoConnection
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.ethernet.SetEthernetAutoConnection
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.CheckInterfacesUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.ConfigureEthernetInterfaceUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetAutoConnection
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnection
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.EthernetInterface
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.services.EthernetNetworkMonitor
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationEvents
