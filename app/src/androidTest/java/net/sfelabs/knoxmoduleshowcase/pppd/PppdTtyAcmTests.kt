@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase
+package net.sfelabs.knoxmoduleshowcase.pppd
 
 import android.Manifest
 import android.content.Context
@@ -9,6 +9,8 @@ import androidx.test.rule.GrantPermissionRule
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
+import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
 import org.junit.Before
 import org.junit.FixMethodOrder
 import org.junit.Rule
@@ -20,7 +22,7 @@ import java.net.NetworkInterface
 
 /**
  * This test class requires that the device be setup to communicate over a null modem cable in the
- * ttyUSB mode.  Having the connections the wrong way will setup ttyACM0 instead of USB.  For testing
+ * ttyACM mode.  Having the connections the wrong way will setup ttyUSB0 instead of ACM.  For testing
  * please ensure you have copied the options file in the res folder to /sdcard/options to pass to the
  * ppp command.
  *
@@ -30,11 +32,12 @@ import java.net.NetworkInterface
 
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-class PppdTtyUsbTests {
-    private val tag = "TTYUSBTEST"
+class PppdTtyAcmTests {
+    private val tag = "TTYACMTEST"
     private lateinit var context: Context
 
-    @Rule @JvmField
+    @Rule
+    @JvmField
     val mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule
         .grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
@@ -50,31 +53,29 @@ class PppdTtyUsbTests {
     }
 
     @Test
-    fun checkForTtyUSB0() {
-        val usbFile = File("/dev/ttyUSB0")
-        assert(usbFile.exists())
+    fun checkForTtyACM0() {
+        val acmFile = File("/dev/ttyACM0")
+        assert(acmFile.exists())
     }
 
     @Test
-    fun checkThatTtyACM0DoesNotExist() {
-        val acmFile = File("/dev/ttyACM0")
-        assert(!acmFile.exists())
+    fun checkThatTtyUSB0DoesNotExist() {
+        val usbFile = File("/dev/ttyUSB0")
+        assert(!usbFile.exists())
     }
 
     @Test
     fun setupPpp() = runBlocking<Unit> {
         val sm = KnoxModule.provideKnoxSystemManager()
         val useCase =
-            _root_ide_package_.net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase(
+            ExecuteAdbCommandUseCase(
                 sm
             )
 
-        val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
+        val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file /sdcard/options")
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
         assert(result is ApiCall.Success)
     }
-
-
 
     @Test
     fun testPpp0InterfaceExists() {
@@ -117,5 +118,11 @@ class PppdTtyUsbTests {
         }
     }
 
-
+    @Test
+    fun testStopPppd() = runBlocking<Unit> {
+        val sm = KnoxModule.provideKnoxSystemManager()
+        val useCase = StopPppdUseCase(sm)
+        val result = useCase.invoke()
+        assert(result is ApiCall.Success)
+    }
 }
