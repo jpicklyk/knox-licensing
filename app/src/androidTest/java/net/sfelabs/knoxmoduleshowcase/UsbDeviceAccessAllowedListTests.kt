@@ -6,7 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule.provideKnoxSystemManager
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.usb.SetUsbDeviceAccessAllowedListUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.usb.SetUsbDeviceAccessAllowedListUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 

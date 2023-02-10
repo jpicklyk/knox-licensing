@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
 import org.junit.Before
 import org.junit.FixMethodOrder
 import org.junit.Rule
@@ -118,5 +119,11 @@ class PppdTtyUsbTests {
         }
     }
 
-
+    @Test
+    fun testStopPppd() = runBlocking<Unit> {
+        val sm = KnoxModule.provideKnoxSystemManager()
+        val useCase = StopPppdUseCase(sm)
+        val result = useCase.invoke()
+        assert(result is ApiCall.Success)
+    }
 }

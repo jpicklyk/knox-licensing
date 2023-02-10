@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase
+package net.sfelabs.knoxmoduleshowcase.ethernet
 
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4

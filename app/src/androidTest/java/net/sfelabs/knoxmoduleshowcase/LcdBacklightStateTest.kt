@@ -16,11 +16,11 @@ class LcdBacklightStateTest {
     fun disableLcdBacklightTest() = runTest {
 
         val setUseCase =
-            net.sfelabs.knox_tactical.domain.use_cases.tactical.backlight.SetBacklightStateUseCase(
+            net.sfelabs.knox_tactical.domain.use_cases.backlight.SetBacklightStateUseCase(
                 sm
             )
         val getUseCase =
-            net.sfelabs.knox_tactical.domain.use_cases.tactical.backlight.GetBacklightStateUseCase(
+            net.sfelabs.knox_tactical.domain.use_cases.backlight.GetBacklightStateUseCase(
                 sm
             )
         assert(setUseCase(true) is ApiCall.Success)

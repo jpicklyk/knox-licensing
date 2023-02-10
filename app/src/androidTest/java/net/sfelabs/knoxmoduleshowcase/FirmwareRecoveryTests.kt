@@ -8,10 +8,7 @@ import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.AllowFirmwareRecoveryUseCase
 import net.sfelabs.knox_common.domain.use_cases.IsFirmwareRecoveryAllowedUseCase
-import org.junit.After
-import org.junit.AfterClass
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith

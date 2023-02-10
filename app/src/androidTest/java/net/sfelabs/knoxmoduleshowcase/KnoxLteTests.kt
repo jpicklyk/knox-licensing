@@ -6,11 +6,11 @@ import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.LteNrModeState
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.lte.DisableBandLockingUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.lte.EnableBandLockingUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.lte.GetBandLockingStateUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.lte.Get5gNrModeUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.lte.Set5gNrModeUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.lte.DisableBandLockingUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.lte.EnableBandLockingUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.lte.GetBandLockingStateUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.lte.Get5gNrModeUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.lte.Set5gNrModeUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 

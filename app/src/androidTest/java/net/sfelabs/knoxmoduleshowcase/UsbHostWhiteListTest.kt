@@ -20,7 +20,7 @@ class UsbHostWhiteListTest {
     @Test
     fun testAddPackageToUsbWhitelist() = runTest {
         val useCase =
-            net.sfelabs.knox_tactical.domain.use_cases.tactical.usb.AddPackageToUsbWhiteListUseCase(
+            net.sfelabs.knox_tactical.domain.use_cases.usb.AddPackageToUsbWhiteListUseCase(
                 edm
             )
         val packageName = "com.android.chrome"

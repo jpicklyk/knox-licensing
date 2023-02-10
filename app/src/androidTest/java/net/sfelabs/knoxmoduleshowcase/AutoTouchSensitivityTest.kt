@@ -15,11 +15,11 @@ class AutoTouchSensitivityTest {
     @Test
     fun enableAutoTouchSensitivity() = runTest {
         val setUseCase =
-            net.sfelabs.knox_tactical.domain.use_cases.tactical.auto_touch.SetAutoTouchSensitivityUseCase(
+            net.sfelabs.knox_tactical.domain.use_cases.auto_touch.SetAutoTouchSensitivityUseCase(
                 sm
             )
         val getUseCase =
-            net.sfelabs.knox_tactical.domain.use_cases.tactical.auto_touch.GetAutoTouchSensitivityUseCase(
+            net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensitivityUseCase(
                 sm
             )
         assert(setUseCase(true) is ApiCall.Success)

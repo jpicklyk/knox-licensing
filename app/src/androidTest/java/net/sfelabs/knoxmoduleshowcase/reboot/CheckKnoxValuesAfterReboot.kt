@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.reboot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
-import net.sfelabs.knox_tactical.domain.use_cases.tactical.mtu.GetCustomMtuUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.mtu.GetCustomMtuUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 
