@@ -26,7 +26,7 @@ package net.sfelabs.knox_common
          *
          */
         // TODO Enter the KPE Development, KPE Standard license key or KPE Premium license key
-        const val KPE_LICENSE_KEY = "KLM06-2SKQ6-E3EH4-BMBOM-YRLCV-O6QKT"
+        const val KPE_LICENSE_KEY = "KLM06-TJ7WD-8CCRO-LEE3S-69XJ4-S6B6K"
         // TODO: Enter a backwards-compatible key
         /**
          * Find more information about how to use the backward-compatibility key here:
