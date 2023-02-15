@@ -20,7 +20,8 @@ class UsbDeviceAccessAllowedListTests {
     fun testSetUsbDeviceAccessAllowedList() = runTest {
         val useCase = SetUsbDeviceAccessAllowedListUseCase(sm)
 
-        val result = useCase.invoke(true, "1234:4321")
+        /* Allow amazon basics ethernet dongle*/
+        val result = useCase.invoke(true, "0B95:1790")
         assert(result is ApiCall.Success)
     }
 }
