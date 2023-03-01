@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.receivers
+package net.sfelabs.knoxmoduleshowcase.app.receivers
 
 import android.app.admin.DeviceAdminReceiver
 import android.app.admin.DevicePolicyManager

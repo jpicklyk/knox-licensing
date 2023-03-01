@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.presentation
+package net.sfelabs.knoxmoduleshowcase.app.presentation
 
 import android.content.Intent
 import android.os.Build

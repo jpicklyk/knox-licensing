@@ -1,10 +1,10 @@
-package net.sfelabs.knoxmoduleshowcase.presentation
+package net.sfelabs.knoxmoduleshowcase.app.presentation
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import net.sfelabs.knoxmoduleshowcase.presentation.navigation.NavBarItems
-import net.sfelabs.knoxmoduleshowcase.presentation.navigation.SetupNavGraph
+import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.NavBarItems
+import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.SetupNavGraph
 import net.sfelabs.knoxmoduleshowcase.ui.theme.KnoxModuleShowcaseTheme
 
 

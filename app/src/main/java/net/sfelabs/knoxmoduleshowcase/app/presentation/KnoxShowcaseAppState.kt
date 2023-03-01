@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.presentation
+package net.sfelabs.knoxmoduleshowcase.app.presentation
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState

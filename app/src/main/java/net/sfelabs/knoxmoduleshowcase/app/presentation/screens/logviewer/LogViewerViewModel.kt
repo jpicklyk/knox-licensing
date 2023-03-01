@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.presentation.screens.logviewer
+package net.sfelabs.knoxmoduleshowcase.app.presentation.screens.logviewer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

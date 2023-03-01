@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.presentation.navigation
+package net.sfelabs.knoxmoduleshowcase.app.presentation.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EventNote

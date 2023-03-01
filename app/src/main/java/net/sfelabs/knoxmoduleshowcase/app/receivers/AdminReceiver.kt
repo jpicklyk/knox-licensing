@@ -1,8 +1,6 @@
-package net.sfelabs.knoxmoduleshowcase.receivers
+package net.sfelabs.knoxmoduleshowcase.app.receivers
 
 import android.app.admin.DeviceAdminReceiver
-import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import net.sfelabs.knox_common.activateLicense

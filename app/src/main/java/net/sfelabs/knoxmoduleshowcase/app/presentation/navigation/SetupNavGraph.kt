@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.presentation.navigation
+package net.sfelabs.knoxmoduleshowcase.app.presentation.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -6,11 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import net.sfelabs.knoxmoduleshowcase.presentation.KnoxShowcaseAppState
+import net.sfelabs.knoxmoduleshowcase.app.presentation.KnoxShowcaseAppState
 import net.sfelabs.knoxmoduleshowcase.presentation.SampleLogViewerScreen
-import net.sfelabs.knoxmoduleshowcase.presentation.screens.AboutScreen
-import net.sfelabs.knoxmoduleshowcase.presentation.screens.EthernetConfigurationScreen
-import net.sfelabs.knoxmoduleshowcase.presentation.screens.TacticalHomeScreen
+import net.sfelabs.knoxmoduleshowcase.app.presentation.screens.AboutScreen
+import net.sfelabs.knoxmoduleshowcase.app.presentation.screens.EthernetConfigurationScreen
+import net.sfelabs.knoxmoduleshowcase.app.presentation.screens.TacticalHomeScreen
 
 @Composable
 fun SetupNavGraph(

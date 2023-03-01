@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.presentation.navigation
+package net.sfelabs.knoxmoduleshowcase.app.presentation.navigation
 
 sealed class NavRoute(val route: String) {
     object Home: NavRoute("home_screen")

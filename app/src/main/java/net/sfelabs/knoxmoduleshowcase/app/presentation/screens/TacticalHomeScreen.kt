@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.presentation.screens
+package net.sfelabs.knoxmoduleshowcase.app.presentation.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.SnackbarDuration
@@ -12,7 +12,7 @@ import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.TacticalKno
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.components.KnoxApiComponent
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel.TacticalKnoxEvents
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel.TacticalTesterViewModel
-import net.sfelabs.knoxmoduleshowcase.presentation.KnoxShowcaseAppState
+import net.sfelabs.knoxmoduleshowcase.app.presentation.KnoxShowcaseAppState
 
 @Composable
 fun TacticalHomeScreen(appState: KnoxShowcaseAppState) {

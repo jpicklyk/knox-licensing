@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.presentation.screens
+package net.sfelabs.knoxmoduleshowcase.app.presentation.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons

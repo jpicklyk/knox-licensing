@@ -1,11 +1,7 @@
-package net.sfelabs.knoxmoduleshowcase.di
+package net.sfelabs.knoxmoduleshowcase.app.di
 
 import android.content.Context
 import android.net.ConnectivityManager
-import com.samsung.android.knox.EnterpriseDeviceManager
-import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SettingsManager
-import com.samsung.android.knox.custom.SystemManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

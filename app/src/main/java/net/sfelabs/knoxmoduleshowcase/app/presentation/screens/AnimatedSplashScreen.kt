@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
-import net.sfelabs.knoxmoduleshowcase.presentation.navigation.NavRoute
+import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.NavRoute
 
 @Composable
 fun AnimatedSplashScreen(navController: NavHostController) {
