@@ -2,9 +2,12 @@ package net.sfelabs.knoxmoduleshowcase.app.presentation
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.NavBarItems
 import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.SetupNavGraph
+import net.sfelabs.knoxmoduleshowcase.features.permissions.isDeviceAdminGranted
+import net.sfelabs.knoxmoduleshowcase.features.permissions.requestDeviceAdmin
 import net.sfelabs.knoxmoduleshowcase.ui.theme.KnoxModuleShowcaseTheme
 
 
@@ -12,6 +15,12 @@ import net.sfelabs.knoxmoduleshowcase.ui.theme.KnoxModuleShowcaseTheme
 @Composable
 fun KnoxShowcaseApp() {
     KnoxModuleShowcaseTheme {
+        val context = LocalContext.current
+        LaunchedEffect(true) {
+            if(!isDeviceAdminGranted(context))
+                requestDeviceAdmin(context)
+        }
+
         val appState: KnoxShowcaseAppState = rememberKnoxShowcaseAppState()
         var selectedItem by remember { mutableStateOf(0) }
 
@@ -67,4 +76,3 @@ fun KnoxShowcaseApp() {
         }
     }
 }
-
