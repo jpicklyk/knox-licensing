@@ -15,11 +15,18 @@ import javax.inject.Inject
 class AddPackageToUsbWhiteListUseCase @Inject constructor(
     @TacticalSdk private val enterpriseDeviceManager: EnterpriseDeviceManager
 ) {
-    suspend operator fun invoke(appIdentity: AppIdentity): UnitApiCall {
+    suspend operator fun invoke(enable: Boolean, appIdentity: AppIdentity): UnitApiCall {
         return coroutineScope {
             try {
+                val restrictionPolicy = enterpriseDeviceManager.restrictionPolicy
+                restrictionPolicy.allowUsbHostStorage(!enable)
                 val appPolicy: ApplicationPolicy = enterpriseDeviceManager.applicationPolicy
-                val result = appPolicy.addPackageToUsbHostWhiteList(appIdentity)
+                val result =
+                    if(enable) {
+                        appPolicy.addPackageToUsbHostWhiteList(appIdentity)
+                    } else {
+                        appPolicy.removePackageFromUsbHostWhiteList(appIdentity)
+                    }
                 if (result != CustomDeviceManager.SUCCESS) {
                     ApiCall.Error(
                         UiText.DynamicString(
