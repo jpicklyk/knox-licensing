@@ -14,7 +14,7 @@ class AllowFirmwareRecoveryUseCase @Inject constructor(
         val restrictionPolicy = enterpriseDeviceManager.restrictionPolicy
         return coroutineScope {
             try {
-                when (val result = restrictionPolicy.allowFirmwareRecovery(enable)) {
+                when (restrictionPolicy.allowFirmwareRecovery(enable)) {
                     true -> {
                         ApiCall.Success(data = enable)
                     }
