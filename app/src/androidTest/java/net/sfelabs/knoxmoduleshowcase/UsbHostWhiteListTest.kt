@@ -11,6 +11,19 @@ import net.sfelabs.common.core.signing.getApplicationSignatures
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * 1. prepare 2 devices and 1 usb-c cable.
+ * 2. connect 2 devices with usb-c cable.
+ * 3. set 1 device(A) to call knox apis as host.
+ * 4. check device A is able to read storage of the other device(B) by selecting "MTP Host" application.
+ *    --> possible
+ * 5. call allowUsbHostStorage(false) api to disable all usb host interface.
+ * 6. check device A is able to read storage of the other device(B) by selecting "MTP Host" application.
+ *   --> impossible
+ * 7. call getPackagesFromUsbHostWhiteList(...) using "MTP Host" packagename - "com.android.mtp".
+ * 8. check device A is able to read storage of the other device(B) by selecting "MTP Host" application.
+ *   --> possible
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class UsbHostWhiteListTest {
