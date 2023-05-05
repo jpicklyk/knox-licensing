@@ -60,7 +60,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime)
-    implementation(libs.bundles.androidx.compose)
+    implementation(composeBom)
     implementation(libs.bundles.androidx.compose.materialIcon)
     implementation(libs.androidx.navigation)
 

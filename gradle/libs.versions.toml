@@ -2,8 +2,8 @@
 accompanist = "0.28.0"
 androidGradlePlugin = "8.2.0-alpha02"
 
-androidx-activity = "1.6.0"
-androidx-appcompat = "1.5.1"
+androidx-activity = "1.7.1"
+androidx-appcompat = "1.6.1"
 androidx-core = "1.10.0"
 androidx-datastore = "1.0.0"
 androidx-lifecycle = "2.6.1"
@@ -24,17 +24,14 @@ ksp = "1.8.21-1.0.11"
 detekt = "1.17.0"
 ktlint = "10.0.0"
 
-#material = "1.1.1"
-#material3 = "1.0.0-alpha11"
-#ui = "1.1.1"
-splashscreen = "1.0.0-beta02"
+splashscreen = "1.1.0-alpha01"
 
 
-testing-androidx = "1.5.0-rc01"
+testing-androidx = "1.5.0"
 testing-junit = "4.13.2"
-testing-androidx-junit = "1.1.4-rc01"
-testing-androidx-espresso = "3.5.0-rc01"
-testing-androidx-orchestrator = "1.4.2-rc01"
+testing-androidx-junit = "1.2.0-alpha01"
+testing-androidx-espresso = "3.6.0-alpha01"
+testing-androidx-orchestrator = "1.5.0-alpha01"
 testing-kotlin-coroutines = "1.6.4"
 
 [libraries]
@@ -111,13 +108,8 @@ androidx-compose-materialIcon = [
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
-#hilt = { id = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt-core" }
-#kapt = { id = "kotlin-kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-#ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-core" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-#protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
-#secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
