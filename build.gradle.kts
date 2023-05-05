@@ -4,7 +4,7 @@
  *
  * For now use @Suppress("DSL_SCOPE_VIOLATION) to work around the issue
  */
-@file:Suppress("DSL_SCOPE_VIOLATION")
+//@file:Suppress("DSL_SCOPE_VIOLATION")
 // All project dependencies tracked in /gradle/libs.versions.toml
 buildscript {
     repositories {
@@ -14,10 +14,10 @@ buildscript {
 }
 
 plugins {
-    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.application) version "8.2.0-alpha02" apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.hilt) apply false
-    //alias(libs.plugins.secrets) apply false
-    id("org.jetbrains.kotlin.android") version "1.7.20" apply false
+    alias(libs.plugins.ksp) apply false
+    id("org.jetbrains.kotlin.android") version "1.8.21" apply false
 }
