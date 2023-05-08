@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         minSdk = 29
-        targetSdk = 33
+        //targetSdk = 33 *** deprecated ***
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")

@@ -18,7 +18,7 @@ android {
     defaultConfig {
 
         applicationId "net.sfelabs.knoxmoduleshowcase"
-        targetSdk = 33
+        //targetSdk = 33 *** deprecated ***
         minSdk = 29
         versionCode 1
         versionName "0.0.1"
