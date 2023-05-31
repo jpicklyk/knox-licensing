@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "net.sfelabs.android_log_wrapper"
-    compileSdk = 32
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 29
@@ -30,7 +30,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {

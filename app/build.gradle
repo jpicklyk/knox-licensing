@@ -53,16 +53,16 @@ android {
     }
 }
 dependencies {
-    def composeBom = platform(libs.androidx.composeBom)
-    implementation composeBom
-    androidTestImplementation composeBom
+    implementation platform(libs.androidx.composeBom)
+    androidTestImplementation platform(libs.androidx.composeBom)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime)
-    implementation(composeBom)
+    implementation(libs.androidx.composeMaterial3)
     implementation(libs.bundles.androidx.compose.materialIcon)
     implementation(libs.androidx.navigation)
+    implementation(libs.androidx.composeUiTooling)
 
     //DI
     implementation(libs.hilt.android)
