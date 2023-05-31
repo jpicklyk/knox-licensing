@@ -168,6 +168,10 @@ class EthernetConfigurationViewModel @Inject constructor(
                     is ApiCall.Error -> {
                         log.e("An error occurred while setting the Auto Connection State")
                     }
+
+                    is ApiCall.NotSupported -> {
+                        log.e("setEthernetAutoConnection method is not supported")
+                    }
                 }
 
             }
@@ -182,6 +186,10 @@ class EthernetConfigurationViewModel @Inject constructor(
             }
             is ApiCall.Error -> {
                 log.e(result.uiText.toString())
+            }
+
+            is ApiCall.NotSupported -> {
+                log.e("getEthernetAutoConnection method is not supported")
             }
         }
     }
@@ -244,6 +252,9 @@ class EthernetConfigurationViewModel @Inject constructor(
                         log.e("Error occurred while creating ${ethInterface.name} configuration")
                     }
 
+                    is ApiCall.NotSupported -> {
+                        log.e("configureEthernet method is not supported")
+                    }
                 }
             }
         }

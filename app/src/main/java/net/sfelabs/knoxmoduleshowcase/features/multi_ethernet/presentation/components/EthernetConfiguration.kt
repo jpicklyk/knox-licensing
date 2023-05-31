@@ -121,7 +121,6 @@ fun EthernetConfiguration(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EthernetTypeComponent(
     radioOptions: List<EthernetInterfaceType> = listOf(),
@@ -191,7 +190,6 @@ fun EthernetTypeComponent(
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StaticIPFieldsComponent(
     state: EthernetConfigurationState,

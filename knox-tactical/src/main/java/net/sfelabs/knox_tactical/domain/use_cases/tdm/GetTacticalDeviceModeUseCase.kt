@@ -22,6 +22,8 @@ class GetTacticalDeviceModeUseCase @Inject constructor(
                         e.message ?: "Calling application does not have the required permission"
                     )
                 )
+            } catch (nsm: NoSuchMethodError) {
+                ApiCall.NotSupported
             }
         }
 

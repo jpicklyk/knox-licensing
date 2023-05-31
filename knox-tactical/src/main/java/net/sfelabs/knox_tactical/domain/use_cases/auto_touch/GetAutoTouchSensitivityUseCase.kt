@@ -27,12 +27,8 @@ class GetAutoTouchSensitivityUseCase @Inject constructor(
                             "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                 ))
             } catch (nsm: NoSuchMethodError) {
-                ApiCall.Error(
-                    UiText.DynamicString(
-                        "The API AutoTouchSensitivity does not exist on this device"
-                    ))
+                ApiCall.NotSupported
             }
-
         }
     }
 }

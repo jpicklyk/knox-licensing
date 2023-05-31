@@ -56,6 +56,9 @@ class TacticalTesterViewModel @Inject constructor(
             is ApiCall.Error -> {
                 log.d("An error occurred")
             }
+            is ApiCall.NotSupported -> {
+                log.e("getTacticalModeState method is not supported")
+            }
         }
     }
 
@@ -66,6 +69,9 @@ class TacticalTesterViewModel @Inject constructor(
             }
             is ApiCall.Error -> {
                 log.d("An error occurred")
+            }
+            is ApiCall.NotSupported -> {
+                log.e("setTacticalModeState method is not supported")
             }
         }
     }
@@ -80,6 +86,9 @@ class TacticalTesterViewModel @Inject constructor(
             is ApiCall.Error -> {
                 log.d("An error occurred")
             }
+            is ApiCall.NotSupported -> {
+                log.e("getAutoTouchSensitivityState method is not supported")
+            }
         }
     }
 
@@ -90,6 +99,9 @@ class TacticalTesterViewModel @Inject constructor(
             }
             is ApiCall.Error -> {
                 log.d("An error occurred")
+            }
+            is ApiCall.NotSupported -> {
+                log.e("setAutoTouchSensitivityState method is not supported")
             }
         }
     }
