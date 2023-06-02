@@ -23,18 +23,18 @@ class LcdBacklightStateTest {
             net.sfelabs.knox_tactical.domain.use_cases.backlight.GetBacklightStateUseCase(
                 sm
             )
-        assert(setUseCase(true) is ApiCall.Success)
+        assert(setUseCase(false) is ApiCall.Success)
         val result = getUseCase.invoke()
         assert(result is ApiCall.Success)
         when(result) {
             is ApiCall.Success -> {
-                assert(result.data)
+                assert(!result.data)
             }
             else -> assert(false)
         }
         //allow the screen back on
 
-
+        Thread.sleep(2000)
         setUseCase(true)
     }
 }
