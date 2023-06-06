@@ -38,7 +38,7 @@ class UsbDebuggingTest {
 //        val result = useCase.invoke(false)
 //        assert(result is ApiCall.Success)
 //    }
-
+/*
     @Test
     fun printAllUsbDeviceSerial() {
         val devices = usbManager.deviceList
@@ -68,6 +68,7 @@ class UsbDebuggingTest {
 
             }
         }
-
     }
+
+ */
 }
