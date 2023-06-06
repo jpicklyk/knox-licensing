@@ -1,0 +1,55 @@
+package net.sfelabs.knoxmoduleshowcase
+
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.test.runTest
+import net.sfelabs.common.core.ApiCall
+import net.sfelabs.common.core.checkMethodExistence
+import net.sfelabs.knox_tactical.di.KnoxModule
+import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoRecordCallEnabledUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoRecordCallEnabledUseCase
+import org.junit.After
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class AutoRecordCallTest {
+    private val systemManager = KnoxModule.provideKnoxSystemManager()
+
+    @Test
+    fun getAutoRecordCallEnabledState_Exists() = runTest {
+        val kClass = systemManager::class
+        assert(checkMethodExistence(kClass, "getAutomaticRecordCallEnabledState"))
+    }
+
+    @Test
+    fun setAutoRecordCallEnabledState_Exists() = runTest {
+        val kClass = systemManager::class
+        assert(checkMethodExistence(kClass, "setAutomaticRecordCallEnabledState"))
+    }
+
+    @Test
+    fun setAutoRecordCallEnabledState_Enabled() = runTest {
+        val useCase = SetAutoRecordCallEnabledUseCase(systemManager)
+        val result = useCase.invoke(true)
+        assert(result is ApiCall.Success)
+        val getCase = GetAutoRecordCallEnabledUseCase(systemManager)
+        val result2 = getCase.invoke()
+        assert(result2 is ApiCall.Success && result2.data)
+    }
+
+    @Test
+    fun setAutoRecordCallEnabledState_Disabled() = runTest {
+        val useCase = SetAutoRecordCallEnabledUseCase(systemManager)
+        val result = useCase.invoke(false)
+        assert(result is ApiCall.Success)
+        val getCase = GetAutoRecordCallEnabledUseCase(systemManager)
+        val result2 = getCase.invoke()
+        assert(result2 is ApiCall.Success && !result2.data)
+    }
+
+    @After
+    fun disableAutoRecordCall() = runTest {
+        val useCase = SetAutoRecordCallEnabledUseCase(systemManager)
+        useCase.invoke(false)
+    }
+}
