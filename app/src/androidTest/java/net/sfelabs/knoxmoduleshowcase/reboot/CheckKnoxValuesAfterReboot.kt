@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.reboot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
-import net.sfelabs.knox_tactical.domain.use_cases.mtu.GetCustomMtuUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.wifi.GetWlan0MtuUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -13,7 +13,7 @@ class CheckKnoxValuesAfterReboot {
 
     @Test
     fun getWlanMtu() = runTest {
-        val useCase = GetCustomMtuUseCase(sm)
+        val useCase = GetWlan0MtuUseCase(sm)
         val result = useCase.invoke()
         assert(result is ApiCall.Success && result.data == 1430)
     }
