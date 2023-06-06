@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.common.core.signing.getApplicationSignatures
 import net.sfelabs.knox_common.AllowUsbHostStorageUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.usb.AddPackageToUsbWhiteListUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.usb.AddPackageToUsbHostWhiteListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetPackagesFromUsbHostWhiteListUseCase
 import org.junit.After
 import org.junit.Before
@@ -43,7 +43,7 @@ class UsbHostWhiteListTest {
 
     @Test
     fun addPackageToUsbWhitelist() = runTest {
-        val useCase = AddPackageToUsbWhiteListUseCase(edm)
+        val useCase = AddPackageToUsbHostWhiteListUseCase(edm)
         val packageName = "com.android.mtp"
         val signatures = getApplicationSignatures(packageName, appContext)
         val sig = signatures[0]

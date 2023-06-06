@@ -12,7 +12,7 @@ import net.sfelabs.common.core.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
-class AddPackageToUsbWhiteListUseCase @Inject constructor(
+class AddPackageToUsbHostWhiteListUseCase @Inject constructor(
     @TacticalSdk private val enterpriseDeviceManager: EnterpriseDeviceManager
 ) {
     suspend operator fun invoke(appIdentity: AppIdentity): UnitApiCall {
