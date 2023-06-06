@@ -37,7 +37,7 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.kotlinReflect)
+    implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

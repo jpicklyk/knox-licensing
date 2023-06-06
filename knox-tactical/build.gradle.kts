@@ -36,7 +36,7 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.kotlinReflect)
+    implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.hilt.android)
     implementation(project(mapOf("path" to ":android-log-wrapper")))
