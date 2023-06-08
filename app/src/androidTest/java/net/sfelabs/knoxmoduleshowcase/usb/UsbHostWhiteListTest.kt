@@ -24,7 +24,7 @@ import org.junit.runner.RunWith
  * 5. call allowUsbHostStorage(false) api to disable all usb host interface.
  * 6. check device A is able to read storage of the other device(B) by selecting "MTP Host" application.
  *   --> impossible
- * 7. call getPackagesFromUsbHostWhiteList(...) using "MTP Host" packagename - "com.android.mtp".
+ * 7. call getPackagesFromUsbHostWhiteList(...) using "MTP Host" packagename - "com.samsung.android.mtp".
  * 8. check device A is able to read storage of the other device(B) by selecting "MTP Host" application.
  *   --> possible
  */
@@ -32,9 +32,9 @@ import org.junit.runner.RunWith
 class UsbHostWhiteListTest {
     private val appContext = InstrumentationRegistry.getInstrumentation().targetContext
     private val edm: EnterpriseDeviceManager = EnterpriseDeviceManager.getInstance(appContext)
+    private val mtpPackage = "com.samsung.android.mtp"
 
-
-    @Before
+    @Test
     fun disableUsbHostMode()= runTest {
         val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
         val res = hostStorageUseCase.invoke(false)
@@ -44,23 +44,23 @@ class UsbHostWhiteListTest {
     @Test
     fun addPackageToUsbWhitelist() = runTest {
         val useCase = AddPackageToUsbHostWhiteListUseCase(edm)
-        val packageName = "com.android.mtp"
-        val signatures = getApplicationSignatures(packageName, appContext)
+
+        val signatures = getApplicationSignatures(mtpPackage, appContext)
         val sig = signatures[0]
         println("Signature: $sig")
-        val appIdentity = AppIdentity(packageName, sig)
+        val appIdentity = AppIdentity(mtpPackage, sig)
         val result = useCase.invoke(appIdentity)
         assert(result is ApiCall.Success)
 
         val useCase2 = GetPackagesFromUsbHostWhiteListUseCase(edm)
         val result2 =  useCase2.invoke()
-        assert(result2 is ApiCall.Success && result2.data.contains("com.android.mtp"))
+        assert(result2 is ApiCall.Success && result2.data.contains(mtpPackage))
 
     }
 
 
 
-    @After
+    @Test
     fun allowUsbHostTest() = runTest {
         val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
         val res = hostStorageUseCase.invoke(true)
