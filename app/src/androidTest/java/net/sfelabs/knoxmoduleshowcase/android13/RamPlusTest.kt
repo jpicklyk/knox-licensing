@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase
+package net.sfelabs.knoxmoduleshowcase.android13
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest

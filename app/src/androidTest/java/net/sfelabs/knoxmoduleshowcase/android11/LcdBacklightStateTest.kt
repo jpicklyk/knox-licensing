@@ -1,7 +1,6 @@
-package net.sfelabs.knoxmoduleshowcase
+package net.sfelabs.knoxmoduleshowcase.android11
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
@@ -11,7 +10,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class LcdBacklightStateTest {
     private val sm = KnoxModule.provideKnoxSystemManager()
-    @OptIn(ExperimentalCoroutinesApi::class)
+
     @Test
     fun disableLcdBacklightTest() = runTest {
 

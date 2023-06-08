@@ -1,7 +1,6 @@
-package net.sfelabs.knoxmoduleshowcase.lte
+package net.sfelabs.knoxmoduleshowcase.android10
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
@@ -11,10 +10,10 @@ import net.sfelabs.knox_tactical.domain.use_cases.lte.EnableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.lte.GetBandLockingStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.lte.Get5gNrModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.lte.Set5gNrModeUseCase
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class KnoxLteTests {
     private val sm = KnoxModule.provideKnoxSystemManager()
@@ -84,36 +83,12 @@ class KnoxLteTests {
         }
     }
 
-   /* @Test
-    fun testGetBandLockN260() = runTest {
-        val useCase = GetBandLockingStateUseCase(sm)
-
-        val result = useCase.invoke()
-        assert(result is ApiCall.Success)
-        when(result) {
-            is ApiCall.Success -> {
-                assert(result.data == 260)
-            }
-            else -> assert(false)
-        }
-    }*/
 
     @Test
     fun testDisableBandLock() = runTest {
         val useCase = DisableBandLockingUseCase(sm)
 
         val result = useCase.invoke()
-        assert(result is ApiCall.Success)
-    }
-
-    /**
-     * Put the default LTE mode back on (SA_AND_NSA)
-     */
-    @Test
-    fun testEnable5gSaNsa() = runTest {
-        val useCase = Set5gNrModeUseCase(sm)
-
-        val result = useCase.invoke(LteNrModeState.EnableBothSaAndNsa)
         assert(result is ApiCall.Success)
     }
 
@@ -127,8 +102,19 @@ class KnoxLteTests {
             is ApiCall.Success -> {
                 assert(result.data == LteNrModeState.EnableBothSaAndNsa)
             } else -> {
-            assert(false)
+                assert(false)
+            }
         }
-        }
+    }
+
+    /**
+     * Put the default LTE mode back on (SA_AND_NSA)
+     */
+    @After
+    fun testEnable5gSaNsa() = runTest {
+        val useCase = Set5gNrModeUseCase(sm)
+
+        val result = useCase.invoke(LteNrModeState.EnableBothSaAndNsa)
+        assert(result is ApiCall.Success)
     }
 }

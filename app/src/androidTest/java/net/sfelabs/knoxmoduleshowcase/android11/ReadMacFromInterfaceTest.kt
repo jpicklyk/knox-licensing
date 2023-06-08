@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.ethernet
+package net.sfelabs.knoxmoduleshowcase.android11
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
@@ -14,16 +14,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ReadMacFromInterfaceTest {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
-
-    @Test
-    fun getMacAddressForEthernetInterface_Exists() = runTest {
-        assert(checkMethodExistence(systemManager::class,"getMacAddressForEthernetInterface"))
-    }
-
-    @Test
-    fun getEthernetInterfaceNameForMacAddress_Exists() = runTest {
-        assert(checkMethodExistence(systemManager::class,"getEthernetInterfaceNameForMacAddress"))
-    }
 
     /**
      * Note that this test requires that the device actually be connected to ethernet

@@ -45,4 +45,10 @@ object KnoxModule {
     @Singleton
     fun provideKnoxRestrictionPolicy(enterpriseDeviceManager: EnterpriseDeviceManager) =
         enterpriseDeviceManager.restrictionPolicy!!
+
+    @Provides
+    @TacticalSdk
+    @Singleton
+    fun provideKnoxApplicationPolicy(enterpriseDeviceManager: EnterpriseDeviceManager) =
+        enterpriseDeviceManager.applicationPolicy!!
 }

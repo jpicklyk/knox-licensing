@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.pppd
+package net.sfelabs.knoxmoduleshowcase.android11
 
 import android.Manifest
 import android.content.Context

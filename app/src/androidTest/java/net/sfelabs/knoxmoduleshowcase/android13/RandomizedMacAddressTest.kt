@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.wifi
+package net.sfelabs.knoxmoduleshowcase.android13
 
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
