@@ -73,4 +73,25 @@ class CheckAndroid13TacticalApisExist {
             )
         )
     }
+
+    /** Lockscreen timeout APIs **/
+    @Test
+    fun setActivityTime_Exists() = runTest {
+        assert(
+            checkMethodExistence(
+                systemManager::class,
+                "setActivityTime"
+            )
+        )
+    }
+
+    @Test
+    fun getActivityTime_Exists() = runTest {
+        assert(
+            checkMethodExistence(
+                systemManager::class,
+                "getActivityTime"
+            )
+        )
+    }
 }
