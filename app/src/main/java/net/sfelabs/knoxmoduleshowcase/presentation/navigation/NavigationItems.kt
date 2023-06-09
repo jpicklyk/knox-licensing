@@ -22,7 +22,7 @@ object NavBarItems {
             navRoute = NavRoute.Home
         ),
         BarItem(
-            title = "Knox APIs",
+            title = "Controls",
             image = Icons.Filled.Policy,
             navRoute = NavRoute.Home
         ),
