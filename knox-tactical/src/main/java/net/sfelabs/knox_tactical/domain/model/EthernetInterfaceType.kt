@@ -7,5 +7,5 @@ sealed class EthernetInterfaceType(val interfaceType: String) {
         }
     }
     object DHCP: EthernetInterfaceType("DHCP")
-    object STATIC: EthernetInterfaceType("STATIC")
+    object STATIC: EthernetInterfaceType("Static")
 }

@@ -205,7 +205,7 @@ fun KnoxApiTextFieldComponent(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier
-                        .width(70.dp)
+                        .width(72.dp)
                         .padding(end = 8.dp)
                         //.weight(1f, false)
                 )
