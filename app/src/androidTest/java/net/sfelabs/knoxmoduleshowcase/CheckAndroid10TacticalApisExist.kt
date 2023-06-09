@@ -19,6 +19,15 @@ class CheckAndroid10TacticalApisExist {
     private val restrictionPolicy = KnoxModule.provideKnoxRestrictionPolicy(edm)
     private val applicationPolicy = KnoxModule.provideKnoxApplicationPolicy(edm)
 
+    /** Tactical Device Mode APIs **/
+    @Test
+    fun enableTacticalDeviceMode_Exists() {
+        assert(checkMethodExistence(restrictionPolicy::class, "enableTacticalDeviceMode"))
+    }
+    @Test
+    fun isTacticalDeviceModeEnabled_Exists() {
+        assert(checkMethodExistence(restrictionPolicy::class, "isTacticalDeviceModeEnabled"))
+    }
     /** Ethernet APIs **/
     @Test
     fun setEthernetConfigurations_Exists() {
