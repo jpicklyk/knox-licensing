@@ -27,8 +27,8 @@ import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
 
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.CheckInterfacesUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.ConfigureEthernetInterfaceUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetAutoConnection
-import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnection
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetAutoConnectionUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnectionUseCase
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.EthernetInterface
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.services.EthernetNetworkMonitor
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationEvents
@@ -40,8 +40,8 @@ class EthernetConfigurationViewModel @Inject constructor(
     @ApplicationContext
     private val context: Context,
     private val configureEthernetInterfaceUseCase: ConfigureEthernetInterfaceUseCase,
-    private val setEthernetAutoConnection: SetEthernetAutoConnection,
-    private val getEthernetAutoConnection: GetEthernetAutoConnection,
+    private val setEthernetAutoConnectionUseCase: SetEthernetAutoConnectionUseCase,
+    private val getEthernetAutoConnection: GetEthernetAutoConnectionUseCase,
     private val checkInterfacesUseCase: CheckInterfacesUseCase,
     private val log: net.sfelabs.android_log_wrapper.Log,
     private val ethernetMonitor: EthernetNetworkMonitor
@@ -152,7 +152,7 @@ class EthernetConfigurationViewModel @Inject constructor(
     private fun setAutoEthernetConnectionState(autoConnectionState: AutoConnectionState) {
         //settingsManager.ethernetAutoConnectionState = autoConnectionState.state
         viewModelScope.launch {
-            setEthernetAutoConnection(
+            setEthernetAutoConnectionUseCase(
                 autoConnectionState = autoConnectionState, listOf(getNetworkCallback())
             ).collect { result ->
                 when(result) {

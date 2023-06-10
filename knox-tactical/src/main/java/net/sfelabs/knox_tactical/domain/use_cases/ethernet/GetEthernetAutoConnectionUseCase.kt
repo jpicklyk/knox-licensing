@@ -7,7 +7,7 @@ import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import javax.inject.Inject
 
-class GetEthernetAutoConnection @Inject constructor(
+class GetEthernetAutoConnectionUseCase @Inject constructor(
     @TacticalSdk private val settingsManager: SettingsManager
 ) {
 
