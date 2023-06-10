@@ -7,6 +7,7 @@ import androidx.core.content.getSystemService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -16,10 +17,10 @@ object AndroidServiceModule {
 
     @Provides
     @Singleton
-    fun provideWifiManager(context: Context) = context.getSystemService<WifiManager>()!!
+    fun provideWifiManager(@ApplicationContext context: Context) = context.getSystemService<WifiManager>()!!
 
     @Provides
     @Singleton
-    fun provideConnectivityManager(context: Context) =
+    fun provideConnectivityManager(@ApplicationContext context: Context) =
         context.getSystemService<ConnectivityManager>()!!
 }
