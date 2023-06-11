@@ -6,11 +6,13 @@ import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import junit.framework.TestCase
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
+import net.sfelabs.knoxmoduleshowcase.R
 import org.junit.Before
 import org.junit.FixMethodOrder
 import org.junit.Rule
@@ -18,6 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 import java.io.File
+import java.io.FileOutputStream
 import java.net.NetworkInterface
 
 /**
@@ -42,13 +45,13 @@ class PppdTtyUsbTests {
 
     @Before
     fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().context
-        /*val file = File("/sdcard/options")
-        FileOutputStream(file).use { out ->
-            context.assets.open("options").use {
-                it.copyTo(out)
-            }
-        }*/
+        context = InstrumentationRegistry.getInstrumentation().targetContext
+        val targetDirectory = context.getExternalFilesDir(null)!!
+        copyFileFromRawToSDCard(context, R.raw.options, targetDirectory, "options")
+
+        // Assert file copied successfully
+        val copiedFile = File(targetDirectory, "options")
+        TestCase.assertTrue(copiedFile.exists())
     }
 
     @Test
@@ -125,5 +128,24 @@ class PppdTtyUsbTests {
         val useCase = StopPppdUseCase(sm)
         val result = useCase.invoke()
         assert(result is ApiCall.Success)
+    }
+
+    private fun copyFileFromRawToSDCard(
+        context: Context,
+        rawResourceId: Int,
+        targetDirectory: File,
+        targetFileName: String
+    ) {
+        val inputStream = context.resources.openRawResource(rawResourceId)
+        val outputFile = File(targetDirectory, targetFileName)
+        val outputStream = FileOutputStream(outputFile)
+        val buffer = ByteArray(4 * 1024)
+        var read: Int
+        while (inputStream.read(buffer).also { read = it } != -1) {
+            outputStream.write(buffer, 0, read)
+        }
+        outputStream.flush()
+        inputStream.close()
+        outputStream.close()
     }
 }
