@@ -16,7 +16,7 @@ class UsbConnectionTypeTetheringTest {
     private val sm = KnoxModule.provideKnoxSystemManager()
 
     @Test
-    fun testTethering() = runTest {
+    fun testUsbConnectionType_RndisTethering() = runTest {
         val setUseCase = SetUsbConnectionTypeUseCase(sm)
         val apiResult = setUseCase.invoke(UsbConnectionType.Tethering)
         assert(apiResult is ApiCall.Success)
