@@ -19,53 +19,31 @@ class KnoxLteTests {
     private val sm = KnoxModule.provideKnoxSystemManager()
 
     @Test
-    fun testEnableNSA() = runTest {
-        val useCase = Set5gNrModeUseCase(sm)
-
-        val result = useCase.invoke(LteNrModeState.DisableSa)
-        assert(result is ApiCall.Success)
+    fun testNsaMode() = runTest {
+        val setCase = Set5gNrModeUseCase(sm).invoke(LteNrModeState.DisableSa)
+        assert(setCase is ApiCall.Success)
+        val getCase = Get5gNrModeUseCase(sm).invoke()
+        assert(getCase is ApiCall.Success && getCase.data == LteNrModeState.DisableSa)
     }
 
     @Test
-    fun testConfirmNsaModeEnabled() = runTest {
-        val useCase = Get5gNrModeUseCase(sm)
-
-        val result = useCase.invoke()
-        assert(result is ApiCall.Success)
-        when(result) {
-            is ApiCall.Success -> {
-                assert(result.data == LteNrModeState.DisableSa)
-            } else -> {
-            assert(false)
-        }
-        }
+    fun testSaMode() = runTest {
+        val setCase = Set5gNrModeUseCase(sm).invoke(LteNrModeState.DisableNsa)
+        assert(setCase is ApiCall.Success)
+        val getCase = Get5gNrModeUseCase(sm).invoke()
+        assert(getCase is ApiCall.Success && getCase.data == LteNrModeState.DisableNsa)
     }
 
     @Test
-    fun testEnableSA() = runTest {
-        val useCase = Set5gNrModeUseCase(sm)
-
-        val result = useCase.invoke(LteNrModeState.DisableNsa)
-        assert(result is ApiCall.Success)
+    fun testSaAndNsaMode() = runTest {
+        val setCase = Set5gNrModeUseCase(sm).invoke(LteNrModeState.EnableBothSaAndNsa)
+        assert(setCase is ApiCall.Success)
+        val getCase = Get5gNrModeUseCase(sm).invoke()
+        assert(getCase is ApiCall.Success && getCase.data == LteNrModeState.EnableBothSaAndNsa)
     }
 
     @Test
-    fun testConfirmSaModeEnabled() = runTest {
-        val useCase = Get5gNrModeUseCase(sm)
-
-        val result = useCase.invoke()
-        assert(result is ApiCall.Success)
-        when(result) {
-            is ApiCall.Success -> {
-                assert(result.data == LteNrModeState.DisableNsa)
-            } else -> {
-                assert(false)
-            }
-        }
-    }
-
-    @Test
-    fun testEnableBandLockN260() = runTest {
+    fun enableBandLockN260() = runTest {
         val useCase = EnableBandLockingUseCase(sm)
 
         val result = useCase.invoke(50000)
@@ -85,36 +63,21 @@ class KnoxLteTests {
 
 
     @Test
-    fun testDisableBandLock() = runTest {
+    fun disableBandLock() = runTest {
         val useCase = DisableBandLockingUseCase(sm)
 
         val result = useCase.invoke()
         assert(result is ApiCall.Success)
     }
 
-    @Test
-    fun testConfirmSaAndNsaModeEnabled() = runTest {
-        val useCase = Get5gNrModeUseCase(sm)
 
-        val result = useCase.invoke()
-        assert(result is ApiCall.Success)
-        when(result) {
-            is ApiCall.Success -> {
-                assert(result.data == LteNrModeState.EnableBothSaAndNsa)
-            } else -> {
-                assert(false)
-            }
-        }
-    }
 
     /**
      * Put the default LTE mode back on (SA_AND_NSA)
      */
     @After
-    fun testEnable5gSaNsa() = runTest {
-        val useCase = Set5gNrModeUseCase(sm)
-
-        val result = useCase.invoke(LteNrModeState.EnableBothSaAndNsa)
-        assert(result is ApiCall.Success)
+    fun resetSetting() = runTest {
+        disableBandLock()
+        testSaAndNsaMode()
     }
 }
