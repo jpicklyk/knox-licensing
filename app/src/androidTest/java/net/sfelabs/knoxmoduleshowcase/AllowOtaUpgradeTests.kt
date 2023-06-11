@@ -7,6 +7,8 @@ import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.AllowOtaUpgradeUseCase
+import net.sfelabs.knox_common.domain.use_cases.IsOtaUpgradeAllowedUseCase
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,8 +25,23 @@ class AllowOtaUpgradeTests {
     @Test
     fun allowUpgrade() = runTest {
         val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
-        val useCase = AllowOtaUpgradeUseCase(edm)
-        val result = useCase.invoke(true)
-        assert(result is ApiCall.Success)
+        val setCase = AllowOtaUpgradeUseCase(edm).invoke(true)
+        assert(setCase is ApiCall.Success)
+        val getCase = IsOtaUpgradeAllowedUseCase(edm).invoke()
+        assert(getCase is ApiCall.Success && getCase.data)
+    }
+
+    @Test
+    fun disallowUpgrade() = runTest {
+        val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
+        val setCase = AllowOtaUpgradeUseCase(edm).invoke(false)
+        assert(setCase is ApiCall.Success)
+        val getCase = IsOtaUpgradeAllowedUseCase(edm).invoke()
+        assert(getCase is ApiCall.Success && !getCase.data)
+    }
+
+    @After
+    fun resetRestriction() {
+        allowUpgrade()
     }
 }
