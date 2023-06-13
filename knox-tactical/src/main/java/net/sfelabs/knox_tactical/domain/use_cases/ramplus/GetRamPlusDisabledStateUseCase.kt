@@ -7,7 +7,7 @@ import net.sfelabs.common.core.ui.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
-class GetRamPlusStateUseCase @Inject constructor(
+class GetRamPlusDisabledStateUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ){
 

@@ -4,8 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
-import net.sfelabs.knox_tactical.domain.use_cases.ramplus.GetRamPlusStateUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.ramplus.SetRamPlusStateUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ramplus.GetRamPlusDisabledStateUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -15,7 +14,7 @@ class RamPlusTest {
 
     @Test
     fun testDefaultDisabled() = runTest {
-        val getUseCase = GetRamPlusStateUseCase(sm)
+        val getUseCase = GetRamPlusDisabledStateUseCase(sm)
         val result2 = getUseCase.invoke()
         assert(result2 is ApiCall.Success && result2.data)
     }
