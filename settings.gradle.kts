@@ -30,3 +30,4 @@ dependencyResolutionManagement {
 }
 
 include(":lib")
+include(":knox-ngd2")

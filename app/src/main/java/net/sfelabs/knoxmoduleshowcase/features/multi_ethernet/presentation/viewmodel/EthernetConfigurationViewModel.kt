@@ -50,7 +50,7 @@ class EthernetConfigurationViewModel @Inject constructor(
     val stateFlow: StateFlow<EthernetConfigurationState> = _state.asStateFlow()
     private lateinit var connected: EthernetNetworkMonitor.EthernetConnectionState
     private val _ethernetState = MutableStateFlow(mapOf<String, EthernetInterface>())
-    val interfaces: StateFlow<Map<String,EthernetInterface>> get() = _ethernetState
+    val interfaces: StateFlow<Map<String, EthernetInterface>> get() = _ethernetState
 
     init {
         _state.update{ EthernetConfigurationState(
@@ -64,7 +64,8 @@ class EthernetConfigurationViewModel @Inject constructor(
                 gateway = "192.168.2.1",
                 dnsList = "192.168.2.1, 8.8.8.8"
             )
-        )}
+        )
+        }
         getAutoEthernetConnectionState()
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
