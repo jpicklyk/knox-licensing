@@ -3,6 +3,7 @@ package net.sfelabs.common.core.di
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
+import android.os.PowerManager
 import androidx.core.content.getSystemService
 import dagger.Module
 import dagger.Provides
@@ -23,4 +24,9 @@ object AndroidServiceModule {
     @Singleton
     fun provideConnectivityManager(@ApplicationContext context: Context) =
         context.getSystemService<ConnectivityManager>()!!
+
+    @Provides
+    @Singleton
+    fun providePowerManager(@ApplicationContext context: Context) =
+        context.getSystemService<PowerManager>()!!
 }
