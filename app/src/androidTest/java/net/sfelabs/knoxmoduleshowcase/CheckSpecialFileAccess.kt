@@ -4,9 +4,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import junit.framework.TestCase
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStreamReader
 
 @RunWith(AndroidJUnit4::class)
@@ -59,5 +61,28 @@ class CheckSpecialFileAccess {
         assert(success)
     }
 
+    @Test
+    fun testUsbDevicesDirectoryIsReadable() {
+        val directoryPath = "/sys/hub/usb/devices"
+
+        val directory = File(directoryPath)
+
+        // Check if the directory exists and is readable
+        TestCase.assertTrue(
+            "$directoryPath does not exist or is not readable",
+            directory.exists() && directory.canRead()
+        )
+
+        // List the directory contents
+        val fileList = directory.listFiles()
+
+        // Check if the directory is not empty
+        //TestCase.assertTrue("$directoryPath is empty", fileList.isNotEmpty())
+
+        // Print the directory contents
+        fileList?.forEach { file ->
+            println(file.absolutePath)
+        }
+    }
 
 }
