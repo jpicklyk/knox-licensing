@@ -50,7 +50,7 @@ class UsbHostWhiteListTest {
         val sig = signatures[0]
         println("Signature: $sig")
         val appIdentity = AppIdentity(mtpPackage, sig)
-        val result = useCase.invoke(appIdentity)
+        val result = useCase.invoke(true, appIdentity)
         assert(result is ApiCall.Success)
 
         val useCase2 = GetPackagesFromUsbHostWhiteListUseCase(edm)
