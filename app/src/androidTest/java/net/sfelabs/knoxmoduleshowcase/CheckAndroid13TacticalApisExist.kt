@@ -1,11 +1,14 @@
 package net.sfelabs.knoxmoduleshowcase
 
+import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.checkMethodExistence
 import net.sfelabs.knox_tactical.di.KnoxModule
+import net.sfelabs.knox_tactical.domain.use_cases.speakerphone.IsSpeakerphoneAllowedUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -93,5 +96,37 @@ class CheckAndroid13TacticalApisExist {
                 "getActivityTime"
             )
         )
+    }
+
+    /**
+     * Speakerphone Related APIs
+     * XC6P does not support these APIs so failures here are acceptable.
+     */
+    @Test
+    fun isSpeakerphoneAllowedUseCase_Exists() = runTest {
+        if(Build.PRODUCT != "xcoverpro2ue") {
+            assert(
+                checkMethodExistence(
+                    restrictionPolicy::class,
+                    "isSpeakerphoneAllowed"
+                )
+            )
+        } else {
+            println("Skipping test for device: ${Build.PRODUCT}")
+        }
+    }
+
+    @Test
+    fun allowSpeakerphone_Exists() = runTest {
+        if(Build.PRODUCT != "xcoverpro2ue") {
+            assert(
+                checkMethodExistence(
+                    restrictionPolicy::class,
+                    "allowSpeakerphoneUseCase"
+                )
+            )
+        } else {
+            println("Skipping test for device: ${Build.PRODUCT}")
+        }
     }
 }
