@@ -21,7 +21,7 @@ class UsbDeviceAccessSerialTests {
         assert(result is ApiCall.Success)
         val getCase = GetUsbAccessBySerialUseCase(sm)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == serials.toString())
+        assert(res is ApiCall.Success && res.data == "0504a2635")
     }
 
     @Test
@@ -32,12 +32,23 @@ class UsbDeviceAccessSerialTests {
         assert(result is ApiCall.Success)
         val getCase = GetUsbAccessBySerialUseCase(sm)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == serials.toString())
+        assert(res is ApiCall.Success && res.data == "123456789abc:cba987654321")
     }
 
     @Test
     fun setUsbAccessBySerial_Disable() = runTest {
         val serials = listOf("123456789abc", "cba987654321")
+        val useCase = SetUsbAccessBySerialUseCase(sm)
+        val result = useCase.invoke(false, serials)
+        assert(result is ApiCall.Success)
+        val getCase = GetUsbAccessBySerialUseCase(sm)
+        val res = getCase.invoke()
+        assert(res is ApiCall.Success && res.data == "OFF")
+    }
+
+    @Test
+    fun setUsbAccessBySerial_Off() = runTest {
+        val serials = listOf("OFF")
         val useCase = SetUsbAccessBySerialUseCase(sm)
         val result = useCase.invoke(false, serials)
         assert(result is ApiCall.Success)
