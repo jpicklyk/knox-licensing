@@ -33,6 +33,7 @@ testing-androidx-junit = "1.2.0-alpha01"
 testing-androidx-espresso = "3.6.0-alpha01"
 testing-androidx-orchestrator = "1.5.0-alpha01"
 testing-androidx-runner = "1.5.2"
+testing-androidx-uiautomator = "2.3.0-alpha03"
 testing-kotlin-coroutines = "1.7.1"
 material3 = "1.1.0"
 
@@ -68,6 +69,7 @@ androidx-test-ext-truth = { module = "androidx.test.ext:truth", version.ref = "t
 androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "testing-androidx-orchestrator" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "testing-androidx-runner" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "testing-androidx" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "testing-androidx-uiautomator"}
 composeNumberPicker = { module = "com.chargemap.compose:numberpicker", version.ref = "chargemap-numberpicker"}
 detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 google-acc = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist"}
