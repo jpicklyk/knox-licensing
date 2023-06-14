@@ -1,4 +1,4 @@
-package net.sfelabs.knox_common
+package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.coroutineScope
