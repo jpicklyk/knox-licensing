@@ -7,12 +7,11 @@ import com.samsung.android.knox.EnterpriseDeviceManager
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.common.core.signing.getApplicationSignatures
-import net.sfelabs.knox_common.AllowUsbHostStorageUseCase
+import net.sfelabs.knox_common.domain.use_cases.AllowUsbHostStorageUseCase
+import net.sfelabs.knox_common.domain.use_cases.IsUsbHostStorageAllowedUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.AddPackageToUsbHostWhiteListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetPackagesFromUsbHostWhiteListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.RemovePackageFromUsbHostWhiteListUseCase
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -35,11 +34,17 @@ class UsbHostWhiteListTest {
     private val edm: EnterpriseDeviceManager = EnterpriseDeviceManager.getInstance(appContext)
     private val mtpPackage = "com.samsung.android.mtp"
 
-    @Before
-    fun disableUsbHostMode()= runTest {
+    @Test
+    fun disableUsbHostMode() = runTest {
         val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
         val res = hostStorageUseCase.invoke(false)
         assert(res is ApiCall.Success)
+    }
+
+    @Test
+    fun usbHostStorageAllowed() = runTest {
+        val result = IsUsbHostStorageAllowedUseCase(edm.restrictionPolicy).invoke()
+        assert(result is ApiCall.Success && result.data)
     }
 
     @Test
@@ -76,7 +81,7 @@ class UsbHostWhiteListTest {
     }
 
 
-    @After
+    @Test
     fun allowUsbHostTest() = runTest {
         val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
         val res = hostStorageUseCase.invoke(true)
