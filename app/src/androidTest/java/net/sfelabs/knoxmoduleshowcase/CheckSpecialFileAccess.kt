@@ -63,7 +63,8 @@ class CheckSpecialFileAccess {
 
     @Test
     fun testUsbDevicesDirectoryIsReadable() {
-        val directoryPath = "/sys/hub/usb/devices"
+        //val directoryPath = "/sys/hub/usb/devices"
+        val directoryPath = "/sys/bus/usb/devices"
 
         val directory = File(directoryPath)
 
@@ -72,13 +73,8 @@ class CheckSpecialFileAccess {
             "$directoryPath does not exist or is not readable",
             directory.exists() && directory.canRead()
         )
-
         // List the directory contents
         val fileList = directory.listFiles()
-
-        // Check if the directory is not empty
-        //TestCase.assertTrue("$directoryPath is empty", fileList.isNotEmpty())
-
         // Print the directory contents
         fileList?.forEach { file ->
             println(file.absolutePath)
