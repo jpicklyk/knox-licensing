@@ -10,6 +10,7 @@ import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.EnableRandomizedMacAddressUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.GetRandomizedMacAddressEnabledUseCase
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,5 +52,10 @@ class RandomizedMacAddressTest {
         val useCase2 = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
         val result2 = useCase2.invoke()
         assert(result2 is ApiCall.Success && result2.data )
+    }
+
+    @After
+    fun cleanup() = runTest {
+        EnableRandomizedMacAddressUseCase(restrictionPolicy).invoke(true)
     }
 }

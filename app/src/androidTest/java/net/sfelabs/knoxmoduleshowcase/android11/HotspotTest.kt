@@ -2,8 +2,8 @@ package net.sfelabs.knoxmoduleshowcase.android11
 
 import android.content.Context
 import android.net.wifi.WifiManager
-import android.net.wifi.hotspot2.PasspointConfiguration
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
@@ -17,6 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
+@SmallTest
 class HotspotTest {
     private lateinit var context: Context
     private val sm = KnoxModule.provideKnoxSettingsManager()

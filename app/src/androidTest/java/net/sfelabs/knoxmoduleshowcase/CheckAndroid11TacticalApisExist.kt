@@ -5,11 +5,13 @@ import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.checkMethodExistence
 import net.sfelabs.knox_tactical.di.KnoxModule
+import net.sfelabs.knoxmoduleshowcase.annotations.ApiExists
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
+@ApiExists
 class CheckAndroid11TacticalApisExist {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
 

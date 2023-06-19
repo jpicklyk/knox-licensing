@@ -32,6 +32,8 @@ class SetUsbConnectionTypeUseCase @Inject constructor(
                     ))
             } catch (nsm: NoSuchMethodError) {
                 ApiCall.NotSupported
+            } catch (ex: Exception) {
+                ApiCall.NotSupported
             }
         }
     }

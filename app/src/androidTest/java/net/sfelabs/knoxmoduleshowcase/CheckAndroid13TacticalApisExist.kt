@@ -4,16 +4,16 @@ import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.checkMethodExistence
 import net.sfelabs.knox_tactical.di.KnoxModule
-import net.sfelabs.knox_tactical.domain.use_cases.speakerphone.IsSpeakerphoneAllowedUseCase
+import net.sfelabs.knoxmoduleshowcase.annotations.ApiExists
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
+@ApiExists
 class CheckAndroid13TacticalApisExist {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
     private val settingsManager = KnoxModule.provideKnoxSettingsManager()

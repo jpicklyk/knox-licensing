@@ -1,6 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.custom.CustomDeviceManager
 import junit.framework.TestCase.assertTrue
@@ -10,6 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
+@SmallTest
 class CheckKnoxPermissionsGranted {
     private lateinit var cdm: CustomDeviceManager
 

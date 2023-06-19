@@ -3,6 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.android10
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -21,6 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
+@SmallTest
 class MultiEthernetConfigurationTest {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
     private val settingsManager = KnoxModule.provideKnoxSettingsManager()

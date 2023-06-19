@@ -10,7 +10,6 @@ import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeUseCase
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,7 +43,7 @@ class TacticalDeviceModeTest {
         assert(res2 is ApiCall.Success && !res2.data)
     }
 
-    @After
+    //@After
     fun resetTacticalDeviceModeOff() = runTest {
         SetTacticalDeviceModeUseCase(restrictionPolicy).invoke(false)
     }

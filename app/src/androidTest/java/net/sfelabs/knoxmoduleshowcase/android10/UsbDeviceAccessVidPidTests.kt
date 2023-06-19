@@ -1,18 +1,18 @@
 package net.sfelabs.knoxmoduleshowcase.android10
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule.provideKnoxSystemManager
-import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbAccessBySerialUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbDeviceAccessAllowedListUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.usb.SetUsbAccessBySerialUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.SetUsbDeviceAccessAllowedListUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
+@SmallTest
 class UsbDeviceAccessVidPidTests {
     private val sm = provideKnoxSystemManager()
 

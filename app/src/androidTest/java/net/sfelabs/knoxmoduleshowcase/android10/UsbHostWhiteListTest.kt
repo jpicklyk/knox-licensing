@@ -1,6 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.android10
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.AppIdentity
 import com.samsung.android.knox.EnterpriseDeviceManager
@@ -12,8 +13,11 @@ import net.sfelabs.knox_common.domain.use_cases.IsUsbHostStorageAllowedUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.AddPackageToUsbHostWhiteListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetPackagesFromUsbHostWhiteListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.RemovePackageFromUsbHostWhiteListUseCase
+import org.junit.After
+import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 
 /**
  * 1. prepare 2 devices and 1 usb-c cable (a bit easier with a USB-A to USB-C with an OTG connector).
@@ -29,26 +33,25 @@ import org.junit.runner.RunWith
  *   --> possible
  */
 @RunWith(AndroidJUnit4::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@SmallTest
 class UsbHostWhiteListTest {
     private val appContext = InstrumentationRegistry.getInstrumentation().targetContext
     private val edm: EnterpriseDeviceManager = EnterpriseDeviceManager.getInstance(appContext)
     private val mtpPackage = "com.samsung.android.mtp"
 
     @Test
-    fun disableUsbHostMode() = runTest {
+    fun test1_disableUsbHostMode() = runTest {
         val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
         val res = hostStorageUseCase.invoke(false)
         assert(res is ApiCall.Success)
-    }
 
-    @Test
-    fun usbHostStorageAllowed() = runTest {
         val result = IsUsbHostStorageAllowedUseCase(edm.restrictionPolicy).invoke()
-        assert(result is ApiCall.Success && result.data)
+        assert(result is ApiCall.Success && !result.data)
     }
 
     @Test
-    fun addPackageToUsbWhitelist() = runTest {
+    fun test2_addPackageToUsbWhitelist() = runTest {
         val useCase = AddPackageToUsbHostWhiteListUseCase(edm)
 
         val signatures = getApplicationSignatures(mtpPackage, appContext)
@@ -65,7 +68,7 @@ class UsbHostWhiteListTest {
     }
 
     @Test
-    fun removePackageFromUsbWhiteList() = runTest {
+    fun test3_removePackageFromUsbWhiteList() = runTest {
         val useCase = RemovePackageFromUsbHostWhiteListUseCase(edm)
 
         val signatures = getApplicationSignatures(mtpPackage, appContext)
@@ -80,10 +83,18 @@ class UsbHostWhiteListTest {
         assert(result2 is ApiCall.Success && result2.data.isEmpty())
     }
 
-
     @Test
-    fun allowUsbHostTest() = runTest {
+    fun test4_allowUsbHostTest() = runTest {
         val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
         val res = hostStorageUseCase.invoke(true)
+        assert(res is ApiCall.Success)
+
+        val result = IsUsbHostStorageAllowedUseCase(edm.restrictionPolicy).invoke()
+        assert(result is ApiCall.Success && result.data)
+    }
+
+    @After
+    fun cleanup() = runTest {
+        AllowUsbHostStorageUseCase(edm.restrictionPolicy).invoke(true)
     }
 }

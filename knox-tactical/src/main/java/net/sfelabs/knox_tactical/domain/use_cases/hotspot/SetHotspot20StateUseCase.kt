@@ -18,9 +18,9 @@ class SetHotspot20StateUseCase @Inject constructor(
             try {
                 val result =
                 if(on) {
-                    settingsManager.setHotspot20State(CustomDeviceManager.ON)
+                    settingsManager.setHotspot20State(true)
                 } else {
-                    settingsManager.setHotspot20State(CustomDeviceManager.OFF)
+                    settingsManager.setHotspot20State(false)
                 }
                 if(result == CustomDeviceManager.SUCCESS) {
                     ApiCall.Success(Unit)

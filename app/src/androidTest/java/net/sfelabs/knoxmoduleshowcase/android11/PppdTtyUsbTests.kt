@@ -38,6 +38,7 @@ import java.net.NetworkInterface
 class PppdTtyUsbTests {
     private val tag = "TTYUSBTEST"
     private lateinit var context: Context
+    private lateinit var targetDirectory: File
 
     @Rule @JvmField
     val mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule
@@ -46,9 +47,9 @@ class PppdTtyUsbTests {
     @Before
     fun setup() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
-        val targetDirectory = context.getExternalFilesDir(null)!!
+        targetDirectory = context.getExternalFilesDir(null)!!
         copyFileFromRawToSDCard(context, R.raw.options, targetDirectory, "options")
-
+        println("Options file installed to: $targetDirectory")
         // Assert file copied successfully
         val copiedFile = File(targetDirectory, "options")
         TestCase.assertTrue(copiedFile.exists())

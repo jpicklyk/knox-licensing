@@ -2,9 +2,7 @@ package net.sfelabs.knoxmoduleshowcase.android11
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.checkMethodExistence
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetInterfaceNameForMacAddressUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
@@ -16,7 +14,8 @@ class ReadMacFromInterfaceTest {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
 
     /**
-     * Note that this test requires that the device actually be connected to ethernet
+     * Note that this test requires that the device actually be connected to ethernet so make sure
+     * to run test via paired wifi connection
      */
     @Test
     fun readHardwareAddress() = runBlocking {

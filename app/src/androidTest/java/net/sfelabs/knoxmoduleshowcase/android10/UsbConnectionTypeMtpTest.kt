@@ -7,7 +7,6 @@ import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.UsbConnectionType
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbConnectionTypeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.SetUsbConnectionTypeUseCase
-import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -23,11 +22,7 @@ class UsbConnectionTypeMtpTest {
 
         val getUseCase = GetUsbConnectionTypeUseCase(sm)
         val result = getUseCase.invoke()
-        assert(result is ApiCall.Success && result.data is UsbConnectionType.MTP)
+        assert(result is ApiCall.Success && result.data == UsbConnectionType.MTP)
     }
 
-    @After
-    fun resetToDefaultConnectionType() = runTest {
-        SetUsbConnectionTypeUseCase(sm).invoke(UsbConnectionType.Default)
-    }
 }
