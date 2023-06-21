@@ -14,7 +14,7 @@ buildscript {
 }
 
 plugins {
-    alias(libs.plugins.android.application) version "8.2.0-alpha08" apply false
+    alias(libs.plugins.android.application) version "8.2.0-alpha09" apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.hilt) apply false
