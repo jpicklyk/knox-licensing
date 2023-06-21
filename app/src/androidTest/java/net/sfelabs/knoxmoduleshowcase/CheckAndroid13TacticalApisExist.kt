@@ -1,6 +1,5 @@
 package net.sfelabs.knoxmoduleshowcase
 
-import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -100,8 +99,8 @@ class CheckAndroid13TacticalApisExist {
 
     /**
      * Speakerphone Related APIs
-     * XC6P does not support these APIs so failures here are acceptable.
-     */
+     * Android T is no longer able to support these, we are dropping them as requirements
+
     @Test
     fun isSpeakerphoneAllowedUseCase_Exists() = runTest {
         if(Build.PRODUCT != "xcoverpro2ue") {
@@ -129,4 +128,5 @@ class CheckAndroid13TacticalApisExist {
             println("Skipping test for device: ${Build.PRODUCT}")
         }
     }
+     */
 }
