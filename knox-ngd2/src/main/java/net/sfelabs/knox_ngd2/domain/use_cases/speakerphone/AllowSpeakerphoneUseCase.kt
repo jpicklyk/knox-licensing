@@ -1,15 +1,16 @@
-package net.sfelabs.knox_tactical.domain.use_cases.speakerphone
+package net.sfelabs.knox_ngd2.domain.use_cases.speakerphone
 
-import android.os.RemoteException
 import com.samsung.android.knox.EnterpriseDeviceManager
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.common.core.ApiCall
 import net.sfelabs.common.core.UnitApiCall
 import net.sfelabs.common.core.ui.UiText
+import net.sfelabs.knox_ngd2.di.Ngd2Sdk
 import javax.inject.Inject
 
+@Deprecated("No longer supported as of Android T")
 class AllowSpeakerphoneUseCase @Inject constructor(
-    private val enterpriseDeviceManager: EnterpriseDeviceManager
+    @Ngd2Sdk private val enterpriseDeviceManager: EnterpriseDeviceManager
 ) {
 
     suspend operator fun invoke(allow: Boolean): UnitApiCall {
