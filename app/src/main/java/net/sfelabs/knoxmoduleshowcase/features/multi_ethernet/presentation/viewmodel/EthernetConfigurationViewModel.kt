@@ -1,6 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.viewmodel
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.LinkProperties
 import android.net.Network
@@ -19,37 +20,41 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.sfelabs.common.core.ApiCall
+import net.sfelabs.common.core.model.NetworkStatus
+import net.sfelabs.common.core.model.NetworkUpdate
+import net.sfelabs.common.core.services.NetworkConnectivityService
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
 import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
-
-import net.sfelabs.knox_tactical.domain.use_cases.ethernet.CheckInterfacesUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.ConfigureEthernetInterfaceUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetAutoConnectionUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnectionUseCase
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.EthernetInterface
-import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.services.EthernetNetworkMonitor
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationEvents
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationState
+import java.net.NetworkInterface
 import javax.inject.Inject
 
 @HiltViewModel
 class EthernetConfigurationViewModel @Inject constructor(
     @ApplicationContext
     private val context: Context,
+    private val connectivityManager: ConnectivityManager,
     private val configureEthernetInterfaceUseCase: ConfigureEthernetInterfaceUseCase,
     private val setEthernetAutoConnectionUseCase: SetEthernetAutoConnectionUseCase,
     private val getEthernetAutoConnection: GetEthernetAutoConnectionUseCase,
-    private val checkInterfacesUseCase: CheckInterfacesUseCase,
+    private val getEthernetMacAddressUseCase: GetMacAddressForInterfaceUseCase,
     private val log: net.sfelabs.android_log_wrapper.Log,
-    private val ethernetMonitor: EthernetNetworkMonitor
+    private val networkService: NetworkConnectivityService
 ): ViewModel() {
+    private val tag = "EthernetConfigurationVM"
     private val _state = MutableStateFlow(EthernetConfigurationState(isLoading = true))
     val stateFlow: StateFlow<EthernetConfigurationState> = _state.asStateFlow()
-    private lateinit var connected: EthernetNetworkMonitor.EthernetConnectionState
     private val _ethernetState = MutableStateFlow(mapOf<String, EthernetInterface>())
+    private val interfaceHandleMap = HashMap<Long, String>()
     val interfaces: StateFlow<Map<String, EthernetInterface>> get() = _ethernetState
 
     init {
@@ -58,15 +63,15 @@ class EthernetConfigurationViewModel @Inject constructor(
             autoConnectionState = AutoConnectionState.OFF,
             ethInterface = EthernetInterface(
                 name = "eth0",
-                type = EthernetInterfaceType.STATIC,
-                ipAddress = "192.168.2.123",
+                type = EthernetInterfaceType.DHCP,
                 netmask = "255.255.255.0",
                 gateway = "192.168.2.1",
                 dnsList = "192.168.2.1, 8.8.8.8"
             )
-        )
-        }
+        )}
+
         getAutoEthernetConnectionState()
+        /*
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 _ethernetState.emit(hashMapOf(
@@ -75,22 +80,22 @@ class EthernetConfigurationViewModel @Inject constructor(
             }
         }
 
+         */
+
         //Collect the connection state updates
-        /*
+
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                ethernetMonitor.ethernetState.collect { connectionState ->
-                    _ethernetState.update {
-                        _ethernetState.value.
-                        val ethInterface = _ethernetState.value.toMutableMap()[connectionState.name]
-                        ethInterface.connectivity = connectionState.connectivity
-                        return@collect it
-                    }
+                networkService.networkUpdate.collect { networkUpdate ->
+                    // Handle the network update
+                    updateInterfaceConnectivityState(networkUpdate)
                 }
             }
         }
 
-         */
+
+       //val usbInterfaces = getAssignedEthernetInterfaces(connectivityManager)
+
 
 
     }
@@ -99,7 +104,7 @@ class EthernetConfigurationViewModel @Inject constructor(
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-    fun onEvent(event: EthernetConfigurationEvents) {
+    fun onEthernetConfigurationEvent(event: EthernetConfigurationEvents) {
         viewModelScope.launch {
             when(event) {
                 EthernetConfigurationEvents.SaveConfiguration -> {
@@ -142,8 +147,7 @@ class EthernetConfigurationViewModel @Inject constructor(
                             ethInterface = _state.value.ethInterface.copy(type = event.value)
                         )}
                 }
-                EthernetConfigurationEvents.CheckEthernetInterfaces ->
-                    checkInterfacesUseCase()
+
             }
         }
 
@@ -248,6 +252,7 @@ class EthernetConfigurationViewModel @Inject constructor(
                                     ethMap -> ethMap[ethInterface.name] = ethInterface
                             }
                         }
+
                     }
                     is ApiCall.Error -> {
                         log.e("Error occurred while creating ${ethInterface.name} configuration")
@@ -281,4 +286,73 @@ class EthernetConfigurationViewModel @Inject constructor(
                 )
         }
     }
+    private fun updateInterfaceConnectivityState(networkUpdate: NetworkUpdate) {
+        log.d("Ethernet connectivity state changed, updating interface model")
+        log.d("Interface [${networkUpdate.handle}] ${networkUpdate.interfaceName} is ${networkUpdate.isConnected}")
+        if(networkUpdate.isConnected == NetworkStatus.Connected) {
+            interfaceHandleMap[networkUpdate.handle] = networkUpdate.interfaceName!!
+        }
+        val interfaceName = interfaceHandleMap[networkUpdate.handle]
+        val mac = getEthernetMacAddress(interfaceName)
+        val updatedInterfaces = _ethernetState.value.toMutableMap()
+        val existingInterface = updatedInterfaces[interfaceName]
+
+        if (existingInterface != null) {
+            val updatedInterface = existingInterface.copy(
+                connectivity = networkUpdate.isConnected,
+                mac = mac,
+                ipAddress = networkUpdate.ipAddress
+                )
+            updatedInterfaces[interfaceName!!] = updatedInterface
+            _ethernetState.value = updatedInterfaces.toMap()
+        } else {
+            val newInterface = EthernetInterface(
+                name = interfaceName!!,
+                type = EthernetInterfaceType.DHCP,
+                ipAddress = networkUpdate.ipAddress,
+                mac = mac,
+                connectivity = networkUpdate.isConnected
+            )
+            updatedInterfaces[interfaceName] = newInterface
+            _ethernetState.value = updatedInterfaces.toMap()
+        }
+
+        if(networkUpdate.isConnected == NetworkStatus.Disconnected) {
+            interfaceHandleMap.remove(networkUpdate.handle)
+        }
+    }
+
+    private fun getEthernetMacAddress(name: String?): String? {
+        if(name == null)
+            return null
+        val result = getEthernetMacAddressUseCase.invoke(name)
+        return if(result is ApiCall.Success) {
+            result.data
+        } else {
+            null
+        }
+    }
+
+    private fun getAssignedEthernetInterfaces(connectivityManager: ConnectivityManager): List<String> {
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        val assignedInterfaces = mutableListOf<String>()
+
+        if (networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) == true) {
+            val networkInterfaces = NetworkInterface.getNetworkInterfaces()
+            while (networkInterfaces.hasMoreElements()) {
+                val networkInterface = networkInterfaces.nextElement()
+                if (isEthernetInterface(networkInterface)) {
+                    assignedInterfaces.add(networkInterface.name)
+                }
+            }
+        }
+
+        return assignedInterfaces
+    }
+
+    private fun isEthernetInterface(networkInterface: NetworkInterface): Boolean {
+        val interfaceName = networkInterface.name
+        return interfaceName.startsWith("eth", ignoreCase = true)
+    }
+
 }

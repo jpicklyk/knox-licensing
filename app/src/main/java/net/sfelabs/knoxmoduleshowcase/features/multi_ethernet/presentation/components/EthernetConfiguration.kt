@@ -1,14 +1,30 @@
 package net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -56,7 +72,7 @@ fun EthernetConfiguration(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .padding(8.dp),
-                    onClick = {viewModel.onEvent(EthernetConfigurationEvents.EnableEthernetAutoConnection)},
+                    onClick = {viewModel.onEthernetConfigurationEvent(EthernetConfigurationEvents.EnableEthernetAutoConnection)},
                     enabled = (!state.isAutoConnectionEnabled())
                 ) {
                     Text(text = "Enable Ethernet")
@@ -65,7 +81,7 @@ fun EthernetConfiguration(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
-                    onClick = {viewModel.onEvent(EthernetConfigurationEvents.DisableEthernetAutoConnection)},
+                    onClick = {viewModel.onEthernetConfigurationEvent(EthernetConfigurationEvents.DisableEthernetAutoConnection)},
                     enabled = (state.isAutoConnectionEnabled())
                 ) {
                     Text(text = "Disable Ethernet")
@@ -78,45 +94,33 @@ fun EthernetConfiguration(
             interfaceName = state.ethInterface.name,
             selectedInterfaceType = state.ethInterface.type,
             onInterfaceNameChange = { name ->
-                viewModel.onEvent(EthernetConfigurationEvents.EnteredInterfaceName(name))
+                viewModel.onEthernetConfigurationEvent(EthernetConfigurationEvents.EnteredInterfaceName(name))
             },
             onSelectInterfaceType = { type ->
                 if(type is EthernetInterfaceType.STATIC) {
                     expandedState = true
                 }
-                viewModel.onEvent(EthernetConfigurationEvents.SelectedInterfaceType(type))
+                viewModel.onEthernetConfigurationEvent(EthernetConfigurationEvents.SelectedInterfaceType(type))
             }
         )
         StaticIPFieldsComponent(
             state = state,
             isVisible = expandedState,
-            onIpAddressChanged = { viewModel.onEvent(EthernetConfigurationEvents.EnteredIpAddress(it)) },
-            onNetmaskChanged = { viewModel.onEvent(EthernetConfigurationEvents.EnteredNetmask(it)) },
-            onGatewayChanged = { viewModel.onEvent(EthernetConfigurationEvents.EnteredDefaultGateway(it)) },
-            onDnsListChanged = { viewModel.onEvent(EthernetConfigurationEvents.EnteredDnsList(it)) }
+            onIpAddressChanged = { viewModel.onEthernetConfigurationEvent(EthernetConfigurationEvents.EnteredIpAddress(it)) },
+            onNetmaskChanged = { viewModel.onEthernetConfigurationEvent(EthernetConfigurationEvents.EnteredNetmask(it)) },
+            onGatewayChanged = { viewModel.onEthernetConfigurationEvent(EthernetConfigurationEvents.EnteredDefaultGateway(it)) },
+            onDnsListChanged = { viewModel.onEthernetConfigurationEvent(EthernetConfigurationEvents.EnteredDnsList(it)) }
         )
         Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-            onClick = {viewModel.onEvent(EthernetConfigurationEvents.SaveConfiguration)}
+            onClick = {viewModel.onEthernetConfigurationEvent(EthernetConfigurationEvents.SaveConfiguration)}
         ) {
             Text(
                 text = "Configure Interface"
                 )
         }
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            onClick = {
-                expandedState = false
-                viewModel.onEvent(EthernetConfigurationEvents.CheckEthernetInterfaces)
-            }
-        ) {
-            Text(text = "Check Interfaces")
-        }
-
     }
 }
 
@@ -135,7 +139,7 @@ fun EthernetTypeComponent(
             .padding(10.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Start
     ) {
 
         Column(modifier = Modifier
@@ -153,26 +157,37 @@ fun EthernetTypeComponent(
                     .fillMaxWidth()
                 )
         }
+        Column(
+            modifier = Modifier
+                .padding(start = 9.dp)
+                .fillMaxWidth()
+        ) {
+            radioOptions.forEach { item ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (item == selectedInterfaceType),
+                        onClick = { onSelectInterfaceType(item) }
+                    )
 
-        radioOptions.forEach { item ->
-            RadioButton(
-                selected = (item == selectedInterfaceType),
-                onClick = { onSelectInterfaceType(item) }
-            )
-
-            val annotatedString = buildAnnotatedString {
-                append("${item.interfaceType}  ")
-            }
-            Text(
-                text = "${item.interfaceType}  ",
-                modifier = Modifier
-                    .clickable(
-                        enabled = true,
-                        role = Role.Button
-                    ) {
-                        onSelectInterfaceType(item)
+                    val annotatedString = buildAnnotatedString {
+                        append("${item.interfaceType}  ")
                     }
-            )
+                    Text(
+                        text = "${item.interfaceType}  ",
+                        modifier = Modifier
+                            .clickable(
+                                enabled = true,
+                                role = Role.Button
+                            ) {
+                                onSelectInterfaceType(item)
+                            }
+                    )
+                }
+
+        }
+
             /*
             ClickableText(
                 text = annotatedString,

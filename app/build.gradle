@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.bundles.androidx.compose.materialIcon)
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.composeUiTooling)
+    implementation(libs.kotlin.reflect)
 
     //DI
     implementation(libs.hilt.android)
@@ -70,20 +71,22 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.composeNumberPicker)
+
     implementation project(path: ':android-log-wrapper')
     implementation project(path: ':core:common')
-
     implementation(project(":knox-common"))
     implementation(project(":knox-tactical"))
     implementation(project(":knox-ngd2"))
 
     testImplementation(libs.testing.kotlin.coroutines)
     androidTestImplementation(libs.testing.kotlin.coroutines)
+    androidTestImplementation(libs.kotlin.reflect)
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.espresso)
     androidTestImplementation(libs.androidx.test.uiautomator)
+
 }
 
 kapt {

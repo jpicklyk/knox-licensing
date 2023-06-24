@@ -39,6 +39,8 @@ fun EthernetList(
                is EthernetInterfaceType.DHCP -> {
                    EthernetInterfaceCard(
                        name = it.name,
+                       ipAddresses = it.ipAddress,
+                       macAddress = it.mac,
                        connected = it.connectivity
                    )
                }
@@ -46,6 +48,7 @@ fun EthernetList(
                    EthernetInterfaceCard(
                        name = it.name,
                        ipAddresses = it.ipAddress,
+                       macAddress = it.mac,
                        connected = it.connectivity
                    )
                }

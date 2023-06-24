@@ -10,6 +10,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import net.sfelabs.common.core.services.NetworkConnectivityService
+import net.sfelabs.common.core.services.internals.EthernetNetworkService
 import javax.inject.Singleton
 
 @Module
@@ -29,4 +31,10 @@ object AndroidServiceModule {
     @Singleton
     fun providePowerManager(@ApplicationContext context: Context) =
         context.getSystemService<PowerManager>()!!
+
+    @Provides
+    @Singleton
+    fun provideNetworkService(connectivityManager: ConnectivityManager): NetworkConnectivityService {
+        return EthernetNetworkService(connectivityManager)
+    }
 }

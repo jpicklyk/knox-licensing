@@ -2,7 +2,7 @@ package net.sfelabs.knoxmoduleshowcase.android11
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.common.core.checkMethodExistence
+import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
 import net.sfelabs.knox_tactical.di.KnoxModule
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val TAG = "MainActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val manager: DevicePolicyManager =
@@ -24,4 +25,5 @@ class MainActivity : ComponentActivity() {
             KnoxShowcaseApp()
         }
     }
+
 }

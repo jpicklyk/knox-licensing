@@ -21,14 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.ConnectivityState
+import net.sfelabs.common.core.model.NetworkStatus
 
 @Composable
 fun EthernetInterfaceCard(
     name: String,
     ipAddresses: String? = null,
     macAddress: String? = null,
-    connected: ConnectivityState = ConnectivityState.Unknown
+    connected: NetworkStatus = NetworkStatus.Unknown
 ) {
     Card (
         modifier = Modifier
@@ -43,21 +43,21 @@ fun EthernetInterfaceCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             when(connected) {
-                ConnectivityState.Available -> {
+                NetworkStatus.Connected -> {
                     Icon(imageVector = Icons.Outlined.CheckCircle,
                         contentDescription = "Ethernet interface is available",
                         tint = Color.Green,
                         modifier = Modifier.size(40.dp)
                     )
                 }
-                ConnectivityState.Unavailable -> {
+                NetworkStatus.Disconnected -> {
                     Icon(imageVector = Icons.Outlined.Error,
                         contentDescription = "Ethernet interface is not available",
                         tint = Color.Red,
                         modifier = Modifier.size(40.dp)
                     )
                 }
-                ConnectivityState.Unknown -> {
+                NetworkStatus.Unknown -> {
                     Icon(imageVector = Icons.Outlined.Warning,
                         contentDescription = "Ethernet interface is in an unknown state",
                         tint = Color.Yellow,
@@ -81,13 +81,13 @@ fun EthernetInterfaceCard(
                         color = MaterialTheme.colors.onSurface
                     )
                 }
-                if(macAddress != null) {
+                //if(macAddress != null) {
                     Text(
                         text = "MAC Address: $macAddress",
                         style = MaterialTheme.typography.body2,
                         color = MaterialTheme.colors.onSurface
                     )
-                }
+                //}
             }
         }
     }
@@ -100,5 +100,5 @@ fun EthernetInterfaceCardDark() {
         name = "eth0",
         ipAddresses = "192.168.2.100",
         macAddress = "3f:e4:5j:33:4k",
-        connected = ConnectivityState.Unknown)
+        connected = NetworkStatus.Unknown)
 }

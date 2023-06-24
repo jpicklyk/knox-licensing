@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.common.core.checkMethodExistence
+import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knoxmoduleshowcase.annotations.ApiExists
 import org.junit.Test

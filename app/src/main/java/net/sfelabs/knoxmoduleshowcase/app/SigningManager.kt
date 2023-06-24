@@ -1,4 +1,4 @@
-package net.sfelabs.common.core.signing
+package net.sfelabs.knoxmoduleshowcase.app
 
 import android.content.Context
 import android.content.pm.PackageInfo

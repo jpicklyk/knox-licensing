@@ -7,7 +7,7 @@ import com.samsung.android.knox.AppIdentity
 import com.samsung.android.knox.EnterpriseDeviceManager
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.signing.getApplicationSignatures
+import net.sfelabs.knoxmoduleshowcase.app.getApplicationSignatures
 import net.sfelabs.knox_common.domain.use_cases.AllowUsbHostStorageUseCase
 import net.sfelabs.knox_common.domain.use_cases.IsUsbHostStorageAllowedUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.AddPackageToUsbHostWhiteListUseCase

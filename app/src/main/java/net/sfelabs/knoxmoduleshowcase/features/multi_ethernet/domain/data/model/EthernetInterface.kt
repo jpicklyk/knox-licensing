@@ -1,5 +1,6 @@
 package net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model
 
+import net.sfelabs.common.core.model.NetworkStatus
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
 
 data class EthernetInterface(
@@ -10,11 +11,6 @@ data class EthernetInterface(
         val gateway: String? = null,
         val mac: String? = null,
         val dnsList: String? = null,
-        val connectivity: ConnectivityState = ConnectivityState.Unknown
+        val connectivity: NetworkStatus = NetworkStatus.Unknown
 )
 
-sealed class ConnectivityState {
-    object Available: ConnectivityState()
-    object Unavailable: ConnectivityState()
-    object Unknown: ConnectivityState()
-}

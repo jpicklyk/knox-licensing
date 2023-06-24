@@ -1,4 +1,4 @@
-package net.sfelabs.common.core
+package net.sfelabs.knoxmoduleshowcase.app
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.declaredMemberFunctions

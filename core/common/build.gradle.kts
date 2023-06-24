@@ -44,15 +44,18 @@ android {
 dependencies {
     val composeBom = platform(libs.androidx.composeBom)
     implementation(composeBom)
-    implementation(libs.accompanist.permissions)
     androidTestImplementation(composeBom)
+    implementation(libs.accompanist.permissions)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.collections)
     implementation(libs.bundles.androidx.compose)
-    implementation(libs.kotlin.reflect)
+
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    androidTestImplementation(libs.kotlin.reflect)
+
+    testImplementation(libs.testing.kotlin.coroutines)
+    testImplementation(libs.kotlin.reflect)
+    androidTestImplementation(libs.testing.kotlin.coroutines)
+
     androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espresso)
 }

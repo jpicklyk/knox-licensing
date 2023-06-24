@@ -12,5 +12,4 @@ sealed class EthernetConfigurationEvents {
     data class EnteredDefaultGateway(val value: String): EthernetConfigurationEvents()
     data class EnteredDnsList(val value: String): EthernetConfigurationEvents()
     object SaveConfiguration: EthernetConfigurationEvents()
-    object CheckEthernetInterfaces: EthernetConfigurationEvents()
 }
