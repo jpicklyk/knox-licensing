@@ -42,12 +42,6 @@ internal fun Project.configureAndroidCompose(
             add("androidTestImplementation", platform(bom))
         }
     }
-
-    /*tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + buildComposeMetricsParameters()
-        }
-    }*/
 }
 
 private fun Project.buildComposeMetricsParameters(): List<String> {

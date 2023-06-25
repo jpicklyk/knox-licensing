@@ -50,5 +50,9 @@ gradlePlugin {
             id = "sfelabs.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
+        register("androidFeature") {
+            id = "sfelabs.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }
