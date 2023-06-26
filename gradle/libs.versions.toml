@@ -30,8 +30,8 @@ splashscreen = "1.0.1"
 
 testing-androidx = "1.5.0"
 
-testing-androidx-junit = "1.2.0-alpha01"
-testing-androidx-espresso = "3.6.0-alpha01"
+testing-androidx-junit = "1.1.5"
+testing-androidx-espresso = "3.5.1"
 testing-androidx-orchestrator = "1.5.0-alpha01"
 testing-androidx-runner = "1.5.2"
 testing-androidx-uiautomator = "2.3.0-alpha03"

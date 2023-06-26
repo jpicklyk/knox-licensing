@@ -1,51 +1,16 @@
 
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("dagger.hilt.android.plugin")
-    id("kotlin-kapt")
+    id("sfelabs.android.feature")
 }
 
 android {
     namespace = "net.sfelabs.knox_tactical"
-    compileSdk = 33
-
-    defaultConfig {
-        minSdk = 29
-        //targetSdk = 33 *** deprecated ***
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
 }
 
 dependencies {
-
-    implementation(libs.androidx.core.ktx)
     implementation(libs.kotlin.reflect)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.hilt.android)
-    implementation(project(mapOf("path" to ":android-log-wrapper")))
-    kapt(libs.hilt.compiler)
+    implementation(project(":android-log-wrapper"))
     //The Tactical Knox SDK shall not be available outside this module (compileOnly)
     compileOnly(fileTree("libs/knoxsdk.jar"))
-    implementation(project(path =":core:common"))
-    implementation(project(path =":core:ui"))
-
-    androidTestImplementation(project(":core:testing"))
     androidTestCompileOnly(fileTree("libs/knoxsdk.jar"))
 }

@@ -18,15 +18,13 @@ dependencyResolutionManagement {
 }
 rootProject.name = "KnoxModuleShowcase"
 
-include(
-    ":app",
-    ":android-log-wrapper",
-    ":core:common",
-    ":core:ui",
-    ":core:testing",
-    ":knox-common",
-    ":knox-tactical",
-    ":knox-ngd2"
-)
-
+include( ":app")
+include(":android-log-wrapper")
+include(":core:common")
+include(":core:ui")
 include(":core:testing")
+include(":knox-common")
+include(":knox-tactical")
+include(":knox-ngd2")
+
+include(":feature:ethernet")
