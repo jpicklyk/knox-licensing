@@ -1,9 +1,6 @@
 package net.sfelabs.knox_tactical.domain.use_cases.hotspot
 
-import android.annotation.SuppressLint
-import android.net.wifi.WifiManager
-import android.os.Build
-import androidx.annotation.RequiresApi
+import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.ui.ApiCall
@@ -12,15 +9,10 @@ import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
 class GetHotspot20StateUseCase @Inject constructor(
-        @TacticalSdk private val settingsManager: SettingsManager,
-        private val wifiManager: WifiManager
+        @TacticalSdk private val settingsManager: SettingsManager
     ){
         suspend operator fun invoke(): ApiCall<Boolean> {
-            return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                android13Implementation(wifiManager)
-            } else {
-                android11Implementation(settingsManager)
-            }
+            return android11Implementation(settingsManager)
         }
     }
 
@@ -28,8 +20,8 @@ private suspend fun android11Implementation(settingsManager: SettingsManager): A
     return coroutineScope {
         try {
             when(val result = settingsManager.hotspot20State) {
-                true -> ApiCall.Success(true)
-                false -> ApiCall.Success(false)
+                CustomDeviceManager.ON -> ApiCall.Success(true)
+                CustomDeviceManager.OFF -> ApiCall.Success(false)
                 else -> ApiCall.Error(UiText.DynamicString("Unexpected value returned: $result"))
             }
         } catch (e: SecurityException) {
@@ -44,7 +36,8 @@ private suspend fun android11Implementation(settingsManager: SettingsManager): A
     }
 }
 
-@SuppressLint("MissingPermission")
+
+/*
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 private suspend fun android13Implementation(wifiManager: WifiManager): ApiCall<Boolean> {
     return coroutineScope {
@@ -54,4 +47,4 @@ private suspend fun android13Implementation(wifiManager: WifiManager): ApiCall<B
             ApiCall.Error(UiText.DynamicString(e.message!!))
         }
     }
-}
+}*/

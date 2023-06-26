@@ -4,8 +4,8 @@ import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UnitApiCall
 import net.sfelabs.core.ui.UiText
+import net.sfelabs.core.ui.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
@@ -18,9 +18,9 @@ class SetHotspot20StateUseCase @Inject constructor(
             try {
                 val result =
                 if(on) {
-                    settingsManager.setHotspot20State(true)
+                    settingsManager.setHotspot20State(CustomDeviceManager.ON)
                 } else {
-                    settingsManager.setHotspot20State(false)
+                    settingsManager.setHotspot20State(CustomDeviceManager.OFF)
                 }
                 if(result == CustomDeviceManager.SUCCESS) {
                     ApiCall.Success(Unit)
