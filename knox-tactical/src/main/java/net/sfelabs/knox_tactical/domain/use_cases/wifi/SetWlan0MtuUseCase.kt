@@ -12,17 +12,17 @@ import javax.inject.Inject
 class SetWlan0MtuUseCase @Inject constructor(
         @TacticalSdk private val systemManager: SystemManager
     ) {
-        suspend operator fun invoke(value: Int): net.sfelabs.core.ui.UnitApiCall {
+        suspend operator fun invoke(value: Int): UnitApiCall {
             return coroutineScope {
                 try {
                     val result = systemManager.setWlanZeroMtu(value)
                     if(result == CustomDeviceManager.SUCCESS)
-                        net.sfelabs.core.ui.ApiCall.Success(Unit)
+                        ApiCall.Success(Unit)
                     else
-                        net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("The wlan interface MTU was not set correctly"))
+                        ApiCall.Error(UiText.DynamicString("The wlan interface MTU was not set correctly"))
                 } catch (e: Exception) {
-                    net.sfelabs.core.ui.ApiCall.Error(
-                        net.sfelabs.core.ui.UiText.DynamicString(
+                    ApiCall.Error(
+                        UiText.DynamicString(
                             e.message!!
                         ))
                 }

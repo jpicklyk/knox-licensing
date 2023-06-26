@@ -10,13 +10,13 @@ import javax.inject.Inject
 class IsPogoKeyboardDisabledUseCase @Inject constructor(
     @Ngd2Sdk private val systemManager: SystemManager
 ) {
-    suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<Boolean> {
+    suspend operator fun invoke(): ApiCall<Boolean> {
         return coroutineScope {
             try {
-                net.sfelabs.core.ui.ApiCall.Success(systemManager.isPOGOKeyboardConnectionDisabled)
+                ApiCall.Success(systemManager.isPOGOKeyboardConnectionDisabled)
             } catch (e: Exception) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         e.message!!
                     ))
             }

@@ -39,7 +39,7 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
     operator fun invoke(
         ethernetInterface: EthernetConfiguration,
         callback: NetworkCallback
-    ): Flow<net.sfelabs.core.ui.UnitApiCall> = flow {
+    ): Flow<UnitApiCall> = flow {
         val success: Boolean =
             when(ethernetInterface.type) {
                 is EthernetInterfaceType.DHCP -> {

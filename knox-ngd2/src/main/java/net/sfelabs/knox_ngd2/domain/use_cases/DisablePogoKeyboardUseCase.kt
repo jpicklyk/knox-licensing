@@ -11,23 +11,23 @@ import javax.inject.Inject
 class DisablePogoKeyboardUseCase @Inject constructor(
     @Ngd2Sdk private val systemManager: SystemManager
 ) {
-    suspend operator fun invoke(disable: Boolean): net.sfelabs.core.ui.ApiCall<Int> {
+    suspend operator fun invoke(disable: Boolean): ApiCall<Int> {
         return coroutineScope {
             try {
                 val result = systemManager.disablePOGOKeyboardConnection(disable)
                 if(result == CustomDeviceManager.SUCCESS) {
-                    net.sfelabs.core.ui.ApiCall.Success(result)
+                    ApiCall.Success(result)
                 } else {
-                    net.sfelabs.core.ui.ApiCall.Error(
-                        net.sfelabs.core.ui.UiText
+                    ApiCall.Error(
+                        UiText
                         .DynamicString(
                             "An error occurred while disabling POGO connection: $result"
                         )
                     )
                 }
             } catch (e: Exception) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         e.message!!
                     ))
             }

@@ -12,17 +12,17 @@ import javax.inject.Inject
 class StopPppdUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
-    suspend operator fun invoke(): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(): UnitApiCall {
         return coroutineScope {
             try {
                 val result = systemManager.stopPPPD()
                 if(result == CustomDeviceManager.SUCCESS)
-                    net.sfelabs.core.ui.ApiCall.Success(Unit)
+                    ApiCall.Success(Unit)
                 else
-                    net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("The stop PPPD command failed."))
+                    ApiCall.Error(UiText.DynamicString("The stop PPPD command failed."))
             } catch (e: Exception) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         e.message!!
                     ))
             }

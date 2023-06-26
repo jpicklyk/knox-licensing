@@ -9,14 +9,14 @@ import javax.inject.Inject
 class GetLockscreenTimeoutUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
-    suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<Int> {
+    suspend operator fun invoke(): ApiCall<Int> {
         return coroutineScope {
             try {
-                net.sfelabs.core.ui.ApiCall.Success(
+                ApiCall.Success(
                     data = systemManager.activityTime
                 )
             } catch (nsm: NoSuchMethodError) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             }
         }
     }

@@ -12,22 +12,22 @@ class SetTacticalDeviceModeUseCase @Inject constructor(
     @TacticalSdk private val restrictionPolicy: RestrictionPolicy
 ) {
 
-    suspend operator fun invoke(enable: Boolean): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(enable: Boolean): UnitApiCall {
         return coroutineScope {
             try {
 
                 val success = restrictionPolicy.enableTacticalDeviceMode(enable)
-                if(success) net.sfelabs.core.ui.ApiCall.Success(Unit)
-                else net.sfelabs.core.ui.ApiCall.Error(uiText =
-                net.sfelabs.core.ui.UiText.DynamicString("An unknown error occurred")
+                if(success) ApiCall.Success(Unit)
+                else ApiCall.Error(uiText =
+                UiText.DynamicString("An unknown error occurred")
                 )
             }catch (e: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(uiText =
-                net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(uiText =
+                UiText.DynamicString(
                     e.message?:"Calling application does not have the required permission"
                 ))
             } catch (nsm: NoSuchMethodError) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             }
         }
 

@@ -8,4 +8,4 @@ import javax.inject.Qualifier
  */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class Ngd2Sdk()
+annotation class Ngd2Sdk

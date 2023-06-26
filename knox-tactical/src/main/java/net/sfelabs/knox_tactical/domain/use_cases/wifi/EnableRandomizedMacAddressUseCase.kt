@@ -11,23 +11,23 @@ import javax.inject.Inject
 class EnableRandomizedMacAddressUseCase @Inject constructor(
     @TacticalSdk private val restrictionPolicy: RestrictionPolicy
 ) {
-    suspend operator fun invoke(enable: Boolean): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(enable: Boolean): UnitApiCall {
         return coroutineScope {
             try {
                 val result = restrictionPolicy.enableRandomisedMacAddress(enable)
                 if (result)
-                    net.sfelabs.core.ui.ApiCall.Success(Unit)
+                    ApiCall.Success(Unit)
                 else
-                    net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("Setting Randomized Mac Address failed"))
+                    ApiCall.Error(UiText.DynamicString("Setting Randomized Mac Address failed"))
             } catch(se: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                     "The use of this API requires the caller to have the " +
                             "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" " +
                             "permission."
                 ))
             }catch (ex: NoSuchMethodException) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             }
         }
     }

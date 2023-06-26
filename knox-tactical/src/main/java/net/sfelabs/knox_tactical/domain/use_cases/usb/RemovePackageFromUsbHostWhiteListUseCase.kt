@@ -13,22 +13,22 @@ import javax.inject.Inject
 class RemovePackageFromUsbHostWhiteListUseCase @Inject constructor(
     @TacticalSdk private val enterpriseDeviceManager: EnterpriseDeviceManager
 ) {
-    suspend operator fun invoke(appIdentity: AppIdentity): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(appIdentity: AppIdentity): UnitApiCall {
         return coroutineScope {
             try {
                 val appPolicy: ApplicationPolicy = enterpriseDeviceManager.applicationPolicy
                 val result = appPolicy.removePackageFromUsbHostWhiteList(appIdentity)
                 if (result != ApplicationPolicy.ERROR_NONE) {
-                    net.sfelabs.core.ui.ApiCall.Error(
-                        net.sfelabs.core.ui.UiText.DynamicString(
+                    ApiCall.Error(
+                        UiText.DynamicString(
                             "removePackageToUsbHostWhiteList error: $result"
                         ))
                 } else {
-                    net.sfelabs.core.ui.ApiCall.Success(Unit)
+                    ApiCall.Success(Unit)
                 }
             } catch (e: Exception) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         e.message!!
                     ))
             }

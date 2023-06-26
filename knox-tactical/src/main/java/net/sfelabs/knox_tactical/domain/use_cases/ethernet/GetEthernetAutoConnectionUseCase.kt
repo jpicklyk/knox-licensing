@@ -11,12 +11,12 @@ class GetEthernetAutoConnectionUseCase @Inject constructor(
     @TacticalSdk private val settingsManager: SettingsManager
 ) {
 
-    operator fun invoke(): net.sfelabs.core.ui.ApiCall<AutoConnectionState> {
+    operator fun invoke(): ApiCall<AutoConnectionState> {
         return try {
-            net.sfelabs.core.ui.ApiCall.Success(AutoConnectionState(settingsManager.ethernetAutoConnectionState))
+            ApiCall.Success(AutoConnectionState(settingsManager.ethernetAutoConnectionState))
         } catch (e: Exception) {
-            net.sfelabs.core.ui.ApiCall.Error(
-                net.sfelabs.core.ui.UiText.DynamicString(
+            ApiCall.Error(
+                UiText.DynamicString(
                     e.message!!
                 ))
         }

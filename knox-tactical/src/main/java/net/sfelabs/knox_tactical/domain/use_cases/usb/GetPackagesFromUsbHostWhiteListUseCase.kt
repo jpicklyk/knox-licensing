@@ -11,15 +11,15 @@ import javax.inject.Inject
 class GetPackagesFromUsbHostWhiteListUseCase @Inject constructor(
     @TacticalSdk private val enterpriseDeviceManager: EnterpriseDeviceManager
 ) {
-    suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<List<String>> {
+    suspend operator fun invoke(): ApiCall<List<String>> {
         return coroutineScope {
             try {
                 val appPolicy: ApplicationPolicy = enterpriseDeviceManager.applicationPolicy
-                net.sfelabs.core.ui.ApiCall.Success(appPolicy.packagesFromUsbHostWhiteList)
+                ApiCall.Success(appPolicy.packagesFromUsbHostWhiteList)
 
             } catch (e: Exception) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         e.message!!
                     ))
             }

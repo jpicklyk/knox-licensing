@@ -34,13 +34,9 @@ object KnoxTacticalExtensions {
             netmask
         )
     }
-    object MR1 {
+    object MR1
 
-    }
-
-    object MR2 {
-
-    }
+    object MR2
 
     object MR3
 }

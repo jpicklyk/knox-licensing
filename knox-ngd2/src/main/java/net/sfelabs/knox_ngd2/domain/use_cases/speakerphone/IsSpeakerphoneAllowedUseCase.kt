@@ -13,21 +13,21 @@ class IsSpeakerphoneAllowedUseCase @Inject constructor(
     @Ngd2Sdk private val enterpriseDeviceManager: EnterpriseDeviceManager
 ) {
 
-    suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<Boolean> {
+    suspend operator fun invoke(): ApiCall<Boolean> {
         val restrictionPolicy = enterpriseDeviceManager.restrictionPolicy
         return coroutineScope {
             try {
-                net.sfelabs.core.ui.ApiCall.Success(restrictionPolicy.isSpeakerphoneAllowed)
+                ApiCall.Success(restrictionPolicy.isSpeakerphoneAllowed)
             } catch (se: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" permission"
                     ))
             } catch (re: RemoteException) {
-                net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString(re.message!!))
+                ApiCall.Error(UiText.DynamicString(re.message!!))
             } catch (nsme: NoSuchMethodError) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             }
         }
     }

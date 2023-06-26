@@ -21,7 +21,7 @@ class SetEthernetAutoConnectionUseCase @Inject constructor(
     operator fun invoke(
         autoConnectionState: AutoConnectionState,
         callbackList: List<NetworkCallback>
-    ): Flow<net.sfelabs.core.ui.UnitApiCall> = flow {
+    ): Flow<UnitApiCall> = flow {
         if(autoConnectionState == AutoConnectionState.ON) {
             val result = settingsManager.setEthernetAutoConnectionState(autoConnectionState.state)
             if(result == CustomDeviceManager.SUCCESS)

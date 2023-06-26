@@ -11,14 +11,14 @@ class GetBandLockingStateUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
 
-    suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<Int> {
+    suspend operator fun invoke(): ApiCall<Int> {
         return coroutineScope {
             try {
                 val result = systemManager.lteBandLocking
-                net.sfelabs.core.ui.ApiCall.Success(result)
+                ApiCall.Success(result)
             } catch (se: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                     "The use of this API requires the caller to have the " +
                             "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                 ))

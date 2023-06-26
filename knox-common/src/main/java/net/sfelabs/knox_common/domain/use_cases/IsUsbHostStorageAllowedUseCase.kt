@@ -9,19 +9,20 @@ import javax.inject.Inject
 class IsUsbHostStorageAllowedUseCase @Inject constructor(
     private val restrictionPolicy: RestrictionPolicy
 ) {
-    suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<Boolean> {
+    suspend operator fun invoke(): ApiCall<Boolean> {
         return coroutineScope {
             try {
-                net.sfelabs.core.ui.ApiCall.Success(restrictionPolicy.isUsbHostStorageAllowed)
-            } catch(se: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Success(restrictionPolicy.isUsbHostStorageAllowed)
+            } catch (se: SecurityException) {
+                ApiCall.Error(
+                    UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" " +
                                 "permission which has a protection level of signature."
-                    ))
-            }catch (ex: NoSuchMethodException) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                    )
+                )
+            } catch (ex: NoSuchMethodException) {
+                ApiCall.NotSupported
             }
         }
     }

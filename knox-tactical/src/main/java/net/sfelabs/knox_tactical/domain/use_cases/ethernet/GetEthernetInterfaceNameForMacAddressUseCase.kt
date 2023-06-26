@@ -10,18 +10,18 @@ class GetEthernetInterfaceNameForMacAddressUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
 
-    operator fun invoke(macAddress: String): net.sfelabs.core.ui.ApiCall<String> {
+    operator fun invoke(macAddress: String): ApiCall<String> {
         return try {
             val result = systemManager.getEthernetInterfaceNameForMacAddress(macAddress)
             if(result == null) {
-                net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("MAC Address doesn't exist"))
+                ApiCall.Error(UiText.DynamicString("MAC Address doesn't exist"))
             } else {
-                net.sfelabs.core.ui.ApiCall.Success(result)
+                ApiCall.Success(result)
             }
 
         } catch (e: Exception) {
-            net.sfelabs.core.ui.ApiCall.Error(
-                net.sfelabs.core.ui.UiText.DynamicString(
+            ApiCall.Error(
+                UiText.DynamicString(
                     e.message!!
                 ))
         }

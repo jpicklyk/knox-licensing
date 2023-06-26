@@ -13,7 +13,7 @@ class SetHotspot20StateUseCase @Inject constructor(
     @TacticalSdk private val settingsManager: SettingsManager
 ){
 
-    suspend operator fun invoke(on: Boolean): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(on: Boolean): UnitApiCall {
         return coroutineScope {
             try {
                 val result =
@@ -23,18 +23,18 @@ class SetHotspot20StateUseCase @Inject constructor(
                     settingsManager.setHotspot20State(false)
                 }
                 if(result == CustomDeviceManager.SUCCESS) {
-                    net.sfelabs.core.ui.ApiCall.Success(Unit)
+                    ApiCall.Success(Unit)
                 } else {
-                    net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("The operation failed for an unknown reason"))
+                    ApiCall.Error(UiText.DynamicString("The operation failed for an unknown reason"))
                 }
             } catch (e: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                     ))
             } catch (nsm: NoSuchMethodError) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             }
         }
     }

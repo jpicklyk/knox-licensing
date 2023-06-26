@@ -15,7 +15,7 @@ class GetHotspot20StateUseCase @Inject constructor(
         @TacticalSdk private val settingsManager: SettingsManager,
         private val wifiManager: WifiManager
     ){
-        suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<Boolean> {
+        suspend operator fun invoke(): ApiCall<Boolean> {
             return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 android13Implementation(wifiManager)
             } else {
@@ -24,34 +24,34 @@ class GetHotspot20StateUseCase @Inject constructor(
         }
     }
 
-private suspend fun android11Implementation(settingsManager: SettingsManager): net.sfelabs.core.ui.ApiCall<Boolean> {
+private suspend fun android11Implementation(settingsManager: SettingsManager): ApiCall<Boolean> {
     return coroutineScope {
         try {
             when(val result = settingsManager.hotspot20State) {
-                true -> net.sfelabs.core.ui.ApiCall.Success(true)
-                false -> net.sfelabs.core.ui.ApiCall.Success(false)
-                else -> net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("Unexpected value returned: $result"))
+                true -> ApiCall.Success(true)
+                false -> ApiCall.Success(false)
+                else -> ApiCall.Error(UiText.DynamicString("Unexpected value returned: $result"))
             }
         } catch (e: SecurityException) {
-            net.sfelabs.core.ui.ApiCall.Error(
-                net.sfelabs.core.ui.UiText.DynamicString(
+            ApiCall.Error(
+                UiText.DynamicString(
                     "The use of this API requires the caller to have the " +
                             "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                 ))
         } catch (nsm: NoSuchMethodError) {
-            net.sfelabs.core.ui.ApiCall.NotSupported
+            ApiCall.NotSupported
         }
     }
 }
 
 @SuppressLint("MissingPermission")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-private suspend fun android13Implementation(wifiManager: WifiManager): net.sfelabs.core.ui.ApiCall<Boolean> {
+private suspend fun android13Implementation(wifiManager: WifiManager): ApiCall<Boolean> {
     return coroutineScope {
         try {
-            net.sfelabs.core.ui.ApiCall.Success(wifiManager.isWifiPasspointEnabled)
+            ApiCall.Success(wifiManager.isWifiPasspointEnabled)
         }catch (e: Exception) {
-            net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString(e.message!!))
+            ApiCall.Error(UiText.DynamicString(e.message!!))
         }
     }
 }

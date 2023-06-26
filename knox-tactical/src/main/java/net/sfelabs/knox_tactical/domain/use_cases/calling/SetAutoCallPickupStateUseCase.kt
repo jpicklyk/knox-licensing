@@ -16,29 +16,29 @@ import javax.inject.Inject
 class SetAutoCallPickupStateUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ){
-    suspend operator fun invoke(state: AutoCallPickupState): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(state: AutoCallPickupState): UnitApiCall {
         return coroutineScope {
             try {
                 when (systemManager.setAutoCallPickupState(state.value)) {
                     CustomDeviceManager.SUCCESS -> {
-                        net.sfelabs.core.ui.ApiCall.Success(Unit)
+                        ApiCall.Success(Unit)
                     }
                     CustomDeviceManager.ERROR_INVALID_MODE_TYPE -> {
-                        net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("Error Invalid Mode Type"))
+                        ApiCall.Error(UiText.DynamicString("Error Invalid Mode Type"))
                     }
                     else -> {
-                        net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("Error not supported"))
+                        ApiCall.Error(UiText.DynamicString("Error not supported"))
                     }
                 }
 
             } catch (e: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM\" permission"
                     ))
             } catch (nsm: NoSuchMethodError) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             }
         }
     }

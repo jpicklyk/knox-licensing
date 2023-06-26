@@ -10,20 +10,20 @@ import javax.inject.Inject
 class GetTacticalDeviceModeUseCase @Inject constructor(
     @TacticalSdk private val restrictionPolicy: RestrictionPolicy
 ) {
-    suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<Boolean> {
+    suspend operator fun invoke(): ApiCall<Boolean> {
         return coroutineScope {
             try {
-                net.sfelabs.core.ui.ApiCall.Success(
+                ApiCall.Success(
                     data = restrictionPolicy.isTacticalDeviceModeEnabled
                 )
             } catch (e: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         e.message ?: "Calling application does not have the required permission"
                     )
                 )
             } catch (nsm: NoSuchMethodError) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             }
         }
 

@@ -12,23 +12,23 @@ import javax.inject.Inject
 class SetLockscreenTimeoutUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
-    suspend operator fun invoke(seconds: Int): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(seconds: Int): UnitApiCall {
         return coroutineScope {
             try {
                 val result = systemManager.setActivityTime(seconds)
                 if (result == CustomDeviceManager.SUCCESS) {
-                    net.sfelabs.core.ui.ApiCall.Success(Unit)
+                    ApiCall.Success(Unit)
                 } else {
-                    net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("An invalid timeout $seconds has been specified"))
+                    ApiCall.Error(UiText.DynamicString("An invalid timeout $seconds has been specified"))
                 }
 
             } catch (e: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(uiText =
-                net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(uiText =
+                UiText.DynamicString(
                     e.message?:"Calling application does not have the required permission"
                 ))
             } catch (nsm: NoSuchMethodError) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             }
         }
     }

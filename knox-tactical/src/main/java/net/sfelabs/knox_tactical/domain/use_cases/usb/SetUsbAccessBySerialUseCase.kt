@@ -12,7 +12,7 @@ import javax.inject.Inject
 class SetUsbAccessBySerialUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
-    suspend operator fun invoke(enable: Boolean, serials: List<String>): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(enable: Boolean, serials: List<String>): UnitApiCall {
         return coroutineScope {
             try {
                 val result =
@@ -31,25 +31,25 @@ class SetUsbAccessBySerialUseCase @Inject constructor(
 
                 when (result) {
                     CustomDeviceManager.SUCCESS -> {
-                        net.sfelabs.core.ui.ApiCall.Success(Unit)
+                        ApiCall.Success(Unit)
                     }
                     CustomDeviceManager.ERROR_INVALID_VALUE -> {
-                        net.sfelabs.core.ui.ApiCall.Error(
-                            net.sfelabs.core.ui.UiText.DynamicString(
+                        ApiCall.Error(
+                            UiText.DynamicString(
                                 "Error invalid value"
                             ))
                     }
                     else -> {
-                        net.sfelabs.core.ui.ApiCall.Error(
-                            net.sfelabs.core.ui.UiText.DynamicString(
+                        ApiCall.Error(
+                            UiText.DynamicString(
                                 "Error, the arguments were not executed"
                             ))
                     }
                 }
 
             } catch (e: Exception) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         e.message!!
                     ))
             }

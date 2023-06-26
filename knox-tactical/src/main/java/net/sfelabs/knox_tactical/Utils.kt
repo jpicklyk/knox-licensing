@@ -17,7 +17,7 @@ import com.samsung.android.knox.custom.CustomDeviceManager
 fun registerNetwork(
     context: Context, interfaceName: String, onAvailable: (Any) -> Unit, onLost: (Any) -> Unit
 ) {
-    val networkCallback = object: ConnectivityManager.NetworkCallback(){
+    val networkCallback = object: NetworkCallback(){
 
         override fun onAvailable(network: Network) {
             super.onAvailable(network)

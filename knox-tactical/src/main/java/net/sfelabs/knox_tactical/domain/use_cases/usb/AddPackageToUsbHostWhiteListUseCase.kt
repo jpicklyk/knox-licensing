@@ -15,7 +15,7 @@ import javax.inject.Inject
 class AddPackageToUsbHostWhiteListUseCase @Inject constructor(
     @TacticalSdk private val enterpriseDeviceManager: EnterpriseDeviceManager
 ) {
-    suspend operator fun invoke(enable: Boolean, appIdentity: AppIdentity): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(enable: Boolean, appIdentity: AppIdentity): UnitApiCall {
         return coroutineScope {
             try {
                 val restrictionPolicy = enterpriseDeviceManager.restrictionPolicy
@@ -28,16 +28,16 @@ class AddPackageToUsbHostWhiteListUseCase @Inject constructor(
                         appPolicy.removePackageFromUsbHostWhiteList(appIdentity)
                     }
                 if (result != CustomDeviceManager.SUCCESS) {
-                    net.sfelabs.core.ui.ApiCall.Error(
-                        net.sfelabs.core.ui.UiText.DynamicString(
+                    ApiCall.Error(
+                        UiText.DynamicString(
                             "addPackageToUsbHostWhiteList error: $result"
                         ))
                 } else {
-                    net.sfelabs.core.ui.ApiCall.Success(Unit)
+                    ApiCall.Success(Unit)
                 }
             } catch (e: Exception) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         e.message!!
                     ))
             }

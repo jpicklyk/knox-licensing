@@ -14,26 +14,26 @@ class SetUsbConnectionTypeUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ){
 
-    suspend operator fun invoke(type: UsbConnectionType): net.sfelabs.core.ui.UnitApiCall {
+    suspend operator fun invoke(type: UsbConnectionType): UnitApiCall {
         return coroutineScope {
             try {
                 val result = systemManager.setUsbConnectionType(type.value)
 
                 if(result == CustomDeviceManager.SUCCESS) {
-                    net.sfelabs.core.ui.ApiCall.Success(Unit)
+                    ApiCall.Success(Unit)
                 } else {
-                    net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("The specified connection type is invalid"))
+                    ApiCall.Error(UiText.DynamicString("The specified connection type is invalid"))
                 }
             } catch (e: SecurityException) {
-                net.sfelabs.core.ui.ApiCall.Error(
-                    net.sfelabs.core.ui.UiText.DynamicString(
+                ApiCall.Error(
+                    UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM\" permission"
                     ))
             } catch (nsm: NoSuchMethodError) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             } catch (ex: Exception) {
-                net.sfelabs.core.ui.ApiCall.NotSupported
+                ApiCall.NotSupported
             }
         }
     }
