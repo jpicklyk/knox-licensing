@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.android10
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.common.core.ApiCall
+import net.sfelabs.core.ui.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.GetWlan0MtuUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.SetWlan0MtuUseCase

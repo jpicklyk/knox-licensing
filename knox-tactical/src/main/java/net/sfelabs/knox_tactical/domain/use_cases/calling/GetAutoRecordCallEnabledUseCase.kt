@@ -2,8 +2,8 @@ package net.sfelabs.knox_tactical.domain.use_cases.calling
 
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.ui.UiText
+import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.ui.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
@@ -11,18 +11,18 @@ class GetAutoRecordCallEnabledUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ){
 
-    suspend operator fun invoke(): ApiCall<Boolean> {
+    suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<Boolean> {
         return coroutineScope {
             try {
-                ApiCall.Success(systemManager.automaticRecordCallEnabledState)
+                net.sfelabs.core.ui.ApiCall.Success(systemManager.automaticRecordCallEnabledState)
             } catch (e: SecurityException) {
-                ApiCall.Error(
-                    UiText.DynamicString(
+                net.sfelabs.core.ui.ApiCall.Error(
+                    net.sfelabs.core.ui.UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM\" permission"
                     ))
             } catch (nsm: NoSuchMethodError) {
-                ApiCall.NotSupported
+                net.sfelabs.core.ui.ApiCall.NotSupported
             }
         }
     }

@@ -17,8 +17,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import net.sfelabs.common.knox.KnoxApi
-import net.sfelabs.common.knox.KnoxComponentType
+import net.sfelabs.core.knox.KnoxApi
+import net.sfelabs.core.knox.KnoxComponentType
 import kotlin.math.roundToInt
 
 fun Modifier.maxWidth(

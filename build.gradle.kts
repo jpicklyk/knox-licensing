@@ -14,10 +14,11 @@ buildscript {
 }
 
 plugins {
-    alias(libs.plugins.android.application) version "8.2.0-alpha09" apply false
+    alias(libs.plugins.android.application) version libs.versions.androidGradlePlugin apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
-    id("org.jetbrains.kotlin.android") version "1.8.21" apply false
+    id("org.jetbrains.kotlin.android") version libs.versions.kotlin apply false
+    alias(libs.plugins.android.library) apply false
 }

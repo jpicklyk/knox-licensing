@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
-import net.sfelabs.common.core.di.AndroidServiceModule
+import net.sfelabs.core.di.AndroidServiceModule
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

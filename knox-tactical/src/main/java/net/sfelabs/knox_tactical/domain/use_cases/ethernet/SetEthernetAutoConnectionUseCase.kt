@@ -8,9 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.ui.UiText
-import net.sfelabs.common.core.UnitApiCall
+import net.sfelabs.core.ui.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import javax.inject.Inject
@@ -23,13 +21,14 @@ class SetEthernetAutoConnectionUseCase @Inject constructor(
     operator fun invoke(
         autoConnectionState: AutoConnectionState,
         callbackList: List<NetworkCallback>
-    ): Flow<UnitApiCall> = flow {
+    ): Flow<net.sfelabs.core.ui.UnitApiCall> = flow {
         if(autoConnectionState == AutoConnectionState.ON) {
             val result = settingsManager.setEthernetAutoConnectionState(autoConnectionState.state)
             if(result == CustomDeviceManager.SUCCESS)
-                emit(ApiCall.Success(Unit))
-            else emit(ApiCall.Error(
-                uiText = UiText.DynamicString("Device does not support this feature"))
+                emit(net.sfelabs.core.ui.ApiCall.Success(Unit))
+            else emit(
+                net.sfelabs.core.ui.ApiCall.Error(
+                uiText = net.sfelabs.core.ui.UiText.DynamicString("Device does not support this feature"))
             )
 
         } else {
@@ -42,9 +41,10 @@ class SetEthernetAutoConnectionUseCase @Inject constructor(
             }
             val result = settingsManager.setEthernetAutoConnectionState(autoConnectionState.state)
             if(result == CustomDeviceManager.SUCCESS)
-                emit(ApiCall.Success(Unit))
-            else emit(ApiCall.Error(
-                uiText = UiText.DynamicString("Device does not support this feature"))
+                emit(net.sfelabs.core.ui.ApiCall.Success(Unit))
+            else emit(
+                net.sfelabs.core.ui.ApiCall.Error(
+                uiText = net.sfelabs.core.ui.UiText.DynamicString("Device does not support this feature"))
             )
         }
 

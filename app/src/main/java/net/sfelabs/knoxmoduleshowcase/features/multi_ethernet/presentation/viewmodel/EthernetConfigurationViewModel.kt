@@ -19,10 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.model.NetworkStatus
-import net.sfelabs.common.core.model.NetworkUpdate
-import net.sfelabs.common.core.services.NetworkConnectivityService
+import net.sfelabs.core.ui.ApiCall
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
@@ -33,6 +30,9 @@ import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetAutoConnec
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnectionUseCase
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.EthernetInterface
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkStatus
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkUpdate
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.services.NetworkConnectivityService
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationEvents
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.presentation.EthernetConfigurationState
 import java.net.NetworkInterface

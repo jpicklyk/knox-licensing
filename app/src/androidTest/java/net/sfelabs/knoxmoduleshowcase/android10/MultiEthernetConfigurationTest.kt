@@ -7,8 +7,8 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.di.AndroidServiceModule
+import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.di.AndroidServiceModule
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration

@@ -8,7 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
-import net.sfelabs.common.core.ApiCall
+import net.sfelabs.core.ui.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase

@@ -13,7 +13,7 @@ import net.sfelabs.android_log_wrapper.Priority
 import net.sfelabs.android_log_wrapper.domain.model.LogLine
 import net.sfelabs.android_log_wrapper.domain.use_case.LogViewerUseCase
 import net.sfelabs.android_log_wrapper.domain.use_case.StreamLogLinesUseCase
-import net.sfelabs.common.core.Resource
+import net.sfelabs.core.ui.Resource
 import javax.inject.Inject
 
 @HiltViewModel

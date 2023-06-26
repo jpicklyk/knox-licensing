@@ -6,7 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.AppIdentity
 import com.samsung.android.knox.EnterpriseDeviceManager
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.common.core.ApiCall
+import net.sfelabs.core.ui.ApiCall
 import net.sfelabs.knoxmoduleshowcase.app.getApplicationSignatures
 import net.sfelabs.knox_common.domain.use_cases.AllowUsbHostStorageUseCase
 import net.sfelabs.knox_common.domain.use_cases.IsUsbHostStorageAllowedUseCase

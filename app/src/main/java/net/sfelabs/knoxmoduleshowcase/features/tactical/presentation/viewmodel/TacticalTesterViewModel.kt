@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.sfelabs.android_log_wrapper.Log
-import net.sfelabs.common.core.ApiCall
+import net.sfelabs.core.ui.ApiCall
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.TacticalKnoxState
 import javax.inject.Inject
 

@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.sfelabs.common.core.model.NetworkStatus
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkStatus
 
 @Composable
 fun EthernetInterfaceCard(

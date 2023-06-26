@@ -2,8 +2,7 @@ package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.ui.UiText
+import net.sfelabs.core.ui.ApiCall
 import javax.inject.Inject
 
 class AllowFirmwareRecoveryUseCase @Inject constructor(
@@ -19,12 +18,12 @@ class AllowFirmwareRecoveryUseCase @Inject constructor(
                         ApiCall.Success(data = enable)
                     }
                     false -> {
-                        ApiCall.Error(UiText.DynamicString("Failure occurred applying API allowFirmwareRecovery(${enable})"))
+                        ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("Failure occurred applying API allowFirmwareRecovery(${enable})"))
                     }
                 }
             } catch (se: SecurityException) {
                 ApiCall.Error(
-                    UiText.DynamicString(
+                    net.sfelabs.core.ui.UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" permission"
                     ))

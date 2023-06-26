@@ -37,17 +37,15 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlin.reflect)
-    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.hilt.android)
     implementation(project(mapOf("path" to ":android-log-wrapper")))
     kapt(libs.hilt.compiler)
     //The Tactical Knox SDK shall not be available outside this module (compileOnly)
     compileOnly(fileTree("libs/knoxsdk.jar"))
     implementation(project(path =":core:common"))
+    implementation(project(path =":core:ui"))
 
-    testImplementation(libs.testing.kotlin.coroutines)
-    androidTestImplementation(libs.testing.kotlin.coroutines)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espresso)
+    androidTestImplementation(project(":core:testing"))
     androidTestCompileOnly(fileTree("libs/knoxsdk.jar"))
 }

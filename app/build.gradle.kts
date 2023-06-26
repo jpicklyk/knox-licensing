@@ -1,0 +1,74 @@
+plugins {
+   id("sfelabs.android.application")
+   id("sfelabs.android.application.compose")
+   id("sfelabs.android.hilt")
+
+
+    //id("com.android.application")
+    //id("org.jetbrains.kotlin.android")
+    //id("kotlin-kapt")
+    //id("dagger.hilt.android.plugin")
+}
+
+android {
+    namespace = "net.sfelabs.knoxmoduleshowcase"
+
+    defaultConfig {
+
+        applicationId = "net.sfelabs.knoxmoduleshowcase"
+
+        versionCode = 1
+        versionName = "0.0.1"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    packaging {
+        resources {
+            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+}
+dependencies {
+    implementation(project(":core:common"))
+    implementation(project(":core:ui"))
+    implementation(project(":android-log-wrapper"))
+    implementation(project(":knox-common"))
+    implementation(project(":knox-tactical"))
+    implementation(project(":knox-ngd2"))
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.bundles.androidx.compose.materialIcons)
+    implementation(libs.androidx.navigation)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.composeNumberPicker)
+
+    implementation(libs.hilt.navigation.compose)
+
+
+    androidTestImplementation(project(":core:testing"))
+
+}

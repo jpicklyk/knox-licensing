@@ -6,8 +6,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.ui.UiText
+import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.ui.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ class GetHotspot20StateUseCase @Inject constructor(
         @TacticalSdk private val settingsManager: SettingsManager,
         private val wifiManager: WifiManager
     ){
-        suspend operator fun invoke(): ApiCall<Boolean> {
+        suspend operator fun invoke(): net.sfelabs.core.ui.ApiCall<Boolean> {
             return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 android13Implementation(wifiManager)
             } else {
@@ -24,34 +24,34 @@ class GetHotspot20StateUseCase @Inject constructor(
         }
     }
 
-private suspend fun android11Implementation(settingsManager: SettingsManager): ApiCall<Boolean> {
+private suspend fun android11Implementation(settingsManager: SettingsManager): net.sfelabs.core.ui.ApiCall<Boolean> {
     return coroutineScope {
         try {
             when(val result = settingsManager.hotspot20State) {
-                true -> ApiCall.Success(true)
-                false -> ApiCall.Success(false)
-                else -> ApiCall.Error(UiText.DynamicString("Unexpected value returned: $result"))
+                true -> net.sfelabs.core.ui.ApiCall.Success(true)
+                false -> net.sfelabs.core.ui.ApiCall.Success(false)
+                else -> net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString("Unexpected value returned: $result"))
             }
         } catch (e: SecurityException) {
-            ApiCall.Error(
-                UiText.DynamicString(
+            net.sfelabs.core.ui.ApiCall.Error(
+                net.sfelabs.core.ui.UiText.DynamicString(
                     "The use of this API requires the caller to have the " +
                             "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                 ))
         } catch (nsm: NoSuchMethodError) {
-            ApiCall.NotSupported
+            net.sfelabs.core.ui.ApiCall.NotSupported
         }
     }
 }
 
 @SuppressLint("MissingPermission")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-private suspend fun android13Implementation(wifiManager: WifiManager): ApiCall<Boolean> {
+private suspend fun android13Implementation(wifiManager: WifiManager): net.sfelabs.core.ui.ApiCall<Boolean> {
     return coroutineScope {
         try {
-            ApiCall.Success(wifiManager.isWifiPasspointEnabled)
+            net.sfelabs.core.ui.ApiCall.Success(wifiManager.isWifiPasspointEnabled)
         }catch (e: Exception) {
-            ApiCall.Error(UiText.DynamicString(e.message!!))
+            net.sfelabs.core.ui.ApiCall.Error(net.sfelabs.core.ui.UiText.DynamicString(e.message!!))
         }
     }
 }

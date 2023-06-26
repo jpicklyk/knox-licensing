@@ -7,7 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import net.sfelabs.common.knox.KnoxComponentType
+import net.sfelabs.core.knox.KnoxComponentType
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.TacticalKnoxState
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.components.KnoxApiComponent
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel.TacticalKnoxEvents

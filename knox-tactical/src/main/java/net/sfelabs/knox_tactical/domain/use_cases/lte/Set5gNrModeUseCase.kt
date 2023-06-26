@@ -3,9 +3,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.lte
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.UnitApiCall
-import net.sfelabs.common.core.ui.UiText
+import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.ui.UnitApiCall
+import net.sfelabs.core.ui.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.LteNrModeState
 import javax.inject.Inject
@@ -14,21 +14,21 @@ class Set5gNrModeUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
 
-    suspend operator fun invoke(state: LteNrModeState): UnitApiCall {
+    suspend operator fun invoke(state: LteNrModeState): net.sfelabs.core.ui.UnitApiCall {
         return coroutineScope {
             try {
                 val result = systemManager.set5gNrModeState(state.value)
                 if( result != CustomDeviceManager.SUCCESS ) {
-                    ApiCall.Error(
-                        UiText.DynamicString(
+                    net.sfelabs.core.ui.ApiCall.Error(
+                        net.sfelabs.core.ui.UiText.DynamicString(
                             "Setting 5gNrModeState error: $result"
                         ))
                 } else {
-                    ApiCall.Success(Unit)
+                    net.sfelabs.core.ui.ApiCall.Success(Unit)
                 }
             } catch (se: SecurityException) {
-                ApiCall.Error(
-                    UiText.DynamicString(
+                net.sfelabs.core.ui.ApiCall.Error(
+                    net.sfelabs.core.ui.UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                     ))

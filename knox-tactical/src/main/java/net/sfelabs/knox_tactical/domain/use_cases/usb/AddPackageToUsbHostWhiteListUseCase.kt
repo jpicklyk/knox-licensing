@@ -6,16 +6,16 @@ import com.samsung.android.knox.application.ApplicationPolicy
 import com.samsung.android.knox.custom.CustomDeviceManager
 
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.common.core.ApiCall
-import net.sfelabs.common.core.ui.UiText
-import net.sfelabs.common.core.UnitApiCall
+import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.ui.UiText
+import net.sfelabs.core.ui.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
 class AddPackageToUsbHostWhiteListUseCase @Inject constructor(
     @TacticalSdk private val enterpriseDeviceManager: EnterpriseDeviceManager
 ) {
-    suspend operator fun invoke(enable: Boolean, appIdentity: AppIdentity): UnitApiCall {
+    suspend operator fun invoke(enable: Boolean, appIdentity: AppIdentity): net.sfelabs.core.ui.UnitApiCall {
         return coroutineScope {
             try {
                 val restrictionPolicy = enterpriseDeviceManager.restrictionPolicy
@@ -28,16 +28,16 @@ class AddPackageToUsbHostWhiteListUseCase @Inject constructor(
                         appPolicy.removePackageFromUsbHostWhiteList(appIdentity)
                     }
                 if (result != CustomDeviceManager.SUCCESS) {
-                    ApiCall.Error(
-                        UiText.DynamicString(
+                    net.sfelabs.core.ui.ApiCall.Error(
+                        net.sfelabs.core.ui.UiText.DynamicString(
                             "addPackageToUsbHostWhiteList error: $result"
                         ))
                 } else {
-                    ApiCall.Success(Unit)
+                    net.sfelabs.core.ui.ApiCall.Success(Unit)
                 }
             } catch (e: Exception) {
-                ApiCall.Error(
-                    UiText.DynamicString(
+                net.sfelabs.core.ui.ApiCall.Error(
+                    net.sfelabs.core.ui.UiText.DynamicString(
                         e.message!!
                     ))
             }

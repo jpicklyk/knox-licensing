@@ -6,7 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.common.core.ApiCall
+import net.sfelabs.core.ui.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.EnableRandomizedMacAddressUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.GetRandomizedMacAddressEnabledUseCase

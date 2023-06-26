@@ -1,18 +1,5 @@
-//Not required to enable in Gradle 7.4+ as it is enabled by default
-//enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "KnoxModuleShowcase"
-
-
-include(
-    ":app",
-    ":core:common",
-    ":android-log-wrapper",
-    ":knox-common",
-    ":knox-tactical",
-    ":android-log-wrapper"
-)
 pluginManagement {
-    //includeBuild("build-logic")
+    includeBuild("build-logic")
     repositories {
         google()
         mavenCentral()
@@ -20,6 +7,7 @@ pluginManagement {
     }
 }
 
+@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -28,6 +16,17 @@ dependencyResolutionManagement {
     }
 
 }
+rootProject.name = "KnoxModuleShowcase"
 
-include(":lib")
-include(":knox-ngd2")
+include(
+    ":app",
+    ":android-log-wrapper",
+    ":core:common",
+    ":core:ui",
+    ":core:testing",
+    ":knox-common",
+    ":knox-tactical",
+    ":knox-ngd2"
+)
+
+include(":core:testing")

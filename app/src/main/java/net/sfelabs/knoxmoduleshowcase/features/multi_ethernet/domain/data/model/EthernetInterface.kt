@@ -1,6 +1,5 @@
 package net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model
 
-import net.sfelabs.common.core.model.NetworkStatus
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
 
 data class EthernetInterface(
