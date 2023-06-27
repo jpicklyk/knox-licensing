@@ -38,6 +38,7 @@ import java.net.NetworkInterface
 class PppdTtyAcmTests {
     private val tag = "TTYACMTEST"
     private lateinit var context: Context
+    private lateinit var optionsFileLocation: File
 
     @Rule
     @JvmField
@@ -51,8 +52,8 @@ class PppdTtyAcmTests {
         copyFileFromRawToSDCard(context, R.raw.options, targetDirectory, "options")
 
         // Assert file copied successfully
-        val copiedFile = File(targetDirectory, "options")
-        assertTrue(copiedFile.exists())
+        optionsFileLocation = File(targetDirectory, "options")
+        assertTrue(optionsFileLocation.exists())
     }
 
 
@@ -75,7 +76,9 @@ class PppdTtyAcmTests {
             ExecuteAdbCommandUseCase(
                 sm
             )
-
+        println("options file location: $optionsFileLocation")
+        //KnoxCustomManagerService: executeAdbCommand - java.lang.IllegalArgumentException: value of system property 'knoxsdk.tac.body' is longer than 91 bytes: /dev/ttyUSB0 file /storage/emulated/0/Android/data/net.sfelabs.knoxmoduleshowcase/files/options
+        //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file $optionsFileLocation")
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file /sdcard/options")
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
         assert(result is ApiCall.Success)

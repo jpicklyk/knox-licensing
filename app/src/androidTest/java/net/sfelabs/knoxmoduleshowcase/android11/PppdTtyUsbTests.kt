@@ -38,7 +38,7 @@ import java.net.NetworkInterface
 class PppdTtyUsbTests {
     private val tag = "TTYUSBTEST"
     private lateinit var context: Context
-    private lateinit var targetDirectory: File
+    private lateinit var optionsFileLocation: File
 
     @Rule @JvmField
     val mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule
@@ -47,12 +47,12 @@ class PppdTtyUsbTests {
     @Before
     fun setup() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
-        targetDirectory = context.getExternalFilesDir(null)!!
+        val targetDirectory = context.getExternalFilesDir(null)!!
         copyFileFromRawToSDCard(context, R.raw.options, targetDirectory, "options")
-        println("Options file installed to: $targetDirectory")
+        //println("Options file installed to: $targetDirectory")
         // Assert file copied successfully
-        val copiedFile = File(targetDirectory, "options")
-        TestCase.assertTrue(copiedFile.exists())
+        optionsFileLocation = File(targetDirectory, "options")
+        TestCase.assertTrue(optionsFileLocation.exists())
     }
 
     @Test
@@ -74,7 +74,9 @@ class PppdTtyUsbTests {
             ExecuteAdbCommandUseCase(
                 sm
             )
-
+        println("options file location: $optionsFileLocation")
+        //KnoxCustomManagerService: executeAdbCommand - java.lang.IllegalArgumentException: value of system property 'knoxsdk.tac.body' is longer than 91 bytes: /dev/ttyUSB0 file /storage/emulated/0/Android/data/net.sfelabs.knoxmoduleshowcase/files/options
+        //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file $optionsFileLocation")
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
         assert(result is ApiCall.Success)
