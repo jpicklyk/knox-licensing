@@ -42,7 +42,7 @@ import javax.inject.Inject
 class EthernetConfigurationViewModel @Inject constructor(
     @ApplicationContext
     private val context: Context,
-    private val connectivityManager: ConnectivityManager,
+    //private val connectivityManager: ConnectivityManager,
     private val configureEthernetInterfaceUseCase: ConfigureEthernetInterfaceUseCase,
     private val setEthernetAutoConnectionUseCase: SetEthernetAutoConnectionUseCase,
     private val getEthernetAutoConnection: GetEthernetAutoConnectionUseCase,
@@ -92,7 +92,8 @@ class EthernetConfigurationViewModel @Inject constructor(
                 }
             }
         }
-
+        //networkService.registerInterface("eth0")
+        //networkService.registerInterface("eth2")
 
        //val usbInterfaces = getAssignedEthernetInterfaces(connectivityManager)
 
@@ -287,34 +288,36 @@ class EthernetConfigurationViewModel @Inject constructor(
         }
     }
     private fun updateInterfaceConnectivityState(networkUpdate: NetworkUpdate) {
-        log.d("Ethernet connectivity state changed, updating interface model")
-        log.d("Interface [${networkUpdate.handle}] ${networkUpdate.interfaceName} is ${networkUpdate.isConnected}")
+        Log.d(tag, "State Changed: Interface [${networkUpdate.handle}] ${networkUpdate.interfaceName} is ${networkUpdate.isConnected}")
         if(networkUpdate.isConnected == NetworkStatus.Connected) {
             interfaceHandleMap[networkUpdate.handle] = networkUpdate.interfaceName!!
         }
         val interfaceName = interfaceHandleMap[networkUpdate.handle]
-        val mac = getEthernetMacAddress(interfaceName)
-        val updatedInterfaces = _ethernetState.value.toMutableMap()
-        val existingInterface = updatedInterfaces[interfaceName]
+        if(interfaceName != null) {
+            val mac = getEthernetMacAddress(interfaceName)
+            val updatedInterfaces = _ethernetState.value.toMutableMap()
+            val existingInterface = updatedInterfaces[interfaceName]
 
-        if (existingInterface != null) {
-            val updatedInterface = existingInterface.copy(
-                connectivity = networkUpdate.isConnected,
-                mac = mac,
-                ipAddress = networkUpdate.ipAddress
+            if (existingInterface != null) {
+                val updatedInterface = existingInterface.copy(
+                    connectivity = networkUpdate.isConnected,
+                    mac = mac,
+                    ipAddress = networkUpdate.ipAddress
+                    )
+                updatedInterfaces[interfaceName] = updatedInterface
+                networkService.registerInterface(interfaceName)
+                _ethernetState.value = updatedInterfaces.toMap()
+            } else {
+                val newInterface = EthernetInterface(
+                    name = interfaceName,
+                    type = EthernetInterfaceType.DHCP,
+                    ipAddress = networkUpdate.ipAddress,
+                    mac = mac,
+                    connectivity = networkUpdate.isConnected
                 )
-            updatedInterfaces[interfaceName!!] = updatedInterface
-            _ethernetState.value = updatedInterfaces.toMap()
-        } else {
-            val newInterface = EthernetInterface(
-                name = interfaceName!!,
-                type = EthernetInterfaceType.DHCP,
-                ipAddress = networkUpdate.ipAddress,
-                mac = mac,
-                connectivity = networkUpdate.isConnected
-            )
-            updatedInterfaces[interfaceName] = newInterface
-            _ethernetState.value = updatedInterfaces.toMap()
+                updatedInterfaces[interfaceName] = newInterface
+                _ethernetState.value = updatedInterfaces.toMap()
+            }
         }
 
         if(networkUpdate.isConnected == NetworkStatus.Disconnected) {
