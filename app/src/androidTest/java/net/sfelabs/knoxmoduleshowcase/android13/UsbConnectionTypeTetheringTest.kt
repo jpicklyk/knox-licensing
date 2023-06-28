@@ -1,6 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.android13
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.FlakyTest
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.ui.ApiCall
@@ -17,6 +18,7 @@ class UsbConnectionTypeTetheringTest {
     private val sm = KnoxModule.provideKnoxSystemManager()
 
     @Test
+    @FlakyTest
     fun testUsbConnectionType_RndisTethering() = runTest {
         val setUseCase = SetUsbConnectionTypeUseCase(sm)
         val apiResult = setUseCase.invoke(UsbConnectionType.Tethering)
