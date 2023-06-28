@@ -31,27 +31,21 @@ class CheckSpecialFileAccess {
             println(file.absolutePath)
         }
     }
-    /*  This directory is not readable in Android
-    @Test
-    fun testNetworkInterfaceDirectoryIsReadable() {
-        //val directoryPath = "/sys/hub/usb/devices"
-        val directoryPath = "/sys/class/net/"
 
-        val directory = File(directoryPath)
+    @Test
+    fun testPppInitializationScriptExists() {
+        //val directoryPath = "/sys/hub/usb/devices"
+        val pppdScriptLocation = "/system/etc/start_knoxcustom_PMNett.sh"
+
+        val pppdScriptFile = File(pppdScriptLocation)
 
         // Check if the directory exists and is readable
         TestCase.assertTrue(
-            "$directoryPath does not exist or is not readable",
-            directory.exists() && directory.canRead()
+            "$pppdScriptLocation does not exist or is not readable",
+            pppdScriptFile.exists()
         )
-        // List the directory contents
-        val fileList = directory.listFiles()
-        // Print the directory contents
-        fileList?.forEach { file ->
-            println(file.absolutePath)
-        }
     }
 
-     */
+
 
 }
