@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.core.ui.ApiCall
@@ -88,49 +89,27 @@ class PppdTtyAcmTests {
     fun testPpp0InterfaceExists() {
         //Not the best way to handle the situation but good enough for now.  Need to wait for
         // interface availability which takes a couple of seconds.
-        Thread.sleep(3000)
+        Thread.sleep(5000)
         try {
-            val interfaces = NetworkInterface.getNetworkInterfaces()
-            if(interfaces == null) {
-                Log.e(tag, "Unable to retrieve any network interfaces")
-            } else {
-                var count = 0
-                while (interfaces.hasMoreElements()) {
-                    val ne = interfaces.nextElement()
-                    if (ne.displayName.startsWith("ppp")) {
-                        count++
-                        val message = StringBuilder("------------------\n")
-                        message.append("Checking interface: ${ne.displayName}\n")
-                        //Causes SocketException when looking at ppp interface
-                        //message.append("Is up? ${ ne?.isUp }\n")
-                        message.append("IP addresses assigned to this interface are:\n")
-                        val addresses = ne.inetAddresses
-                        while (addresses.hasMoreElements()) {
-                            message.append(addresses.nextElement().toString()+"\n")
-                        }
-
-                        message.append("------------------")
-                        Log.d(tag, message.toString())
-                    }
-                }
-                if(count == 0) {
-                    Log.d(tag, "No PPP interfaces connected")
-                    assert(false)
-                }
-                assert(true)
-            }
+            assertTrue("Interface ppp0 was not found", isPpp0InterfaceUp())
         } catch (e: Exception) {
             Log.e(tag, e.message, e)
-            assert(false)
+            assertTrue(e.message,false)
         }
     }
 
+
     @Test
     fun testStopPppd() = runBlocking<Unit> {
+        Thread.sleep(1000)
         val sm = KnoxModule.provideKnoxSystemManager()
         val useCase = StopPppdUseCase(sm)
         val result = useCase.invoke()
-        assert(result is ApiCall.Success)
+        assertTrue("Knox API stopPPPD() was not successful.  $result", result is ApiCall.Success)
+        assertFalse(
+            "stopPPPD Api did not stop service.  Interface PPP0 is still available!",
+            isPpp0InterfaceUp()
+        )
     }
 
     private fun copyFileFromRawToSDCard(
@@ -150,5 +129,36 @@ class PppdTtyAcmTests {
         outputStream.flush()
         inputStream.close()
         outputStream.close()
+    }
+
+    private fun isPpp0InterfaceUp(): Boolean {
+        val interfaces = NetworkInterface.getNetworkInterfaces()
+        if(interfaces == null) {
+            Log.e(tag, "Unable to retrieve any network interfaces")
+            return false
+        } else {
+            var count = 0
+            while (interfaces.hasMoreElements()) {
+                val ne = interfaces.nextElement()
+                if (ne.displayName.startsWith("ppp", true)) {
+                    count++
+                    val message = StringBuilder("------------------\n")
+                    message.append("Checking interface: ${ne.displayName}\n")
+                    message.append("IP addresses assigned to this interface are:\n")
+                    val addresses = ne.inetAddresses
+                    while (addresses.hasMoreElements()) {
+                        message.append(addresses.nextElement().toString()+"\n")
+                    }
+
+                    message.append("------------------")
+                    Log.d(tag, message.toString())
+                }
+            }
+            if(count == 0) {
+                Log.d(tag, "No PPP interfaces connected")
+                return false
+            }
+            return true
+        }
     }
 }
