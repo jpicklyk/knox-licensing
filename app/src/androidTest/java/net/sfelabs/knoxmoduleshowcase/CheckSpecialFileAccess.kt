@@ -5,7 +5,9 @@ import androidx.test.filters.SmallTest
 import junit.framework.TestCase
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.BufferedReader
 import java.io.File
+import java.io.InputStreamReader
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
@@ -46,6 +48,71 @@ class CheckSpecialFileAccess {
         )
     }
 
+    /*
+    Permissions should be crw rw rw
 
+    @Test
+    fun testPppPermissionsAreCorrect() {
+//        val pppFile = Path("/dev/ppp")
+//        val permissions = pppFile.getPosixFilePermissions()
+//        println(permissions)
+        val command = "ls -l /dev/ppp"
+        val result = executeAdbShellCommand(command)
+        println(result)
+
+    }*/
+
+    private fun executeAdbShellCommand(command: String): String {
+        val adbExecutable = findAdbExecutable()
+        if (adbExecutable != null) {
+            val adbCommand = "$adbExecutable shell $command"
+            return executeShellCommand(adbCommand)
+        }
+        return "ADB executable not found."
+    }
+    private fun executeShellCommand(command: String): String {
+        val output = StringBuilder()
+
+        try {
+            val process = ProcessBuilder()
+                .command("sh", "-c", command)
+                .redirectErrorStream(true)
+                .start()
+
+            val reader = BufferedReader(InputStreamReader(process.inputStream))
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                output.append(line)
+                output.append("\n")
+            }
+
+            process.waitFor()
+            reader.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return output.toString()
+    }
+
+    private fun findAdbExecutable(): String? {
+        val paths = System.getenv("PATH")?.split(":") ?: return null
+        for (path in paths) {
+            val adbExecutable = "$path/adb"
+            if (isExecutable(adbExecutable)) {
+                return adbExecutable
+            }
+        }
+        return null
+    }
+
+    private fun isExecutable(filePath: String): Boolean {
+        val process = ProcessBuilder()
+            .command("sh", "-c", "[ -x \"$filePath\" ]")
+            .redirectErrorStream(true)
+            .start()
+        process.waitFor()
+        return process.exitValue() == 0
+    }
 
 }
