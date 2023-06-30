@@ -61,7 +61,11 @@ class CheckSpecialFileAccess {
         println(result)
 
     }*/
-
+    private fun isPermissiveModeEnabled(): Boolean {
+        val command = "getenforce"
+        val result = executeAdbShellCommand(command)
+        return result.trim().equals("Permissive", ignoreCase = true)
+    }
     private fun executeAdbShellCommand(command: String): String {
         val adbExecutable = findAdbExecutable()
         if (adbExecutable != null) {
