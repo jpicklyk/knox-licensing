@@ -5,6 +5,7 @@ import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import com.samsung.android.knox.custom.SystemManager
+import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +16,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object KnoxModule {
+
+    @Provides
+    @Singleton
+    fun provideKnoxEnterpriseLicenseManager(@ApplicationContext context: Context) =
+        KnoxEnterpriseLicenseManager.getInstance(context)
 
     @Provides
     @Singleton

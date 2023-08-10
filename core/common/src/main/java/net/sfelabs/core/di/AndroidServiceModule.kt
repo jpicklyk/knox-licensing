@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.PowerManager
-import androidx.core.content.getSystemService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,15 +17,15 @@ object AndroidServiceModule {
 
     @Provides
     @Singleton
-    fun provideWifiManager(@ApplicationContext context: Context) = context.getSystemService<WifiManager>()!!
+    fun provideWifiManager(@ApplicationContext context: Context) = context.getSystemService(Context.WIFI_SERVICE)!! as WifiManager
 
     @Provides
     @Singleton
     fun provideConnectivityManager(@ApplicationContext context: Context) =
-        context.getSystemService<ConnectivityManager>()!!
+        context.getSystemService(Context.CONNECTIVITY_SERVICE)!! as ConnectivityManager
 
     @Provides
     @Singleton
     fun providePowerManager(@ApplicationContext context: Context) =
-        context.getSystemService<PowerManager>()!!
+        context.getSystemService(Context.POWER_SERVICE)!! as PowerManager
 }
