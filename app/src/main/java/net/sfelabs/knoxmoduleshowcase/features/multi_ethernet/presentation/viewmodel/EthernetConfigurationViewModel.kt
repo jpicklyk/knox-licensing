@@ -332,7 +332,7 @@ class EthernetConfigurationViewModel @Inject constructor(
         return if(result is ApiCall.Success) {
             result.data
         } else {
-            null
+            "(Api Not Supported)"
         }
     }
 

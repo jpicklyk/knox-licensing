@@ -13,12 +13,17 @@ class GetMacAddressForInterfaceUseCase @Inject constructor(
     operator fun invoke(interfaceName: String): ApiCall<String> {
         return try {
             val result = systemManager.getMacAddressForEthernetInterface(interfaceName)
-            if(result == null) {
+            if (result == null) {
                 ApiCall.Error(UiText.DynamicString("Ethernet interface doesn't exist"))
             } else {
                 ApiCall.Success(result)
             }
 
+        } catch (nsm: NoSuchMethodError) {
+            ApiCall.Error(
+                UiText.DynamicString(
+                    "getMacAddressForEthernetInterface API does not exist on this device"
+                ))
         } catch (e: Exception) {
             ApiCall.Error(
                 UiText.DynamicString(
