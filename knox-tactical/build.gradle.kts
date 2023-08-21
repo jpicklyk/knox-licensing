@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(libs.kotlin.reflect)
+    implementation(libs.jackson.module)
     implementation(project(":android-log-wrapper"))
     //The Tactical Knox SDK shall not be available outside this module (compileOnly)
     compileOnly(fileTree("libs/knoxsdk.jar"))

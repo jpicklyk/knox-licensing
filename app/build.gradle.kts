@@ -67,7 +67,7 @@ dependencies {
     implementation(libs.composeNumberPicker)
 
     implementation(libs.hilt.navigation.compose)
-
+    implementation(libs.jackson.module)
 
     androidTestImplementation(project(":core:testing"))
 

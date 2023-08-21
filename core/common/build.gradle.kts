@@ -12,6 +12,7 @@ android {
 dependencies {
     implementation(libs.androidx.collections)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.jackson.module)
     //implementation(libs.hilt.android)
     //kapt("com.google.dagger:hilt-compiler")
     androidTestImplementation(project(":core:testing"))
