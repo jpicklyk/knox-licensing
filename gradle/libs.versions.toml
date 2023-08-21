@@ -14,6 +14,7 @@ compose-kotlin-compiler = "1.4.7"
 compose-bom = "2023.08.00"
 hilt-core = "2.46.1"
 hilt-navigation = "1.0.0"
+jackson-kotlin = "2.15.2"
 kotlin = "1.8.21"
 kotlinx-collections-immutable = "0.3.5"
 kotlinx-coroutines = "1.7.1"
@@ -83,6 +84,9 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 hilt-gradleplugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt-core" }
 
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation"}
+
+jackson-module = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin"}
+
 kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin"}
