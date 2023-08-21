@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.sfelabs.android_log_wrapper.Log
+import net.sfelabs.core.knox.KnoxFeature
 import net.sfelabs.core.ui.ApiCall
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.TacticalKnoxState
 import javax.inject.Inject
@@ -22,6 +23,9 @@ class TacticalTesterViewModel @Inject constructor(
 ): ViewModel(){
     private val _state = MutableStateFlow(TacticalKnoxState(isLoading = true))
     val state = _state.asStateFlow()
+
+    private val _knoxFeatureList = MutableStateFlow<List<KnoxFeature>>(emptyList())
+    val knoxFeatureList = _knoxFeatureList.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -42,6 +46,15 @@ class TacticalTesterViewModel @Inject constructor(
                     getAutoTouchSensitivityState()
                 is TacticalKnoxEvents.SetAutoTouchSensitivity ->
                     setAutoTouchSensitivityState(event.enable)
+
+                is TacticalKnoxEvents.FeatureChanged -> {
+                    val updatedList = _knoxFeatureList.value.toMutableList()
+                    val feature = updatedList.find { it.name == event.featureName }
+
+                    feature?.enabledState = event.isEnabled
+                    _knoxFeatureList.value = updatedList
+                    TODO("set whatever the feature is in Knox Use Case")
+                }
             }
         }
     }

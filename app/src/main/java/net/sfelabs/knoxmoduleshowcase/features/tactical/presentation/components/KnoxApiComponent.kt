@@ -1,13 +1,30 @@
 package net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,8 +34,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import net.sfelabs.core.knox.KnoxApi
 import net.sfelabs.core.knox.KnoxComponentType
+import net.sfelabs.core.knox.KnoxFeature
+import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel.TacticalKnoxEvents
 import kotlin.math.roundToInt
 
 fun Modifier.maxWidth(
@@ -38,10 +56,11 @@ fun Modifier.maxWidth(
 fun KnoxApiComponent(
     title: String,
     description: String,
-    onChanged: ((Boolean) -> Unit),
+    onEvent: ((TacticalKnoxEvents) -> Unit)?,
     isFeatureSupported: Boolean = true,
     expanded: Boolean = false,
-    componentType: KnoxComponentType
+    componentType: KnoxComponentType,
+    featureEnabledState: Boolean = false
 
     ) {
     var expandedState by remember {
@@ -133,15 +152,24 @@ fun KnoxApiComponent(
             when(componentType) {
                 is KnoxComponentType.BooleanComponent ->
                     KnoxBooleanApiComponent(
-                        checked = componentType.checkedState,
+                        checked = featureEnabledState,
                         enabled = isFeatureSupported,
-                        onSwitchChanged = onChanged
+
+                        onSwitchChanged = {isChecked ->
+                            if(onEvent != null) {
+                                onEvent(TacticalKnoxEvents.FeatureChanged(title, isChecked))
+                            }
+                        }
                     )
                 is KnoxComponentType.SpinnerComponent ->
                     KnoxApiTextFieldComponent(
                         expandedState = expandedState,
-                        checked = componentType.checkedState,
-                        onSwitchChanged = onChanged
+                        checked = featureEnabledState,
+                        onSwitchChanged = { isChecked ->
+                            if (onEvent != null) {
+                                onEvent(TacticalKnoxEvents.FeatureChanged(title, isChecked))
+                            }
+                        }
                     )
 
             }
@@ -221,17 +249,13 @@ fun KnoxApiTextFieldComponent(
 }
 
 
-val knoxApi = KnoxApi(
+val knoxApi = KnoxFeature(
     name = "Tactical Device Mode",
     description = "Tactical Device Mode disables all cellular communication including Emergency " +
             "911 services.  The device user will not be able to turn off Airplane Mode and only" +
             " wired communication will be allowed.",
-    knoxComponentType = KnoxComponentType.BooleanComponent(
-        false
-    ),
-    callingClass = "com.samsung.android.knox.restriction.RestrictionPolicy",
-    functionName = "isTacticalDeviceModeEnabled",
-    onChanged = { }
+    knoxComponentType = KnoxComponentType.BooleanComponent,
+    enabledState = false
 )
 
 @Preview
@@ -241,7 +265,7 @@ fun PreviewSwitchComponent() {
         title = knoxApi.name,
         description = knoxApi.description?:"",
         isFeatureSupported = true,
-        onChanged = knoxApi.onChanged,
+        onEvent = null,
         expanded = false,
         componentType = knoxApi.knoxComponentType
     )
@@ -254,7 +278,8 @@ fun PreviewSwitchComponentExpanded() {
         title = knoxApi.name,
         description = knoxApi.description?:"",
         isFeatureSupported = true,
-        onChanged = knoxApi.onChanged,
+        featureEnabledState = true,
+        onEvent = { },
         expanded = true,
         componentType = knoxApi.knoxComponentType
     )
@@ -268,8 +293,9 @@ fun PreviewSpinnerComponent() {
         description = "Lock the LTE frequency band to that specified osiadgjolkad;g osaifgosdfjo " +
                 "sjdfj jso jdifj jdsj ojs; jfo j",
         isFeatureSupported = true,
+        featureEnabledState = true,
         expanded = false,
-        componentType = KnoxComponentType.SpinnerComponent(checkedState = false),
-        onChanged = {}
+        componentType = KnoxComponentType.SpinnerComponent(),
+        onEvent = {}
     )
 }

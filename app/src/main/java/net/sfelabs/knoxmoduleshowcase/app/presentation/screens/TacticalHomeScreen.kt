@@ -1,23 +1,28 @@
 package net.sfelabs.knoxmoduleshowcase.app.presentation.screens
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import net.sfelabs.core.knox.KnoxComponentType
+import net.sfelabs.knoxmoduleshowcase.app.presentation.KnoxShowcaseAppState
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.TacticalKnoxState
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.components.KnoxApiComponent
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel.TacticalKnoxEvents
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel.TacticalTesterViewModel
-import net.sfelabs.knoxmoduleshowcase.app.presentation.KnoxShowcaseAppState
 
 @Composable
 fun TacticalHomeScreen(appState: KnoxShowcaseAppState) {
     val viewModel: TacticalTesterViewModel = hiltViewModel()
     val state: TacticalKnoxState by viewModel.state.collectAsState()
+    val featureList by viewModel.knoxFeatureList.collectAsState()
     val errorText: String = state.errorText.asString()
 
     LaunchedEffect(state.hasError) {
@@ -31,31 +36,56 @@ fun TacticalHomeScreen(appState: KnoxShowcaseAppState) {
         }
     }
     if(!state.isLoading) {
-        Column {
-            KnoxApiComponent(
-                title = "Tactical Device Mode",
-                description = "Tactical Device Mode disables all cellular communication including " +
-                        "Emergency 911 services.  The device user will not be able to turn off " +
-                        "Airplane Mode and only wired communication will be allowed.",
-                onChanged = { viewModel.onEvent(TacticalKnoxEvents.SetTacticalDeviceMode(it)) },
-                componentType = KnoxComponentType.BooleanComponent(state.isTacticalDeviceModeEnabled)
-            )
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(16.dp)
+        ) {
 
-            KnoxApiComponent(
-                title = "Auto-Adjust Touch Sensitivity",
-                description = "This method switch ON and OFF the touch sensitivity functionality in settings.",
-                onChanged = { viewModel.onEvent(TacticalKnoxEvents.SetAutoTouchSensitivity(it)) },
-                componentType = KnoxComponentType.BooleanComponent(state.isAutoTouchSensitivityEnabled)
-            )
-
-
-            KnoxApiComponent(
-                title = "LTE Band Locking",
-                description = "Lock the LTE to a specific network band",
-                onChanged = {},
-                componentType = KnoxComponentType.SpinnerComponent(false)
-            )
+            items(items = featureList, itemContent = { item ->
+                KnoxApiComponent(
+                    title = item.name,
+                    description = item.description,
+                    onEvent = {
+                        viewModel.onEvent(
+                            TacticalKnoxEvents.FeatureChanged(
+                                item.name,
+                                item.enabledState
+                            )
+                        )
+                    },
+                    componentType = item.knoxComponentType
+                )
+            })
         }
+
     }
 
 }
+
+/**
+ * Column {
+ *             KnoxApiComponent(
+ *                 title = "Tactical Device Mode",
+ *                 description = "Tactical Device Mode disables all cellular communication including " +
+ *                         "Emergency 911 services.  The device user will not be able to turn off " +
+ *                         "Airplane Mode and only wired communication will be allowed.",
+ *                 onEvent = { viewModel.onEvent(TacticalKnoxEvents.FeatureChanged(, it)) },
+ *                 componentType = KnoxComponentType.BooleanComponent(state.isTacticalDeviceModeEnabled)
+ *             )
+ *
+ *             KnoxApiComponent(
+ *                 title = "Auto-Adjust Touch Sensitivity",
+ *                 description = "This method switch ON and OFF the touch sensitivity functionality in settings.",
+ *                 onEvent = { viewModel.onEvent(TacticalKnoxEvents.SetAutoTouchSensitivity(it)) },
+ *                 componentType = KnoxComponentType.BooleanComponent(state.isAutoTouchSensitivityEnabled)
+ *             )
+ *
+ *
+ *             KnoxApiComponent(
+ *                 title = "LTE Band Locking",
+ *                 description = "Lock the LTE to a specific network band",
+ *                 onEvent = {},
+ *                 componentType = KnoxComponentType.SpinnerComponent(false)
+ *             )
+ *         }
+ */

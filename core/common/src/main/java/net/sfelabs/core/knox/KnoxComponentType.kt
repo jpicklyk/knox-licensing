@@ -1,10 +1,11 @@
 package net.sfelabs.core.knox
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 sealed class KnoxComponentType {
-    //<out T: Any, R>
-    data class BooleanComponent(val checkedState: Boolean? = null): KnoxComponentType()
+    object BooleanComponent: KnoxComponentType()
     data class SpinnerComponent(
-        val checkedState: Boolean? = null,
         val lteBandState: Int = 0
     ): KnoxComponentType()
 
