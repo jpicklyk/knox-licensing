@@ -62,7 +62,7 @@ class TacticalTesterViewModel @Inject constructor(
 
         _knoxFeatureList.update {
             featureList.map {knoxFeature ->
-
+                val featureValue = knoxFeature.knoxFeatureValueType
                 val state = KnoxFeatureState(
                     key = knoxFeature.key,
                     title = knoxFeature.title,

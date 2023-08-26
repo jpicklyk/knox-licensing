@@ -160,7 +160,7 @@ fun KnoxApiComponent(
 
                         onSwitchChanged = {isChecked ->
                             if(onEvent != null) {
-                                onEvent(TacticalKnoxEvents.FeatureOnOffChanged(title, isChecked))
+                                onEvent(TacticalKnoxEvents.FeatureOnOffChanged(title, isChecked, null))
                             }
                         }
                     )
@@ -226,7 +226,7 @@ fun KnoxApiTextFieldComponent(
     data: String = "0",
     onValueChanged: (String) -> Unit
 ) {
-    var band: String by remember { mutableStateOf(data)}
+    //var band: String by remember { mutableStateOf(data)}
 
         Column(
             modifier = Modifier
@@ -241,9 +241,9 @@ fun KnoxApiTextFieldComponent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
-                    value = band,
-                    onValueChange = { band = it },
-                    label = { Text(text = "Band")},
+                    value = data,
+                    onValueChange = onValueChanged,
+                    label = { Text(text = "Value")},
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier

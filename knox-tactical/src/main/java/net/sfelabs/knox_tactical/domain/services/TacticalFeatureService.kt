@@ -4,6 +4,7 @@ import net.sfelabs.android_log_wrapper.Log
 import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
 import net.sfelabs.knox_tactical.domain.model.TacticalFeature
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensitivityUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.SetAutoTouchSensitivityUseCase
@@ -48,9 +49,9 @@ class TacticalFeatureService @Inject constructor(
         }
     }
 
-    suspend fun getApiValueState(feature: TacticalFeature): ApiCall<Any> {
+    suspend fun getApiValueState(feature: TacticalFeature): KnoxFeatureValueType<Any> {
         return when(feature) {
-            TacticalFeature.AutoSensitivity -> getAutoTouchSensitivityUseCase()
+            TacticalFeature.AutoSensitivity -> KnoxFeatureValueType.BooleanValue(getAutoTouchSensitivityUseCase())
             TacticalFeature.TacticalDeviceMode -> getTacticalDeviceModeUseCase()
             TacticalFeature.Hotspot20 -> getHotspot20StateUseCase()
             TacticalFeature.RamPlus -> getRamPlusDisabledStateUseCase()
@@ -75,4 +76,5 @@ class TacticalFeatureService @Inject constructor(
             }
         }
     }
+
 }

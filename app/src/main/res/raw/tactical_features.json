@@ -34,7 +34,7 @@
     "title":"LTE Band Locking",
     "description":"Lock the LTE band to the value specified provided the HW supports the band passed",
     "knoxFeatureValueType":{
-      "@type":"KnoxFeatureValueType$IntValue"
+      "@type":"KnoxFeatureValueType$IntegerValue"
     }
   }
 ]

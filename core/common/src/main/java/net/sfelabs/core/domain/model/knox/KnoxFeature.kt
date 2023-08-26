@@ -4,6 +4,6 @@ data class KnoxFeature(
     val key: String,
     val title: String,
     val description: String,
-    val knoxFeatureValueType: KnoxFeatureValueType = KnoxFeatureValueType.BooleanValue,
+    val knoxFeatureValueType: KnoxFeatureValueType<Any> = KnoxFeatureValueType.NoValue,
     val enabled: Boolean = false,
     )

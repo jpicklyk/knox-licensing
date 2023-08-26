@@ -4,8 +4,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 sealed class KnoxFeatureValueType<out T: Any> {
-    object NoValue: KnoxFeatureValueType<Nothing>()
-    data class BooleanValue(val value: Boolean): KnoxFeatureValueType<Boolean>()
-    data class IntegerValue(val value: Int): KnoxFeatureValueType<Int>()
+    abstract val value: T
+    object NoValue: KnoxFeatureValueType<Nothing>() {
+        override val value: Nothing
+            get() = throw IllegalStateException("Cannot call getValue() on NoValue type!")
+    }
+
+    data class BooleanValue(override val value: Boolean): KnoxFeatureValueType<Boolean>()
+    data class IntegerValue(override val value: Int): KnoxFeatureValueType<Int>()
 
 }
