@@ -34,8 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import net.sfelabs.core.knox.KnoxComponentType
-import net.sfelabs.core.knox.KnoxFeature
+import net.sfelabs.core.domain.model.knox.KnoxFeature
+import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel.TacticalKnoxEvents
 import kotlin.math.roundToInt
 
@@ -59,12 +59,15 @@ fun KnoxApiComponent(
     onEvent: ((TacticalKnoxEvents) -> Unit)?,
     isFeatureSupported: Boolean = true,
     expanded: Boolean = false,
-    componentType: KnoxComponentType,
+    componentType: KnoxFeatureValueType<Any>,
     featureEnabledState: Boolean = false
 
     ) {
     var expandedState by remember {
         mutableStateOf(expanded)
+    }
+    var data:Any? by remember {
+        mutableStateOf(null)
     }
     OutlinedCard(
         modifier = Modifier
@@ -150,28 +153,38 @@ fun KnoxApiComponent(
             }
 
             when(componentType) {
-                is KnoxComponentType.BooleanComponent ->
+                is KnoxFeatureValueType.NoValue ->
                     KnoxBooleanApiComponent(
                         checked = featureEnabledState,
                         enabled = isFeatureSupported,
 
                         onSwitchChanged = {isChecked ->
                             if(onEvent != null) {
-                                onEvent(TacticalKnoxEvents.FeatureChanged(title, isChecked))
+                                onEvent(TacticalKnoxEvents.FeatureOnOffChanged(title, isChecked))
                             }
                         }
                     )
-                is KnoxComponentType.SpinnerComponent ->
+                is KnoxFeatureValueType.IntegerValue -> {
+                    data = componentType.value.toString()
                     KnoxApiTextFieldComponent(
-                        expandedState = expandedState,
                         checked = featureEnabledState,
                         onSwitchChanged = { isChecked ->
                             if (onEvent != null) {
-                                onEvent(TacticalKnoxEvents.FeatureChanged(title, isChecked))
+                                onEvent(
+                                    TacticalKnoxEvents.FeatureOnOffChanged(
+                                        title,
+                                        isChecked,
+                                        data
+                                    )
+                                )
                             }
-                        }
+                        },
+                        data = data as String,
+                        onValueChanged = { data = it }
                     )
+                }
 
+                is KnoxFeatureValueType.BooleanValue -> TODO()
             }
         }
     }
@@ -208,11 +221,12 @@ fun KnoxBooleanApiComponent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KnoxApiTextFieldComponent(
-    expandedState: Boolean,
     checked: Boolean?,
-    onSwitchChanged: (Boolean) -> Unit
+    onSwitchChanged: (Boolean) -> Unit,
+    data: String = "0",
+    onValueChanged: (String) -> Unit
 ) {
-    var band: String by remember { mutableStateOf("0")}
+    var band: String by remember { mutableStateOf(data)}
 
         Column(
             modifier = Modifier
@@ -250,24 +264,25 @@ fun KnoxApiTextFieldComponent(
 
 
 val knoxApi = KnoxFeature(
-    name = "Tactical Device Mode",
+    key = "TacticalDeviceMode",
+    title = "Tactical Device Mode",
     description = "Tactical Device Mode disables all cellular communication including Emergency " +
             "911 services.  The device user will not be able to turn off Airplane Mode and only" +
             " wired communication will be allowed.",
-    knoxComponentType = KnoxComponentType.BooleanComponent,
-    enabledState = false
+    knoxFeatureValueType = KnoxFeatureValueType.NoValue,
+    enabled = false
 )
 
 @Preview
 @Composable
 fun PreviewSwitchComponent() {
     KnoxApiComponent(
-        title = knoxApi.name,
+        title = knoxApi.title,
         description = knoxApi.description?:"",
         isFeatureSupported = true,
         onEvent = null,
         expanded = false,
-        componentType = knoxApi.knoxComponentType
+        componentType = knoxApi.knoxFeatureValueType
     )
 }
 
@@ -275,13 +290,13 @@ fun PreviewSwitchComponent() {
 @Composable
 fun PreviewSwitchComponentExpanded() {
     KnoxApiComponent(
-        title = knoxApi.name,
+        title = knoxApi.title,
         description = knoxApi.description?:"",
         isFeatureSupported = true,
         featureEnabledState = true,
         onEvent = { },
         expanded = true,
-        componentType = knoxApi.knoxComponentType
+        componentType = knoxApi.knoxFeatureValueType
     )
 }
 
@@ -295,7 +310,7 @@ fun PreviewSpinnerComponent() {
         isFeatureSupported = true,
         featureEnabledState = true,
         expanded = false,
-        componentType = KnoxComponentType.SpinnerComponent(),
+        componentType = KnoxFeatureValueType.IntegerValue(0),
         onEvent = {}
     )
 }

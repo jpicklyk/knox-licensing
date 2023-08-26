@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.FlakyTest
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.UsbConnectionType
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbConnectionTypeUseCase

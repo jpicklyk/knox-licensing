@@ -1,4 +1,4 @@
-package net.sfelabs.core.ui
+package net.sfelabs.core.domain
 
 import android.content.Context
 import androidx.annotation.StringRes

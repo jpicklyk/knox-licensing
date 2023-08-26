@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.AllowOtaUpgradeUseCase
 import net.sfelabs.knox_common.domain.use_cases.IsOtaUpgradeAllowedUseCase

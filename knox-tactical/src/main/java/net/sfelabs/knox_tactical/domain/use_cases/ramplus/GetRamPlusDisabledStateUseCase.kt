@@ -2,14 +2,15 @@ package net.sfelabs.knox_tactical.domain.use_cases.ramplus
 
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UiText
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.KnoxApiEnabled
+import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
 class GetRamPlusDisabledStateUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
-){
+): KnoxApiEnabled {
 
     suspend operator fun invoke(): ApiCall<Boolean> {
         return coroutineScope {
@@ -26,5 +27,9 @@ class GetRamPlusDisabledStateUseCase @Inject constructor(
                 ApiCall.NotSupported
             }
         }
+    }
+
+    override suspend fun isApiEnabled(): ApiCall<Boolean> {
+        return invoke()
     }
 }

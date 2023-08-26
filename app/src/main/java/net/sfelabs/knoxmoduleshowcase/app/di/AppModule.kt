@@ -1,7 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.app.di
 
 import android.content.Context
-import android.net.ConnectivityManager
+import android.content.res.Resources
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,4 +13,9 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    @Provides
+    @Singleton
+    fun provideResources(@ApplicationContext context: Context): Resources {
+        return context.resources
+    }
 }

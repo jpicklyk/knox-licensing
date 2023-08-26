@@ -2,8 +2,8 @@ package net.sfelabs.knox_ngd2.domain.use_cases
 
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UiText
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_ngd2.di.Ngd2Sdk
 import javax.inject.Inject
 

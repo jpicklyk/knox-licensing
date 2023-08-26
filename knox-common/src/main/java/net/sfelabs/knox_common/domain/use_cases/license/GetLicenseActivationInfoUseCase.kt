@@ -3,8 +3,8 @@ package net.sfelabs.knox_common.domain.use_cases.license
 import com.samsung.android.knox.license.ActivationInfo
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UiText
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.UiText
 import javax.inject.Inject
 
 class GetLicenseActivationInfoUseCase @Inject constructor(

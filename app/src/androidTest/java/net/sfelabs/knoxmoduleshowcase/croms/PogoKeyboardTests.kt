@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.croms
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_ngd2.di.KnoxModule
 import net.sfelabs.knox_ngd2.domain.use_cases.DisablePogoKeyboardUseCase
 import net.sfelabs.knox_ngd2.domain.use_cases.IsPogoKeyboardDisabledUseCase

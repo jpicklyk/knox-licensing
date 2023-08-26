@@ -2,9 +2,9 @@ package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UiText
-import net.sfelabs.core.ui.UnitApiCall
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.domain.UnitApiCall
 import javax.inject.Inject
 
 class AllowUsbHostStorageUseCase @Inject constructor(

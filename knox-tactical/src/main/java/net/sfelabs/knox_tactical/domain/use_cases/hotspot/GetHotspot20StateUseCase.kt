@@ -3,18 +3,23 @@ package net.sfelabs.knox_tactical.domain.use_cases.hotspot
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UiText
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.KnoxApiEnabled
+import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
 class GetHotspot20StateUseCase @Inject constructor(
         @TacticalSdk private val settingsManager: SettingsManager
-    ){
+    ): KnoxApiEnabled {
         suspend operator fun invoke(): ApiCall<Boolean> {
             return android11Implementation(settingsManager)
         }
+
+    override suspend fun isApiEnabled(): ApiCall<Boolean> {
+        return invoke()
     }
+}
 
 private suspend fun android11Implementation(settingsManager: SettingsManager): ApiCall<Boolean> {
     return coroutineScope {

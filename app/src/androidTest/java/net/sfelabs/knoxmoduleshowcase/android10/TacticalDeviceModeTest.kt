@@ -6,7 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeUseCase

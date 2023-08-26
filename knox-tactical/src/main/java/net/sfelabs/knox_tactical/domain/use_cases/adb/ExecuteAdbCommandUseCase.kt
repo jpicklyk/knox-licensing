@@ -4,9 +4,9 @@ import android.util.Log
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UiText
-import net.sfelabs.core.ui.UnitApiCall
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import javax.inject.Inject

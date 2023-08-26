@@ -1,7 +1,7 @@
 package net.sfelabs.android_log_wrapper
 
 import net.sfelabs.android_log_wrapper.domain.LogNode
-import net.sfelabs.core.ui.getCallerClassName
+import net.sfelabs.core.domain.getCallerClassName
 import javax.inject.Inject
 
 /**

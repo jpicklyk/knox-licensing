@@ -1,7 +1,7 @@
 package net.sfelabs.android_log_wrapper.presentation
 
 import net.sfelabs.android_log_wrapper.domain.model.LogLine
-import net.sfelabs.core.ui.UiText
+import net.sfelabs.core.domain.UiText
 
 data class LogViewerState(
     //TODO - Handle loading use case

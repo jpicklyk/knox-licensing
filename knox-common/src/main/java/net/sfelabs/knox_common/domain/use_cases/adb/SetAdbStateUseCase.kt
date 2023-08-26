@@ -3,8 +3,8 @@ package net.sfelabs.knox_common.domain.use_cases.adb
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UiText
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.UiText
 import javax.inject.Inject
 
 /**

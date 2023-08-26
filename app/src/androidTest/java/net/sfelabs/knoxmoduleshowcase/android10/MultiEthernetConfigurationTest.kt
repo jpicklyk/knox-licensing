@@ -9,7 +9,7 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurations
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurationsMultiDns
 import net.sfelabs.knox_tactical.TestingVisibilityOnly

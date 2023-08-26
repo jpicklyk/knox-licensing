@@ -6,7 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.license.ActivationInfo
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.license.GetLicenseActivationInfoUseCase
 import org.junit.Assert.assertTrue

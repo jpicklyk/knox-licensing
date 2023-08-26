@@ -8,7 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import net.sfelabs.core.ui.UnitApiCall
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import javax.inject.Inject
@@ -25,10 +27,10 @@ class SetEthernetAutoConnectionUseCase @Inject constructor(
         if(autoConnectionState == AutoConnectionState.ON) {
             val result = settingsManager.setEthernetAutoConnectionState(autoConnectionState.state)
             if(result == CustomDeviceManager.SUCCESS)
-                emit(net.sfelabs.core.ui.ApiCall.Success(Unit))
+                emit(ApiCall.Success(Unit))
             else emit(
-                net.sfelabs.core.ui.ApiCall.Error(
-                uiText = net.sfelabs.core.ui.UiText.DynamicString("Device does not support this feature"))
+                ApiCall.Error(
+                uiText = UiText.DynamicString("Device does not support this feature"))
             )
 
         } else {
@@ -41,10 +43,10 @@ class SetEthernetAutoConnectionUseCase @Inject constructor(
             }
             val result = settingsManager.setEthernetAutoConnectionState(autoConnectionState.state)
             if(result == CustomDeviceManager.SUCCESS)
-                emit(net.sfelabs.core.ui.ApiCall.Success(Unit))
+                emit(ApiCall.Success(Unit))
             else emit(
-                net.sfelabs.core.ui.ApiCall.Error(
-                uiText = net.sfelabs.core.ui.UiText.DynamicString("Device does not support this feature"))
+                ApiCall.Error(
+                uiText = UiText.DynamicString("Device does not support this feature"))
             )
         }
 

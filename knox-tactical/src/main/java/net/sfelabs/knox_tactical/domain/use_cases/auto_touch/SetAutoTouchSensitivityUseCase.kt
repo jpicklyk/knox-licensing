@@ -3,9 +3,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.auto_touch
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UiText
-import net.sfelabs.core.ui.UnitApiCall
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.toOnOrOff
 

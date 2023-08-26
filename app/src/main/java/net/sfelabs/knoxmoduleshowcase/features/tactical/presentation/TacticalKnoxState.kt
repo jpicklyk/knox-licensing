@@ -1,6 +1,6 @@
 package net.sfelabs.knoxmoduleshowcase.features.tactical.presentation
 
-import net.sfelabs.core.ui.UiText
+import net.sfelabs.core.domain.UiText
 
 data class TacticalKnoxState(
     val isLoading: Boolean = false,

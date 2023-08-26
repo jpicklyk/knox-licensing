@@ -4,10 +4,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 sealed class TacticalKnoxEvents {
-    data class FeatureChanged(val featureName: String, val isEnabled: Boolean): TacticalKnoxEvents()
-    object GetTacticalDeviceMode: TacticalKnoxEvents()
-    data class SetTacticalDeviceMode(val enable: Boolean): TacticalKnoxEvents()
-
-    object GetAutoTouchSensitivity: TacticalKnoxEvents()
-    data class SetAutoTouchSensitivity(val enable: Boolean): TacticalKnoxEvents()
+    data class FeatureOnOffChanged(val featureKey: String, val isEnabled: Boolean, val data: Any? = null): TacticalKnoxEvents()
 }

@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.android11
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.runBlocking
-import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
 import org.junit.Test

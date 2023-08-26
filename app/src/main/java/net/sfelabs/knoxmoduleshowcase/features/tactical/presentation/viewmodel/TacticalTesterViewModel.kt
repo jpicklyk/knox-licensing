@@ -1,5 +1,6 @@
 package net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel
 
+import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,29 +9,30 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.sfelabs.android_log_wrapper.Log
-import net.sfelabs.core.knox.KnoxFeature
-import net.sfelabs.core.ui.ApiCall
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.processFeatureList
+import net.sfelabs.core.presentation.KnoxFeatureState
+import net.sfelabs.knox_tactical.domain.model.TacticalFeature
+import net.sfelabs.knox_tactical.domain.services.TacticalFeatureService
+import net.sfelabs.knoxmoduleshowcase.R
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.TacticalKnoxState
 import javax.inject.Inject
 
 @HiltViewModel
 class TacticalTesterViewModel @Inject constructor(
-    private val setTacticalDeviceModeUseCase: net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeUseCase,
-    private val getTacticalDeviceModeUseCase: net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeUseCase,
-    private val setAutoTouchSensitivityUseCase: net.sfelabs.knox_tactical.domain.use_cases.auto_touch.SetAutoTouchSensitivityUseCase,
-    private val getAutoTouchSensitivityUseCase: net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensitivityUseCase,
-    private val log: Log
+    private val resources: Resources,
+    private val log: Log,
+    private val featureService: TacticalFeatureService
 ): ViewModel(){
     private val _state = MutableStateFlow(TacticalKnoxState(isLoading = true))
     val state = _state.asStateFlow()
 
-    private val _knoxFeatureList = MutableStateFlow<List<KnoxFeature>>(emptyList())
+    private val _knoxFeatureList = MutableStateFlow<List<KnoxFeatureState>>(emptyList())
     val knoxFeatureList = _knoxFeatureList.asStateFlow()
 
     init {
         viewModelScope.launch {
-            getTacticalModeState()
-            getAutoTouchSensitivityState()
+            loadFeaturesFromJson()
             _state.update {it.copy(isLoading = false)}
         }
     }
@@ -38,85 +40,76 @@ class TacticalTesterViewModel @Inject constructor(
     fun onEvent(event: TacticalKnoxEvents) {
         viewModelScope.launch {
             when(event) {
-                TacticalKnoxEvents.GetTacticalDeviceMode ->
-                    getTacticalModeState()
-                is TacticalKnoxEvents.SetTacticalDeviceMode ->
-                    setTacticalModeState(event.enable)
-                TacticalKnoxEvents.GetAutoTouchSensitivity ->
-                    getAutoTouchSensitivityState()
-                is TacticalKnoxEvents.SetAutoTouchSensitivity ->
-                    setAutoTouchSensitivityState(event.enable)
-
-                is TacticalKnoxEvents.FeatureChanged -> {
+                is TacticalKnoxEvents.FeatureOnOffChanged -> {
                     val updatedList = _knoxFeatureList.value.toMutableList()
-                    val feature = updatedList.find { it.name == event.featureName }
-
-                    feature?.enabledState = event.isEnabled
-                    _knoxFeatureList.value = updatedList
-                    TODO("set whatever the feature is in Knox Use Case")
+                    val feature = updatedList.find { it.key == event.featureKey }
+                    val index = updatedList.indexOf(feature)
+                    updatedList[index] = updateFeature(feature!!, event.isEnabled, event.data)
+                    _knoxFeatureList.update {
+                        updatedList
+                    }
                 }
             }
         }
     }
 
-    private suspend fun getTacticalModeState() {
-        when (val apiCall = getTacticalDeviceModeUseCase()) {
-            is ApiCall.Success -> {
-                _state.update {it.copy(
-                    isTacticalDeviceModeEnabled = apiCall.data
-                )}
+    /**
+     * Read the knox features from the json file and for each feature check for current state
+     * and convert KnoxFeature to KnoxFeatureState object.
+     */
+    private suspend fun loadFeaturesFromJson() {
+        val featureList = processFeatureList(resources.openRawResource(R.raw.tactical_features))
+
+        _knoxFeatureList.update {
+            featureList.map {knoxFeature ->
+
+                val state = KnoxFeatureState(
+                    key = knoxFeature.key,
+                    title = knoxFeature.title,
+                    description = knoxFeature.description,
+                    knoxFeatureValueType = knoxFeature.knoxFeatureValueType
+                )
+                when(val apiCall = featureService.getApiEnabledState(TacticalFeature(knoxFeature.key)!!)) {
+                    ApiCall.NotSupported -> {
+                        state.copy(isSupported = false)
+                    }
+
+                    is ApiCall.Error -> {
+                        log.e(apiCall.uiText.toString())
+                        state.copy(hasError = true, error = apiCall.uiText.toString())
+                    }
+
+                    is ApiCall.Success -> {
+                        state.copy(enabled = apiCall.data)
+                    }
+                }
+
             }
+
+
+        }
+
+    }
+
+    private suspend fun updateFeature(state: KnoxFeatureState, enabled: Boolean, data: Any?): KnoxFeatureState {
+
+        return when (
+            val apiCall = featureService.setCurrentState(TacticalFeature(state.key), enabled, data)
+        ) {
+            ApiCall.NotSupported -> {
+                state.copy(isSupported = false)
+            }
+
             is ApiCall.Error -> {
-                log.d("An error occurred")
+                log.e(apiCall.uiText.toString())
+                state.copy(hasError = true, error = apiCall.uiText.toString())
             }
-            is ApiCall.NotSupported -> {
-                log.e("getTacticalModeState method is not supported")
+
+            is ApiCall.Success -> {
+                state.copy(enabled = enabled)
             }
         }
     }
 
-    private suspend fun setTacticalModeState(enable: Boolean) {
-        when (setTacticalDeviceModeUseCase(enable)) {
-            is ApiCall.Success -> {
-                _state.update {it.copy(isTacticalDeviceModeEnabled = enable)}
-            }
-            is ApiCall.Error -> {
-                log.d("An error occurred")
-            }
-            is ApiCall.NotSupported -> {
-                log.e("setTacticalModeState method is not supported")
-            }
-        }
-    }
-
-    private suspend fun getAutoTouchSensitivityState() {
-        when (val apiCall = getAutoTouchSensitivityUseCase()) {
-            is ApiCall.Success -> {
-                _state.update {it.copy(
-                    isAutoTouchSensitivityEnabled = apiCall.data
-                )}
-            }
-            is ApiCall.Error -> {
-                log.d("An error occurred")
-            }
-            is ApiCall.NotSupported -> {
-                log.e("getAutoTouchSensitivityState method is not supported")
-            }
-        }
-    }
-
-    private suspend fun setAutoTouchSensitivityState(enable: Boolean) {
-        when (setAutoTouchSensitivityUseCase(enable)) {
-            is ApiCall.Success -> {
-                _state.update {it.copy(isAutoTouchSensitivityEnabled = enable)}
-            }
-            is ApiCall.Error -> {
-                log.d("An error occurred")
-            }
-            is ApiCall.NotSupported -> {
-                log.e("setAutoTouchSensitivityState method is not supported")
-            }
-        }
-    }
 
 }

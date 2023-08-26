@@ -1,14 +1,20 @@
 package net.sfelabs.knoxmoduleshowcase.app.presentation.screens
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,21 +49,36 @@ fun TacticalHomeScreen(appState: KnoxShowcaseAppState) {
 
             items(items = featureList, itemContent = { item ->
                 KnoxApiComponent(
-                    title = item.name,
+                    title = item.title,
                     description = item.description,
+                    isFeatureSupported = item.isSupported,
+                    featureEnabledState = item.enabled,
                     onEvent = {
                         viewModel.onEvent(
-                            TacticalKnoxEvents.FeatureChanged(
-                                item.name,
-                                item.enabledState
+                            TacticalKnoxEvents.FeatureOnOffChanged(
+                                item.key,
+                                !item.enabled,
+
                             )
                         )
                     },
-                    componentType = item.knoxComponentType
+                    componentType = item.knoxFeatureValueType
                 )
             })
         }
 
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(80.dp)
+            )
+        }
     }
 
 }

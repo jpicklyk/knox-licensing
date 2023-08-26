@@ -1,9 +1,9 @@
 package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
-import net.sfelabs.core.ui.ApiCall
-import net.sfelabs.core.ui.UiText
-import net.sfelabs.core.ui.UnitApiCall
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_common.domain.model.CertificateType
 import net.sfelabs.knox_common.domain.model.TargetKeystore
 import javax.inject.Inject

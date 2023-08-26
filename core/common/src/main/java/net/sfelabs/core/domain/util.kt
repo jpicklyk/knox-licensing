@@ -1,4 +1,4 @@
-package net.sfelabs.core.ui
+package net.sfelabs.core.domain
 
 import android.os.Build
 import java.lang.reflect.Method
@@ -9,16 +9,11 @@ typealias UnitApiCall = ApiCall<Unit>
 /**
  * Utility package for various Android helper functions.
  */
-sealed class ApiCall<out T : Any> {
-    data class Success<out T : Any>(val data: T, val uiText: net.sfelabs.core.ui.UiText? = null): ApiCall<T>()
-    data class Error(val uiText: net.sfelabs.core.ui.UiText): ApiCall<Nothing>()
-    object NotSupported: ApiCall<Nothing>()
-}
 
-sealed class Resource<T>(val data: T? = null, val uiText: net.sfelabs.core.ui.UiText? = null) {
+sealed class Resource<T>(val data: T? = null, val uiText: UiText? = null) {
     class Loading<T>(data: T? = null): Resource<T>(data)
     class Success<T>(data: T? = null): Resource<T>(data)
-    class Error<T>(data: T? = null, uiText: net.sfelabs.core.ui.UiText): Resource<T>(data, uiText)
+    class Error<T>(data: T? = null, uiText: UiText): Resource<T>(data, uiText)
 }
 
 fun getCallerClassName(clazz: Class<*>): String? {
