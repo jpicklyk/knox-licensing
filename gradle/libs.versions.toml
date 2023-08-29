@@ -1,13 +1,13 @@
 [versions]
 accompanist = "0.30.1"
-androidGradlePlugin = "8.2.0-alpha16"
+androidGradlePlugin = "8.2.0-beta01"
 
 androidx-activity = "1.7.2"
 androidx-appcompat = "1.6.1"
 androidx-core = "1.10.1"
 androidx-datastore = "1.0.0"
 androidx-lifecycle = "2.6.1"
-androidx-navigation = "2.7.0"
+androidx-navigation = "2.7.1"
 chargemap-numberpicker = "1.0.3"
 collections-kotlin = "1.2.0"
 compose-kotlin-compiler = "1.4.7"
