@@ -3,8 +3,8 @@ package net.sfelabs.knox_tactical.domain.use_cases.wifi
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.ApiCall
-import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ class EnableRandomizedMacAddressUseCase @Inject constructor(
                             "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" " +
                             "permission."
                 ))
-            }catch (ex: NoSuchMethodException) {
+            }catch (ex: NoSuchMethodError) {
                 ApiCall.NotSupported
             }
         }

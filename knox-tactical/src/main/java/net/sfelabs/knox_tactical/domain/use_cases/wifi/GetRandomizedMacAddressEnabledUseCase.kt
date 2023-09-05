@@ -15,7 +15,7 @@ class GetRandomizedMacAddressEnabledUseCase @Inject constructor(
             try {
                 val result = restrictionPolicy.isRandomisedMacAddressEnabled
                 ApiCall.Success(ApiResult(result, result))
-            } catch (ex: NoSuchMethodException) {
+            } catch (ex: NoSuchMethodError) {
                 ApiCall.NotSupported
             }
         }

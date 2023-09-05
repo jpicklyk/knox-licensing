@@ -26,7 +26,7 @@ class GetBandLockingStateUseCase @Inject constructor(
                     "The use of this API requires the caller to have the " +
                             "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                 ))
-            } catch (ex: NoSuchMethodException) {
+            } catch (ex: NoSuchMethodError) {
                 ApiCall.NotSupported
             }
         }
