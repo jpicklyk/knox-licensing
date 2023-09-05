@@ -8,8 +8,8 @@ import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.LteNrModeState
 import net.sfelabs.knox_tactical.domain.use_cases.lte.DisableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.lte.EnableBandLockingUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.lte.GetBandLockingStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.lte.Get5gNrModeUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.lte.GetBandLockingStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.lte.Set5gNrModeUseCase
 import org.junit.After
 import org.junit.Test
@@ -57,7 +57,7 @@ class KnoxLteTests {
         assert(result2 is ApiCall.Success)
         when(result2) {
             is ApiCall.Success -> {
-                assert(result2.data == 50000)
+                assert(result2.data.apiValue == 50000)
             }
             else -> assert(false)
         }

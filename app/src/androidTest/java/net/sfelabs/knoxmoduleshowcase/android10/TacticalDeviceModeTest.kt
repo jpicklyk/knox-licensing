@@ -32,7 +32,7 @@ class TacticalDeviceModeTest {
         val res1 = SetTacticalDeviceModeUseCase(restrictionPolicy).invoke(true)
         assert(res1 is ApiCall.Success)
         val res2 = GetTacticalDeviceModeUseCase(restrictionPolicy).invoke()
-        assert(res2 is ApiCall.Success && res2.data)
+        assert(res2 is ApiCall.Success && res2.data.enabled)
     }
 
     @Test
@@ -40,7 +40,7 @@ class TacticalDeviceModeTest {
         val res1 = SetTacticalDeviceModeUseCase(restrictionPolicy).invoke(false)
         assert(res1 is ApiCall.Success)
         val res2 = GetTacticalDeviceModeUseCase(restrictionPolicy).invoke()
-        assert(res2 is ApiCall.Success && !res2.data)
+        assert(res2 is ApiCall.Success && !res2.data.enabled)
     }
 
     //@After

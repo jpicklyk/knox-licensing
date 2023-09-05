@@ -45,7 +45,7 @@ class HotspotTest {
         val result = setUseCase.invoke(true)
         assert(result is ApiCall.Success)
         val result2 = getUseCase.invoke()
-        assert(result2 is ApiCall.Success && result2.data)
+        assert(result2 is ApiCall.Success && result2.data.enabled)
     }
 
     @Test
@@ -57,7 +57,7 @@ class HotspotTest {
         assert(result is ApiCall.Success)
 
         val result2 = getUseCase.invoke()
-        assert(result2 is ApiCall.Success && !result2.data)
+        assert(result2 is ApiCall.Success && !result2.data.enabled)
     }
 
     @After

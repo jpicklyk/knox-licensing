@@ -24,7 +24,7 @@ class AutoTouchSensitivityTest {
         assert(result is ApiCall.Success)
         when(result) {
             is ApiCall.Success -> {
-                assert(result.data)
+                assert(result.data.enabled)
             }
             else -> assert(false)
         }
@@ -39,7 +39,7 @@ class AutoTouchSensitivityTest {
         assert(result is ApiCall.Success)
         when(result) {
             is ApiCall.Success -> {
-                assert(!result.data)
+                assert(!result.data.enabled)
             }
             else -> assert(false)
         }

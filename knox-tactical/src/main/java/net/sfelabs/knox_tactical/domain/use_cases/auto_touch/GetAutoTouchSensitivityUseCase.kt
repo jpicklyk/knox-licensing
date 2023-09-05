@@ -4,21 +4,21 @@ import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.ApiCall
-import net.sfelabs.core.domain.KnoxApiEnabled
+import net.sfelabs.core.domain.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
 class GetAutoTouchSensitivityUseCase @Inject constructor(
     @TacticalSdk private val settingsManager: SettingsManager
-): KnoxApiEnabled {
+) {
 
-    suspend operator fun invoke(): ApiCall<Boolean> {
+    suspend operator fun invoke(): ApiCall<ApiResult<Int>> {
         return coroutineScope {
             try {
                 when(val result = settingsManager.autoAdjustTouchSensitivity) {
-                    CustomDeviceManager.ON -> ApiCall.Success(true)
-                    CustomDeviceManager.OFF -> ApiCall.Success(false)
+                    CustomDeviceManager.ON -> ApiCall.Success(ApiResult(true, result))
+                    CustomDeviceManager.OFF -> ApiCall.Success(ApiResult(false, result))
                     else -> ApiCall.Error(UiText.DynamicString("Unexpected value returned: $result"))
                 }
             } catch (e: SecurityException) {
@@ -31,9 +31,5 @@ class GetAutoTouchSensitivityUseCase @Inject constructor(
                 ApiCall.NotSupported
             }
         }
-    }
-
-    override suspend fun isApiEnabled(): ApiCall<Boolean> {
-        return invoke()
     }
 }

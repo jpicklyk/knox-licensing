@@ -19,7 +19,7 @@ class RamPlusTest {
     fun testDefaultDisabled() = runTest {
         val getUseCase = GetRamPlusDisabledStateUseCase(sm)
         val result2 = getUseCase.invoke()
-        assert(result2 is ApiCall.Success && result2.data)
+        assert(result2 is ApiCall.Success && result2.data.enabled)
     }
     // Setting the state force restarts the device so we can't set and immediately read the state
         @Test
@@ -31,7 +31,7 @@ class RamPlusTest {
             assert(result is ApiCall.Success)
 
             val result2 = getUseCase.invoke()
-            assert(result2 is ApiCall.Success && !result2.data)
+            assert(result2 is ApiCall.Success && !result2.data.enabled)
         }
 
         @Test
@@ -43,7 +43,7 @@ class RamPlusTest {
             assert(result is ApiCall.Success)
 
             val result2 = getUseCase.invoke()
-            assert(result2 is ApiCall.Success && result2.data)
+            assert(result2 is ApiCall.Success && result2.data.enabled)
         }
 
 }

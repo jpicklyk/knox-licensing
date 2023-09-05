@@ -2,6 +2,7 @@ package net.sfelabs.knox_tactical.domain.services
 
 import net.sfelabs.android_log_wrapper.Log
 import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
@@ -38,20 +39,9 @@ class TacticalFeatureService @Inject constructor(
     private val log: Log
 ) {
 
-    suspend fun getApiEnabledState(feature: TacticalFeature): ApiCall<Boolean> {
+    suspend fun getApiEnabledState(feature: TacticalFeature): ApiCall<ApiResult<*>> {
         return when(feature) {
-            TacticalFeature.AutoSensitivity -> getAutoTouchSensitivityUseCase.isApiEnabled()
-            TacticalFeature.TacticalDeviceMode -> getTacticalDeviceModeUseCase.isApiEnabled()
-            TacticalFeature.Hotspot20 -> getHotspot20StateUseCase.isApiEnabled()
-            TacticalFeature.RamPlus -> getRamPlusDisabledStateUseCase.isApiEnabled()
-            TacticalFeature.RandomMac -> getRandomizedMacAddressEnabledUseCase.isApiEnabled()
-            TacticalFeature.LteBandLock -> getBandLockingStateUseCase.isApiEnabled()
-        }
-    }
-
-    suspend fun getApiValueState(feature: TacticalFeature): KnoxFeatureValueType<Any> {
-        return when(feature) {
-            TacticalFeature.AutoSensitivity -> KnoxFeatureValueType.BooleanValue(getAutoTouchSensitivityUseCase())
+            TacticalFeature.AutoSensitivity -> getAutoTouchSensitivityUseCase()
             TacticalFeature.TacticalDeviceMode -> getTacticalDeviceModeUseCase()
             TacticalFeature.Hotspot20 -> getHotspot20StateUseCase()
             TacticalFeature.RamPlus -> getRamPlusDisabledStateUseCase()
@@ -71,10 +61,21 @@ class TacticalFeatureService @Inject constructor(
             TacticalFeature.RamPlus -> setRamPlusStateUseCase(enable)
             TacticalFeature.RandomMac ->enableRandomizedMacAddressUseCase(enable)
             TacticalFeature.LteBandLock -> {
-                if(enable && data != null) enableBandLockingUseCase(data as Int)
+                if(enable && data != null) enableBandLockingUseCase( (data as String).toInt())
                 else disableBandLockingUseCase()
             }
         }
     }
 
+
+    fun getFeatureValueType(feature: TacticalFeature, value: Any?): KnoxFeatureValueType<Any> {
+        return when(feature) {
+            TacticalFeature.AutoSensitivity -> KnoxFeatureValueType.NoValue
+            TacticalFeature.TacticalDeviceMode -> KnoxFeatureValueType.BooleanValue(value as Boolean)
+            TacticalFeature.Hotspot20 -> KnoxFeatureValueType.NoValue
+            TacticalFeature.RamPlus -> KnoxFeatureValueType.NoValue
+            TacticalFeature.RandomMac -> KnoxFeatureValueType.NoValue
+            TacticalFeature.LteBandLock -> KnoxFeatureValueType.StringValue(value.toString())
+        }
+    }
 }

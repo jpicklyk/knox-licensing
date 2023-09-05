@@ -41,7 +41,7 @@ class RandomizedMacAddressTest {
         assert(result is ApiCall.Success)
         val useCase2 = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
         val result2 = useCase2.invoke()
-        assert(result2 is ApiCall.Success && !result2.data )
+        assert(result2 is ApiCall.Success && !result2.data.enabled )
     }
 
     @Test
@@ -51,7 +51,7 @@ class RandomizedMacAddressTest {
         assert(result is ApiCall.Success)
         val useCase2 = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
         val result2 = useCase2.invoke()
-        assert(result2 is ApiCall.Success && result2.data )
+        assert(result2 is ApiCall.Success && result2.data.enabled )
     }
 
     @After

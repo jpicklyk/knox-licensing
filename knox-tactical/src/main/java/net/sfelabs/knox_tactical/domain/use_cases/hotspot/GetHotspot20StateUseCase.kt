@@ -4,43 +4,34 @@ import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.ApiCall
-import net.sfelabs.core.domain.KnoxApiEnabled
+import net.sfelabs.core.domain.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
 class GetHotspot20StateUseCase @Inject constructor(
         @TacticalSdk private val settingsManager: SettingsManager
-    ): KnoxApiEnabled {
-        suspend operator fun invoke(): ApiCall<Boolean> {
-            return android11Implementation(settingsManager)
-        }
-
-    override suspend fun isApiEnabled(): ApiCall<Boolean> {
-        return invoke()
-    }
-}
-
-private suspend fun android11Implementation(settingsManager: SettingsManager): ApiCall<Boolean> {
-    return coroutineScope {
-        try {
-            when(val result = settingsManager.hotspot20State) {
-                CustomDeviceManager.ON -> ApiCall.Success(true)
-                CustomDeviceManager.OFF -> ApiCall.Success(false)
-                else -> ApiCall.Error(UiText.DynamicString("Unexpected value returned: $result"))
+    ) {
+        suspend operator fun invoke(): ApiCall<ApiResult<Int>> {
+            return coroutineScope {
+                try {
+                    when(val result = settingsManager.hotspot20State) {
+                        CustomDeviceManager.ON -> ApiCall.Success(ApiResult(true, result))
+                        CustomDeviceManager.OFF -> ApiCall.Success(ApiResult(false, result))
+                        else -> ApiCall.Error(UiText.DynamicString("Unexpected value returned: $result"))
+                    }
+                } catch (e: SecurityException) {
+                    ApiCall.Error(
+                        UiText.DynamicString(
+                            "The use of this API requires the caller to have the " +
+                                    "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
+                        ))
+                } catch (nsm: NoSuchMethodError) {
+                    ApiCall.NotSupported
+                }
             }
-        } catch (e: SecurityException) {
-            ApiCall.Error(
-                UiText.DynamicString(
-                    "The use of this API requires the caller to have the " +
-                            "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
-                ))
-        } catch (nsm: NoSuchMethodError) {
-            ApiCall.NotSupported
         }
-    }
 }
-
 
 /*
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)

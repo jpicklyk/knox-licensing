@@ -18,9 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
 import net.sfelabs.knoxmoduleshowcase.app.presentation.KnoxShowcaseAppState
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.TacticalKnoxState
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.components.KnoxApiComponent
+import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.components.KnoxApiTextComponent
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel.TacticalKnoxEvents
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.viewmodel.TacticalTesterViewModel
 
@@ -44,26 +46,59 @@ fun TacticalHomeScreen(appState: KnoxShowcaseAppState) {
     if(!state.isLoading) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(16.dp)
+            contentPadding = PaddingValues(4.dp)
         ) {
 
             items(items = featureList, itemContent = { item ->
-                KnoxApiComponent(
-                    title = item.title,
-                    description = item.description,
-                    isFeatureSupported = item.isSupported,
-                    featureEnabledState = item.enabled,
-                    onEvent = {
-                        viewModel.onEvent(
-                            TacticalKnoxEvents.FeatureOnOffChanged(
-                                item.key,
-                                !item.enabled,
-
-                            )
+                when(val type = item.knoxFeatureValueType) {
+                    is KnoxFeatureValueType.NoValue -> {
+                        KnoxApiComponent(
+                            title = item.title,
+                            description = item.description,
+                            isFeatureSupported = item.isSupported,
+                            isFeatureEnabled = item.enabled,
+                            onEvent = {
+                                viewModel.onEvent(
+                                    TacticalKnoxEvents.FeatureOnOffChanged(
+                                        item.key,
+                                        !item.enabled,
+                                        null
+                                        )
+                                )
+                            },
+                            componentType = item.knoxFeatureValueType
                         )
-                    },
-                    componentType = item.knoxFeatureValueType
-                )
+                    }
+                    is KnoxFeatureValueType.BooleanValue -> {}
+                    is KnoxFeatureValueType.IntegerValue -> {}
+                    is KnoxFeatureValueType.StringValue -> {
+                        KnoxApiTextComponent(
+                            title = item.title,
+                            description = item.description,
+                            isFeatureSupported = item.isSupported,
+                            isFeatureEnabled = item.enabled,
+                            onSwitchEvent = {
+                                viewModel.onEvent(
+                                    TacticalKnoxEvents.FeatureOnOffChanged(
+                                        item.key,
+                                        it,
+                                        type.value
+                                    )
+                                )
+                            },
+                            data = type.value.toString(),
+                            onDataChangeEvent = {
+                                viewModel.onEvent(
+                                    TacticalKnoxEvents.FeatureIntegerValueChanged(
+                                        item.key,
+                                        it
+                                    )
+                                )
+                            }
+                        )
+                    }
+                }
+
             })
         }
 
