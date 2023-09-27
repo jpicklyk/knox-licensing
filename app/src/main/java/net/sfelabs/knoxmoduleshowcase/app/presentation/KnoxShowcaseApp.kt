@@ -1,78 +1,84 @@
 package net.sfelabs.knoxmoduleshowcase.app.presentation
 
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.NavBarItems
+import net.sfelabs.core.component.AppNavigationBar
+import net.sfelabs.core.component.AppNavigationBarItem
+import net.sfelabs.core.component.TacticalTopAppBar
 import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.SetupNavGraph
+import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.TopLevelDestination
 import net.sfelabs.knoxmoduleshowcase.features.permissions.isDeviceAdminGranted
 import net.sfelabs.knoxmoduleshowcase.features.permissions.requestDeviceAdmin
-import net.sfelabs.knoxmoduleshowcase.ui.theme.KnoxModuleShowcaseTheme
+import net.sfelabs.core.ui.theme.AppTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KnoxShowcaseApp() {
-    KnoxModuleShowcaseTheme {
+    AppTheme {
         val context = LocalContext.current
         LaunchedEffect(true) {
             if(!isDeviceAdminGranted(context))
                 requestDeviceAdmin(context)
         }
 
-        val appState: KnoxShowcaseAppState = rememberKnoxShowcaseAppState()
-        var selectedItem by remember { mutableStateOf(0) }
+        val appState: TacticalAppState = rememberKnoxShowcaseAppState()
 
         Scaffold(
             snackbarHost = {SnackbarHost(appState.snackbarHostState)},
             topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text("Knox Playground ") },
-                    /*
-                    navigationIcon = {
-                        IconButton(onClick = { /* doSomething() */ }) {
-                            Icon(
-                                imageVector = Icons.Filled.Menu,
-                                contentDescription = "Localized description"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { /* doSomething() */ }) {
-                            Icon(
-                                imageVector = Icons.Filled.Favorite,
-                                contentDescription = "Localized description"
-                            )
-                        }
-                    }
-                     */
-                )
+                appState.currentTopLevelDestination?.let { TacticalTopAppBar(titleResource = it.titleTextId) }
             },
             bottomBar = {
-                NavigationBar {
-                    NavBarItems.BarItems.forEachIndexed { index, item ->
-                        NavigationBarItem(
-                            selected = selectedItem == index, 
-                            onClick = {
-                                selectedItem = index
-                                val nav = appState.navHostController
-                                nav.navigate(item.navRoute.route) {
-                                    popUpTo(nav.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                                      },
-                            icon = { Icon(item.image, contentDescription = item.title) },
-                            label = { Text(text = item.title)}
-                        )
-                    }
-                }
+                AppBottomBar(
+                    destinations = appState.topLevelDestinations,
+                    onNavigateToDestination = appState::navigateToTopLevelDestination,
+                    currentDestination = appState.currentTopLevelDestination
+                )
             }
         ) { innerPadding ->
             SetupNavGraph(state = appState, padding = innerPadding)
+        }
+    }
+}
+
+@Composable
+private fun AppBottomBar(
+    destinations: List<TopLevelDestination>,
+    onNavigateToDestination: (TopLevelDestination) -> Unit,
+    currentDestination: TopLevelDestination?,
+    modifier: Modifier = Modifier,
+) {
+    AppNavigationBar(
+        modifier = modifier,
+    ) {
+        destinations.forEach { destination ->
+            val selected = currentDestination == destination
+            AppNavigationBarItem(
+                selected = selected,
+                onClick = { onNavigateToDestination(destination) },
+                icon = {
+                    Icon(
+                        imageVector = destination.image,
+                        contentDescription = null,
+                    )
+                },
+                selectedIcon = {
+                    Icon(
+                        imageVector = destination.image,
+                        contentDescription = null,
+                    )
+                },
+                label = { Text(destination.label) },
+                //modifier = if (hasUnread) Modifier.notificationDot() else Modifier,
+            )
         }
     }
 }

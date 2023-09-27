@@ -5,38 +5,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import net.sfelabs.knoxmoduleshowcase.app.presentation.KnoxShowcaseAppState
-import net.sfelabs.knoxmoduleshowcase.presentation.SampleLogViewerScreen
-import net.sfelabs.knoxmoduleshowcase.app.presentation.screens.AboutScreen
-import net.sfelabs.knoxmoduleshowcase.app.presentation.screens.EthernetConfigurationScreen
-import net.sfelabs.knoxmoduleshowcase.app.presentation.screens.TacticalHomeScreen
+import net.sfelabs.knoxmoduleshowcase.app.presentation.TacticalAppState
+import net.sfelabs.knoxmoduleshowcase.features.about.navigation.aboutScreen
+import net.sfelabs.knoxmoduleshowcase.features.controls.navigation.controlsScreen
+import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeNavigationRoute
+import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeScreen
+import net.sfelabs.knoxmoduleshowcase.features.logviewer.navigation.loggerScreen
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.navigation.ethernetScreen
 
 @Composable
 fun SetupNavGraph(
-    state: KnoxShowcaseAppState,
+    state: TacticalAppState,
     padding: PaddingValues
     ) {
     NavHost(
         navController = state.navHostController,
-        startDestination = NavRoute.Home.route,
+        startDestination = homeNavigationRoute,
         modifier = Modifier.padding(padding)
     ) {
-        composable(route = NavRoute.Home.route) {
-            //Box(modifier = Modifier.fillMaxSize())
-            //val viewModel: LogTextViewModel = hiltViewModel()
-            //SampleLogViewerScreen()
-            //EthernetConfigurationScreen()
-            TacticalHomeScreen(state)
-        }
-        composable(route = NavRoute.Ethernet.route) {
-            EthernetConfigurationScreen()
-        }
-        composable(route = NavRoute.Logging.route) {
-            SampleLogViewerScreen()
-        }
-        composable(route = NavRoute.About.route) {
-            AboutScreen()
-        }
+        homeScreen()
+        controlsScreen()
+        ethernetScreen()
+        loggerScreen()
+        aboutScreen()
     }
 }
