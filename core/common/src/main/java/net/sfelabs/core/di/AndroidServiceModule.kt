@@ -1,5 +1,6 @@
 package net.sfelabs.core.di
 
+import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
@@ -17,7 +18,12 @@ object AndroidServiceModule {
 
     @Provides
     @Singleton
-    fun provideWifiManager(@ApplicationContext context: Context) = context.getSystemService(Context.WIFI_SERVICE)!! as WifiManager
+    fun provideDevicePolicyManager(@ApplicationContext context: Context) =
+        context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+    @Provides
+    @Singleton
+    fun provideWifiManager(@ApplicationContext context: Context) =
+        context.getSystemService(Context.WIFI_SERVICE)!! as WifiManager
 
     @Provides
     @Singleton
