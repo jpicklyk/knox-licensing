@@ -51,4 +51,10 @@ object KnoxModule {
     @Singleton
     fun provideKnoxApplicationPolicy(enterpriseDeviceManager: EnterpriseDeviceManager) =
         enterpriseDeviceManager.applicationPolicy!!
+
+    @Provides
+    @TacticalSdk
+    @Singleton
+    fun provideKnoxHdmManager(enterpriseDeviceManager: EnterpriseDeviceManager) =
+        enterpriseDeviceManager.hypervisorDeviceManager!!
 }

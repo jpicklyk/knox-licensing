@@ -52,7 +52,7 @@ class KeyGeneratorUseCase @Inject constructor(
         builder.setCertificateNotBefore(Date(startTime))
         builder.setCertificateNotAfter(Date(startTime + 365L * 24L * 60L * 60L * 1000L - 1L))
         builder.setUserAuthenticationRequired(false)
-        builder.setIsStrongBoxBacked(true)
+        builder.setIsStrongBoxBacked(false)
         builder.setUnlockedDeviceRequired(false)
         builder.setDevicePropertiesAttestationIncluded(true)
         builder.setDigests(KeyProperties.DIGEST_SHA256)

@@ -27,7 +27,7 @@ class KeyGenTest {
         val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         val useCase = KeyGeneratorUseCase(dpm)
         println("Starting keygen stress test")
-        for(i in 5 downTo 0 step 1) {
+        for(i in 10 downTo 0 step 1) {
             val result = useCase.invoke()
             assertTrue("Certificate generation failed: ${result.toString()}", result is ApiCall.Success)
         }

@@ -4,9 +4,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knoxmoduleshowcase.annotations.ApiExists
+import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -20,6 +20,7 @@ class CheckAndroid13TacticalApisExist {
     private val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(appContext)
     private val restrictionPolicy = KnoxModule.provideKnoxRestrictionPolicy(edm)
     private val applicationPolicy = KnoxModule.provideKnoxApplicationPolicy(edm)
+    private val hdmManager = KnoxModule.provideKnoxHdmManager(edm)
 
     /** RAM Plus Related APIs **/
     @Test
@@ -129,4 +130,17 @@ class CheckAndroid13TacticalApisExist {
         }
     }
      */
+
+    /**
+     * HDM Related
+     */
+    @Test
+    fun checkStealthHwCpControl_Exists() = runTest {
+        assert(
+            checkMethodExistence(
+                hdmManager::class,
+                "stealthCpHwControl"
+            )
+        )
+    }
 }
