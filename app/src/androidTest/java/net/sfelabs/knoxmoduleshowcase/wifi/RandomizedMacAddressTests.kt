@@ -1,0 +1,89 @@
+package net.sfelabs.knoxmoduleshowcase.wifi
+
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
+import com.samsung.android.knox.EnterpriseDeviceManager
+import com.samsung.android.knox.restriction.RestrictionPolicy
+import kotlinx.coroutines.test.runTest
+import net.sfelabs.core.annotations.ApiExists
+import net.sfelabs.core.checkMethodExistence
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
+import net.sfelabs.knox_tactical.di.KnoxModule
+import net.sfelabs.knox_tactical.domain.use_cases.wifi.EnableRandomizedMacAddressUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.wifi.GetRandomizedMacAddressEnabledUseCase
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+@SmallTest
+@TacticalSdkSuppress(minReleaseVersion = 130)
+class RandomizedMacAddressTests {
+    private lateinit var context: Context
+    private lateinit var edm: EnterpriseDeviceManager
+    private lateinit var restrictionPolicy: RestrictionPolicy
+    @Before
+    fun setup() {
+        context = ApplicationProvider.getApplicationContext()
+        edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
+        restrictionPolicy = KnoxModule.provideKnoxRestrictionPolicy(edm)
+    }
+
+    @Test
+    @ApiExists
+    fun isRandomisedMacAddressEnabled_Exists() = runTest {
+        assert(
+            checkMethodExistence(
+                restrictionPolicy::class,
+                "isRandomisedMacAddressEnabled"
+            )
+        )
+    }
+
+    @Test
+    @ApiExists
+    fun enableRandomisedMacAddress_Exists() = runTest {
+        assert(
+            checkMethodExistence(
+                restrictionPolicy::class,
+                "enableRandomisedMacAddress"
+            )
+        )
+    }
+
+    @Test
+    fun testGetRandomizedMacAddressApi() = runTest {
+        val useCase = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
+        val result = useCase.invoke()
+        assert(result is ApiCall.Success)
+    }
+
+    @Test
+    fun testDisableRandomizedMacAddress() = runTest {
+        val useCase = EnableRandomizedMacAddressUseCase(restrictionPolicy)
+        val result = useCase.invoke(false)
+        assert(result is ApiCall.Success)
+        val useCase2 = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
+        val result2 = useCase2.invoke()
+        assert(result2 is ApiCall.Success && !result2.data.enabled )
+    }
+
+    @Test
+    fun testEnableRandomizedMacAddress() = runTest {
+        val useCase = EnableRandomizedMacAddressUseCase(restrictionPolicy)
+        val result = useCase.invoke(true)
+        assert(result is ApiCall.Success)
+        val useCase2 = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
+        val result2 = useCase2.invoke()
+        assert(result2 is ApiCall.Success && result2.data.enabled )
+    }
+
+    @After
+    fun cleanup() = runTest {
+        EnableRandomizedMacAddressUseCase(restrictionPolicy).invoke(true)
+    }
+}

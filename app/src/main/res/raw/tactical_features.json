@@ -28,5 +28,10 @@
     "key":"LteBandLock",
     "title":"LTE Band Locking",
     "description":"Lock the LTE band to the value specified provided the HW supports the band passed"
+  },
+  {
+    "key":"SimPowerState",
+    "title":"SIM Power State",
+    "description":"No idea what this does"
   }
 ]

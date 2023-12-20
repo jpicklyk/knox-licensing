@@ -71,9 +71,4 @@ object KnoxTacticalExtensions {
         )
     }
 
-    object MR1
-
-    object MR2
-
-    object MR3
 }

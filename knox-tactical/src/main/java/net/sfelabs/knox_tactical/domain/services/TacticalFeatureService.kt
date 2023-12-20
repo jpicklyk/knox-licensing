@@ -11,11 +11,13 @@ import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensiti
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.SetAutoTouchSensitivityUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hotspot.GetHotspot20StateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hotspot.SetHotspot20StateUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.lte.DisableBandLockingUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.lte.EnableBandLockingUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.lte.GetBandLockingStateUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.radio.DisableBandLockingUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.radio.EnableBandLockingUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.radio.GetBandLockingStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ramplus.GetRamPlusDisabledStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ramplus.SetRamPlusStateUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.sim.EnableSimPowerStateUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.sim.GetSimPowerStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.EnableRandomizedMacAddressUseCase
@@ -36,6 +38,8 @@ class TacticalFeatureService @Inject constructor(
     private val enableBandLockingUseCase: EnableBandLockingUseCase,
     private val disableBandLockingUseCase: DisableBandLockingUseCase,
     private val getBandLockingStateUseCase: GetBandLockingStateUseCase,
+    private val enableSimPowerStateUseCase: EnableSimPowerStateUseCase,
+    private val getSimPowerStateUseCase: GetSimPowerStateUseCase,
     private val log: Log
 ) {
 
@@ -47,6 +51,7 @@ class TacticalFeatureService @Inject constructor(
             TacticalFeature.RamPlus -> getRamPlusDisabledStateUseCase()
             TacticalFeature.RandomMac -> getRandomizedMacAddressEnabledUseCase()
             TacticalFeature.LteBandLock -> getBandLockingStateUseCase()
+            TacticalFeature.SimPowerState -> getSimPowerStateUseCase()
         }
     }
 
@@ -64,6 +69,8 @@ class TacticalFeatureService @Inject constructor(
                 if(enable && data != null) enableBandLockingUseCase( (data as String).toInt())
                 else disableBandLockingUseCase()
             }
+
+            TacticalFeature.SimPowerState -> enableSimPowerStateUseCase(enable)
         }
     }
 
@@ -71,11 +78,12 @@ class TacticalFeatureService @Inject constructor(
     fun getFeatureValueType(feature: TacticalFeature, value: Any?): KnoxFeatureValueType<Any> {
         return when(feature) {
             TacticalFeature.AutoSensitivity -> KnoxFeatureValueType.NoValue
-            TacticalFeature.TacticalDeviceMode -> KnoxFeatureValueType.BooleanValue(value as Boolean)
+            TacticalFeature.TacticalDeviceMode -> KnoxFeatureValueType.NoValue
             TacticalFeature.Hotspot20 -> KnoxFeatureValueType.NoValue
             TacticalFeature.RamPlus -> KnoxFeatureValueType.NoValue
             TacticalFeature.RandomMac -> KnoxFeatureValueType.NoValue
             TacticalFeature.LteBandLock -> KnoxFeatureValueType.StringValue(value.toString())
+            TacticalFeature.SimPowerState -> KnoxFeatureValueType.NoValue
         }
     }
 }

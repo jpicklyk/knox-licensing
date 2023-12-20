@@ -11,7 +11,7 @@ import javax.inject.Inject
 class SetBrightnessUseCase @Inject constructor(
     private val settingsManager: SettingsManager
 ) {
-    suspend operator fun invoke(enable: Boolean, level: Int): UnitApiCall {
+    suspend operator fun invoke(enable: Boolean, level: Int = 255): UnitApiCall {
         return coroutineScope {
             try {
                 if (!enable) {

@@ -10,15 +10,17 @@ sealed class TacticalFeature(val key: String) {
                 "RamPlus" -> RamPlus
                 "RandomMac" -> RandomMac
                 "LteBandLock" -> LteBandLock
+                "SimPowerState" -> SimPowerState
                 else -> null
             }
         }
     }
-    object TacticalDeviceMode: TacticalFeature("TacticalDeviceMode")
-    object AutoSensitivity: TacticalFeature("AutoSensitivity")
-    object Hotspot20: TacticalFeature("Hotspot20")
-    object RamPlus: TacticalFeature("RamPlus")
-    object RandomMac: TacticalFeature("RandomMac")
-    object LteBandLock: TacticalFeature("LteBandLock")
+    data object TacticalDeviceMode: TacticalFeature("TacticalDeviceMode")
+    data object AutoSensitivity: TacticalFeature("AutoSensitivity")
+    data object Hotspot20: TacticalFeature("Hotspot20")
+    data object RamPlus: TacticalFeature("RamPlus")
+    data object RandomMac: TacticalFeature("RandomMac")
+    data object LteBandLock: TacticalFeature("LteBandLock")
+    data object SimPowerState: TacticalFeature("SimPowerState")
 
 }

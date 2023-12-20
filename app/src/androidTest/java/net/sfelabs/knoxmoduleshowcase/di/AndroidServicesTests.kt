@@ -19,6 +19,11 @@ class AndroidServicesTests {
         context = InstrumentationRegistry.getInstrumentation().context
     }
     @Test
+    fun getDevicePolicyMananger() {
+        val service = AndroidServiceModule.provideDevicePolicyManager(context)
+        assert(service != null)
+    }
+    @Test
     fun getWifiManager() {
         val service = AndroidServiceModule.provideWifiManager(context)
         assert(service != null)

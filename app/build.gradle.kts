@@ -54,7 +54,6 @@ dependencies {
     implementation(project(":android-log-wrapper"))
     implementation(project(":knox-common"))
     implementation(project(":knox-tactical"))
-    implementation(project(":knox-ngd2"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)

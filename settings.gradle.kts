@@ -25,6 +25,5 @@ include(":core:ui")
 include(":core:testing")
 include(":knox-common")
 include(":knox-tactical")
-include(":knox-ngd2")
 
 include(":feature:ethernet")

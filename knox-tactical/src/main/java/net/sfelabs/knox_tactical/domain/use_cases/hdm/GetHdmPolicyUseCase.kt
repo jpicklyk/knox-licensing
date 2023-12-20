@@ -1,7 +1,9 @@
 package net.sfelabs.knox_tactical.domain.use_cases.hdm
 
+import android.content.Context
 import android.util.Base64
 import com.samsung.android.knox.EnterpriseDeviceManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.core.domain.UiText
@@ -9,13 +11,13 @@ import java.util.UUID
 import javax.inject.Inject
 
 class GetHdmPolicyUseCase @Inject constructor(
-    private val enterpriseDeviceManager: EnterpriseDeviceManager
+    @ApplicationContext private val context: Context
 ) {
 
     suspend operator fun invoke(): ApiCall<String> {
         return coroutineScope {
             try {
-                val hdmManager = enterpriseDeviceManager.hypervisorDeviceManager
+                val hdmManager = EnterpriseDeviceManager.getInstance(context).hypervisorDeviceManager
                 val response = hdmManager.getHdmPolicy(UUID.randomUUID().toString(), "stealth")
                 ApiCall.Success(getPayload(response))
             } catch (e: Exception) {

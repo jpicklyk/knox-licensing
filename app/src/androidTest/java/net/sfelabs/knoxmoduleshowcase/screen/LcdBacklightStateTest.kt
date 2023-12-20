@@ -1,0 +1,43 @@
+package net.sfelabs.knoxmoduleshowcase.screen
+
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
+import kotlinx.coroutines.test.runTest
+import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
+import net.sfelabs.knox_tactical.di.KnoxModule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+@SmallTest
+@TacticalSdkSuppress(minReleaseVersion = 110)
+class LcdBacklightStateTest {
+    private val sm = KnoxModule.provideKnoxSystemManager()
+
+    @Test
+    fun disableLcdBacklightTest() = runTest {
+
+        val setUseCase =
+            net.sfelabs.knox_tactical.domain.use_cases.backlight.SetBacklightStateUseCase(
+                sm
+            )
+        val getUseCase =
+            net.sfelabs.knox_tactical.domain.use_cases.backlight.GetBacklightStateUseCase(
+                sm
+            )
+        assert(setUseCase(false) is ApiCall.Success)
+        val result = getUseCase.invoke()
+        assert(result is ApiCall.Success)
+        when(result) {
+            is ApiCall.Success -> {
+                assert(!result.data)
+            }
+            else -> assert(false)
+        }
+        //allow the screen back on
+
+        Thread.sleep(2000)
+        setUseCase(true)
+    }
+}

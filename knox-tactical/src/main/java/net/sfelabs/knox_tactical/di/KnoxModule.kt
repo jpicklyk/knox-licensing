@@ -5,6 +5,7 @@ import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import com.samsung.android.knox.custom.SystemManager
+import com.samsung.android.knox.restriction.PhoneRestrictionPolicy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,9 +53,13 @@ object KnoxModule {
     fun provideKnoxApplicationPolicy(enterpriseDeviceManager: EnterpriseDeviceManager) =
         enterpriseDeviceManager.applicationPolicy!!
 
+
     @Provides
     @TacticalSdk
     @Singleton
-    fun provideKnoxHdmManager(enterpriseDeviceManager: EnterpriseDeviceManager) =
-        enterpriseDeviceManager.hypervisorDeviceManager!!
+    fun providePhoneRestrictionPolicy(@ApplicationContext context: Context): PhoneRestrictionPolicy {
+        return provideKnoxEnterpriseDeviceManager(context).phoneRestrictionPolicy
+    }
+
+
 }

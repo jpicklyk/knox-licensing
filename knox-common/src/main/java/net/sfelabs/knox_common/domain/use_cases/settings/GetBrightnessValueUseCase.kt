@@ -11,7 +11,7 @@ import javax.inject.Inject
 class GetBrightnessValueUseCase @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    suspend operator fun invoke(enable: Boolean, level: Int): ApiCall<Int> {
+    suspend operator fun invoke(): ApiCall<Int> {
         return coroutineScope {
             try {
                 ApiCall.Success(Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS))

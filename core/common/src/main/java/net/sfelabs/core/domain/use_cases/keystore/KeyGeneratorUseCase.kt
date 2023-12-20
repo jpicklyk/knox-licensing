@@ -1,6 +1,7 @@
 package net.sfelabs.core.domain.use_cases.keystore
 
 import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
 import android.os.Build
 import android.security.AttestedKeyPair
 import android.security.keystore.KeyGenParameterSpec
@@ -29,8 +30,10 @@ class KeyGeneratorUseCase @Inject constructor(
                 val result = generateKey()
                 if(result == null)
                     ApiCall.Error(UiText.DynamicString("Error, generate keypair returned null"))
-                else
+                else {
+                    println("Key generated: ${result.keyPair}")
                     ApiCall.Success(Unit)
+                }
             } catch (e: Exception) {
                 ApiCall.Error(UiText.DynamicString(e.toString()))
             }
@@ -45,26 +48,26 @@ class KeyGeneratorUseCase @Inject constructor(
         SecureRandom().nextBytes(challenge)
         builder.setAttestationChallenge(challenge)
         builder.setCertificateSerialNumber(BigInteger.valueOf(42))
-        builder.setCertificateSubject(X500Principal("C=US, ST=California, L=Carlsbad, O=Viasat, OU=MDD, CN=R5CW7189GEY"))
+        builder.setCertificateSubject(X500Principal("C=US, ST=Texas, O=ABC, OU=XYZ, CN=ABCDEFGH12345678"))
 
 
         val startTime: Long = System.currentTimeMillis()
         builder.setCertificateNotBefore(Date(startTime))
         builder.setCertificateNotAfter(Date(startTime + 365L * 24L * 60L * 60L * 1000L - 1L))
         builder.setUserAuthenticationRequired(false)
-        builder.setIsStrongBoxBacked(false)
+        builder.setIsStrongBoxBacked(true)
         builder.setUnlockedDeviceRequired(false)
         builder.setDevicePropertiesAttestationIncluded(true)
         builder.setDigests(KeyProperties.DIGEST_SHA256)
         //builder.setSignaturePaddings(arrayOf<String>(0))
         //builder . setEncryptionPaddings arrayOfNulls<String>(0)
         builder.setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
-        val name = devicePolicyManager.activeAdmins!![1]
+        val name = ComponentName("net.sfelabs.knoxmoduleshowcase","net.sfelabs.knoxmoduleshowcase.app.receivers.AdminReceiver")
         return devicePolicyManager.generateKeyPair(
             name,
             "EC",
             builder.build(),
-            DevicePolicyManager.ID_TYPE_BASE_INFO or DevicePolicyManager.ID_TYPE_IMEI or DevicePolicyManager.ID_TYPE_SERIAL
+            DevicePolicyManager.ID_TYPE_BASE_INFO or DevicePolicyManager.ID_TYPE_SERIAL
         )
     }
 

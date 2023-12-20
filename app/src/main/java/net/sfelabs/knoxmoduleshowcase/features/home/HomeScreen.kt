@@ -214,7 +214,7 @@ private fun KeyTextComposable(
 @Composable
 fun PreviewTacticalVersionInfo() {
     TacticalVersionInformation(
-        buildNumber = "G981U1UEU3BVK1_B2BF",
-        splVersion = "July 1, 2023"
+        buildNumber = "S911U1UEU2AWL1_B2BF",
+        splVersion = "November 1, 2023"
         )
 }
