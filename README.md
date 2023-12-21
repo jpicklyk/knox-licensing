@@ -1,3 +1,7 @@
+Cloning Project:
+- After cloning the project, you may need to rename the folder due to case sensitivity reasons.
+- Rename knoxmoduleshowcase to KnoxModuleShowcase prior to opening in Android Studio
+
 Testing DPC
 Enable DPC:
 adb shell dpm set-device-owner net.sfelabs.knoxmoduleshowcase/.app.receivers.AdminReceiver
