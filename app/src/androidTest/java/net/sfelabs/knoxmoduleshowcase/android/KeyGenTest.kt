@@ -3,6 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.android
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.integrity.EnhancedAttestationPolicy
 import com.samsung.knox.attesation.blobvalidator.library.Verdict
@@ -19,6 +20,7 @@ import org.junit.runner.RunWith
 import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
+@SmallTest
 class KeyGenTest {
     private lateinit var context: Context
     private lateinit var attestationPolicy: EnhancedAttestationPolicy
