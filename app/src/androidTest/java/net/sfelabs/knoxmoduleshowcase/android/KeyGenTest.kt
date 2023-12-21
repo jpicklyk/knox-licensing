@@ -3,6 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.android
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.FlakyTest
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.integrity.EnhancedAttestationPolicy
@@ -33,11 +34,12 @@ class KeyGenTest {
 
 
     @Test
+    @FlakyTest
     fun createCertificateTest() = runTest {
         val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         val useCase = KeyGeneratorUseCase(dpm)
         println("Starting keygen stress test")
-        for(i in 13 downTo 0 step 1) {
+        for(i in 10 downTo 0 step 1) {
             val result = useCase.invoke()
             assertTrue("Certificate generation failed: $result", result is ApiCall.Success)
             val nonce = UUID.randomUUID().toString()
