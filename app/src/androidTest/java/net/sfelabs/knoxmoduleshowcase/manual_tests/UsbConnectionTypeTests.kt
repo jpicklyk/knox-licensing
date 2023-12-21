@@ -1,8 +1,7 @@
-package net.sfelabs.knoxmoduleshowcase.usb
+package net.sfelabs.knoxmoduleshowcase.manual_tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.FlakyTest
-import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_tactical.di.KnoxModule
@@ -15,7 +14,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-@SmallTest
 class UsbConnectionTypeTests {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
     private lateinit var currentType: UsbConnectionType
