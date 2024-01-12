@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.PowerManager
+import android.telephony.TelephonyManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,4 +35,9 @@ object AndroidServiceModule {
     @Singleton
     fun providePowerManager(@ApplicationContext context: Context) =
         context.getSystemService(Context.POWER_SERVICE)!! as PowerManager
+
+    @Provides
+    @Singleton
+    fun provideTelephonyManager(@ApplicationContext context: Context) =
+    context.getSystemService(Context.TELEPHONY_SERVICE)!! as TelephonyManager
 }

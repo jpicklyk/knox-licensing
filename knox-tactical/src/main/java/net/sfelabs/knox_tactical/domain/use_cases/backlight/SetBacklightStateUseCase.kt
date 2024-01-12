@@ -20,13 +20,17 @@ class SetBacklightStateUseCase @Inject constructor(
                     CustomDeviceManager.SUCCESS -> {
                         ApiCall.Success(Unit)
                     }
+
                     else -> {
                         ApiCall.Error(
                             UiText.DynamicString(
-                            "An error occurred calling the setLcdBacklightState API: $result"
-                        ))
+                                "An error occurred calling the setLcdBacklightState API: $result"
+                            )
+                        )
                     }
                 }
+            }catch (e: NoSuchMethodError) {
+                ApiCall.NotSupported
             } catch (e: SecurityException) {
                 ApiCall.Error(
                     UiText.DynamicString(

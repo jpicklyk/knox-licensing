@@ -10,7 +10,8 @@ sealed class TacticalFeature(val key: String) {
                 "RamPlus" -> RamPlus
                 "RandomMac" -> RandomMac
                 "LteBandLock" -> LteBandLock
-                "SimPowerState" -> SimPowerState
+                "E-SimEnabled" -> ESimEnabled
+                "ExtraBrightnessEnabled" -> ExtraBrightnessEnabled
                 else -> null
             }
         }
@@ -21,6 +22,7 @@ sealed class TacticalFeature(val key: String) {
     data object RamPlus: TacticalFeature("RamPlus")
     data object RandomMac: TacticalFeature("RandomMac")
     data object LteBandLock: TacticalFeature("LteBandLock")
-    data object SimPowerState: TacticalFeature("SimPowerState")
+    data object ESimEnabled: TacticalFeature("E-SimEnabled")
+    data object ExtraBrightnessEnabled: TacticalFeature("ExtraBrightnessEnabled")
 
 }

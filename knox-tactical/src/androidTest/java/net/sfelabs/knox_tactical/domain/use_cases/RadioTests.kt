@@ -2,6 +2,7 @@ package net.sfelabs.knox_tactical.domain.use_cases
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import com.samsung.android.knox.custom.SettingsManager
 import com.samsung.android.knox.custom.SystemManager
 import com.samsung.android.knox.restriction.PhoneRestrictionPolicy
 import com.samsung.android.knox.restriction.RestrictionPolicy
@@ -89,6 +90,17 @@ class RadioTests {
     @TacticalSdkSuppress(minReleaseVersion = 131)
     fun isIMSEnabled_Exists() = runTest {
         assert(checkMethodExistence(PhoneRestrictionPolicy::class,"isIMSEnabled"))
+    }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 131)
+    fun setEsimEnabled_Exists() = runTest {
+        assert(checkMethodExistence(SettingsManager::class,"setEsimEnabled"))
+    }
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 131)
+    fun getEsimEnabled_Exists() = runTest {
+        assert(checkMethodExistence(SettingsManager::class,"getEsimEnabled"))
     }
 
 

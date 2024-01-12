@@ -30,8 +30,13 @@
     "description":"Lock the LTE band to the value specified provided the HW supports the band passed"
   },
   {
-    "key":"SimPowerState",
-    "title":"SIM Power State",
-    "description":"No idea what this does"
+    "key":"E-SimEnabled",
+    "title":"Electronic SIM Enabled",
+    "description":"Controls to either block or allow the use of Electronic SIM"
+  },
+  {
+    "key":"ExtraBrightnessEnabled",
+    "title":"Extra Screen Brightness Enabled",
+    "description":"Controls to either enable or disable the extra screen brightness"
   }
 ]

@@ -60,6 +60,9 @@ class TacticalTesterViewModel @Inject constructor(
                         updatedList
                     }
                 }
+
+                is TacticalKnoxEvents.FeatureIntegerValueChanged -> TODO()
+                is TacticalKnoxEvents.FeatureOnOffChanged -> TODO()
             }
         }
     }

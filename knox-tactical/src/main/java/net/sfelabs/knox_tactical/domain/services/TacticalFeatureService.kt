@@ -16,8 +16,10 @@ import net.sfelabs.knox_tactical.domain.use_cases.radio.EnableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.GetBandLockingStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ramplus.GetRamPlusDisabledStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ramplus.SetRamPlusStateUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.sim.EnableSimPowerStateUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.sim.GetSimPowerStateUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.screen.GetExtraBrightnessUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.screen.SetExtraBrightnessUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.sim.GetElectronicSimEnabledUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.sim.SetElectronicSimEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.EnableRandomizedMacAddressUseCase
@@ -38,8 +40,10 @@ class TacticalFeatureService @Inject constructor(
     private val enableBandLockingUseCase: EnableBandLockingUseCase,
     private val disableBandLockingUseCase: DisableBandLockingUseCase,
     private val getBandLockingStateUseCase: GetBandLockingStateUseCase,
-    private val enableSimPowerStateUseCase: EnableSimPowerStateUseCase,
-    private val getSimPowerStateUseCase: GetSimPowerStateUseCase,
+    private val setElectronicSimEnabledUseCase: SetElectronicSimEnabledUseCase,
+    private val getElectronicSimEnabledUseCase: GetElectronicSimEnabledUseCase,
+    private val getExtraBrightnessUseCase: GetExtraBrightnessUseCase,
+    private val setExtraBrightnessUseCase: SetExtraBrightnessUseCase,
     private val log: Log
 ) {
 
@@ -51,7 +55,8 @@ class TacticalFeatureService @Inject constructor(
             TacticalFeature.RamPlus -> getRamPlusDisabledStateUseCase()
             TacticalFeature.RandomMac -> getRandomizedMacAddressEnabledUseCase()
             TacticalFeature.LteBandLock -> getBandLockingStateUseCase()
-            TacticalFeature.SimPowerState -> getSimPowerStateUseCase()
+            TacticalFeature.ESimEnabled -> getElectronicSimEnabledUseCase()
+            TacticalFeature.ExtraBrightnessEnabled -> getExtraBrightnessUseCase()
         }
     }
 
@@ -70,7 +75,8 @@ class TacticalFeatureService @Inject constructor(
                 else disableBandLockingUseCase()
             }
 
-            TacticalFeature.SimPowerState -> enableSimPowerStateUseCase(enable)
+            TacticalFeature.ESimEnabled -> setElectronicSimEnabledUseCase(enable)
+            TacticalFeature.ExtraBrightnessEnabled -> setExtraBrightnessUseCase(enable)
         }
     }
 
@@ -83,7 +89,8 @@ class TacticalFeatureService @Inject constructor(
             TacticalFeature.RamPlus -> KnoxFeatureValueType.NoValue
             TacticalFeature.RandomMac -> KnoxFeatureValueType.NoValue
             TacticalFeature.LteBandLock -> KnoxFeatureValueType.StringValue(value.toString())
-            TacticalFeature.SimPowerState -> KnoxFeatureValueType.NoValue
+            TacticalFeature.ESimEnabled -> KnoxFeatureValueType.NoValue
+            TacticalFeature.ExtraBrightnessEnabled ->KnoxFeatureValueType.NoValue
         }
     }
 }
