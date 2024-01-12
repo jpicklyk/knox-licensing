@@ -28,7 +28,7 @@ class HdmTests {
      * encompassing API to control all HDM policies.  See stealthHwControl()
      */
     @Test
-    @TacticalSdkSuppress(maxReleaseVersion = 131)
+    @TacticalSdkSuppress(maxReleaseVersion = 130)
     fun checkStealthHwCpControl_Exists() = runTest {
         assert(checkMethodExistence(HdmManager::class, "stealthCpHwControl"))
     }

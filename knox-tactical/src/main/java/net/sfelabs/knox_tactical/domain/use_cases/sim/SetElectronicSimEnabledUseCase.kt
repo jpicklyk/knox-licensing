@@ -1,37 +1,32 @@
 package net.sfelabs.knox_tactical.domain.use_cases.sim
 
-import android.content.Context
-import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.custom.CustomDeviceManager
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import javax.inject.Inject
 
-class EnableSimPowerStateUseCase  @Inject constructor(
-    @ApplicationContext private val context: Context
+class SetElectronicSimEnabledUseCase  @Inject constructor(
+    private val settingsManager: SettingsManager
 ) {
 
     suspend operator fun invoke(enable: Boolean): UnitApiCall {
         return coroutineScope {
             try {
-                val phoneRestrictionPolicy = EnterpriseDeviceManager.getInstance(context)
-                    .phoneRestrictionPolicy
-                if(enable) {
-                    ApiCall.Success(phoneRestrictionPolicy.setSimPowerState(CustomDeviceManager.ON))
-                } else {
-                    ApiCall.Success(phoneRestrictionPolicy.setSimPowerState(CustomDeviceManager.OFF))
-                }
-
+                val result = settingsManager.setEsimEnabled(enable)
+                if(result == CustomDeviceManager.SUCCESS)
+                    ApiCall.Success(Unit)
+                else
+                    ApiCall.Error(UiText.DynamicString("setEsimEnabled API call failed"))
             } catch (e: NoSuchMethodError) {
               ApiCall.NotSupported
             } catch (e: SecurityException) {
                 println(e.message)
                 ApiCall.Error(UiText.DynamicString(
                     "The use of this API requires the caller to have the " +
-                        "\"com.samsung.android.knox.permission.KNOX_PHONE_RESTRICTION\" permission"
+                        "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTINGS\" permission"
                 ))
             }
         }

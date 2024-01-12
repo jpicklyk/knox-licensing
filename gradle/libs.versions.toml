@@ -28,13 +28,12 @@ ktlint = "10.0.0"
 
 splashscreen = "1.0.1"
 
-
-testing-androidx = "1.5.0"
-
-testing-androidx-junit = "1.1.5"
-testing-androidx-espresso = "3.5.1"
-testing-androidx-orchestrator = "1.5.0-alpha01"
-testing-androidx-runner = "1.5.2"
+testing-androidx-core = "1.6.0-alpha04"
+testing-androidx-junit = "1.2.0-alpha02"
+testing-androidx-espresso = "3.6.0-alpha02"
+testing-androidx-orchestrator = "1.5.0-alpha02"
+testing-androidx-runner = "1.6.0-alpha05"
+testing-androidx-rules = "1.6.0-alpha02"
 testing-androidx-uiautomator = "2.3.0-beta01"
 testing-kotlin-coroutines = "1.7.1"
 junit4 = "4.13.2"
@@ -69,12 +68,12 @@ androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", 
 androidx-lifecycle-vm-comp = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
 androidx-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
-androidx-test-core = { module = "androidx.test:core", version.ref = "testing-androidx" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "testing-androidx-core" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "testing-androidx-espresso" }
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "testing-androidx-junit" }
 
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "testing-androidx-runner" }
-androidx-test-rules = { module = "androidx.test:rules", version.ref = "testing-androidx" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "testing-androidx-rules" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "testing-androidx-uiautomator"}
 composeNumberPicker = { module = "com.chargemap.compose:numberpicker", version.ref = "chargemap-numberpicker"}
 detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }

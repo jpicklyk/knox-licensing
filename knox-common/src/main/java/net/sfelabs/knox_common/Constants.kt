@@ -28,7 +28,8 @@ package net.sfelabs.knox_common
         // TODO Enter the KPE Development, KPE Standard license key or KPE Premium license key
         //const val KPE_LICENSE_KEY = "KLM06-GOH5V-9WB6U-5QDNT-H8K6R-YGKC3"
         //Hard coded on-prem key
-        const val KPE_LICENSE_KEY = "KLM05-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX#offline.com"
+        const val TE2_LICENSE_KEY = "KLM06-D1V06-Z5R6Z-W5UGP-LFTR0-VYV77"
+        const val TE3_LICENSE_KEY = "KLM05-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX#offline.com"
 
         //Hard coded cloud key
         //const val KPE_LICENSE_KEY = "KLM09-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"

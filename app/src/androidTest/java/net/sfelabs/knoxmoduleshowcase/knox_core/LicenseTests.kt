@@ -18,6 +18,7 @@ import org.junit.runner.RunWith
 class LicenseTests {
     private lateinit var context: Context
     private lateinit var licenseManager: KnoxEnterpriseLicenseManager
+    private val license = "KLM05-6J7VR-PN3X1-W76OG-GOHYF-9MVLZ-000X-D6090-A4GSS-3SUAP#knox.sdsasolutions.io"
 
     @Before
     fun setup() {
@@ -25,6 +26,10 @@ class LicenseTests {
         licenseManager = KnoxModule.provideKnoxEnterpriseLicenseManager(context)
     }
 
+    @Test
+    fun activateLicense() {
+        licenseManager.activateLicense(license)
+    }
 
     @Test
     fun checkActivationInfo() = runTest{
@@ -36,5 +41,10 @@ class LicenseTests {
         } else {
             assertTrue("No license info is available", false)
         }
+    }
+
+    @Test
+    fun deactivateLicense() {
+        licenseManager.deActivateLicense(license)
     }
 }

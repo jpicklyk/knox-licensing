@@ -45,4 +45,10 @@ class ScreenTests {
     fun setExtraBrightness_Exists() = runTest {
         assert(checkMethodExistence(SettingsManager::class, "setExtraBrightness"))
     }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 131)
+    fun getExtraBrightness_Exists() = runTest {
+        assert(checkMethodExistence(SettingsManager::class, "getExtraBrightness"))
+    }
 }
