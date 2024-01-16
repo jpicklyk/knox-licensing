@@ -6,22 +6,18 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.core.domain.UiText
-import net.sfelabs.core.domain.parseHdmPolicyBlock
-import java.util.UUID
 import javax.inject.Inject
 
-class GetHdmPolicyUseCase @Inject constructor(
+class SetHdmPolicyUseCase  @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-
-    suspend operator fun invoke(): ApiCall<Int> {
+    suspend operator fun invoke(policy: Int, reboot: Boolean): ApiCall<Boolean> {
         return coroutineScope {
             try {
                 val hdmManager =
                     EnterpriseDeviceManager.getInstance(context).hypervisorDeviceManager
-                val response = hdmManager.getHdmPolicy(UUID.randomUUID().toString(), "stealth")
-                ApiCall.Success(parseHdmPolicyBlock(response))
-            } catch (e: NoSuchMethodError) {
+                ApiCall.Success(hdmManager.stealthHwControl(policy, reboot))
+            } catch(e: NoSuchMethodError) {
                 ApiCall.NotSupported
             } catch (e: Exception) {
                 ApiCall.Error(UiText.DynamicString("getHdmPolicy failed: ${e.message}"))

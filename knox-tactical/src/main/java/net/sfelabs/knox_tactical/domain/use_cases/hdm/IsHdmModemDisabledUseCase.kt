@@ -10,17 +10,18 @@ import net.sfelabs.core.domain.parseHdmPolicyBlock
 import java.util.UUID
 import javax.inject.Inject
 
-class GetHdmPolicyUseCase @Inject constructor(
+class IsHdmModemDisabledUseCase @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-
-    suspend operator fun invoke(): ApiCall<Int> {
+    private val hdmFeatureBitmask = 256
+    suspend operator fun invoke(): ApiCall<Boolean> {
         return coroutineScope {
             try {
-                val hdmManager =
+                val hdmPolicy = parseHdmPolicyBlock(
                     EnterpriseDeviceManager.getInstance(context).hypervisorDeviceManager
-                val response = hdmManager.getHdmPolicy(UUID.randomUUID().toString(), "stealth")
-                ApiCall.Success(parseHdmPolicyBlock(response))
+                        .getHdmPolicy(UUID.randomUUID().toString(), "stealth")
+                )
+                ApiCall.Success(hdmPolicy and hdmFeatureBitmask != 0)
             } catch (e: NoSuchMethodError) {
                 ApiCall.NotSupported
             } catch (e: Exception) {

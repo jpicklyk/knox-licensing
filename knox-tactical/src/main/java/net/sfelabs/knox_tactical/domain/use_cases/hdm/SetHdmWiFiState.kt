@@ -10,18 +10,29 @@ import net.sfelabs.core.domain.parseHdmPolicyBlock
 import java.util.UUID
 import javax.inject.Inject
 
-class GetHdmPolicyUseCase @Inject constructor(
+class SetHdmWiFiState @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-
-    suspend operator fun invoke(): ApiCall<Int> {
+    private val bitmask = 8
+    suspend operator fun invoke(disabled: Boolean, reboot: Boolean = false): ApiCall<Boolean> {
         return coroutineScope {
             try {
                 val hdmManager =
                     EnterpriseDeviceManager.getInstance(context).hypervisorDeviceManager
-                val response = hdmManager.getHdmPolicy(UUID.randomUUID().toString(), "stealth")
-                ApiCall.Success(parseHdmPolicyBlock(response))
-            } catch (e: NoSuchMethodError) {
+                val currentPolicy = parseHdmPolicyBlock(
+                    hdmManager.getHdmPolicy(
+                        UUID.randomUUID().toString(),
+                        "stealth"
+                    )
+                )
+                val newPolicy =
+                    if (disabled) {
+                        currentPolicy or bitmask
+                    } else {
+                        currentPolicy and bitmask.inv()
+                    }
+                ApiCall.Success(hdmManager.stealthHwControl(newPolicy, reboot))
+            } catch(e: NoSuchMethodError) {
                 ApiCall.NotSupported
             } catch (e: Exception) {
                 ApiCall.Error(UiText.DynamicString("getHdmPolicy failed: ${e.message}"))
