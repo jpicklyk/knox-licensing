@@ -14,6 +14,7 @@ sealed class VersionInfo(val description: String, val releaseVersion: Int) {
                 "G981U1UEU3BVK1_B2BF" -> TE2Android11GA
                 "G981U1UEU4BWC2_B2BF" -> TE2Android11MR1
                 "G981U1UEU7BWI1_B2BF" -> TE2Android11MR2
+                "G981U1UEU8BXA2_B2BF" -> TE2Android11MR3
 
                 //TE3 Devices
                 "G736U1UEU4CWH5_B2BF" -> TE3Android13GA
@@ -22,6 +23,11 @@ sealed class VersionInfo(val description: String, val releaseVersion: Int) {
                 "G736U1UEU5CWL1_B2BF" -> TE3Android13MR1Beta
                 "S911U1UEU2AXA1_B2BF" -> TE3Android13MR1Beta
                 "G736U1UEU5CXA1_B2BF" -> TE3Android13MR1Beta
+                "S911U1UEU2AXA2_B2BF" -> TE3Android13MR1Beta
+                "G736U1UEU5CXA2_B2BF" -> TE3Android13MR1Beta
+                "S911U1UEU2AXA3_B2BF" -> TE3Android13MR1Beta
+                "G736U1UEU5CXA3_B2BF" -> TE3Android13MR1Beta
+                "S911U1UEU2AXA4_B2BF" -> TE3Android13MR1
 
                 else -> Unknown
             }
@@ -39,8 +45,10 @@ sealed class VersionInfo(val description: String, val releaseVersion: Int) {
     data object TE2Android11GA: VersionInfo("TE2 Android 11 GA (extension program)", 110)
     data object TE2Android11MR1: VersionInfo("TE2 Android 11 MR1 (extension program)", 111)
     data object TE2Android11MR2: VersionInfo("TE2 Android 11 MR2 (extension program)", 112)
+    data object TE2Android11MR3: VersionInfo("TE2 Android 11 MR3 (extension program)", 113)
     data object TE3Android13GA: VersionInfo("TE3 Android 13 GA", 130)
     data object TE3Android13MR1Beta: VersionInfo("TE3 Android 13 MR1 (beta)", 131)
+    data object TE3Android13MR1: VersionInfo("TE3 Android 13 MR1", 131)
 }
 
 private fun formatBuildNumber(buildNumber: String): String {
@@ -59,6 +67,8 @@ fun isTacticalEditionGen2Device(buildNumber: String): Boolean {
         VersionInfo.TE2Android11GA -> true
         VersionInfo.TE2Android11MR1-> true
         VersionInfo.TE2Android11MR2 -> true
+        VersionInfo.TE2Android11MR3 -> true
+
         else -> false
 
     }
@@ -68,6 +78,7 @@ fun isTacticalEditionGen3Device(buildNumber: String): Boolean {
     return when (VersionInfo(formatBuildNumber(buildNumber))) {
         VersionInfo.TE3Android13GA -> true
         VersionInfo.TE3Android13MR1Beta -> true
+        VersionInfo.TE3Android13MR1 -> true
         else -> false
 
     }
