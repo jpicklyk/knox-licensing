@@ -26,10 +26,19 @@ class ExecuteAdbCommandTest {
                 sm
             )
 
-        val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.IP, "ip rule flush")
+        val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.IP, "rule flush")
         assert(result is ApiCall.Success)
     }
+    @Test
+    fun testIpRouting() = runTest {
+        val useCase =
+            ExecuteAdbCommandUseCase(
+                sm
+            )
 
+        val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.IP, "rule add from all uidrange 10345-10345 lookup 1021")
+        assert(result is ApiCall.Success)
+    }
     @Test
     fun testDhcpDbgCommand() = runTest {
         val useCase =

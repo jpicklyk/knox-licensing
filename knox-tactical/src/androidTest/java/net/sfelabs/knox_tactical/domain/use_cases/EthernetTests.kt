@@ -51,4 +51,16 @@ class EthernetTests {
     fun addIpAddressToEthernetInterface_Exists() = runTest {
         assert(checkMethodExistence(SettingsManager::class, "addIpAddressToEthernetInterface"))
     }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 131)
+    fun deleteIpAddressToEthernetInterface_Exists() = runTest {
+        assert(checkMethodExistence(SettingsManager::class, "deleteIpAddressToEthernetInterface"))
+    }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 131)
+    fun listIpAddress_Exists() = runTest {
+        assert(checkMethodExistence(SettingsManager::class, "listIpAddress"))
+    }
 }

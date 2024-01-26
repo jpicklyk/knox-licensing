@@ -2,6 +2,7 @@ package net.sfelabs.core.di
 
 import android.app.admin.DevicePolicyManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.PowerManager
@@ -40,4 +41,8 @@ object AndroidServiceModule {
     @Singleton
     fun provideTelephonyManager(@ApplicationContext context: Context) =
     context.getSystemService(Context.TELEPHONY_SERVICE)!! as TelephonyManager
+
+    @Provides
+    fun providePackageManager(@ApplicationContext context: Context): PackageManager =
+        context.packageManager
 }

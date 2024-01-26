@@ -32,7 +32,7 @@ class BandLocking5gTests {
 
     @Test
     fun enable5gBandLockingN78() = runTest {
-        val band = 3500
+        val band = 78
         val result = Enable5gBandLockingUseCase(systemManager).invoke(band)
         assert(result is ApiCall.Success)
 
@@ -72,10 +72,6 @@ class BandLocking5gTests {
 
     @After
     fun cleanup() = runTest {
-        if(currentBand == -1) {
-            Disable5gBandLockingUseCase(systemManager).invoke()
-        } else {
-            Enable5gBandLockingUseCase(systemManager).invoke(currentBand)
-        }
+        Disable5gBandLockingUseCase(systemManager).invoke()
     }
 }

@@ -7,10 +7,16 @@ import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.AddIpAddressToEthernetInterfaceUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.DeleteIpAddressFromEthernetInterfaceUseCase
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * To confirm the IP id set, you need to use: adb shell ip -4 addr
+ * ifconfig will not show the IP address added for whatever reason.  The IP tool is technically
+ * newer and ifconfig somewhat (or is) deprecated so this is the likely reason.
+ */
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 131)
@@ -29,10 +35,12 @@ class AddIpAddressToInterfaceTests {
     @Test
     fun setSingleIpAddress_cidr_notation_24() = runTest {
         val interfaceName = "eth0"
-        val ipAddress: List<String> = listOf("192.168.2.199/24")
+        val ipAddress = "192.168.2.199/24"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
         assert(result is ApiCall.Success)
+
+
     }
 
     /**
@@ -42,10 +50,10 @@ class AddIpAddressToInterfaceTests {
     @Test
     fun setSingleIpAddress_implicit_cidr_notation_24() = runTest {
         val interfaceName = "eth0"
-        val ipAddress: List<String> = listOf("192.168.2.199/24")
+        val ipAddress ="192.168.2.199"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
-        assert(result is ApiCall.Success)
+        assert(result is ApiCall.Error)
     }
 
     /**
@@ -55,26 +63,44 @@ class AddIpAddressToInterfaceTests {
     @Test
     fun setSingleIpAddress_cidr_notation_16() = runTest {
         val interfaceName = "eth0"
-        val ipAddress: List<String> = listOf("192.168.2.199/16")
+        val ipAddress = "192.168.2.199/16"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
         assert(result is ApiCall.Success)
     }
 
     @Test
-    fun passIncorrectInterfaceName() = runTest {
+    fun addIncorrectInterfaceName() = runTest {
         val interfaceNameBad = "ether0"
-        val ipAddress: List<String> = listOf("192.168.2.199")
+        val ipAddress = "192.168.2.199"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceNameBad, ipAddress)
         assert(result is ApiCall.Error)
     }
 
     @Test
-    fun passIncorrectIpAddress() = runTest {
+    fun addIncorrectIpAddress() = runTest {
         val interfaceNameBad = "eth0"
-        val ipAddress: List<String> = listOf("192.168.2.1999")
+        val ipAddress = "192.168.2.1999"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
+            .invoke(interfaceNameBad, ipAddress)
+        assert(result is ApiCall.Error)
+    }
+
+    @Test
+    fun removeIncorrectIpAddress() = runTest {
+        val interfaceName = "eth0"
+        val ipAddressBad = "192.168.2.1999"
+        val result = DeleteIpAddressFromEthernetInterfaceUseCase(settingsManager)
+            .invoke(interfaceName, ipAddressBad)
+        assert(result is ApiCall.Error)
+    }
+
+    @Test
+    fun removeIncorrectInterfaceName() = runTest {
+        val interfaceNameBad = "ether0"
+        val ipAddress = "192.168.2.199/24"
+        val result = DeleteIpAddressFromEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceNameBad, ipAddress)
         assert(result is ApiCall.Error)
     }
@@ -82,7 +108,7 @@ class AddIpAddressToInterfaceTests {
     @Test
     fun clearIpAddresses() = runTest {
         val interfaceName = "eth0"
-        val ipAddress: List<String> = listOf()
+        val ipAddress = "192.168.2.199/24"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
         assert(result is ApiCall.Success)
