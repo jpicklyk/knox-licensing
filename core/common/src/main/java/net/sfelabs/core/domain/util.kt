@@ -1,5 +1,6 @@
 package net.sfelabs.core.domain
 
+import android.annotation.SuppressLint
 import android.os.Build
 import java.lang.reflect.Method
 
@@ -36,6 +37,7 @@ fun getCallerClassName(clazz: Class<*>): String? {
  * The following reflection code will work on Android 10 or below but has be since patched.
  */
 
+@SuppressLint("PrivateApi")
 fun getDeviceSerialNumber(): String? {
     if(Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
         return null
