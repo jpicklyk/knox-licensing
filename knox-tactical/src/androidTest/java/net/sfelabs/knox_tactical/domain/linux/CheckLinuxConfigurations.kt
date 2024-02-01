@@ -93,6 +93,14 @@ class CheckLinuxConfigurations {
             checkLinuxConfiguration(config)
         )
     }
+    @Test
+    fun checkCDCECM_isConfigured() {
+        val config = "CONFIG_USB_CONFIGFS_ECM_SUBSET=y"
+        Assert.assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
 
     @Test
     fun checkCDCNCM_isConfigured() {
@@ -111,6 +119,40 @@ class CheckLinuxConfigurations {
             checkLinuxConfiguration(config)
         )
     }
+
+    @Test
+    fun checkASIX_A_isConfigured() {
+        var config = "CONFIG_USB_NET_AX8817X=y"
+        Assert.assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+
+        config = "CONFIG_USB_NET_AX88179_178A=y"
+        Assert.assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+
+        config = "CONFIG_USB_NET_AX88178=y"
+        Assert.assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+        @Test
+        fun checkASIX_B_isConfigured() {
+            //prerequisite for the USB driver
+            val config = "CONFIG_AX88796B_PHY=y"
+            Assert.assertTrue(
+                "Linux configuration '$config' is not set!",
+                checkLinuxConfiguration(config)
+            )
+        }
+
+
+
 
     private fun checkLinuxConfiguration(config: String) : Boolean {
         val uiDevice: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
