@@ -30,13 +30,13 @@ class ScreenTests {
     }
 
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 110)
+    @TacticalSdkSuppress(minReleaseVersion = 130)
     fun setActivityTime_Exists() = runTest {
         assert(checkMethodExistence(SystemManager::class, "setActivityTime"))
     }
 
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 110)
+    @TacticalSdkSuppress(minReleaseVersion = 130)
     fun getActivityTime_Exists() = runTest {
         assert(checkMethodExistence(SystemManager::class, "getActivityTime"))
     }

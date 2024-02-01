@@ -48,7 +48,7 @@ class RadioTests {
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun disableLteBandLocking_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"disable5GBandLocking"))
+        assert(checkMethodExistence(SystemManager::class,"disableLteBandLocking"))
     }
 
     @Test
@@ -66,7 +66,7 @@ class RadioTests {
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 131)
     fun disable5GBandLocking_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"disableLteBandLocking"))
+        assert(checkMethodExistence(SystemManager::class,"disable5GBandLocking"))
     }
 
     @Test
