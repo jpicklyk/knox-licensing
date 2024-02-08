@@ -58,4 +58,24 @@ class ApplicationTests {
     fun linkedInRemoved() {
         assertFalse(isPackageInstalled("com.linkedin.android", pm))
     }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 110)
+    fun bixbyDictationRemoved() {
+        assertFalse(isPackageInstalled("com.samsung.android.bixby.service", pm))
+    }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 110)
+    fun bixbyVisionRemoved() {
+        assertFalse(isPackageInstalled("com.samsung.android.visionintelligence", pm))
+        assertFalse(isPackageInstalled("com.samsung.android.bixbyvision.framework", pm))
+    }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 110)
+    fun bixbyVoiceRemoved() {
+        assertFalse(isPackageInstalled("com.samsung.android.bixby.agent", pm))
+    }
+
 }
