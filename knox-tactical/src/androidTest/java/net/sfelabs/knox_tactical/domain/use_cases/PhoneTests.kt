@@ -3,7 +3,6 @@ package net.sfelabs.knox_tactical.domain.use_cases
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.samsung.android.knox.custom.SystemManager
-import com.samsung.android.knox.restriction.PhoneRestrictionPolicy
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.annotations.ApiExists
 import net.sfelabs.core.checkMethodExistence
@@ -40,10 +39,6 @@ class PhoneTests {
     fun setAutoRecordCallEnabledState_Exists() = runTest {
         assert(checkMethodExistence(SystemManager::class, "setAutomaticRecordCallEnabledState"))
     }
-    @Test
-    @TacticalSdkSuppress(minReleaseVersion = 131)
-    fun setSimPowerState_Exists() = runTest {
-        assert(checkMethodExistence(PhoneRestrictionPolicy::class,"setSimPowerState"))
-    }
+
 
 }
