@@ -7,14 +7,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.Warning
+
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,8 +39,7 @@ fun EthernetInterfaceCard(
             .fillMaxWidth()
             .wrapContentHeight(),
         shape = MaterialTheme.shapes.medium,
-        elevation = 5.dp,
-        backgroundColor = MaterialTheme.colors.surface
+        elevation = CardDefaults.cardElevation(5.dp)
     ){
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -71,21 +73,18 @@ fun EthernetInterfaceCard(
             Column(Modifier.padding(8.dp)) {
                 Text(
                     text = "Interface ($name)",
-                    style = MaterialTheme.typography.h5,
-                    color = MaterialTheme.colors.onSurface
+                    style = MaterialTheme.typography.headlineSmall
                     )
                 if(ipAddresses != null) {
                     Text(
                         text = "IP Address: $ipAddresses",
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface
-                    )
+                        style = MaterialTheme.typography.bodyMedium
+                                           )
                 }
                 //if(macAddress != null) {
                     Text(
                         text = "MAC Address: $macAddress",
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 //}
             }
