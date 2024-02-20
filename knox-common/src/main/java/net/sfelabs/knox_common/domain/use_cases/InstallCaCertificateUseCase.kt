@@ -12,7 +12,7 @@ class InstallCaCertificateUseCase @Inject constructor(
     private val enterpriseDeviceManager: EnterpriseDeviceManager
 ) {
 
-    suspend operator fun invoke(
+    operator fun invoke(
         keystore: TargetKeystore,
         certificateType: CertificateType,
         data: ByteArray,

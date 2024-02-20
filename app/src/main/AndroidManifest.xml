@@ -12,9 +12,6 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.USB_PERMISSION"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
@@ -30,23 +27,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KnoxModuleShowcase"
         tools:targetApi="33">
-        <activity
-            android:name=".app.presentation.SplashActivity"
-            android:exported="true"
-            android:hardwareAccelerated="true"
-            android:theme="@style/SplashScreenTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".app.presentation.MainActivity"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:theme="@style/Theme.KnoxModuleShowcase">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <receiver
@@ -68,7 +59,7 @@
         </receiver>
         <receiver
             android:name="net.sfelabs.knox_common.LicenseReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.samsung.android.knox.intent.action.KNOX_LICENSE_STATUS" />
                 <action android:name="com.samsung.android.knox.intent.action.LICENSE_STATUS" />

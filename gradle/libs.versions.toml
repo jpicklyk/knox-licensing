@@ -10,6 +10,7 @@ androidx-lifecycle = "2.7.0"
 androidx-navigation = "2.7.7"
 chargemap-numberpicker = "1.0.3"
 collections-kotlin = "1.4.0"
+commonsLang = "2.6"
 compose-kotlin-compiler = "1.5.6"
 compose-bom = "2024.02.00"
 hilt-core = "2.49"
@@ -26,8 +27,9 @@ ksp = "1.9.21-1.0.15"
 detekt = "1.17.0"
 ktlint = "10.0.0"
 
-splashscreen = "1.0.1"
 
+splashscreen = "1.0.1"
+spongycastle = "1.53.0.0"
 testing-androidx-core = "1.6.0-alpha05"
 testing-androidx-junit = "1.2.0-alpha03"
 testing-androidx-espresso = "3.6.0-alpha03"
@@ -71,33 +73,35 @@ androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "testi
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "testing-androidx-runner" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "testing-androidx-rules" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "testing-androidx-uiautomator"}
+commons-lang = { module = "commons-lang:commons-lang", version.ref = "commonsLang" }
 composeNumberPicker = { module = "com.chargemap.compose:numberpicker", version.ref = "chargemap-numberpicker"}
-detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-google-acc = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist"}
+#detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+#google-acc = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist"}
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-core" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt-core" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-core" }
-hilt-gradleplugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt-core" }
+#hilt-gradleplugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt-core" }
 
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation"}
 
 jackson-module = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin"}
 
-kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+#kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin"}
-kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
+#kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
-ktlintPlugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint" }
+#kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+#ktlintPlugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint" }
 
 
 
-testing-compose-ui = { module = "androidx.compose.ui:ui-test-junit4"}
-testing-compose-manifest = { module = "androidx.compose.ui:ui-test-manifest"}
-testing-hilt-android = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt-core"}
-testing-kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "testing-kotlin-coroutines" }
+spongycastle-prov = { module = "com.madgag.spongycastle:prov", version.ref = "spongycastle" }
+#testing-compose-ui = { module = "androidx.compose.ui:ui-test-junit4"}
+#testing-compose-manifest = { module = "androidx.compose.ui:ui-test-manifest"}
+#testing-hilt-android = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt-core"}
+#testing-kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "testing-kotlin-coroutines" }
 
 
 # Dependencies of the included build-logic
@@ -105,7 +109,6 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 junit = { group = "junit", name = "junit", version.ref = "junit4" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [bundles]
 androidx-compose-materialIcons = [
@@ -115,7 +118,7 @@ androidx-compose-materialIcons = [
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
+#android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-core" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

@@ -42,18 +42,17 @@ fun TacticalControlsScreen() {
                         KnoxApiComponent(
                             title = item.title,
                             description = item.description,
-                            isFeatureSupported = item.isSupported,
-                            isFeatureEnabled = item.enabled,
                             onEvent = {
                                 viewModel.onEvent(
                                     TacticalKnoxEvents.FeatureOnOffChanged(
                                         item.key,
                                         !item.enabled,
                                         null
-                                        )
+                                    )
                                 )
                             },
-                            componentType = item.knoxFeatureValueType
+                            isFeatureSupported = item.isSupported,
+                            isFeatureEnabled = item.enabled
                         )
                     }
                     is KnoxFeatureValueType.BooleanValue -> {}
@@ -73,7 +72,7 @@ fun TacticalControlsScreen() {
                                     )
                                 )
                             },
-                            data = type.value.toString(),
+                            data = type.value,
                             onDataChangeEvent = {
                                 viewModel.onEvent(
                                     TacticalKnoxEvents.FeatureIntegerValueChanged(

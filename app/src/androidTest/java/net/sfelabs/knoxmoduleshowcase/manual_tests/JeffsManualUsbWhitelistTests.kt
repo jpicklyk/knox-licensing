@@ -16,10 +16,10 @@ import org.junit.runner.RunWith
 @LargeTest
 class JeffsManualUsbWhitelistTests {
     val usb_c_drive_serial = "0C9D92C19C40F62109890113"
-    val usb_c_drive_vid_pid = "0951:172B"
+    private val usb_c_drive_vid_pid = "0951:172B"
     val mouse_serial = null
     val mouse_vid_pid = "046D:C03D"
-    val amazon_basics_ethernet_dongle_serial = "00000000000001"
+    private val amazon_basics_ethernet_dongle_serial = "00000000000001"
     val amazon_basics_ethernet_dongle_vid_pid = "0B95:1790"
 
     val sm = KnoxModule.provideKnoxSystemManager()

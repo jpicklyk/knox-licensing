@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 sealed class KnoxFeatureValueType<out T: Any> {
     abstract val value: T
 
-    object NoValue: KnoxFeatureValueType<Nothing>() {
+    data object NoValue: KnoxFeatureValueType<Nothing>() {
         override val value: Nothing
 
             get() = throw IllegalStateException("Cannot call getValue() on NoValue type!")

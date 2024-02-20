@@ -17,7 +17,7 @@ class DeleteIpAddressFromEthernetInterfaceUseCase @Inject constructor(
             try {
                 ApiCall.Success(
                     settingsManager.deleteIpAddressToEthernetInterface(
-                        interfaceName, ipAddresses.toString()
+                        interfaceName, ipAddresses
                     )
                 )
             } catch(e: IllegalArgumentException) {

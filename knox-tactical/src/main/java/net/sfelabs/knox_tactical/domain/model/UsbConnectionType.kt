@@ -13,10 +13,10 @@ sealed class UsbConnectionType(val value: Int) {
             }
         }
     }
-    object Default: UsbConnectionType(0)
-    object MTP: UsbConnectionType(1)
-    object PTP: UsbConnectionType(2)
-    object MIDI: UsbConnectionType(3)
-    object Charging: UsbConnectionType(4)
-    object Tethering: UsbConnectionType(5)
+    data object Default: UsbConnectionType(0)
+    data object MTP: UsbConnectionType(1)
+    data object PTP: UsbConnectionType(2)
+    data object MIDI: UsbConnectionType(3)
+    data object Charging: UsbConnectionType(4)
+    data object Tethering: UsbConnectionType(5)
 }

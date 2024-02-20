@@ -59,9 +59,9 @@ class RoutingTests {
         val result = ListIpAddressesUseCase(settingsManager).invoke("eth0")
         assert(result is ApiCall.Success)
         if(result is ApiCall.Success) {
-            val ipList = result.data
-            val route1 = "route add 192.168.0.3 dev eth0 src ${ipSrc} table 70"
-            val route2 = "route add 192.168.0.4 dev eth0 src ${ipSrc} table 70"
+            //val ipList = result.data
+            val route1 = "route add 192.168.0.3 dev eth0 src $ipSrc table 70"
+            val route2 = "route add 192.168.0.4 dev eth0 src $ipSrc table 70"
             val rule = "rule add from all uidrange ${chromeUid}-${chromeUid} lookup 70 prio 10"
             val block = "rule add from all uidrange ${chromeUid}-${chromeUid} blackhole prio 11"
 

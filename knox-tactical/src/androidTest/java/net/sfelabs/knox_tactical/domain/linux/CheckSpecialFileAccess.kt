@@ -5,10 +5,9 @@ import androidx.test.filters.SmallTest
 import junit.framework.TestCase
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.BufferedReader
 import java.io.File
-import java.io.InputStreamReader
 
+@Suppress("SameParameterValue", "SameParameterValue", "SameParameterValue", "SameParameterValue")
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class CheckSpecialFileAccess {
@@ -60,12 +59,14 @@ class CheckSpecialFileAccess {
         val result = executeAdbShellCommand(command)
         println(result)
 
-    }*/
+    }
     private fun isPermissiveModeEnabled(): Boolean {
         val command = "getenforce"
         val result = executeAdbShellCommand(command)
         return result.trim().equals("Permissive", ignoreCase = true)
     }
+
+
     private fun executeAdbShellCommand(command: String): String {
         val adbExecutable = findAdbExecutable()
         if (adbExecutable != null) {
@@ -118,5 +119,5 @@ class CheckSpecialFileAccess {
         process.waitFor()
         return process.exitValue() == 0
     }
-
+*/
 }

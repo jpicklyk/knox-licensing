@@ -6,6 +6,6 @@ sealed class EthernetInterfaceType(val interfaceType: String) {
             return if (type.equals("DHCP", true)) DHCP else STATIC
         }
     }
-    object DHCP: EthernetInterfaceType("DHCP")
-    object STATIC: EthernetInterfaceType("Static")
+    data object DHCP: EthernetInterfaceType("DHCP")
+    data object STATIC: EthernetInterfaceType("Static")
 }

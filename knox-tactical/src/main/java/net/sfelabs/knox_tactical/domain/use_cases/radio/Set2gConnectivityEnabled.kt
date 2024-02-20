@@ -16,7 +16,7 @@ class Set2gConnectivityEnabled @Inject constructor(
     suspend operator fun invoke(enabled: Boolean): UnitApiCall {
         return coroutineScope {
             try {
-                when(val result = systemManager.set2GConnectivityState(enabled)) {
+                when(systemManager.set2GConnectivityState(enabled)) {
                     CustomDeviceManager.SUCCESS -> ApiCall.Success(Unit)
                     else -> ApiCall.Error(UiText.DynamicString("The operation failed for an unknown reason."))
                 }

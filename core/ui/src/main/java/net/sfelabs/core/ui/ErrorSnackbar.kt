@@ -9,14 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
 /**
- * Referemce for handling snackbar with scaffold:
+ * Reference for handling snack bar with scaffold:
  * https://www.devbitsandbytes.com/configuring-snackbar-jetpack-compose-using-scaffold-with-bottom-navigation/
  */
 @Composable
 fun ErrorSnackbar(
-    errorMessage: String,
-    showError: Boolean = !errorMessage.isNullOrBlank(),
     modifier: Modifier = Modifier,
+    errorMessage: String,
+    showError: Boolean = errorMessage.isNotBlank(),
     onErrorAction: () -> Unit = { },
     onDismiss: () -> Unit = { }
 ) {

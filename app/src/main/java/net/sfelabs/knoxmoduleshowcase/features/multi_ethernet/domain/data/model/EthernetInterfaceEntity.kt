@@ -9,5 +9,4 @@ data class EthernetInterfaceEntity(
     val gateway: String? = null,
     val mac: String? = null,
     val dnsList: List<String> = emptyList()
-) {
-}
+)

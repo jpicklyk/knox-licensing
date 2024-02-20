@@ -10,8 +10,8 @@ sealed class AutoCallPickupState(val value: Int) {
             }
         }
     }
-    object Disable: AutoCallPickupState(0)
-    object Enable: AutoCallPickupState(1)
+    data object Disable: AutoCallPickupState(0)
+    data object Enable: AutoCallPickupState(1)
     /* TE Specific flag */
-    object EnableAlwaysAccept: AutoCallPickupState(2)
+    data object EnableAlwaysAccept: AutoCallPickupState(2)
 }

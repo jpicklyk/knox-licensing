@@ -29,15 +29,17 @@ import net.sfelabs.android_log_wrapper.domain.model.LogLine
 
 @Composable
 fun LogViewer(
-    modifier: Modifier = Modifier.defaultMinSize(minHeight = 60.dp),
+    modifier: Modifier = Modifier,
     viewModel: LogViewerViewModel = hiltViewModel(),
     backgroundColor: Color = Color.Black
 ) {
     val state = viewModel.state
     val listState = rememberLazyListState()
     val scrollState = rememberScrollState()
+    modifier.defaultMinSize(minHeight = 60.dp)
     BoxWithConstraints(modifier = modifier
     ) {
+        val boxWithConstraintsScope = this
         LazyColumn(
             modifier = Modifier
                 .defaultMinSize(minHeight = 20.dp)

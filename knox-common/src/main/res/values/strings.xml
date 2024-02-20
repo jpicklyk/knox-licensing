@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- License activation messages -->
-    <string name="no_intent">License activation intent is not available</string>
     <string name="no_intent_action">License activation intent action is not available</string>
     <string name="kpe_activated_succesfully">KPE activated successfully</string>
-    <string name="elm_action_successful">Action successful</string>
 
     <!-- License deactivation messages -->
     <string name="kpe_deactivated_successfully">Knox lincese deactivated successfully</string>
@@ -20,8 +18,6 @@
     <string name="err_kpe_unknown">KPE: Error unknown</string>
     <string name="err_kpe_code_unknown">KPE: Error code unknown %1$s, status %2$s</string>
     <string name="err_kpe_not_current_date">KPE: Not current date</string>
-    <string name="err_kpe_sig_mismatch">KPE: Caller package signature mismatch</string>
-    <string name="err_kpe_ver_code_mismatch">KPE: Caller package version code mismatch</string>
     <string name="err_kpe_null_params">KPE: NULL params</string>
     <string name="err_kpe_user_disagrees_license_agreement">KPE: User disagrees EULA</string>
     <string name="err_kpe_license_expired">KPE: License expired</string>
@@ -31,23 +27,6 @@
     <string name="err_kpe_license_quantity_exhausted_on_auto_release">KPE: License quantity exhausted on automatic release</string>
 
     <!-- Backwards-Compatible Key Error Codes -->
-    <string name="err_elm_internal">EnterpriseLicenseManager: Internal error</string>
-    <string name="err_elm_internal_server">EnterpriseLicenseManager: Internal server error</string>
-    <string name="err_elm_licence_invalid_license">EnterpriseLicenseManager: Invalid license</string>
-    <string name="err_elm_invalid_package_name">EnterpriseLicenseManager: Invalid package name</string>
-    <string name="err_elm_licence_terminated">EnterpriseLicenseManager: License terminated</string>
-    <string name="err_elm_network_disconnected">EnterpriseLicenseManager: Network disconnected</string>
-    <string name="err_elm_network_general">EnterpriseLicenseManager: Network general error</string>
-    <string name="err_elm_unknown">EnterpriseLicenseManager: Error unknown</string>
-    <string name="err_elm_code_unknown">EnterpriseLicenseManager: Error code unknown %1$s, status %2$s</string>
-    <string name="err_elm_not_current_date">EnterpriseLicenseManager: Not current date</string>
-    <string name="err_elm_sig_mismatch">EnterpriseLicenseManager: Caller package signature mismatch</string>
-    <string name="err_elm_ver_code_mismatch">EnterpriseLicenseManager: Caller package version code mismatch</string>
-    <string name="err_elm_null_params">EnterpriseLicenseManager: NULL params</string>
-    <string name="err_elm_user_disagrees_license_agreement">EnterpriseLicenseManager: User disagrees EULA</string>
 
     <!-- API level -->
-    <string name="api_level_message">This device does not meet the minimum requirements to run.
-        API level %1$d detected. Requires level %2$d.</string>
-    <string name="api_level_notice">App Requirement</string>
 </resources>

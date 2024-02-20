@@ -9,7 +9,7 @@ import net.sfelabs.knox_common.activateLicense
 class AdminReceiver : DeviceAdminReceiver() {
     override fun onEnabled(context: Context, intent: Intent) {
         super.onEnabled(context, intent)
-        /* If you wanted to use the DevicePolicyManager and componentname, here is how you get them.
+        /* If you wanted to use the DevicePolicyManager and ComponentName, here is how you get them.
             val manager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
             val component = ComponentName(context.applicationContext, AdminReceiver::class.java)
         */

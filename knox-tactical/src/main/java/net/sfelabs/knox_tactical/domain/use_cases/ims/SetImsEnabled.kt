@@ -18,7 +18,7 @@ class SetImsEnabled @Inject constructor(
     suspend operator fun invoke(feature: Int = 1, simSlotId: Int = 0, enable: Boolean): UnitApiCall {
         return coroutineScope {
             try {
-                when(val result = phoneRestrictionPolicy.setIMSEnabled(feature, enable, simSlotId)) {
+                when(phoneRestrictionPolicy.setIMSEnabled(feature, enable, simSlotId)) {
                     ERROR_NONE -> ApiCall.Success(Unit)
                     ERROR_NOT_SUPPORTED -> ApiCall.NotSupported
                     ERROR_INVALID_INPUT -> ApiCall.Error(UiText.DynamicString("Invalid input provided."))

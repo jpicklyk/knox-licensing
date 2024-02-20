@@ -11,12 +11,12 @@ public static final int WARN = 5;
 
  */
 sealed class Priority(val value: Int) {
-    object VERBOSE: Priority(value = 2)
-    object DEBUG: Priority(value = 3)
-    object INFO: Priority(value = 4)
-    object WARN: Priority(value = 5)
-    object ERROR: Priority(value = 6)
-    object ASSERT: Priority(value = 7)
+    data object VERBOSE: Priority(value = 2)
+    data object DEBUG: Priority(value = 3)
+    data object INFO: Priority(value = 4)
+    data object WARN: Priority(value = 5)
+    data object ERROR: Priority(value = 6)
+    data object ASSERT: Priority(value = 7)
 
     fun Int.toPriority(): Priority =
         when(this) {

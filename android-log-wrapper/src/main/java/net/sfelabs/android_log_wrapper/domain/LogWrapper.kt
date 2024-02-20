@@ -14,8 +14,8 @@ class LogWrapper(
     var tag = "LogWrapper"
     var packageName = ""
     var className = ""
-    var isLoggingEnabled = true
-    var logLevelEnabledMap: Map<Priority, Boolean> = mapOf(
+    private var isLoggingEnabled = true
+    private var logLevelEnabledMap: Map<Priority, Boolean> = mapOf(
         Priority.VERBOSE to true, Priority.DEBUG to true, Priority.INFO to true,
         Priority.WARN to true, Priority.ERROR to true, Priority.ASSERT to true
     )
@@ -25,7 +25,7 @@ class LogWrapper(
     var timeFormat = "HH:mm:ss:SSS"
 
     override fun println(priority: Priority, tag: String?, message: String, t: Throwable?) {
-        if(!isLoggingEnabled || !logLevelEnabledMap.get(priority)!!) return
+        if(!isLoggingEnabled || !logLevelEnabledMap[priority]!!) return
 
         if(t != null) {
             message + "\n" + Log.getStackTraceString(t)

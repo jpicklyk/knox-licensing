@@ -6,6 +6,6 @@ sealed class AutoConnectionState(val state: Int) {
             return if (type  == 0) OFF else ON
         }
     }
-    object ON: AutoConnectionState(1)
-    object OFF: AutoConnectionState(0)
+    data object ON: AutoConnectionState(1)
+    data object OFF: AutoConnectionState(0)
 }

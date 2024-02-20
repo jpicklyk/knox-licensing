@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
@@ -36,7 +35,6 @@ import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.EthernetConfigurat
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.EthernetConfigurationState
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.EthernetConfigurationViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EthernetConfiguration(
     modifier: Modifier = Modifier,

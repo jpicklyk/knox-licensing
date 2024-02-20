@@ -12,7 +12,7 @@ import org.junit.runner.Description
 @CustomFilter(filterClass = DebugUsbRequired.UsbDebuggingRequiredFilter::class)
 @Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class DebugUsbRequired() {
+annotation class DebugUsbRequired {
 
     class UsbDebuggingRequiredFilter: AbstractFilter() {
         override fun describe(): String {

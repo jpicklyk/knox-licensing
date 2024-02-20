@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_EXPRESSION")
+
 package net.sfelabs.knox_tactical
 
 import android.content.Context

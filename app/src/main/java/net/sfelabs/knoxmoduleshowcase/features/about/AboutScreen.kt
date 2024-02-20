@@ -1,3 +1,7 @@
+@file:Suppress("unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused",
+    "unused", "unused", "unused", "unused"
+)
+
 package net.sfelabs.knoxmoduleshowcase.features.about
 
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -26,7 +29,7 @@ import net.sfelabs.core.component.GroupingComposable
 import net.sfelabs.core.component.OutlinedCardContainer
 import net.sfelabs.core.ui.theme.AppTheme
 
-private val disclaimer = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed accumsan " +
+private const val disclaimer = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed accumsan " +
         "neque vel felis luctus, condimentum dignissim felis tempus. Orci varius natoque penatibus " +
         "et magnis dis parturient montes, nascetur ridiculus mus. Vivamus libero nisl, mollis a " +
         "posuere nec, dignissim ac nisl. Nullam rhoncus, neque quis condimentum scelerisque, nulla " +
@@ -42,7 +45,6 @@ private val disclaimer = "Lorem ipsum dolor sit amet, consectetur adipiscing eli
         "scelerisque nunc, at congue lorem tempor sit amet. Proin ac bibendum leo. In hendrerit " +
         "scelerisque mi.\n"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable fun AboutScreen(
     state: InformationState,
     isLoaded: Boolean = state.isLoaded
@@ -89,7 +91,7 @@ private val disclaimer = "Lorem ipsum dolor sit amet, consectetur adipiscing eli
 
 }
 
-@Preview()
+@Preview
 @Composable
 fun PreviewAboutScreen() {
     AppTheme {
@@ -98,38 +100,3 @@ fun PreviewAboutScreen() {
 
 }
 
-@Composable
-private fun AgreementComponent() {
-    OutlinedCard(Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.Bottom
-        ) {
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center) {
-                Icon(
-                    imageVector = Icons.Filled.Info,
-                    contentDescription = null,
-                    modifier = Modifier.size(135.dp)
-                )
-            }
-            Row() {
-                Text(text = disclaimer, style = MaterialTheme.typography.bodySmall)
-            }
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { /*TODO*/ }) {
-                    Text(text = "I Agree")
-
-                }
-            }
-        }
-    }
-}

@@ -1,7 +1,7 @@
 package net.sfelabs.knox_common.domain.model
 
 sealed class TargetKeystore(val value: Int) {
-    object VpnAndApps : TargetKeystore(4)
-    object Wifi : TargetKeystore(2)
-    object Default : TargetKeystore(1)
+    data object VpnAndApps : TargetKeystore(4)
+    data object Wifi : TargetKeystore(2)
+    data object Default : TargetKeystore(1)
 }

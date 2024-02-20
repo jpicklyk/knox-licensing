@@ -13,7 +13,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -28,29 +27,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import net.sfelabs.core.domain.model.knox.KnoxFeature
-import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
-import kotlin.math.roundToInt
 
-fun Modifier.maxWidth(
-    fraction: Float = 1f,
-) = layout { measurable, constraints ->
-    val maxWidth = (constraints.maxWidth * fraction).roundToInt()
-    val width = measurable.maxIntrinsicWidth(constraints.maxHeight).coerceAtMost(maxWidth)
 
-    val placeable = measurable.measure(Constraints(constraints.minWidth, width, constraints.minHeight, constraints.maxHeight))
-    layout(width, placeable.height) {
-        placeable.placeRelative(0, 0)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KnoxApiComponent(
     title: String,
@@ -58,8 +41,7 @@ fun KnoxApiComponent(
     onEvent: (Boolean) -> Unit = {},
     isFeatureSupported: Boolean = true,
     expanded: Boolean = false,
-    componentType: KnoxFeatureValueType<Any>,
-    isFeatureEnabled: Boolean = false
+    isFeatureEnabled: Boolean = false,
 
     ) {
     var expandedState by remember {
@@ -167,7 +149,6 @@ fun KnoxApiComponent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KnoxApiTextComponent(
     title: String,
@@ -300,27 +281,6 @@ fun KnoxApiTextComponent(
         }
     }
 }
-@Composable
-fun KnoxBooleanApiComponent(
-    checked: Boolean?,
-    enabled: Boolean = true,
-    onSwitchChanged: (Boolean) -> Unit
-) {
-
-
-}
-
-@Composable
-fun KnoxApiTextFieldComponent(
-    checked: Boolean?,
-    onSwitchChanged: (Boolean) -> Unit,
-    data: String,
-    onValueChanged: (String) -> Unit
-) {
-    //var band: String by remember { mutableStateOf(data)}
-
-
-}
 
 
 val knoxApi = KnoxFeature(
@@ -337,10 +297,9 @@ val knoxApi = KnoxFeature(
 fun PreviewSwitchComponent() {
     KnoxApiComponent(
         title = knoxApi.title,
-        description = knoxApi.description?:"",
+        description = knoxApi.description,
         isFeatureSupported = true,
-        expanded = false,
-        componentType = KnoxFeatureValueType.BooleanValue(false)
+        expanded = false
     )
 }
 
@@ -349,12 +308,11 @@ fun PreviewSwitchComponent() {
 fun PreviewSwitchComponentExpanded() {
     KnoxApiComponent(
         title = knoxApi.title,
-        description = knoxApi.description?:"",
-        isFeatureSupported = true,
-        isFeatureEnabled = true,
+        description = knoxApi.description,
         onEvent = { },
+        isFeatureSupported = true,
         expanded = true,
-        componentType = KnoxFeatureValueType.BooleanValue(false)
+        isFeatureEnabled = true
     )
 }
 
@@ -365,10 +323,9 @@ fun PreviewSpinnerComponent() {
         title = "LTE Band Lock",
         description = "Lock the LTE frequency band to that specified osiadgjolkad;g osaifgosdfjo " +
                 "sjdfj jso jdifj jdsj ojs; jfo j",
+        onEvent = {},
         isFeatureSupported = true,
-        isFeatureEnabled = true,
         expanded = false,
-        componentType = KnoxFeatureValueType.StringValue("0"),
-        onEvent = {}
+        isFeatureEnabled = true
     )
 }

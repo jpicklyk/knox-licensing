@@ -60,9 +60,6 @@ class TacticalTesterViewModel @Inject constructor(
                         updatedList
                     }
                 }
-
-                is TacticalKnoxEvents.FeatureIntegerValueChanged -> TODO()
-                is TacticalKnoxEvents.FeatureOnOffChanged -> TODO()
             }
         }
     }
@@ -93,7 +90,7 @@ class TacticalTesterViewModel @Inject constructor(
                     }
 
                     is ApiCall.Success -> {
-                        val type = when(val value = apiCall.data.apiValue) {
+                        when(val value = apiCall.data.apiValue) {
                             is String -> KnoxFeatureValueType.StringValue(value)
                             is Boolean -> KnoxFeatureValueType.BooleanValue(value)
                             is Int -> KnoxFeatureValueType.IntegerValue(value)

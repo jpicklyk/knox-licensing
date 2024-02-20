@@ -12,7 +12,7 @@ fun EthernetConfigurationScreen(
 ) {
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
-    Column() {
+    Column {
         EthernetConfiguration()
         //LogViewer()
         EthernetList()

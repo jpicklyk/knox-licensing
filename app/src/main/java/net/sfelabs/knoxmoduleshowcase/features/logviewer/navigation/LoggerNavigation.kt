@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import net.sfelabs.knoxmoduleshowcase.presentation.SampleLogViewerScreen
+import net.sfelabs.knoxmoduleshowcase.features.logviewer.SampleLogViewerScreen
 
 const val loggerNavigationRoute = "logger_route"
 
