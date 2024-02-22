@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -142,6 +143,7 @@ class CheckLinuxConfigurations {
     }
 
         @Test
+        @TacticalSdkSuppress(minReleaseVersion = 130)
         fun checkASIX_B_isConfigured() {
             //prerequisite for the USB driver
             val config = "CONFIG_AX88796B_PHY=y"

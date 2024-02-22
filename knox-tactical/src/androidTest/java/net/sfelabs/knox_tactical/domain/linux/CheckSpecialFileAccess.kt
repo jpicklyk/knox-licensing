@@ -7,7 +7,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 
-@Suppress("SameParameterValue", "SameParameterValue", "SameParameterValue", "SameParameterValue")
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class CheckSpecialFileAccess {
