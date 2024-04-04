@@ -12,7 +12,7 @@ chargemap-numberpicker = "1.0.3"
 collections-kotlin = "1.4.0"
 commonsLang = "2.6"
 compose-kotlin-compiler = "1.5.8"
-compose-bom = "2024.02.02"
+compose-bom = "2024.04.00"
 hilt-core = "2.49"
 hilt-navigation = "1.2.0"
 jackson-kotlin = "2.15.2"
@@ -39,7 +39,7 @@ testing-androidx-rules = "1.6.0-alpha03"
 testing-androidx-uiautomator = "2.3.0"
 testing-kotlin-coroutines = "1.7.1"
 junit4 = "4.13.2"
-material = "1.11.0"
+
 
 
 [libraries]
