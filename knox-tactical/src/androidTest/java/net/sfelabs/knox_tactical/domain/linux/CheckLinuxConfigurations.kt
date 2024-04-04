@@ -142,17 +142,27 @@ class CheckLinuxConfigurations {
         )
     }
 
-        @Test
-        @TacticalSdkSuppress(minReleaseVersion = 130)
-        fun checkASIX_B_isConfigured() {
-            //prerequisite for the USB driver
-            val config = "CONFIG_AX88796B_PHY=y"
-            Assert.assertTrue(
-                "Linux configuration '$config' is not set!",
-                checkLinuxConfiguration(config)
-            )
-        }
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 130)
+    fun checkASIX_B_isConfigured() {
+        //prerequisite for the USB driver
+        val config = "CONFIG_AX88796B_PHY=y"
+        Assert.assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
 
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 132)
+    fun check_lan78xx_isConfigured() {
+        //prerequisite for the USB driver
+        val config = "CONFIG_USB_LAN78XX=y"
+        Assert.assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
 
 
 
