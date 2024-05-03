@@ -22,7 +22,22 @@ class JeffsManualUsbWhitelistTests {
     private val amazon_basics_ethernet_dongle_serial = "00000000000001"
     val amazon_basics_ethernet_dongle_vid_pid = "0B95:1790"
 
+    /** QGeem hub and ethernet
+     *  Superspeed hub - 1D5C:5001
+     *  Ethernet - 0BDA:8156
+     */
+    val usbHubVidPid = "1D5C:5001:0BDA:8156"
+    val usbHubSerial = "001500A96"
+
+
     val sm = KnoxModule.provideKnoxSystemManager()
+
+    @Test
+    fun whitelistHubAndEthernetByVidPid() = runTest {
+        val vidPidCase = SetUsbDeviceAccessAllowedListUseCase(sm)
+        val result2 = vidPidCase.invoke(true, usbHubVidPid)
+        assert(result2 is ApiCall.Success)
+    }
 
     @Test
     fun whitelistEthernetSerialAndUsbDriveVidPid() = runTest {
