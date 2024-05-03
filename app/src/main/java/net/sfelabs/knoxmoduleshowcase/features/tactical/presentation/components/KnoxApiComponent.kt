@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.sfelabs.core.domain.model.knox.KnoxFeature
+import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
 
 
 @Composable
@@ -289,7 +290,8 @@ val knoxApi = KnoxFeature(
     description = "Tactical Device Mode disables all cellular communication including Emergency " +
             "911 services.  The device user will not be able to turn off Airplane Mode and only" +
             " wired communication will be allowed.",
-    enabled = false
+    enabled = false,
+    knoxFeatureValueType = KnoxFeatureValueType.NoValue
 )
 
 @Preview

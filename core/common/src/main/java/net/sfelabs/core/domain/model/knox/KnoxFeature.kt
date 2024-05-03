@@ -5,4 +5,5 @@ data class KnoxFeature(
     val title: String,
     val description: String,
     val enabled: Boolean = false,
+    val knoxFeatureValueType: KnoxFeatureValueType<*>,
     )

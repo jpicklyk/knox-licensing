@@ -29,7 +29,10 @@ sealed class VersionInfo(val description: String, val releaseVersion: Int) {
                 "G736U1UEU5CXA3_B2BF" -> TE3Android13MR1Beta
                 "S911U1UEU2AXA4_B2BF" -> TE3Android13MR1
                 "G736U1UEU5CXB1_B2BF" -> TE3Android13MR1
+                "G736U1UEU5CXD1_B2BF" -> TE3Android13MR2Beta
 
+                //TA5
+                "X300XXS1AXC5" -> TE3Android13GA
                 else -> Unknown
             }
         }
@@ -50,6 +53,7 @@ sealed class VersionInfo(val description: String, val releaseVersion: Int) {
     data object TE3Android13GA: VersionInfo("TE3 Android 13 GA", 130)
     data object TE3Android13MR1Beta: VersionInfo("TE3 Android 13 MR1 (beta)", 131)
     data object TE3Android13MR1: VersionInfo("TE3 Android 13 MR1", 131)
+    data object TE3Android13MR2Beta: VersionInfo("TE3 Android 13 MR2 beta", 132)
 }
 
 private fun formatBuildNumber(buildNumber: String): String {
@@ -80,6 +84,7 @@ fun isTacticalEditionGen3Device(buildNumber: String): Boolean {
         VersionInfo.TE3Android13GA -> true
         VersionInfo.TE3Android13MR1Beta -> true
         VersionInfo.TE3Android13MR1 -> true
+        VersionInfo.TE3Android13MR2Beta -> true
         else -> false
 
     }

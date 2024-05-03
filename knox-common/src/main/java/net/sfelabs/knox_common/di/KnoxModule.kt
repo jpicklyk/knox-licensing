@@ -48,8 +48,8 @@ object KnoxModule {
 
     @Provides
     @Singleton
-    fun provideKnoxRestrictionPolicy(enterpriseDeviceManager: EnterpriseDeviceManager): RestrictionPolicy =
-        enterpriseDeviceManager.restrictionPolicy
+    fun provideKnoxRestrictionPolicy(@ApplicationContext context: Context): RestrictionPolicy =
+        EnterpriseDeviceManager.getInstance(context).restrictionPolicy
 
     @Provides
     @Singleton
