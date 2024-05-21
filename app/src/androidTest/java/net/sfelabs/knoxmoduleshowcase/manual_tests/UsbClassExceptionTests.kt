@@ -25,7 +25,7 @@ class UsbClassExceptionTests {
      * to connect to ethernet.
      */
     @Test
-    fun setCdc() = runTest {
+    fun setCdcOnly() = runTest {
         val usbClasses: Int = USBInterface.CDC.value
         val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
         assert(useCase is ApiCall.Success)
@@ -41,6 +41,14 @@ class UsbClassExceptionTests {
         val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
         assert(useCase is ApiCall.Success)
     }
+
+    @Test
+    fun setMasOnly() = runTest {
+        val usbClasses: Int = USBInterface.MAS.value
+        val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
+        assert(useCase is ApiCall.Success)
+    }
+
 
     @Test
     fun setAllOpen() = runTest {
