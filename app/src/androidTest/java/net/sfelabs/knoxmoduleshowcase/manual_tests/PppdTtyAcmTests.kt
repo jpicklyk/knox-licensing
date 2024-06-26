@@ -11,7 +11,6 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.core.domain.ApiCall
 import net.sfelabs.knox_common.di.KnoxModule
-import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
 import net.sfelabs.knoxmoduleshowcase.R
@@ -37,7 +36,7 @@ import java.net.NetworkInterface
 
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@TacticalSdkSuppress(minReleaseVersion = 110)
+//@TacticalSdkSuppress(minReleaseVersion = 110)
 class PppdTtyAcmTests {
     private val tag = "TTYACMTEST"
     private lateinit var context: Context
@@ -52,11 +51,9 @@ class PppdTtyAcmTests {
     fun setup() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
         val targetDirectory = context.getExternalFilesDir(null)!!
-        copyFileFromRawToSDCard(context, R.raw.options, targetDirectory, "options")
-
-        // Assert file copied successfully
-        optionsFileLocation = File(targetDirectory, "options")
-        assertTrue(optionsFileLocation.exists())
+        optionsFileLocation = copyFileFromRawToSDCard(
+            context, R.raw.options, targetDirectory, "options"
+        )
     }
 
 
@@ -80,6 +77,7 @@ class PppdTtyAcmTests {
                 sm
             )
         println("options file location: $optionsFileLocation")
+        assertTrue("Options file was not copied to device!",optionsFileLocation.exists())
         //KnoxCustomManagerService: executeAdbCommand - java.lang.IllegalArgumentException: value of system property 'knoxsdk.tac.body' is longer than 91 bytes: /dev/ttyUSB0 file /storage/emulated/0/Android/data/net.sfelabs.knoxmoduleshowcase/files/options
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file $optionsFileLocation")
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file /sdcard/options")
@@ -119,18 +117,14 @@ class PppdTtyAcmTests {
         rawResourceId: Int,
         targetDirectory: File,
         targetFileName: String
-    ) {
-        val inputStream = context.resources.openRawResource(rawResourceId)
-        val outputFile = File(targetDirectory, targetFileName)
-        val outputStream = FileOutputStream(outputFile)
-        val buffer = ByteArray(4 * 1024)
-        var read: Int
-        while (inputStream.read(buffer).also { read = it } != -1) {
-            outputStream.write(buffer, 0, read)
+    ) : File{
+        val targetFile = File(targetDirectory, targetFileName)
+        context.resources.openRawResource(rawResourceId).use { inputStream ->
+            FileOutputStream(targetFile).use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
         }
-        outputStream.flush()
-        inputStream.close()
-        outputStream.close()
+        return targetFile
     }
 
     private fun isPpp0InterfaceUp(): Boolean {

@@ -211,8 +211,9 @@ class CheckLinuxConfigurations {
         var success = false
         while (reader.readLine().also { line = it } != null) {
             output.append(line).append("\n")
+
             if(line?.contains(config) ==true) {
-                println(line)
+                println("Linux config value: $line")
                 success = true
             }
         }

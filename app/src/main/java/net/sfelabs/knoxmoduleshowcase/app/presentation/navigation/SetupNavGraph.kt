@@ -12,6 +12,7 @@ import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeNavigationRou
 import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeScreen
 import net.sfelabs.knoxmoduleshowcase.features.logviewer.navigation.loggerScreen
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.navigation.ethernetScreen
+import net.sfelabs.knoxmoduleshowcase.features.network_manager.presentation.navigation.networkManagerScreen
 
 @Composable
 fun SetupNavGraph(
@@ -26,6 +27,7 @@ fun SetupNavGraph(
         homeScreen()
         controlsScreen()
         ethernetScreen()
+        networkManagerScreen()
         loggerScreen()
         aboutScreen()
     }

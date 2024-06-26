@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
-import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkStatus
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkInterfaceState
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkUpdate
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.services.NetworkConnectivityService
 import java.net.Inet4Address
@@ -63,7 +63,7 @@ class EthernetNetworkService @Inject constructor(
                         interfaceName,
                         ipAddress = getIpv4Address(linkProperties),
                         network.networkHandle,
-                        NetworkStatus.Connected
+                        NetworkInterfaceState.Connected
                     )
                 )
             }
@@ -77,7 +77,7 @@ class EthernetNetworkService @Inject constructor(
                         interfaceName,
                         ipAddress = getIpv4Address(linkProperties),
                         network.networkHandle,
-                        NetworkStatus.Disconnected
+                        NetworkInterfaceState.Disconnected
                     )
                 )
             }

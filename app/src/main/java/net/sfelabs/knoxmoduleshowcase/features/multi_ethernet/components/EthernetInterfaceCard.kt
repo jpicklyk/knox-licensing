@@ -24,14 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkStatus
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkInterfaceState
 
 @Composable
 fun EthernetInterfaceCard(
     name: String,
     ipAddresses: String? = null,
     macAddress: String? = null,
-    connected: NetworkStatus = NetworkStatus.Unknown
+    connected: NetworkInterfaceState = NetworkInterfaceState.Unknown
 ) {
     Card (
         modifier = Modifier
@@ -45,21 +45,21 @@ fun EthernetInterfaceCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             when(connected) {
-                NetworkStatus.Connected -> {
+                NetworkInterfaceState.Connected -> {
                     Icon(imageVector = Icons.Outlined.CheckCircle,
                         contentDescription = "Ethernet interface is available",
                         tint = Color.Green,
                         modifier = Modifier.size(40.dp)
                     )
                 }
-                NetworkStatus.Disconnected -> {
+                NetworkInterfaceState.Disconnected -> {
                     Icon(imageVector = Icons.Outlined.Error,
                         contentDescription = "Ethernet interface is not available",
                         tint = Color.Red,
                         modifier = Modifier.size(40.dp)
                     )
                 }
-                NetworkStatus.Unknown -> {
+                NetworkInterfaceState.Unknown -> {
                     Icon(imageVector = Icons.Outlined.Warning,
                         contentDescription = "Ethernet interface is in an unknown state",
                         tint = Color.Yellow,
@@ -99,5 +99,5 @@ fun EthernetInterfaceCardDark() {
         name = "eth0",
         ipAddresses = "192.168.2.100",
         macAddress = "3f:e4:5j:33:4k",
-        connected = NetworkStatus.Unknown)
+        connected = NetworkInterfaceState.Unknown)
 }

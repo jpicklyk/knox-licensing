@@ -29,8 +29,11 @@ sealed class VersionInfo(val description: String, val releaseVersion: Int) {
                 "G736U1UEU5CXA3_B2BF" -> TE3Android13MR1Beta
                 "S911U1UEU2AXA4_B2BF" -> TE3Android13MR1
                 "G736U1UEU5CXB1_B2BF" -> TE3Android13MR1
-                "G736U1UEU6CXD1_B2BF" -> TE3Android13MR2Beta
-                "S911U1UEU3AXD1_B2BF" -> TE3Android13MR2Beta
+                "014 G736U1UEU6CXD1_B2BF test-keys" -> TE3Android13MR2Alpha
+                "G736U1UEU6CXD1_B2BF" -> TE3Android13MR2Alpha
+                "S911U1UEU3AXD1_B2BF" -> TE3Android13MR2Alpha
+                "G736U1UEU6CXF1_B2BF" -> TE3Android13MR2Beta
+                "G736U1UEU7CXF2_B2BF" -> TE3Android13MR2Beta
 
                 //TA5
                 "X300XXS1AXC5" -> TE3Android13GA
@@ -51,9 +54,11 @@ sealed class VersionInfo(val description: String, val releaseVersion: Int) {
     data object TE2Android11MR1: VersionInfo("TE2 Android 11 MR1 (extension program)", 111)
     data object TE2Android11MR2: VersionInfo("TE2 Android 11 MR2 (extension program)", 112)
     data object TE2Android11MR3: VersionInfo("TE2 Android 11 MR3 (extension program)", 113)
+    //TE3 Devices
     data object TE3Android13GA: VersionInfo("TE3 Android 13 GA", 130)
     data object TE3Android13MR1Beta: VersionInfo("TE3 Android 13 MR1 (beta)", 131)
     data object TE3Android13MR1: VersionInfo("TE3 Android 13 MR1", 131)
+    data object TE3Android13MR2Alpha: VersionInfo("TE3 Android 13 MR2 alpha", 132)
     data object TE3Android13MR2Beta: VersionInfo("TE3 Android 13 MR2 beta", 132)
 }
 
@@ -85,6 +90,7 @@ fun isTacticalEditionGen3Device(buildNumber: String): Boolean {
         VersionInfo.TE3Android13GA -> true
         VersionInfo.TE3Android13MR1Beta -> true
         VersionInfo.TE3Android13MR1 -> true
+        VersionInfo.TE3Android13MR2Alpha -> true
         VersionInfo.TE3Android13MR2Beta -> true
         else -> false
 

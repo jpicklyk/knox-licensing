@@ -10,6 +10,6 @@ data class EthernetInterface(
         val gateway: String? = null,
         val mac: String? = null,
         val dnsList: String? = null,
-        val connectivity: NetworkStatus = NetworkStatus.Unknown
+        val connectivity: NetworkInterfaceState = NetworkInterfaceState.Unknown
 )
 

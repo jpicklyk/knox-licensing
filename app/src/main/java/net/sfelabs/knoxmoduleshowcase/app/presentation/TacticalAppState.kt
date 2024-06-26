@@ -20,10 +20,10 @@ import net.sfelabs.knoxmoduleshowcase.features.controls.navigation.controlsNavig
 import net.sfelabs.knoxmoduleshowcase.features.controls.navigation.navigateToControls
 import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeNavigationRoute
 import net.sfelabs.knoxmoduleshowcase.features.home.navigation.navigateToHome
-import net.sfelabs.knoxmoduleshowcase.features.logviewer.navigation.loggerNavigationRoute
-import net.sfelabs.knoxmoduleshowcase.features.logviewer.navigation.navigateToLogger
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.navigation.ethernetNavigationRoute
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.navigation.navigateToEthernet
+import net.sfelabs.knoxmoduleshowcase.features.network_manager.presentation.navigation.navigateToNetworkManager
+import net.sfelabs.knoxmoduleshowcase.features.network_manager.presentation.navigation.networkManagerNavigationRoute
 
 /**
  * Application level state container that can be passed down the composition tree to various
@@ -59,7 +59,8 @@ class TacticalAppState(
             homeNavigationRoute -> TopLevelDestination.HOME
             controlsNavigationRoute -> TopLevelDestination.CONTROLS
             ethernetNavigationRoute -> TopLevelDestination.ETHERNET
-            loggerNavigationRoute -> TopLevelDestination.LOGGING
+            networkManagerNavigationRoute -> TopLevelDestination.NetworkManager
+            //loggerNavigationRoute -> TopLevelDestination.LOGGING
             aboutNavigationRoute -> TopLevelDestination.ABOUT
             else -> null
         }
@@ -96,7 +97,8 @@ class TacticalAppState(
             TopLevelDestination.HOME -> navHostController.navigateToHome(topLevelNavOptions)
             TopLevelDestination.CONTROLS -> navHostController.navigateToControls(topLevelNavOptions)
             TopLevelDestination.ETHERNET -> navHostController.navigateToEthernet(topLevelNavOptions)
-            TopLevelDestination.LOGGING -> navHostController.navigateToLogger(topLevelNavOptions)
+            TopLevelDestination.NetworkManager -> navHostController.navigateToNetworkManager(topLevelNavOptions)
+            //TopLevelDestination.LOGGING -> navHostController.navigateToLogger(topLevelNavOptions)
             TopLevelDestination.ABOUT -> navHostController.navigateToAbout(topLevelNavOptions)
         }
 

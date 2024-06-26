@@ -30,7 +30,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetAutoConnec
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnectionUseCase
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.EthernetInterface
-import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkStatus
+import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkInterfaceState
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkUpdate
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.services.NetworkConnectivityService
 import java.net.NetworkInterface
@@ -288,7 +288,7 @@ class EthernetConfigurationViewModel @Inject constructor(
     }
     private fun updateInterfaceConnectivityState(networkUpdate: NetworkUpdate) {
         Log.d(tag, "State Changed: Interface [${networkUpdate.handle}] ${networkUpdate.interfaceName} is ${networkUpdate.isConnected}")
-        if(networkUpdate.isConnected == NetworkStatus.Connected) {
+        if(networkUpdate.isConnected == NetworkInterfaceState.Connected) {
             interfaceHandleMap[networkUpdate.handle] = networkUpdate.interfaceName!!
         }
         val interfaceName = interfaceHandleMap[networkUpdate.handle]
@@ -319,7 +319,7 @@ class EthernetConfigurationViewModel @Inject constructor(
             }
         }
 
-        if(networkUpdate.isConnected == NetworkStatus.Disconnected) {
+        if(networkUpdate.isConnected == NetworkInterfaceState.Disconnected) {
             interfaceHandleMap.remove(networkUpdate.handle)
         }
     }
@@ -354,7 +354,7 @@ class EthernetConfigurationViewModel @Inject constructor(
 
     private fun isEthernetInterface(networkInterface: NetworkInterface): Boolean {
         val interfaceName = networkInterface.name
-        return interfaceName.startsWith("eth", ignoreCase = true)
+        return interfaceName.startsWith("eth", ignoreCase = true) or interfaceName.startsWith("rndis", ignoreCase = true)
     }
 
 }

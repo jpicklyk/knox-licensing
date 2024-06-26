@@ -34,6 +34,7 @@ internal fun Project.configureKotlinAndroid(
         compileSdk = 34
 
         defaultConfig {
+            // Need to leave this at 29 for Android 10 on S20TE
             minSdk = 29
         }
 

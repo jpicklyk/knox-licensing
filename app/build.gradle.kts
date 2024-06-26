@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.bundles.androidx.compose.materialIcons)
     implementation(libs.androidx.navigation)
+    implementation(libs.androidx.compose.material3.adaptive.navigationSuite)
+    implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.kotlin.reflect)
     implementation(libs.composeNumberPicker)
