@@ -1,10 +1,10 @@
-package net.sfelabs.knoxmoduleshowcase.experimental
+package net.sfelabs.knoxmoduleshowcase.manual_tests.experimental
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
@@ -57,8 +57,8 @@ class RoutingTests {
         val chromeUid = packageManager.getPackageUid(packageName, 0)
         val ipSrc = "192.168.2.244"
         val result = ListIpAddressesUseCase(settingsManager).invoke("eth0")
-        assert(result is ApiCall.Success)
-        if(result is ApiCall.Success) {
+        assert(result is ApiResult.Success)
+        if(result is ApiResult.Success) {
             //val ipList = result.data
             val route1 = "route add 192.168.0.3 dev eth0 src $ipSrc table 70"
             val route2 = "route add 192.168.0.4 dev eth0 src $ipSrc table 70"
@@ -69,25 +69,25 @@ class RoutingTests {
                 AdbHeader.IP,
                 route1
             )
-            assert(route1Result is ApiCall.Success)
+            assert(route1Result is ApiResult.Success)
 
             val route2Result = ExecuteAdbCommandUseCase(systemManager).invoke(
                 AdbHeader.IP,
                 route2
             )
-            assert(route2Result is ApiCall.Success)
+            assert(route2Result is ApiResult.Success)
 
             val ruleResult = ExecuteAdbCommandUseCase(systemManager).invoke(
                 AdbHeader.IP,
                 rule
             )
-            assert(ruleResult is ApiCall.Success)
+            assert(ruleResult is ApiResult.Success)
 
             val blockResult = ExecuteAdbCommandUseCase(systemManager).invoke(
                 AdbHeader.IP,
                 block
             )
-            assert(blockResult is ApiCall.Success)
+            assert(blockResult is ApiResult.Success)
         }
 
     }

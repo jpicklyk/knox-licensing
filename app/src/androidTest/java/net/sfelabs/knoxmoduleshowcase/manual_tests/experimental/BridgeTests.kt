@@ -1,11 +1,11 @@
-package net.sfelabs.knoxmoduleshowcase.manual_tests
+package net.sfelabs.knoxmoduleshowcase.manual_tests.experimental
 
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
@@ -42,7 +42,7 @@ class BridgeTests {
         allCommands.forEach { command ->
             println("Running command: $command")
             val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
-            assert(apiResult is ApiCall.Success)
+            assert(apiResult is ApiResult.Success)
         }
     }
 
@@ -60,7 +60,7 @@ class BridgeTests {
             println("Running command: $command")
             val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
             //delay(300)
-            assert(apiResult is ApiCall.Success)
+            assert(apiResult is ApiResult.Success)
         }
     }
 
@@ -75,7 +75,7 @@ class BridgeTests {
             println("Running command: $command")
             val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
             //delay(800)
-            assert(apiResult is ApiCall.Success)
+            assert(apiResult is ApiResult.Success)
         }
     }
 
@@ -90,7 +90,7 @@ class BridgeTests {
             println("Running command: $command")
             val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
             //delay(800)
-            assert(apiResult is ApiCall.Success)
+            assert(apiResult is ApiResult.Success)
         }
     }
 
@@ -105,7 +105,7 @@ class BridgeTests {
             println("Running command: $command")
             val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
             //delay(800)
-            assert(apiResult is ApiCall.Success)
+            assert(apiResult is ApiResult.Success)
         }
     }
 
@@ -120,7 +120,7 @@ class BridgeTests {
             println("Running command: $command")
             val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
             //delay(800)
-            assert(apiResult is ApiCall.Success)
+            assert(apiResult is ApiResult.Success)
         }
     }
 

@@ -1,4 +1,4 @@
-package net.sfelabs.knoxmoduleshowcase.knox_core
+package net.sfelabs.knoxmoduleshowcase.manual_tests.experimental
 
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -6,7 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.license.ActivationInfo
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.license.GetLicenseActivationInfoUseCase
 import org.junit.Assert.assertTrue
@@ -34,7 +34,7 @@ class LicenseTests {
     @Test
     fun checkActivationInfo() = runTest{
         val result = GetLicenseActivationInfoUseCase(licenseManager).invoke()
-        if(result is ApiCall.Success) {
+        if(result is ApiResult.Success) {
             val info = result.data
             println(info)
             assert(ActivationInfo.State.ACTIVE == info.state)
