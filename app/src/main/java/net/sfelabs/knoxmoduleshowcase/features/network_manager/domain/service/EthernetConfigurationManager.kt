@@ -1,6 +1,6 @@
 package net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.service
 
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.ConfigureEthernetInterfaceAltUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnectionAltUseCase
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.InterfaceAddressConfigurationType
@@ -45,7 +45,7 @@ class EthernetConfigurationManager @Inject constructor(
                 dnsAddressList = address.dnsList,
                 defaultRouter = address.gateway
             )
-            if(configureResult is ApiCall.Error) {
+            if(configureResult is ApiResult.Error) {
                 println("Configuration failed: ${configureResult.uiText}")
             }
 

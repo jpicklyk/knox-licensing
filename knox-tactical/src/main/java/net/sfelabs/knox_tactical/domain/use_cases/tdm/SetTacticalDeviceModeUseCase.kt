@@ -2,7 +2,7 @@ package net.sfelabs.knox_tactical.domain.use_cases.tdm
 
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -17,17 +17,17 @@ class SetTacticalDeviceModeUseCase @Inject constructor(
             try {
 
                 val success = restrictionPolicy.enableTacticalDeviceMode(enable)
-                if(success) ApiCall.Success(Unit)
-                else ApiCall.Error(uiText =
+                if(success) ApiResult.Success(Unit)
+                else ApiResult.Error(uiText =
                 UiText.DynamicString("An unknown error occurred")
                 )
             }catch (e: SecurityException) {
-                ApiCall.Error(uiText =
+                ApiResult.Error(uiText =
                 UiText.DynamicString(
                     e.message?:"Calling application does not have the required permission"
                 ))
             } catch (nsm: NoSuchMethodError) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             }
         }
 

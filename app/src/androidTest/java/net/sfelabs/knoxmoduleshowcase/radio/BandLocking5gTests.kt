@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.radio
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Disable5gBandLockingUseCase
@@ -25,8 +25,8 @@ class BandLocking5gTests {
     @Before
     fun recordCurrentBandLocking() = runTest {
         val result = Get5gBandLockingUseCase(systemManager).invoke()
-        if(result is ApiCall.Success) {
-            currentBand = result.data.apiValue
+        if(result is ApiResult.Success) {
+            currentBand = result.data.value
         }
     }
 
@@ -34,10 +34,10 @@ class BandLocking5gTests {
     fun enable5gBandLockingN78() = runTest {
         val band = 78
         val result = Enable5gBandLockingUseCase(systemManager).invoke(band)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val result2 = Get5gBandLockingUseCase(systemManager).invoke()
-        assert(result2 is ApiCall.Success && result2.data.enabled && result2.data.apiValue == band)
+        assert(result2 is ApiResult.Success && result2.data.enabled && result2.data.value == band)
     }
 
     /**
@@ -48,26 +48,26 @@ class BandLocking5gTests {
     fun enable5gBandLocking_BANDLOCK_NONE() = runTest {
         val band = -1
         val result = Enable5gBandLockingUseCase(systemManager).invoke(band)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val result2 = Get5gBandLockingUseCase(systemManager).invoke()
-        assert(result2 is ApiCall.Success && !result2.data.enabled && result2.data.apiValue == band)
+        assert(result2 is ApiResult.Success && !result2.data.enabled && result2.data.value == band)
     }
 
     @Test
     fun enable5gBandLocking_invalidParameter() = runTest {
         val band = -2
         val result = Enable5gBandLockingUseCase(systemManager).invoke(band)
-        assert(result is ApiCall.Error)
+        assert(result is ApiResult.Error)
     }
 
     @Test
     fun disable5gBandLocking() = runTest {
         val result = Disable5gBandLockingUseCase(systemManager).invoke()
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val result2 = Get5gBandLockingUseCase(systemManager).invoke()
-        assert(result2 is ApiCall.Success && !result2.data.enabled)
+        assert(result2 is ApiResult.Success && !result2.data.enabled)
     }
 
     @After

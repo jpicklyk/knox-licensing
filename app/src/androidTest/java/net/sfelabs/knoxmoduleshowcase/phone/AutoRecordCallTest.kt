@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.phone
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoRecordCallEnabledUseCase
@@ -35,20 +35,20 @@ class AutoRecordCallTest {
     fun setAutoRecordCallEnabledState_Enabled() = runTest {
         val useCase = SetAutoRecordCallEnabledUseCase(systemManager)
         val result = useCase.invoke(true)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetAutoRecordCallEnabledUseCase(systemManager)
         val result2 = getCase.invoke()
-        assert(result2 is ApiCall.Success && result2.data)
+        assert(result2 is ApiResult.Success && result2.data)
     }
 
     @Test
     fun setAutoRecordCallEnabledState_Disabled() = runTest {
         val useCase = SetAutoRecordCallEnabledUseCase(systemManager)
         val result = useCase.invoke(false)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetAutoRecordCallEnabledUseCase(systemManager)
         val result2 = getCase.invoke()
-        assert(result2 is ApiCall.Success && !result2.data)
+        assert(result2 is ApiResult.Success && !result2.data)
     }
 
     @After

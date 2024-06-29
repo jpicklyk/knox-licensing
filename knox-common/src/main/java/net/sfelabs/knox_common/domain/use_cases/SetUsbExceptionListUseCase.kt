@@ -2,7 +2,7 @@ package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import javax.inject.Inject
@@ -15,11 +15,11 @@ class SetUsbExceptionListUseCase @Inject constructor(
             try {
                 val result = restrictionPolicy.setUsbExceptionList(usbClassList)
                 if (result)
-                    ApiCall.Success(Unit)
+                    ApiResult.Success(Unit)
                 else
-                    ApiCall.Error(UiText.DynamicString("The API setUsbExceptionList($usbClassList) failed"))
+                    ApiResult.Error(UiText.DynamicString("The API setUsbExceptionList($usbClassList) failed"))
             } catch (se: SecurityException) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" " +
@@ -27,7 +27,7 @@ class SetUsbExceptionListUseCase @Inject constructor(
                     )
                 )
             } catch (ex: NoSuchMethodException) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             }
         }
     }

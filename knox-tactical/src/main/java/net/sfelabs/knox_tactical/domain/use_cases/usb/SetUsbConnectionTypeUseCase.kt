@@ -3,7 +3,7 @@ package net.sfelabs.knox_tactical.domain.use_cases.usb
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -20,20 +20,20 @@ class SetUsbConnectionTypeUseCase @Inject constructor(
                 val result = systemManager.setUsbConnectionType(type.value)
 
                 if(result == CustomDeviceManager.SUCCESS) {
-                    ApiCall.Success(Unit)
+                    ApiResult.Success(Unit)
                 } else {
-                    ApiCall.Error(UiText.DynamicString("The specified connection type is invalid"))
+                    ApiResult.Error(UiText.DynamicString("The specified connection type is invalid"))
                 }
             } catch (e: SecurityException) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM\" permission"
                     ))
             } catch (nsm: NoSuchMethodError) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             } catch (ex: Exception) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             }
         }
     }

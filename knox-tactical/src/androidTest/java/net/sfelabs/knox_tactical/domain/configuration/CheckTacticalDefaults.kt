@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.ramplus.GetRamPlusDisabledStateUseCase
@@ -22,7 +22,7 @@ class CheckTacticalDefaults {
     fun ramPlusState_Disabled() = runTest {
         val getUseCase = GetRamPlusDisabledStateUseCase(systemManager)
         val result2 = getUseCase.invoke()
-        assert(result2 is ApiCall.Success && !result2.data.enabled)
+        assert(result2 is ApiResult.Success && !result2.data.enabled)
     }
 
     @Test

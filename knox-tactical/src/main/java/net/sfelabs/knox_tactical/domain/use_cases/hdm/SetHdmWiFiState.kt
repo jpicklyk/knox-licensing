@@ -4,7 +4,7 @@ import android.content.Context
 import com.samsung.android.knox.EnterpriseDeviceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.parseHdmPolicyBlock
 import java.util.UUID
@@ -14,7 +14,7 @@ class SetHdmWiFiState @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val bitmask = 8
-    suspend operator fun invoke(disabled: Boolean, reboot: Boolean = false): ApiCall<Boolean> {
+    suspend operator fun invoke(disabled: Boolean, reboot: Boolean = false): ApiResult<Boolean> {
         return coroutineScope {
             try {
                 val hdmManager =
@@ -31,11 +31,11 @@ class SetHdmWiFiState @Inject constructor(
                     } else {
                         currentPolicy and bitmask.inv()
                     }
-                ApiCall.Success(hdmManager.stealthHwControl(newPolicy, reboot))
+                ApiResult.Success(hdmManager.stealthHwControl(newPolicy, reboot))
             } catch(e: NoSuchMethodError) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             } catch (e: Exception) {
-                ApiCall.Error(UiText.DynamicString("getHdmPolicy failed: ${e.message}"))
+                ApiResult.Error(UiText.DynamicString("getHdmPolicy failed: ${e.message}"))
             }
         }
     }

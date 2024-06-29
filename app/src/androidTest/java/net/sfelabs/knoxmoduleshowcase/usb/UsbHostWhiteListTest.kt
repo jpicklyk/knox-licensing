@@ -6,7 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.AppIdentity
 import com.samsung.android.knox.EnterpriseDeviceManager
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.domain.use_cases.AllowUsbHostStorageUseCase
 import net.sfelabs.knox_common.domain.use_cases.IsUsbHostStorageAllowedUseCase
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
@@ -45,10 +45,10 @@ class UsbHostWhiteListTest {
     fun step1_disableUsbHostMode() = runTest {
         val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
         val res = hostStorageUseCase.invoke(false)
-        assert(res is ApiCall.Success)
+        assert(res is ApiResult.Success)
 
         val result = IsUsbHostStorageAllowedUseCase(edm.restrictionPolicy).invoke()
-        assert(result is ApiCall.Success && !result.data)
+        assert(result is ApiResult.Success && !result.data)
     }
 
     @Test
@@ -60,11 +60,11 @@ class UsbHostWhiteListTest {
         println("Signature: $sig")
         val appIdentity = AppIdentity(mtpPackage, sig)
         val result = useCase.invoke(true, appIdentity)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val useCase2 = GetPackagesFromUsbHostWhiteListUseCase(edm)
         val result2 =  useCase2.invoke()
-        assert(result2 is ApiCall.Success && result2.data.contains(mtpPackage))
+        assert(result2 is ApiResult.Success && result2.data.contains(mtpPackage))
 
     }
 
@@ -77,21 +77,21 @@ class UsbHostWhiteListTest {
         println("Signature: $sig")
         val appIdentity = AppIdentity(mtpPackage, sig)
         val result = useCase.invoke(appIdentity)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val useCase2 = GetPackagesFromUsbHostWhiteListUseCase(edm)
         val result2 =  useCase2.invoke()
-        assert(result2 is ApiCall.Success && result2.data.isEmpty())
+        assert(result2 is ApiResult.Success && result2.data.isEmpty())
     }
 
     @Test
     fun step4_allowUsbHostTest() = runTest {
         val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
         val res = hostStorageUseCase.invoke(true)
-        assert(res is ApiCall.Success)
+        assert(res is ApiResult.Success)
 
         val result = IsUsbHostStorageAllowedUseCase(edm.restrictionPolicy).invoke()
-        assert(result is ApiCall.Success && result.data)
+        assert(result is ApiResult.Success && result.data)
     }
 
 }

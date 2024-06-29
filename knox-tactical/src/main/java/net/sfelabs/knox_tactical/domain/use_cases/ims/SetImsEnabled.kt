@@ -5,7 +5,7 @@ import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_INVALID
 import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_NONE
 import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_NOT_SUPPORTED
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -19,19 +19,19 @@ class SetImsEnabled @Inject constructor(
         return coroutineScope {
             try {
                 when(phoneRestrictionPolicy.setIMSEnabled(feature, enable, simSlotId)) {
-                    ERROR_NONE -> ApiCall.Success(Unit)
-                    ERROR_NOT_SUPPORTED -> ApiCall.NotSupported
-                    ERROR_INVALID_INPUT -> ApiCall.Error(UiText.DynamicString("Invalid input provided."))
-                    else -> ApiCall.Error(UiText.DynamicString("An unknown error was encountered."))
+                    ERROR_NONE -> ApiResult.Success(Unit)
+                    ERROR_NOT_SUPPORTED -> ApiResult.NotSupported
+                    ERROR_INVALID_INPUT -> ApiResult.Error(UiText.DynamicString("Invalid input provided."))
+                    else -> ApiResult.Error(UiText.DynamicString("An unknown error was encountered."))
                 }
             } catch (se: SecurityException) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_PHONE_RESTRICTION\" permission"
                     ))
             } catch (ex: NoSuchMethodError) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             }
         }
     }

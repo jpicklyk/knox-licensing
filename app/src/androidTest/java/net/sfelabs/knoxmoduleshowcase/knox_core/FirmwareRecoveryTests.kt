@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.AllowFirmwareRecoveryUseCase
 import net.sfelabs.knox_common.domain.use_cases.IsFirmwareRecoveryAllowedUseCase
@@ -33,10 +33,10 @@ class FirmwareRecoveryTests {
         val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
         val useCase = AllowFirmwareRecoveryUseCase(edm)
         val result = useCase.invoke(true)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val allowed = IsFirmwareRecoveryAllowedUseCase(edm).invoke(true)
-        assert(allowed is ApiCall.Success && allowed.data)
+        assert(allowed is ApiResult.Success && allowed.data)
     }
 
     @Test
@@ -44,10 +44,10 @@ class FirmwareRecoveryTests {
         val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
         val useCase = AllowFirmwareRecoveryUseCase(edm)
         val result = useCase.invoke(false)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val allowed = IsFirmwareRecoveryAllowedUseCase(edm).invoke(true)
-        assert(allowed is ApiCall.Success && !allowed.data)
+        assert(allowed is ApiResult.Success && !allowed.data)
     }
 
     @After

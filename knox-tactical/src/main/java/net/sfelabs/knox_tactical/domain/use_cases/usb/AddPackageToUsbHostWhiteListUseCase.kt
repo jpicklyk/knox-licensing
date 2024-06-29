@@ -6,7 +6,7 @@ import com.samsung.android.knox.application.ApplicationPolicy
 import com.samsung.android.knox.custom.CustomDeviceManager
 
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -28,15 +28,15 @@ class AddPackageToUsbHostWhiteListUseCase @Inject constructor(
                         appPolicy.removePackageFromUsbHostWhiteList(appIdentity)
                     }
                 if (result != CustomDeviceManager.SUCCESS) {
-                    ApiCall.Error(
+                    ApiResult.Error(
                         UiText.DynamicString(
                             "addPackageToUsbHostWhiteList error: $result"
                         ))
                 } else {
-                    ApiCall.Success(Unit)
+                    ApiResult.Success(Unit)
                 }
             } catch (e: Exception) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                         e.message!!
                     ))

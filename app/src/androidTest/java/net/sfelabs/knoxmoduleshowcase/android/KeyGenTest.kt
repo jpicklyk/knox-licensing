@@ -9,8 +9,8 @@ import com.samsung.android.knox.integrity.EnhancedAttestationPolicy
 import com.samsung.knox.attesation.blobvalidator.library.Verdict
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
-import net.sfelabs.core.domain.use_cases.keystore.KeyGeneratorUseCase
+import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.knox_common.domain.use_cases.attestation.KeyGeneratorUseCase
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.attestation.GetAttestationBlobUseCase
 import net.sfelabs.knox_common.domain.use_cases.attestation.ValidateAttestationUseCase
@@ -39,13 +39,13 @@ class KeyGenTest {
         println("Starting keygen stress test")
         for(i in 10 downTo 0 step 1) {
             val result = useCase.invoke()
-            assertTrue("Certificate generation failed: $result", result is ApiCall.Success)
+            assertTrue("Certificate generation failed: $result", result is ApiResult.Success)
             val nonce = UUID.randomUUID().toString()
             val blobResult = GetAttestationBlobUseCase(attestationPolicy).invoke(nonce)
-            assertTrue("Unable to get attestation blob", blobResult is ApiCall.Success)
-            if(blobResult is ApiCall.Success) {
+            assertTrue("Unable to get attestation blob", blobResult is ApiResult.Success)
+            if(blobResult is ApiResult.Success) {
                 val attestationResult = ValidateAttestationUseCase().invoke(nonce, blobResult.data)
-                assert(attestationResult is ApiCall.Success
+                assert(attestationResult is ApiResult.Success
                         && attestationResult.data.verdict == Verdict.Yes)
             }
         }

@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.radio
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.LteNrModeState
@@ -25,7 +25,7 @@ class Nr5GModeTests {
     @Before
     fun recordCurrentConfiguration() = runTest {
         val result = Get5gNrModeUseCase(systemManager).invoke()
-        if(result is ApiCall.Success) {
+        if(result is ApiResult.Success) {
             currentState = result.data.value
         }
     }
@@ -33,25 +33,25 @@ class Nr5GModeTests {
     @Test
     fun setNsaMode() = runTest {
         val setCase = Set5gNrModeUseCase(systemManager).invoke(LteNrModeState.DisableSa)
-        assert(setCase is ApiCall.Success)
+        assert(setCase is ApiResult.Success)
         val getCase = Get5gNrModeUseCase(systemManager).invoke()
-        assert(getCase is ApiCall.Success && getCase.data == LteNrModeState.DisableSa)
+        assert(getCase is ApiResult.Success && getCase.data == LteNrModeState.DisableSa)
     }
 
     @Test
     fun setSaMode() = runTest {
         val setCase = Set5gNrModeUseCase(systemManager).invoke(LteNrModeState.DisableNsa)
-        assert(setCase is ApiCall.Success)
+        assert(setCase is ApiResult.Success)
         val getCase = Get5gNrModeUseCase(systemManager).invoke()
-        assert(getCase is ApiCall.Success && getCase.data == LteNrModeState.DisableNsa)
+        assert(getCase is ApiResult.Success && getCase.data == LteNrModeState.DisableNsa)
     }
 
     @Test
     fun setSaAndNsaMode() = runTest {
         val setCase = Set5gNrModeUseCase(systemManager).invoke(LteNrModeState.EnableBothSaAndNsa)
-        assert(setCase is ApiCall.Success)
+        assert(setCase is ApiResult.Success)
         val getCase = Get5gNrModeUseCase(systemManager).invoke()
-        assert(getCase is ApiCall.Success && getCase.data == LteNrModeState.EnableBothSaAndNsa)
+        assert(getCase is ApiResult.Success && getCase.data == LteNrModeState.EnableBothSaAndNsa)
     }
 
     @After

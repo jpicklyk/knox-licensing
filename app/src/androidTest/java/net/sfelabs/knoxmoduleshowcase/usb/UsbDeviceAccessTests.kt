@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.usb
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbAccessBySerialUseCase
@@ -25,10 +25,10 @@ class UsbDeviceAccessTests {
         val serials = listOf("0504a2635")
         val useCase = SetUsbAccessBySerialUseCase(systemManager)
         val result = useCase.invoke(true, serials)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbAccessBySerialUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == "0504a2635")
+        assert(res is ApiResult.Success && res.data == "0504a2635")
     }
 
     @Test
@@ -36,10 +36,10 @@ class UsbDeviceAccessTests {
         val serials = listOf("123456789abc", "cba987654321")
         val useCase = SetUsbAccessBySerialUseCase(systemManager)
         val result = useCase.invoke(true, serials)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbAccessBySerialUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == "123456789abc:cba987654321")
+        assert(res is ApiResult.Success && res.data == "123456789abc:cba987654321")
     }
 
     @Test
@@ -47,10 +47,10 @@ class UsbDeviceAccessTests {
         val serials = listOf("123456789abc", "cba987654321")
         val useCase = SetUsbAccessBySerialUseCase(systemManager)
         val result = useCase.invoke(false, serials)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbAccessBySerialUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == "OFF")
+        assert(res is ApiResult.Success && res.data == "OFF")
     }
 
     @Test
@@ -58,10 +58,10 @@ class UsbDeviceAccessTests {
         val serials = listOf("OFF")
         val useCase = SetUsbAccessBySerialUseCase(systemManager)
         val result = useCase.invoke(false, serials)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbAccessBySerialUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == "OFF")
+        assert(res is ApiResult.Success && res.data == "OFF")
     }
 
     @Test
@@ -69,10 +69,10 @@ class UsbDeviceAccessTests {
         val vidpid = "1234:4321"
         val useCase = SetUsbDeviceAccessAllowedListUseCase(systemManager)
         val result = useCase.invoke(true, vidpid)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbDeviceAccessAllowedListUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == vidpid)
+        assert(res is ApiResult.Success && res.data == vidpid)
     }
 
     @Test
@@ -80,10 +80,10 @@ class UsbDeviceAccessTests {
         val vidpid = "OFF"
         val useCase = SetUsbDeviceAccessAllowedListUseCase(systemManager)
         val result = useCase.invoke(false, vidpid)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbDeviceAccessAllowedListUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == vidpid)
+        assert(res is ApiResult.Success && res.data == vidpid)
     }
 
     @Test
@@ -91,10 +91,10 @@ class UsbDeviceAccessTests {
         val vidpid = "1234:4321"
         val useCase = SetUsbDeviceAccessAllowedListUseCase(systemManager)
         val result = useCase.invoke(false, vidpid)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbDeviceAccessAllowedListUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == "OFF")
+        assert(res is ApiResult.Success && res.data == "OFF")
     }
 
     @After

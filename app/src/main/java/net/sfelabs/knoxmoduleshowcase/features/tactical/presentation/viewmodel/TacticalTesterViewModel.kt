@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.sfelabs.android_log_wrapper.Log
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
 import net.sfelabs.core.domain.processFeatureList
 import net.sfelabs.core.presentation.KnoxFeatureState
@@ -80,17 +80,17 @@ class TacticalTesterViewModel @Inject constructor(
                 )
                 val feature = TacticalFeature(knoxFeature.key)!!
                 when(val apiCall = featureService.getApiEnabledState(feature)) {
-                    ApiCall.NotSupported -> {
+                    ApiResult.NotSupported -> {
                         state.copy(isSupported = false)
                     }
 
-                    is ApiCall.Error -> {
+                    is ApiResult.Error -> {
                         log.e(apiCall.uiText.toString())
                         state.copy(hasError = true, error = apiCall.uiText.toString())
                     }
 
-                    is ApiCall.Success -> {
-                        when(val value = apiCall.data.apiValue) {
+                    is ApiResult.Success -> {
+                        when(val value = apiCall.data.value) {
                             is String -> KnoxFeatureValueType.StringValue(value)
                             is Boolean -> KnoxFeatureValueType.BooleanValue(value)
                             is Int -> KnoxFeatureValueType.IntegerValue(value)
@@ -99,7 +99,7 @@ class TacticalTesterViewModel @Inject constructor(
                         state.copy(
                             enabled = apiCall.data.enabled,
                             knoxFeatureValueType = featureService.getFeatureValueType(
-                                feature, apiCall.data.apiValue
+                                feature, apiCall.data.value
                             )
                         )
                     }
@@ -117,16 +117,16 @@ class TacticalTesterViewModel @Inject constructor(
         return when (
             val apiCall = featureService.setCurrentState(TacticalFeature(state.key), enabled, data)
         ) {
-            ApiCall.NotSupported -> {
+            ApiResult.NotSupported -> {
                 state.copy(isSupported = false)
             }
 
-            is ApiCall.Error -> {
+            is ApiResult.Error -> {
                 log.e(apiCall.uiText.toString())
                 state.copy(hasError = true, error = apiCall.uiText.toString())
             }
 
-            is ApiCall.Success -> {
+            is ApiResult.Success -> {
                 state.copy(enabled = enabled)
             }
         }

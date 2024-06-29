@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.manual_tests
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.FlakyTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.UsbConnectionType
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbConnectionTypeUseCase
@@ -20,7 +20,7 @@ class UsbConnectionTypeTests {
     @Before
     fun setup() = runTest {
         val result = GetUsbConnectionTypeUseCase(systemManager).invoke()
-        if(result is ApiCall.Success) {
+        if(result is ApiResult.Success) {
             currentType = result.data
         }
     }
@@ -46,10 +46,10 @@ class UsbConnectionTypeTests {
     fun testUsbConnectionType_RndisTethering() = runTest {
         val setUseCase = SetUsbConnectionTypeUseCase(systemManager)
         val apiResult = setUseCase.invoke(UsbConnectionType.Tethering)
-        assert(apiResult is ApiCall.Success)
+        assert(apiResult is ApiResult.Success)
         Thread.sleep(1000)
         val result = GetUsbConnectionTypeUseCase(systemManager).invoke()
-        assert(result is ApiCall.Success && result.data == UsbConnectionType.Tethering)
+        assert(result is ApiResult.Success && result.data == UsbConnectionType.Tethering)
     }
 
     @After

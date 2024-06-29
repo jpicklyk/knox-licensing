@@ -2,19 +2,19 @@ package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import javax.inject.Inject
 
 class IsUsbHostStorageAllowedUseCase @Inject constructor(
     private val restrictionPolicy: RestrictionPolicy
 ) {
-    suspend operator fun invoke(): ApiCall<Boolean> {
+    suspend operator fun invoke(): ApiResult<Boolean> {
         return coroutineScope {
             try {
-                ApiCall.Success(restrictionPolicy.isUsbHostStorageAllowed)
+                ApiResult.Success(restrictionPolicy.isUsbHostStorageAllowed)
             } catch (se: SecurityException) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" " +
@@ -22,7 +22,7 @@ class IsUsbHostStorageAllowedUseCase @Inject constructor(
                     )
                 )
             } catch (ex: NoSuchMethodException) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             }
         }
     }

@@ -1,10 +1,10 @@
 package net.sfelabs.knox_tactical.domain.services
 
 import net.sfelabs.android_log_wrapper.Log
-import net.sfelabs.core.domain.ApiCall
-import net.sfelabs.core.domain.ApiResult
+import net.sfelabs.core.domain.api.feature.FeatureState
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
 import net.sfelabs.knox_tactical.domain.model.TacticalFeature
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensitivityUseCase
@@ -47,7 +47,7 @@ class TacticalFeatureService @Inject constructor(
     private val log: Log
 ) {
 
-    suspend fun getApiEnabledState(feature: TacticalFeature): ApiCall<ApiResult<*>> {
+    suspend fun getApiEnabledState(feature: TacticalFeature): ApiResult<FeatureState<*>> {
         return when(feature) {
             TacticalFeature.AutoSensitivity -> getAutoTouchSensitivityUseCase()
             TacticalFeature.TacticalDeviceMode -> getTacticalDeviceModeUseCase()
@@ -62,7 +62,7 @@ class TacticalFeatureService @Inject constructor(
 
     suspend fun setCurrentState(feature: TacticalFeature?, enable: Boolean, data: Any? = null): UnitApiCall {
         if(feature == null)
-            return ApiCall.Error(UiText.DynamicString("Feature key is not supported"))
+            return ApiResult.Error(UiText.DynamicString("Feature key is not supported"))
 
         return when(feature) {
             TacticalFeature.AutoSensitivity -> setAutoTouchSensitivityUseCase(enable)

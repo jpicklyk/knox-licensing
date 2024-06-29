@@ -5,7 +5,7 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.restriction.RestrictionPolicy.USBInterface
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.SetUsbExceptionListUseCase
 import org.junit.Test
@@ -28,7 +28,7 @@ class UsbClassExceptionTests {
     fun setCdcOnly() = runTest {
         val usbClasses: Int = USBInterface.CDC.value
         val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
-        assert(useCase is ApiCall.Success)
+        assert(useCase is ApiResult.Success)
     }
 
     /**
@@ -39,14 +39,14 @@ class UsbClassExceptionTests {
     fun setCdcAndMas() = runTest {
         val usbClasses: Int = USBInterface.CDC.value or USBInterface.MAS.value
         val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
-        assert(useCase is ApiCall.Success)
+        assert(useCase is ApiResult.Success)
     }
 
     @Test
     fun setMasOnly() = runTest {
         val usbClasses: Int = USBInterface.MAS.value
         val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
-        assert(useCase is ApiCall.Success)
+        assert(useCase is ApiResult.Success)
     }
 
 
@@ -54,6 +54,6 @@ class UsbClassExceptionTests {
     fun setAllOpen() = runTest {
         val usbClasses: Int = USBInterface.OFF.value
         val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
-        assert(useCase is ApiCall.Success)
+        assert(useCase is ApiResult.Success)
     }
 }

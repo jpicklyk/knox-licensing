@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.AllowOtaUpgradeUseCase
 import net.sfelabs.knox_common.domain.use_cases.IsOtaUpgradeAllowedUseCase
@@ -26,18 +26,18 @@ class AllowOtaUpgradeTests {
     fun allowUpgrade() = runTest {
         val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
         val setCase = AllowOtaUpgradeUseCase(edm).invoke(true)
-        assert(setCase is ApiCall.Success)
+        assert(setCase is ApiResult.Success)
         val getCase = IsOtaUpgradeAllowedUseCase(edm).invoke()
-        assert(getCase is ApiCall.Success && getCase.data)
+        assert(getCase is ApiResult.Success && getCase.data)
     }
 
     @Test
     fun disallowUpgrade() = runTest {
         val edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
         val setCase = AllowOtaUpgradeUseCase(edm).invoke(false)
-        assert(setCase is ApiCall.Success)
+        assert(setCase is ApiResult.Success)
         val getCase = IsOtaUpgradeAllowedUseCase(edm).invoke()
-        assert(getCase is ApiCall.Success && !getCase.data)
+        assert(getCase is ApiResult.Success && !getCase.data)
     }
 
     @After

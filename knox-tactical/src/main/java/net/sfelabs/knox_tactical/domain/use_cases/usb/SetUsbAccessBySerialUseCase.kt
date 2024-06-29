@@ -3,7 +3,7 @@ package net.sfelabs.knox_tactical.domain.use_cases.usb
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -31,16 +31,16 @@ class SetUsbAccessBySerialUseCase @Inject constructor(
 
                 when (result) {
                     CustomDeviceManager.SUCCESS -> {
-                        ApiCall.Success(Unit)
+                        ApiResult.Success(Unit)
                     }
                     CustomDeviceManager.ERROR_INVALID_VALUE -> {
-                        ApiCall.Error(
+                        ApiResult.Error(
                             UiText.DynamicString(
                                 "Error invalid value"
                             ))
                     }
                     else -> {
-                        ApiCall.Error(
+                        ApiResult.Error(
                             UiText.DynamicString(
                                 "Error, the arguments were not executed"
                             ))
@@ -48,7 +48,7 @@ class SetUsbAccessBySerialUseCase @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                         e.message!!
                     ))

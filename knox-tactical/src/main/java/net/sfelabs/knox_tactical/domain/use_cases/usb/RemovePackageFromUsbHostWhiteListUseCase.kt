@@ -4,7 +4,7 @@ import com.samsung.android.knox.AppIdentity
 import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.application.ApplicationPolicy
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -19,15 +19,15 @@ class RemovePackageFromUsbHostWhiteListUseCase @Inject constructor(
                 val appPolicy: ApplicationPolicy = enterpriseDeviceManager.applicationPolicy
                 val result = appPolicy.removePackageFromUsbHostWhiteList(appIdentity)
                 if (result != ApplicationPolicy.ERROR_NONE) {
-                    ApiCall.Error(
+                    ApiResult.Error(
                         UiText.DynamicString(
                             "removePackageToUsbHostWhiteList error: $result"
                         ))
                 } else {
-                    ApiCall.Success(Unit)
+                    ApiResult.Success(Unit)
                 }
             } catch (e: Exception) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                         e.message!!
                     ))

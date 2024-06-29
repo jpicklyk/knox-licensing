@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.radio
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.ims.IsImsEnabledUseCase
@@ -24,7 +24,7 @@ class ImsTests {
     @Before
     fun readCurrentState() = runTest {
         val result = IsImsEnabledUseCase(phoneRestrictionPolicy).invoke(1, 0)
-        if(result is ApiCall.Success) {
+        if(result is ApiResult.Success) {
             imsEnabled = result.data
         }
     }
@@ -32,29 +32,29 @@ class ImsTests {
     @Test
     fun setImsEnabled() = runTest {
         val result = SetImsEnabled(phoneRestrictionPolicy).invoke(enable = true)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val result2 = IsImsEnabledUseCase(phoneRestrictionPolicy).invoke(1, 0)
-        assert(result2 is ApiCall.Success && result2.data)
+        assert(result2 is ApiResult.Success && result2.data)
     }
 
     @Test
     fun setImsDisabled() = runTest {
         val result = SetImsEnabled(phoneRestrictionPolicy).invoke(enable = false)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val result2 = IsImsEnabledUseCase(phoneRestrictionPolicy).invoke(1, 0)
-        assert(result2 is ApiCall.Success && !result2.data)
+        assert(result2 is ApiResult.Success && !result2.data)
     }
 
     @Test
     fun setInvalidImsFeature() = runTest {
         val result = SetImsEnabled(phoneRestrictionPolicy).invoke(0, 0, false)
-        assert(result is ApiCall.Error)
+        assert(result is ApiResult.Error)
     }
 
     @Test
     fun setInvalidSimSlotId() = runTest {
         val result = SetImsEnabled(phoneRestrictionPolicy).invoke(1, 2, false)
-        assert(result is ApiCall.Error)
+        assert(result is ApiResult.Error)
     }
 
     @After

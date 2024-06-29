@@ -3,30 +3,30 @@ package net.sfelabs.knox_tactical.domain.use_cases.screen
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
-import net.sfelabs.core.domain.ApiResult
+import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.core.domain.api.feature.FeatureState
 import net.sfelabs.core.domain.UiText
 import javax.inject.Inject
 
 class GetExtraBrightnessUseCase @Inject constructor(
     private val settingsManager: SettingsManager
 ){
-    suspend operator fun invoke(): ApiCall<ApiResult<Boolean>> {
+    suspend operator fun invoke(): ApiResult<FeatureState<Boolean>> {
         return coroutineScope {
             try {
                 when (settingsManager.extraBrightness) {
                     CustomDeviceManager.ON ->
-                        ApiCall.Success(ApiResult(enabled = true, apiValue = true))
+                        ApiResult.Success(FeatureState(enabled = true, value = true))
                     CustomDeviceManager.OFF ->
-                        ApiCall.Success(ApiResult(enabled = false, apiValue = false))
+                        ApiResult.Success(FeatureState(enabled = false, value = false))
                     else -> {
-                        ApiCall.Error(UiText.DynamicString("Unknown error occurred"))
+                        ApiResult.Error(UiText.DynamicString("Unknown error occurred"))
                     }
                 }
             } catch (e: NoSuchMethodError) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             } catch (e: Exception) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                         e.message!!
                     )

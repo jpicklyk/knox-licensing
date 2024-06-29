@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.NetworkManagerState
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.Interface
@@ -378,7 +378,7 @@ class NetworkManagerListViewModel @Inject constructor(
 
     private fun lookupMacAddress(interfaceName: String): String {
         val result = getMacAddressForInterfaceUseCase(interfaceName)
-        return if (result is ApiCall.Success) {
+        return if (result is ApiResult.Success) {
             result.data
         } else {
             ""

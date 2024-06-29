@@ -7,7 +7,7 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
@@ -52,7 +52,7 @@ class LinuxTunnelingTests {
         var result = true
         for(command in commands) {
             val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
-            result = if(apiResult is ApiCall.Success)
+            result = if(apiResult is ApiResult.Success)
                 result and true
             else
                 false

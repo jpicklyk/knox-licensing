@@ -6,7 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.domain.use_cases.settings.GetBrightnessModeUseCase
 import net.sfelabs.knox_common.domain.use_cases.settings.GetBrightnessValueUseCase
 import net.sfelabs.knox_common.domain.use_cases.settings.SetBrightnessUseCase
@@ -26,19 +26,19 @@ class ScreenBrightnessTests {
     @Test
     fun setBrightnessTo50() = runTest {
         val result = SetBrightnessUseCase(settingsManager).invoke(true, 50)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val result2 = GetBrightnessValueUseCase(context).invoke()
-        assert(result2 is ApiCall.Success && result2.data == 50)
+        assert(result2 is ApiResult.Success && result2.data == 50)
         val result3 = GetBrightnessModeUseCase(context).invoke()
-        assert(result3 is ApiCall.Success && result3.data == SCREEN_BRIGHTNESS_MODE_MANUAL)
+        assert(result3 is ApiResult.Success && result3.data == SCREEN_BRIGHTNESS_MODE_MANUAL)
     }
 
     @Test
     fun setBrightnessToAdaptive() = runTest {
         val result = SetBrightnessUseCase(settingsManager).invoke(false)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val result2 = GetBrightnessModeUseCase(context).invoke()
-        assert(result2 is ApiCall.Success && result2.data == SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+        assert(result2 is ApiResult.Success && result2.data == SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
     }
 
     @Test
@@ -46,10 +46,10 @@ class ScreenBrightnessTests {
     fun setExtraBrightness_On() = runTest {
         setBrightnessTo50()
         val result = SetExtraBrightnessUseCase(settingsManager).invoke(true)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val result2 = GetExtraBrightnessUseCase(settingsManager).invoke()
-        assert(result2 is ApiCall.Success && result2.data.apiValue)
+        assert(result2 is ApiResult.Success && result2.data.value)
     }
 
     @Test
@@ -57,10 +57,10 @@ class ScreenBrightnessTests {
     fun setExtraBrightness_Off() = runTest {
         setBrightnessTo50()
         val result = SetExtraBrightnessUseCase(settingsManager).invoke(false)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val result2 = GetExtraBrightnessUseCase(settingsManager).invoke()
-        assert(result2 is ApiCall.Success && !result2.data.apiValue)
+        assert(result2 is ApiResult.Success && !result2.data.value)
     }
 
     @After

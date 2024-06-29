@@ -14,7 +14,7 @@ import com.samsung.android.knox.license.ActivationInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.domain.use_cases.license.GetLicenseActivationInfoUseCase
 import java.util.Date
 import javax.inject.Inject
@@ -53,7 +53,7 @@ class HomeScreenViewModel @Inject constructor(
 
     private suspend fun updateKnoxActivationInfo() {
         val results = getLicenseActivationInfoUseCase()
-        if(results is ApiCall.Success) {
+        if(results is ApiResult.Success) {
             val info = results.data
             _knoxState.value = _knoxState.value.copy(
                 maskedKey = info.maskedLicenseKey,

@@ -9,7 +9,7 @@ import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.annotations.ApiExists
 import net.sfelabs.core.checkMethodExistence
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.EnableRandomizedMacAddressUseCase
@@ -59,27 +59,27 @@ class RandomizedMacAddressTests {
     fun testGetRandomizedMacAddressApi() = runTest {
         val useCase = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
         val result = useCase.invoke()
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
     }
 
     @Test
     fun testDisableRandomizedMacAddress() = runTest {
         val useCase = EnableRandomizedMacAddressUseCase(restrictionPolicy)
         val result = useCase.invoke(false)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val useCase2 = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
         val result2 = useCase2.invoke()
-        assert(result2 is ApiCall.Success && !result2.data.enabled )
+        assert(result2 is ApiResult.Success && !result2.data.enabled )
     }
 
     @Test
     fun testEnableRandomizedMacAddress() = runTest {
         val useCase = EnableRandomizedMacAddressUseCase(restrictionPolicy)
         val result = useCase.invoke(true)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val useCase2 = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
         val result2 = useCase2.invoke()
-        assert(result2 is ApiCall.Success && result2.data.enabled )
+        assert(result2 is ApiResult.Success && result2.data.enabled )
     }
 
     @After

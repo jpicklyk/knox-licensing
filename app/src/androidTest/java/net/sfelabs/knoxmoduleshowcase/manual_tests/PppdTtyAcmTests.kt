@@ -9,7 +9,7 @@ import androidx.test.rule.GrantPermissionRule
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
@@ -82,7 +82,7 @@ class PppdTtyAcmTests {
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file $optionsFileLocation")
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file /sdcard/options")
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
     }
 
     @Test
@@ -105,7 +105,7 @@ class PppdTtyAcmTests {
         val sm = KnoxModule.provideKnoxSystemManager()
         val useCase = StopPppdUseCase(sm)
         val result = useCase.invoke()
-        assertTrue("Knox API stopPPPD() was not successful.  $result", result is ApiCall.Success)
+        assertTrue("Knox API stopPPPD() was not successful.  $result", result is ApiResult.Success)
         assertFalse(
             "stopPPPD Api did not stop service.  Interface PPP0 is still available!",
             isPpp0InterfaceUp()

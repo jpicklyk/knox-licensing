@@ -1,7 +1,7 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ethernet
 
 import com.samsung.android.knox.custom.SettingsManager
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
@@ -11,11 +11,11 @@ class GetEthernetAutoConnectionUseCase @Inject constructor(
     @TacticalSdk private val settingsManager: SettingsManager
 ) {
 
-    operator fun invoke(): ApiCall<AutoConnectionState> {
+    operator fun invoke(): ApiResult<AutoConnectionState> {
         return try {
-            ApiCall.Success(AutoConnectionState(settingsManager.ethernetAutoConnectionState))
+            ApiResult.Success(AutoConnectionState(settingsManager.ethernetAutoConnectionState))
         } catch (e: Exception) {
-            ApiCall.Error(
+            ApiResult.Error(
                 UiText.DynamicString(
                     e.message!!
                 ))

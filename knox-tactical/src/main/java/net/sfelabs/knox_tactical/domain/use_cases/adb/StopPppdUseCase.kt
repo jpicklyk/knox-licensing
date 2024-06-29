@@ -3,7 +3,7 @@ package net.sfelabs.knox_tactical.domain.use_cases.adb
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -17,11 +17,11 @@ class StopPppdUseCase @Inject constructor(
             try {
                 val result = systemManager.stopPPPD()
                 if(result == CustomDeviceManager.SUCCESS)
-                    ApiCall.Success(Unit)
+                    ApiResult.Success(Unit)
                 else
-                    ApiCall.Error(UiText.DynamicString("The stop PPPD command failed."))
+                    ApiResult.Error(UiText.DynamicString("The stop PPPD command failed."))
             } catch (e: Exception) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                         e.message!!
                     ))

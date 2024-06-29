@@ -9,7 +9,7 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurations
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurationsMultiDns
 import net.sfelabs.knox_tactical.TestingVisibilityOnly
@@ -46,10 +46,10 @@ class MultiEthernetConfigurationTest {
         val resultFlow = SetEthernetAutoConnectionUseCase(settingsManager, connectivityManager)
             .invoke(AutoConnectionState.OFF, listOf(ConnectivityManager.NetworkCallback()))
 
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
 
         val result = GetEthernetAutoConnectionUseCase(settingsManager).invoke()
-        assert(result is ApiCall.Success && result.data is AutoConnectionState.OFF)
+        assert(result is ApiResult.Success && result.data is AutoConnectionState.OFF)
     }
 
     @Test
@@ -57,10 +57,10 @@ class MultiEthernetConfigurationTest {
         val resultFlow = SetEthernetAutoConnectionUseCase(settingsManager, connectivityManager)
             .invoke(AutoConnectionState.ON, listOf(ConnectivityManager.NetworkCallback()))
 
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
 
         val result = GetEthernetAutoConnectionUseCase(settingsManager).invoke()
-        assert(result is ApiCall.Success && result.data is AutoConnectionState.ON)
+        assert(result is ApiResult.Success && result.data is AutoConnectionState.ON)
     }
 
     @Test
@@ -71,7 +71,7 @@ class MultiEthernetConfigurationTest {
         )
             .invoke(DhcpConfiguration("eth0"), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -82,7 +82,7 @@ class MultiEthernetConfigurationTest {
         )
             .invoke(DhcpConfiguration("eth1"), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -93,7 +93,7 @@ class MultiEthernetConfigurationTest {
         )
             .invoke(DhcpConfiguration("eth2"), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -104,7 +104,7 @@ class MultiEthernetConfigurationTest {
         )
             .invoke(DhcpConfiguration("eth3"), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -115,7 +115,7 @@ class MultiEthernetConfigurationTest {
         )
             .invoke(DhcpConfiguration("eth4"), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -126,7 +126,7 @@ class MultiEthernetConfigurationTest {
         )
             .invoke(DhcpConfiguration("eth5"), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -143,7 +143,7 @@ class MultiEthernetConfigurationTest {
                 dnsList = listOf("8.8.8.8", "8.8.4.4")
                 ), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -160,7 +160,7 @@ class MultiEthernetConfigurationTest {
                 dnsList = listOf("8.8.8.8", "8.8.4.4")
             ), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -177,7 +177,7 @@ class MultiEthernetConfigurationTest {
                 dnsList = emptyList()
             ), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -194,7 +194,7 @@ class MultiEthernetConfigurationTest {
                 dnsList = emptyList()
             ), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @Test
@@ -211,7 +211,7 @@ class MultiEthernetConfigurationTest {
                 dnsList = emptyList()
             ), getNetworkCallback())
         enableEthernetAutoConfig()
-        assert(resultFlow.first() is ApiCall.Success)
+        assert(resultFlow.first() is ApiResult.Success)
     }
 
     @OptIn(TestingVisibilityOnly::class)

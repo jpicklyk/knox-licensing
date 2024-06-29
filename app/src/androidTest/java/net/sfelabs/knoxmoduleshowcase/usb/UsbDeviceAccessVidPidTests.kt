@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.usb
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule.provideKnoxSystemManager
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbDeviceAccessAllowedListUseCase
@@ -23,10 +23,10 @@ class UsbDeviceAccessVidPidTests {
         val vidpid = "1234:4321"
         val useCase = SetUsbDeviceAccessAllowedListUseCase(sm)
         val result = useCase.invoke(true, vidpid)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbDeviceAccessAllowedListUseCase(sm)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == vidpid)
+        assert(res is ApiResult.Success && res.data == vidpid)
     }
 
     @Test
@@ -34,10 +34,10 @@ class UsbDeviceAccessVidPidTests {
         val vidpid = "OFF"
         val useCase = SetUsbDeviceAccessAllowedListUseCase(sm)
         val result = useCase.invoke(false, vidpid)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbDeviceAccessAllowedListUseCase(sm)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == vidpid)
+        assert(res is ApiResult.Success && res.data == vidpid)
     }
 
     @Test
@@ -45,10 +45,10 @@ class UsbDeviceAccessVidPidTests {
         val vidpid = "1234:4321"
         val useCase = SetUsbDeviceAccessAllowedListUseCase(sm)
         val result = useCase.invoke(false, vidpid)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val getCase = GetUsbDeviceAccessAllowedListUseCase(sm)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data == "OFF")
+        assert(res is ApiResult.Success && res.data == "OFF")
     }
 
 

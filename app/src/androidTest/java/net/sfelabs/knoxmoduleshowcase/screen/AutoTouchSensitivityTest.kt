@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.screen
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensitivityUseCase
@@ -21,11 +21,11 @@ class AutoTouchSensitivityTest {
     fun enableAutoTouchSensitivity() = runTest {
         val setUseCase = SetAutoTouchSensitivityUseCase(sm)
         val getUseCase = GetAutoTouchSensitivityUseCase(sm)
-        assert(setUseCase(true) is ApiCall.Success)
+        assert(setUseCase(true) is ApiResult.Success)
         val result = getUseCase.invoke()
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         when(result) {
-            is ApiCall.Success -> {
+            is ApiResult.Success -> {
                 assert(result.data.enabled)
             }
             else -> assert(false)
@@ -36,11 +36,11 @@ class AutoTouchSensitivityTest {
     fun disableAutoTouchSensitivity() = runTest {
         val setUseCase = SetAutoTouchSensitivityUseCase(sm)
         val getUseCase = GetAutoTouchSensitivityUseCase(sm)
-        assert(setUseCase(false) is ApiCall.Success)
+        assert(setUseCase(false) is ApiResult.Success)
         val result = getUseCase.invoke()
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         when(result) {
-            is ApiCall.Success -> {
+            is ApiResult.Success -> {
                 assert(!result.data.enabled)
             }
             else -> assert(false)

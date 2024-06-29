@@ -2,7 +2,7 @@ package net.sfelabs.knox_common.domain.use_cases.attestation
 
 import com.samsung.knox.attesation.blobvalidator.library.AttestationResult
 import com.samsung.knox.attesation.blobvalidator.library.EABlobVerifier
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 
 /**
@@ -14,11 +14,11 @@ import net.sfelabs.core.domain.UiText
  * USED FOR ANY FORM OF TRUST!
  */
 class ValidateAttestationUseCase {
-    operator fun invoke(nonce: String, blob: ByteArray): ApiCall<AttestationResult> {
+    operator fun invoke(nonce: String, blob: ByteArray): ApiResult<AttestationResult> {
         return try {
-            ApiCall.Success(EABlobVerifier.verify(nonce, blob))
+            ApiResult.Success(EABlobVerifier.verify(nonce, blob))
         } catch (e: Exception) {
-            ApiCall.Error(UiText.DynamicString(e.message!!))
+            ApiResult.Error(UiText.DynamicString(e.message!!))
         }
     }
 }

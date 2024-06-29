@@ -2,7 +2,7 @@ package net.sfelabs.knox_tactical.domain.use_cases.wifi
 
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -16,18 +16,18 @@ class EnableRandomizedMacAddressUseCase @Inject constructor(
             try {
                 val result = restrictionPolicy.enableRandomisedMacAddress(enable)
                 if (result)
-                    ApiCall.Success(Unit)
+                    ApiResult.Success(Unit)
                 else
-                    ApiCall.Error(UiText.DynamicString("Setting Randomized Mac Address failed"))
+                    ApiResult.Error(UiText.DynamicString("Setting Randomized Mac Address failed"))
             } catch(se: SecurityException) {
-                ApiCall.Error(
+                ApiResult.Error(
                     UiText.DynamicString(
                     "The use of this API requires the caller to have the " +
                             "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" " +
                             "permission."
                 ))
             }catch (ex: NoSuchMethodError) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             }
         }
     }

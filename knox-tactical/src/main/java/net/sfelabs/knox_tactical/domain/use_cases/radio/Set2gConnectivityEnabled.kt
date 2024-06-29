@@ -3,7 +3,7 @@ package net.sfelabs.knox_tactical.domain.use_cases.radio
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -17,11 +17,11 @@ class Set2gConnectivityEnabled @Inject constructor(
         return coroutineScope {
             try {
                 when(systemManager.set2GConnectivityState(enabled)) {
-                    CustomDeviceManager.SUCCESS -> ApiCall.Success(Unit)
-                    else -> ApiCall.Error(UiText.DynamicString("The operation failed for an unknown reason."))
+                    CustomDeviceManager.SUCCESS -> ApiResult.Success(Unit)
+                    else -> ApiResult.Error(UiText.DynamicString("The operation failed for an unknown reason."))
                 }
             } catch (ex: NoSuchMethodError) {
-                ApiCall.NotSupported
+                ApiResult.NotSupported
             }
         }
     }

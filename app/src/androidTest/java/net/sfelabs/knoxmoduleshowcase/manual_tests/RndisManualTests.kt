@@ -8,7 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
@@ -42,7 +42,7 @@ class RndisManualTests {
         val result = SetUsbConnectionTypeUseCase(systemManager).invoke(
             UsbConnectionType.Tethering
         )
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
     }
 
     @Test
@@ -50,7 +50,7 @@ class RndisManualTests {
         val result = SetUsbConnectionTypeUseCase(systemManager).invoke(
             UsbConnectionType.Default
         )
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
     }
 
     @Test
@@ -74,7 +74,7 @@ class RndisManualTests {
         var result = true
         for(command in commands) {
             val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
-            result = if(apiResult is ApiCall.Success)
+            result = if(apiResult is ApiResult.Success)
                 result and true
             else
                 false
@@ -99,7 +99,7 @@ class RndisManualTests {
          */
 
         ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, "link set rndis0 up")
-        assert(dhcpResult is ApiCall.Success)
+        assert(dhcpResult is ApiResult.Success)
         delay(350)
         //setupNetworkRulesAndRoutes()
     }
@@ -108,7 +108,7 @@ class RndisManualTests {
     fun addNetworkRoute() = runTest {
         val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, "route add 10.0.2.0/24 dev rndis0 src 10.0.2.3")
         Thread.sleep(150)
-        assert(apiResult is ApiCall.Success)
+        assert(apiResult is ApiResult.Success)
     }
 
 
@@ -145,7 +145,7 @@ class RndisManualTests {
         commands.forEach {command ->
             println("Running adb command: $command")
             val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP,command)
-            assert(apiResult is ApiCall.Success)
+            assert(apiResult is ApiResult.Success)
             Thread.sleep(500)
         }
     }

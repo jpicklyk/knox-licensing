@@ -1,7 +1,7 @@
 package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_common.domain.model.CertificateType
@@ -28,10 +28,10 @@ class InstallCaCertificateUseCase @Inject constructor(
                 password,
                 keystore.value
             )
-            if (result) ApiCall.Success(Unit)
-            else ApiCall.Error(UiText.DynamicString("Certificate failed to install to keystore"))
+            if (result) ApiResult.Success(Unit)
+            else ApiResult.Error(UiText.DynamicString("Certificate failed to install to keystore"))
         } catch (e: Exception) {
-            ApiCall.Error(
+            ApiResult.Error(
                 UiText.DynamicString(
                     "Knox API installCertificateToKeystore failed: ${e.message}"
                 )

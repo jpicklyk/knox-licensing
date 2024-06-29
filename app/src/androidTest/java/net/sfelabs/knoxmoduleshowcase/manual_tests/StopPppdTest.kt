@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.manual_tests
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.runBlocking
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
@@ -20,9 +20,9 @@ class StopPppdTest {
         val sm = KnoxModule.provideKnoxSystemManager()
         val useCase = StopPppdUseCase(sm)
         val result = useCase.invoke()
-        if(result is ApiCall.Error) {
+        if(result is ApiResult.Error) {
             println(result.uiText)
         }
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
     }
 }

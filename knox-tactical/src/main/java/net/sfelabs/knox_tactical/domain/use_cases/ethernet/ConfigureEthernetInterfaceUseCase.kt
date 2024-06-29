@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureDhcpEthernetInterface
@@ -67,9 +67,9 @@ class ConfigureEthernetInterfaceUseCase @Inject constructor(
             else
                 registerNetworkCallback(ethernetInterface.name, callback)
 
-            emit(ApiCall.Success(Unit))
+            emit(ApiResult.Success(Unit))
         } else emit(
-            ApiCall.Error(
+            ApiResult.Error(
             uiText = UiText.DynamicString("An unknown error occurred while configuring DHCP " +
                     "interface ${ethernetInterface.name}"))
         )

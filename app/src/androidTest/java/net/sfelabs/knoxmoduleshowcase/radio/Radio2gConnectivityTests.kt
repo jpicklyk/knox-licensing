@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.radio
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Is2gConnectivityEnabledUseCase
@@ -30,7 +30,7 @@ class Radio2gConnectivityTests {
     @Before
     fun getCurrentState() = runTest {
         val result = Is2gConnectivityEnabledUseCase(systemManager).invoke()
-        if(result is ApiCall.Success) {
+        if(result is ApiResult.Success) {
             radio2gAllowed = result.data
         }
     }
@@ -38,9 +38,9 @@ class Radio2gConnectivityTests {
     @Test
     fun set2G_disabled() = runTest {
         val result = Set2gConnectivityEnabled(systemManager).invoke(false)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val result2 = Is2gConnectivityEnabledUseCase(systemManager).invoke()
-        assert(result2 is ApiCall.Success && !result2.data )
+        assert(result2 is ApiResult.Success && !result2.data )
         //println("2G available? ${is2GSupported()}")
 
         //Lets check another way to ensure it
@@ -49,9 +49,9 @@ class Radio2gConnectivityTests {
     @Test
     fun set2G_enabled() = runTest {
         val result = Set2gConnectivityEnabled(systemManager).invoke(true)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val result2 = Is2gConnectivityEnabledUseCase(systemManager).invoke()
-        assert(result2 is ApiCall.Success && result2.data)
+        assert(result2 is ApiResult.Success && result2.data)
     }
 
     @After

@@ -4,7 +4,7 @@ import android.content.Context
 import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import javax.inject.Inject
 
@@ -14,12 +14,12 @@ import javax.inject.Inject
 class GetBrightnessModeUseCase @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    suspend operator fun invoke(): ApiCall<Int> {
+    suspend operator fun invoke(): ApiResult<Int> {
         return coroutineScope {
             try {
-                ApiCall.Success(Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE))
+                ApiResult.Success(Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE))
             } catch (e: Settings.SettingNotFoundException) {
-                ApiCall.Error(UiText.DynamicString(e.message!!))
+                ApiResult.Error(UiText.DynamicString(e.message!!))
             }
         }
     }

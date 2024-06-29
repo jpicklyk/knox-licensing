@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.phone
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupState
@@ -36,33 +36,33 @@ class AutoCallPickupTests {
     fun setAutoCallPickupState_Enable() = runTest {
         val useCase = SetAutoCallPickupStateUseCase(systemManager)
         val result = useCase.invoke(AutoCallPickupState.Enable)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val getCase = GetAutoCallPickupStateUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data is AutoCallPickupState.Enable)
+        assert(res is ApiResult.Success && res.data is AutoCallPickupState.Enable)
     }
 
     @Test
     fun setAutoCallPickupState_EnableAlwaysAccept() = runTest {
         val useCase = SetAutoCallPickupStateUseCase(systemManager)
         val result = useCase.invoke(AutoCallPickupState.EnableAlwaysAccept)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val getCase = GetAutoCallPickupStateUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data is AutoCallPickupState.EnableAlwaysAccept)
+        assert(res is ApiResult.Success && res.data is AutoCallPickupState.EnableAlwaysAccept)
     }
 
     @Test
     fun setAutoCallPickupState_Disable() = runTest {
         val useCase = SetAutoCallPickupStateUseCase(systemManager)
         val result = useCase.invoke(AutoCallPickupState.Disable)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val getCase = GetAutoCallPickupStateUseCase(systemManager)
         val res = getCase.invoke()
-        assert(res is ApiCall.Success && res.data is AutoCallPickupState.Disable)
+        assert(res is ApiResult.Success && res.data is AutoCallPickupState.Disable)
     }
 
     @After

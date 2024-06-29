@@ -8,7 +8,7 @@ import com.samsung.android.knox.integrity.EnhancedAttestationPolicy
 import com.samsung.knox.attesation.blobvalidator.library.Verdict
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.attestation.GetAttestationBlobUseCase
 import net.sfelabs.knox_common.domain.use_cases.attestation.IsAttestationSupportedUseCase
@@ -34,18 +34,18 @@ class AttestationTests {
     fun isAttestationSupported() = runTest {
         val useCase = IsAttestationSupportedUseCase(attestationPolicy)
         val result = useCase.invoke()
-        assert(result is ApiCall.Success && result.data)
+        assert(result is ApiResult.Success && result.data)
     }
 
     @Test
     fun validateAttestationBlob() = runTest {
         val nonce = UUID.randomUUID().toString()
         val useCaseResult = GetAttestationBlobUseCase(attestationPolicy).invoke(nonce)
-        assert(useCaseResult is ApiCall.Success)
-        if(useCaseResult is ApiCall.Success) {
+        assert(useCaseResult is ApiResult.Success)
+        if(useCaseResult is ApiResult.Success) {
             val result = ValidateAttestationUseCase().invoke(nonce, useCaseResult.data)
-            assert(result is ApiCall.Success)
-            if(result is ApiCall.Success) {
+            assert(result is ApiResult.Success)
+            if(result is ApiResult.Success) {
                 val blob = result.data
                 val text = StringBuffer("Blob Validation: \n")
                     .append("version: ${blob.version} \n")

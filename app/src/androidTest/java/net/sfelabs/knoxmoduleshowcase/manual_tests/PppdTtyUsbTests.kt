@@ -9,7 +9,7 @@ import androidx.test.rule.GrantPermissionRule
 import junit.framework.TestCase
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.runBlocking
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
@@ -82,7 +82,7 @@ class PppdTtyUsbTests {
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file $optionsFileLocation")
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
     }
 
 
@@ -108,7 +108,7 @@ class PppdTtyUsbTests {
         val result = useCase.invoke()
         TestCase.assertTrue(
             "Knox API stopPPPD() was not successful.  $result",
-            result is ApiCall.Success
+            result is ApiResult.Success
         )
         assertFalse(
             "stopPPPD Api did not stop service.  Interface PPP0 is still available!",

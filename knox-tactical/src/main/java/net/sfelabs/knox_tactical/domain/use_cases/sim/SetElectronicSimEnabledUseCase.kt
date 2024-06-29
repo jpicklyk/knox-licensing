@@ -3,7 +3,7 @@ package net.sfelabs.knox_tactical.domain.use_cases.sim
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
 import javax.inject.Inject
@@ -17,14 +17,14 @@ class SetElectronicSimEnabledUseCase  @Inject constructor(
             try {
                 val result = settingsManager.setEsimEnabled(enable)
                 if(result == CustomDeviceManager.SUCCESS)
-                    ApiCall.Success(Unit)
+                    ApiResult.Success(Unit)
                 else
-                    ApiCall.Error(UiText.DynamicString("setEsimEnabled API call failed"))
+                    ApiResult.Error(UiText.DynamicString("setEsimEnabled API call failed"))
             } catch (e: NoSuchMethodError) {
-              ApiCall.NotSupported
+              ApiResult.NotSupported
             } catch (e: SecurityException) {
                 println(e.message)
-                ApiCall.Error(UiText.DynamicString(
+                ApiResult.Error(UiText.DynamicString(
                     "The use of this API requires the caller to have the " +
                         "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTINGS\" permission"
                 ))

@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.ethernet
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.AddIpAddressToEthernetInterfaceUseCase
@@ -38,7 +38,7 @@ class AddIpAddressToInterfaceTests {
         val ipAddress = "192.168.2.199/24"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
 
     }
@@ -53,7 +53,7 @@ class AddIpAddressToInterfaceTests {
         val ipAddress ="192.168.2.199"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
-        assert(result is ApiCall.Error)
+        assert(result is ApiResult.Error)
     }
 
     /**
@@ -66,7 +66,7 @@ class AddIpAddressToInterfaceTests {
         val ipAddress = "192.168.2.199/16"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
     }
 
     @Test
@@ -75,7 +75,7 @@ class AddIpAddressToInterfaceTests {
         val ipAddress = "192.168.2.199"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceNameBad, ipAddress)
-        assert(result is ApiCall.Error)
+        assert(result is ApiResult.Error)
     }
 
     @Test
@@ -84,7 +84,7 @@ class AddIpAddressToInterfaceTests {
         val ipAddress = "192.168.2.1999"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceNameBad, ipAddress)
-        assert(result is ApiCall.Error)
+        assert(result is ApiResult.Error)
     }
 
     @Test
@@ -93,7 +93,7 @@ class AddIpAddressToInterfaceTests {
         val ipAddressBad = "192.168.2.1999"
         val result = DeleteIpAddressFromEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddressBad)
-        assert(result is ApiCall.Error)
+        assert(result is ApiResult.Error)
     }
 
     @Test
@@ -102,7 +102,7 @@ class AddIpAddressToInterfaceTests {
         val ipAddress = "192.168.2.199/24"
         val result = DeleteIpAddressFromEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceNameBad, ipAddress)
-        assert(result is ApiCall.Error)
+        assert(result is ApiResult.Error)
     }
 
     @Test
@@ -111,6 +111,6 @@ class AddIpAddressToInterfaceTests {
         val ipAddress = "192.168.2.199/24"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
     }
 }

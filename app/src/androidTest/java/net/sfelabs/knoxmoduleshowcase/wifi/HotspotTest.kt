@@ -7,7 +7,7 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.hotspot.GetHotspot20StateUseCase
@@ -36,7 +36,7 @@ class HotspotTest {
         val useCase = GetHotspot20StateUseCase(sm)
 
         val result = useCase.invoke()
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
     }
 
     @Test
@@ -45,9 +45,9 @@ class HotspotTest {
         val getUseCase = GetHotspot20StateUseCase(sm)
 
         val result = setUseCase.invoke(true)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
         val result2 = getUseCase.invoke()
-        assert(result2 is ApiCall.Success && result2.data.enabled)
+        assert(result2 is ApiResult.Success && result2.data.enabled)
     }
 
     @Test
@@ -56,10 +56,10 @@ class HotspotTest {
         val getUseCase = GetHotspot20StateUseCase(sm)
 
         val result = setUseCase.invoke(false)
-        assert(result is ApiCall.Success)
+        assert(result is ApiResult.Success)
 
         val result2 = getUseCase.invoke()
-        assert(result2 is ApiCall.Success && !result2.data.enabled)
+        assert(result2 is ApiResult.Success && !result2.data.enabled)
     }
 
     @After
