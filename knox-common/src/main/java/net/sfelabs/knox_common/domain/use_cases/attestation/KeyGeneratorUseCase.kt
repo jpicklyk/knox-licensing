@@ -1,4 +1,4 @@
-package net.sfelabs.core.domain.use_cases.keystore
+package net.sfelabs.knox_common.domain.use_cases.attestation
 
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
@@ -6,10 +6,9 @@ import android.os.Build
 import android.security.AttestedKeyPair
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import android.security.keystore.KeyProperties.PURPOSE_SIGN
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.ApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import java.math.BigInteger
 import java.security.SecureRandom
@@ -18,24 +17,23 @@ import java.util.Date
 import javax.inject.Inject
 import javax.security.auth.x500.X500Principal
 
-
 class KeyGeneratorUseCase @Inject constructor(
     private val devicePolicyManager: DevicePolicyManager
 ){
 
     @RequiresApi(Build.VERSION_CODES.S)
-    suspend operator fun invoke(): ApiCall<Unit> {
+    suspend operator fun invoke(): ApiResult<Unit> {
         return coroutineScope {
             try {
                 val result = generateKey()
-                if(result == null)
-                    ApiCall.Error(UiText.DynamicString("Error, generate keypair returned null"))
+                if (result == null)
+                    ApiResult.Error(UiText.DynamicString("Error, generate keypair returned null"))
                 else {
                     println("Key generated: ${result.keyPair}")
-                    ApiCall.Success(Unit)
+                    ApiResult.Success(Unit)
                 }
             } catch (e: Exception) {
-                ApiCall.Error(UiText.DynamicString(e.toString()))
+                ApiResult.Error(UiText.DynamicString(e.toString()))
             }
         }
     }
@@ -43,7 +41,7 @@ class KeyGeneratorUseCase @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.S)
     private fun generateKey(): AttestedKeyPair? {
         val builder: KeyGenParameterSpec.Builder =
-            KeyGenParameterSpec.Builder("alias", PURPOSE_SIGN)
+            KeyGenParameterSpec.Builder("alias", KeyProperties.PURPOSE_SIGN)
         val challenge = ByteArray(16)
         SecureRandom().nextBytes(challenge)
         builder.setAttestationChallenge(challenge)
@@ -62,7 +60,10 @@ class KeyGeneratorUseCase @Inject constructor(
         //builder.setSignaturePaddings(arrayOf<String>(0))
         //builder . setEncryptionPaddings arrayOfNulls<String>(0)
         builder.setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
-        val name = ComponentName("net.sfelabs.knoxmoduleshowcase","net.sfelabs.knoxmoduleshowcase.app.receivers.AdminReceiver")
+        val name = ComponentName(
+            "net.sfelabs.knoxmoduleshowcase",
+            "net.sfelabs.knoxmoduleshowcase.app.receivers.AdminReceiver"
+        )
         return devicePolicyManager.generateKeyPair(
             name,
             "EC",

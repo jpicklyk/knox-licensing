@@ -1,4 +1,4 @@
-package net.sfelabs.common
+package net.sfelabs.core
 
 import net.sfelabs.core.domain.model.knox.KnoxFeature
 import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType

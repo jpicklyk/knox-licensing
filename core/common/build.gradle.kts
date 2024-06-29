@@ -18,8 +18,16 @@ dependencies {
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.runtime)
     api(libs.androidx.lifecycle.vm.comp)
+    testImplementation(libs.androidx.ui.android)
     //implementation(libs.hilt.android)
     //kapt("com.google.dagger:hilt-compiler")
     androidTestImplementation(project(":core:testing"))
+    testImplementation(libs.kotlin.stdlib)
+    testImplementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.agent)
+    testImplementation(libs.mockk.android)
+
 }
 

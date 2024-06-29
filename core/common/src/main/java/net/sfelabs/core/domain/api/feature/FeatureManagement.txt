@@ -1,0 +1,144 @@
+
+ Feature Management System
+
+ This file provides an overview and documentation for the Feature Management System.
+ It includes explanations of key components, usage examples, and best practices.
+  
+
+
+ Overview
+
+ This feature management system provides a flexible and type-safe way to handle
+ feature flags and dynamic configurations in our Android application. It allows
+ for easy toggling of features, management of feature states, and categorization
+ of features (e.g., production, experimental).
+  
+
+
+ Key Components
+
+ - FeatureKey: Interface for defining feature keys.
+ - FeatureState: Represents the state of a feature (enabled/disabled and associated value).
+ - FeatureHandler: Interface for handling feature-specific operations.
+ - FeatureManager: Central manager for interacting with features.
+ - FeatureRegistry: Keeps track of all registered features and their categories.
+    
+
+
+ Usage
+
+ 1. Defining a New Feature
+
+ a. Create a new enum that implements FeatureKey:
+
+ enum class MyFeatureKey(override val name: String) : FeatureKey<Boolean> {
+     NEW_FEATURE("new_feature")
+ }
+
+ b. Implement a FeatureHandler for your feature:
+
+ class MyFeatureHandler(
+     private val getUseCase: GetMyFeatureUseCase,
+     private val setUseCase: SetMyFeatureUseCase
+ ) : FeatureHandler<Boolean> {
+     override suspend fun getState(): ApiResult<FeatureState<Boolean>> = getUseCase()
+     override suspend fun setState(newState: FeatureState<Boolean>): ApiResult<Unit> = setUseCase(newState)
+ }
+
+ c. Register your feature in your DI module:
+
+ @Module
+ @InstallIn(SingletonComponent::class)
+ object MyFeatureModule {
+     @Provides
+     @Singleton
+     @IntoMap
+     @FeatureHandlerKey(MyFeatureKey.NEW_FEATURE::class)
+     fun provideMyFeatureHandler(
+         getUseCase: GetMyFeatureUseCase,
+         setUseCase: SetMyFeatureUseCase,
+         featureRegistry: FeatureRegistry
+     ): FeatureHandler<Boolean> {
+         featureRegistry.registerFeature(MyFeatureKey.NEW_FEATURE, FeatureCategory.EXPERIMENTAL)
+         return MyFeatureHandler(getUseCase, setUseCase)
+     }
+ }
+
+ 2. Using Features in Your Code
+
+ Inject the FeatureManager into your ViewModel or use case:
+
+ class MyViewModel @Inject constructor(
+     private val featureManager: FeatureManager
+ ) : ViewModel() {
+     suspend fun checkNewFeature() {
+         when (val result = featureManager.getFeatureState(MyFeatureKey.NEW_FEATURE)) {
+             is ApiResult.Success -> {
+                 if (result.data.enabled) {
+                      Feature is enabled, use the new functionality
+                 } else {
+                      Feature is disabled, use the old functionality
+                 }
+             }
+             is ApiResult.Error -> {
+                  Handle error
+             }
+             is ApiResult.NotSupported -> {
+                  Handle not supported case
+             }
+         }
+     }
+
+     suspend fun enableNewFeature() {
+         featureManager.setFeatureState(MyFeatureKey.NEW_FEATURE, FeatureState(true, true))
+     }
+ }
+
+ 3. Getting All Features
+
+ You can retrieve all features or features by category:
+
+ suspend fun getAllFeatures() {
+     when (val result = featureManager.getAllFeatures()) {
+         is ApiResult.Success -> {
+              Process all features
+         }
+         is ApiResult.Error -> {
+              Handle error
+         }
+         is ApiResult.NotSupported -> {
+              Handle not supported case
+         }
+     }
+ }
+
+ suspend fun getExperimentalFeatures() {
+     when (val result = featureManager.getAllFeatures(FeatureCategory.EXPERIMENTAL)) {
+         is ApiResult.Success -> {
+              Process experimental features
+         }
+         is ApiResult.Error -> {
+              Handle error
+         }
+         is ApiResult.NotSupported -> {
+              Handle not supported case
+         }
+     }
+ }
+  
+
+
+ Best Practices
+
+ 1. Always use the FeatureManager to interact with features, rather than accessing feature states directly.
+ 2. Keep feature keys in a centralized place for easy management.
+ 3. Use meaningful names for your feature keys and handlers.
+ 4. Write unit tests for your feature handlers and use cases.
+ 5. Regularly review and clean up obsolete features.
+     
+
+
+
+ For more detailed information about specific components, refer to their respective
+ class and interface definitions in the codebase.
+  
