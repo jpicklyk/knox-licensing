@@ -17,10 +17,10 @@ interface ApiUseCase<in P, out R : Any> {
     /**
      * Executes the use case.
      *
-     * @param params The input parameters for the use case. Can be null if no parameters are required.
+     * @param params The input parameters for the use case.
      * @return An [ApiResult] representing the result of the operation.
      */
-    suspend operator fun invoke(params: P? = null): ApiResult<R>
+    suspend operator fun invoke(params: P): ApiResult<R>
 }
 
 /**
@@ -39,10 +39,10 @@ abstract class CoroutineApiUseCase<in P, out R : Any>(
     /**
      * Executes the use case with error handling and context switching.
      *
-     * @param params The input parameters for the use case. Can be null if no parameters are required.
+     * @param params The input parameters for the use case.
      * @return An [ApiResult] representing the result of the operation.
      */
-    override suspend operator fun invoke(params: P?): ApiResult<R> = withContext(dispatcher) {
+    override suspend operator fun invoke(params: P): ApiResult<R> = withContext(dispatcher) {
         try {
             execute(params)
         } catch (e: Throwable) {
@@ -54,10 +54,10 @@ abstract class CoroutineApiUseCase<in P, out R : Any>(
      * Implements the core logic of the use case.
      * This method should be implemented by subclasses to define the specific behavior of the use case.
      *
-     * @param params The input parameters for the use case. Can be null if no parameters are required.
+     * @param params The input parameters for the use case.
      * @return An [ApiResult] representing the result of the operation.
      */
-    protected abstract suspend fun execute(params: P?): ApiResult<R>
+    protected abstract suspend fun execute(params: P): ApiResult<R>
 
     /**
      * Maps exceptions to appropriate [ApiResult.Error] instances.
