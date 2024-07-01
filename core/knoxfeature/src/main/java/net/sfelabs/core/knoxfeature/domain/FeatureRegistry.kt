@@ -1,5 +1,6 @@
-package net.sfelabs.core.domain.api.feature
+package net.sfelabs.core.knoxfeature.domain
 
+import net.sfelabs.core.knoxfeature.FeatureKey
 import javax.inject.Inject
 
 enum class FeatureCategory {

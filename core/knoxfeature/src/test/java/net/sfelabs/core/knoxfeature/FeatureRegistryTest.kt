@@ -1,5 +1,7 @@
-package net.sfelabs.core.domain.api.feature
+package net.sfelabs.core.knoxfeature
 
+import net.sfelabs.core.knoxfeature.domain.FeatureCategory
+import net.sfelabs.core.knoxfeature.domain.FeatureRegistry
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
