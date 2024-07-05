@@ -1,4 +1,4 @@
-package net.sfelabs.core.knoxfeature.model
+package net.sfelabs.core.domain.api.feature
 
 import net.sfelabs.core.domain.api.ApiResult
 

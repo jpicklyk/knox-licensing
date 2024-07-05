@@ -34,7 +34,8 @@ sealed class VersionInfo(val description: String, val releaseVersion: Int) {
                 "S911U1UEU3AXD1_B2BF" -> TE3Android13MR2Alpha
                 "G736U1UEU6CXF1_B2BF" -> TE3Android13MR2Beta
                 "G736U1UEU7CXF2_B2BF" -> TE3Android13MR2Beta
-
+                "G736U1UEU7CXG2_B2BF" -> TE3Android13MR2Beta
+                "S911U1UEU4AXG1_B2BF" -> TE3Android13MR2Beta
                 //TA5
                 "X300XXS1AXC5" -> TE3Android13GA
                 else -> Unknown
