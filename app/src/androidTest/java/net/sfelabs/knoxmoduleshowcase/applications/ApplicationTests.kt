@@ -17,14 +17,14 @@ class ApplicationTests {
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
-    fun kidsModeRemoved() {
+    fun checkThatKidsModeHasBeenRemoved() {
         assertFalse(isPackageInstalled("com.sec.android.app.kidshome", pm))
         assertFalse(isPackageInstalled("com.sec.android.app.kidsinstaller", pm))
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 130)
-    fun gameLauncherRemoved() {
+    fun checkThatGameLauncherHasBeenRemoved() {
         assertFalse(isPackageInstalled("com.samsung.android.game.gamehome", pm))
         assertFalse(isPackageInstalled("com.samsung.android.game.gametools", pm))
         assertFalse(isPackageInstalled("com.samsung.android.game.gos", pm))
@@ -32,7 +32,7 @@ class ApplicationTests {
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
-    fun facebookRemoved() {
+    fun checkThatFacebookHasBeenRemoved() {
         assertFalse(isPackageInstalled("com.facebook.android", pm))
         //preload
         assertFalse(isPackageInstalled("com.facebook.katana", pm))
@@ -43,38 +43,38 @@ class ApplicationTests {
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
-    fun netflixRemoved() {
+    fun checkThatNetflixHasBeenRemoved() {
         assertFalse(isPackageInstalled("com.netflix.mediaclient", pm))
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
-    fun spotifyRemoved() {
+    fun checkThatSpotifyHasBeenRemoved() {
         assertFalse(isPackageInstalled("com.spotify.music", pm))
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 130)
-    fun linkedInRemoved() {
+    fun checkThatLinkedInHasBeenRemoved() {
         assertFalse(isPackageInstalled("com.linkedin.android", pm))
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 130)
-    fun bixbyDictationRemoved() {
+    fun checkThatBixbyDictationHasBeenRemoved() {
         assertFalse(isPackageInstalled("com.samsung.android.bixby.service", pm))
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 130)
-    fun bixbyVisionRemoved() {
+    fun checkThatBixbyVisionHasBeenRemoved() {
         assertFalse(isPackageInstalled("com.samsung.android.visionintelligence", pm))
         assertFalse(isPackageInstalled("com.samsung.android.bixbyvision.framework", pm))
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 130)
-    fun bixbyVoiceRemoved() {
+    fun checkThatBixbyVoiceHasBeenRemoved() {
         assertFalse(isPackageInstalled("com.samsung.android.bixby.agent", pm))
     }
 
