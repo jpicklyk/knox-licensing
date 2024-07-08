@@ -3,9 +3,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.radio
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
@@ -17,14 +17,17 @@ class EnableBandLockingUseCase @Inject constructor(
         return coroutineScope {
             try {
                 val result = systemManager.enableLteBandLocking(lteBand)
-                if( result != CustomDeviceManager.SUCCESS ) {
+                if (result != CustomDeviceManager.SUCCESS) {
                     ApiResult.Error(
                         UiText.DynamicString(
-                        "EnableLteBandLocking error: $result"
-                    ))
+                            "EnableLteBandLocking error: $result"
+                        )
+                    )
                 } else {
                     ApiResult.Success(Unit)
                 }
+            } catch (nsm: NoSuchMethodError) {
+                ApiResult.NotSupported
             } catch (se: SecurityException) {
                 ApiResult.Error(
                     UiText.DynamicString(

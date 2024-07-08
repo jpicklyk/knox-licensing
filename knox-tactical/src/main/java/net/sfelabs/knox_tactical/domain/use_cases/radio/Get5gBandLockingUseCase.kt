@@ -26,6 +26,8 @@ class Get5gBandLockingUseCase @Inject constructor(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                     ))
+            } catch (nsm: NoSuchMethodError) {
+                ApiResult.NotSupported
             } catch (ex: NoSuchMethodError) {
                 ApiResult.NotSupported
             }
