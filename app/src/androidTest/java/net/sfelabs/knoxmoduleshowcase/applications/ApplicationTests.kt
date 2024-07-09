@@ -78,10 +78,11 @@ class ApplicationTests {
         assertFalse(isPackageInstalled("com.samsung.android.bixby.agent", pm))
     }
 
-    @Test
-    @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun checkThatBixbyRoutinesHasBeenRemoved() {
-        assertFalse(isPackageInstalled("com.samsung.android.app.routines", pm))
-    }
+    // This cannot be removed as there are other components reliant on it that are required by Google
+//    @Test
+//    @TacticalSdkSuppress(minReleaseVersion = 132)
+//    fun checkThatBixbyRoutinesHasBeenRemoved() {
+//        assertFalse(isPackageInstalled("com.samsung.android.app.routines", pm))
+//    }
 
 }
