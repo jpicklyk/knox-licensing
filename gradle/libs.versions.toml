@@ -15,6 +15,7 @@ collections-kotlin = "1.4.0"
 commonsLang = "2.6"
 compose-kotlin-compiler = "1.5.14"
 compose-bom = "2024.05.00"
+googleArVersion = "1.32.0"
 hilt-core = "2.51.1"
 hilt-navigation = "1.2.0"
 jackson-kotlin = "2.15.2"
@@ -86,6 +87,7 @@ androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", 
 commons-lang = { module = "commons-lang:commons-lang", version.ref = "commonsLang" }
 composeNumberPicker = { module = "com.chargemap.compose:numberpicker", version.ref = "chargemap-numberpicker"}
 #detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+google-ar = { group = "com.google.ar", name = "core", version.ref = "googleArVersion" }
 #google-acc = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist"}
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-core" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt-core" }
