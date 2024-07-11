@@ -66,10 +66,12 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.kotlin.reflect)
     implementation(libs.composeNumberPicker)
-
+    implementation(libs.google.ar)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.jackson.module)
 
     androidTestImplementation(project(":core:testing"))
+    androidTestImplementation(libs.androidx.test.runner)
+
 
 }

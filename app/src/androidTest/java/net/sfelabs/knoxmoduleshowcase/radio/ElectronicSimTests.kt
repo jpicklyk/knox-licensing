@@ -9,6 +9,7 @@ import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.sim.GetElectronicSimEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.sim.SetElectronicSimEnabledUseCase
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,5 +49,8 @@ class ElectronicSimTests {
         assert(result2 is ApiResult.Success && result2.data.value)
     }
 
-
+    @After
+    fun resetElectronicSimSettings() = runTest {
+        SetElectronicSimEnabledUseCase(settingsManager).invoke(esimEnabled)
+    }
 }
