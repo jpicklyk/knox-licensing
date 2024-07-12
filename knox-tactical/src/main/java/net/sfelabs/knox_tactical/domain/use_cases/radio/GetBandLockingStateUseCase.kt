@@ -13,10 +13,19 @@ class GetBandLockingStateUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
 
-    suspend operator fun invoke(): ApiResult<FeatureState<Int>> {
+    suspend operator fun invoke(simSlotId: Int? = null): ApiResult<FeatureState<Int>> {
+        simSlotId?.let { slotId ->
+            if (slotId !in 0..1) {
+                return ApiResult.Error(UiText.DynamicString("Invalid sim slot id: $slotId"))
+            }
+        }
         return coroutineScope {
             try {
-                when(val result = systemManager.lteBandLocking) {
+                val result = when (simSlotId) {
+                    null -> systemManager.lteBandLocking
+                    else -> systemManager.getLteBandLockingPerSimSlot(simSlotId)
+                }
+                when(result) {
                     BANDLOCK_NONE -> ApiResult.Success(FeatureState(false, result))
                     else -> ApiResult.Success(FeatureState(true, result))
                 }

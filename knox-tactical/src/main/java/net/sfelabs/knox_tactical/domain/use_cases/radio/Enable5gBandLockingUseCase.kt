@@ -13,10 +13,18 @@ class Enable5gBandLockingUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
 
-    suspend operator fun invoke(band: Int): UnitApiCall {
+    suspend operator fun invoke(band: Int, simSlotId: Int? = null): UnitApiCall {
+        simSlotId?.let { slotId ->
+            if (slotId !in 0..1) {
+                return ApiResult.Error(UiText.DynamicString("Invalid sim slot id: $slotId"))
+            }
+        }
         return coroutineScope {
             try {
-                val result = systemManager.enable5GBandLocking(band)
+                val result = when (simSlotId) {
+                    null -> systemManager.enable5GBandLocking(band)
+                    else -> systemManager.enable5GBandLockingPerSimSlot(band, simSlotId)
+                }
                 if( result != CustomDeviceManager.SUCCESS ) {
                     ApiResult.Error(
                         UiText.DynamicString(

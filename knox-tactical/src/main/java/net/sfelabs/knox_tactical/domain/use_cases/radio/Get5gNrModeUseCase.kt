@@ -13,10 +13,18 @@ class Get5gNrModeUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
 
-    suspend operator fun invoke(): ApiResult<LteNrModeState> {
+    suspend operator fun invoke(simSlotId: Int? = null): ApiResult<LteNrModeState> {
+        simSlotId?.let { slotId ->
+            if (slotId !in 0..1) {
+                return ApiResult.Error(UiText.DynamicString("Invalid sim slot id: $slotId"))
+            }
+        }
         return coroutineScope {
             try {
-                val result = systemManager.get5gNrModeState()
+                val result = when (simSlotId) {
+                    null -> systemManager.get5gNrModeState()
+                    else -> systemManager.get5gNrModeStatePerSimSlot(simSlotId)
+                }
                 if( result == CustomDeviceManager.ERROR_FAIL ) {
                     ApiResult.Error(
                         UiText.DynamicString(

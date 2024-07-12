@@ -13,10 +13,19 @@ class Get5gBandLockingUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
 
-    suspend operator fun invoke(): ApiResult<FeatureState<Int>> {
+    suspend operator fun invoke(simSlotId: Int? = null): ApiResult<FeatureState<Int>> {
+        simSlotId?.let { slotId ->
+            if (slotId !in 0..1) {
+                return ApiResult.Error(UiText.DynamicString("Invalid sim slot id: $slotId"))
+            }
+        }
         return coroutineScope {
             try {
-                when(val result = systemManager.get5GBandLocking()) {
+                val result = when (simSlotId) {
+                    null -> systemManager.get5GBandLocking()
+                    else -> systemManager.get5GBandLockingPerSimSlot(simSlotId)
+                }
+                when(result) {
                     CustomDeviceManager.BANDLOCK_NONE -> ApiResult.Success(FeatureState(false, result))
                     else -> ApiResult.Success(FeatureState(true, result))
                 }
@@ -27,8 +36,6 @@ class Get5gBandLockingUseCase @Inject constructor(
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                     ))
             } catch (nsm: NoSuchMethodError) {
-                ApiResult.NotSupported
-            } catch (ex: NoSuchMethodError) {
                 ApiResult.NotSupported
             }
         }

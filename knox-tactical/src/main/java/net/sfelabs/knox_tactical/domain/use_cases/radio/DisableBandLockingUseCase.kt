@@ -12,10 +12,18 @@ import javax.inject.Inject
 class DisableBandLockingUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
-    suspend operator fun invoke(): UnitApiCall {
+    suspend operator fun invoke(simSlotId: Int? = null): UnitApiCall {
+        simSlotId?.let { slotId ->
+            if (slotId !in 0..1) {
+                return ApiResult.Error(UiText.DynamicString("Invalid sim slot id: $slotId"))
+            }
+        }
         return coroutineScope {
             try {
-                val result = systemManager.disableLteBandLocking()
+                val result = when (simSlotId) {
+                    null -> systemManager.disableLteBandLocking()
+                    else -> systemManager.disableLteBandLockingPerSimSlot(simSlotId)
+                }
                 if( result != CustomDeviceManager.SUCCESS ) {
                     ApiResult.Error(
                         UiText.DynamicString(
