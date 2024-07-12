@@ -41,6 +41,25 @@ class Nr5GModeTests {
     }
 
     @Test
+    fun setNsaModePerSimSlotId1() = runTest {
+        testSetNrMode(LteNrModeState.DisableSa, 1)
+    }
+
+    @Test
+    fun setNsaModeSlotId0_and_setSaModeSlotId1() = runTest {
+        val setCaseNsa = Set5gNrModeUseCase(systemManager).invoke(LteNrModeState.DisableSa, 0)
+        val setCaseSa = Set5gNrModeUseCase(systemManager).invoke(LteNrModeState.DisableNsa, 1)
+        assert(setCaseNsa is ApiResult.Success)
+        assert(setCaseSa is ApiResult.Success)
+        val getCaseNsa = Get5gNrModeUseCase(systemManager).invoke(0)
+        val getCaseSa = Get5gNrModeUseCase(systemManager).invoke(1)
+        println("Set mode: DisableSa, got mode: ${getCaseNsa.getOrNull()}, simSlotId: 0")
+        println("Set mode: DisableNsa, got mode: ${getCaseSa.getOrNull()}, simSlotId: 1")
+        assert(getCaseNsa is ApiResult.Success && getCaseNsa.data == LteNrModeState.DisableSa)
+        assert(getCaseSa is ApiResult.Success && getCaseSa.data == LteNrModeState.DisableNsa)
+    }
+
+    @Test
     fun setSaMode() = runTest {
         testSetNrMode(LteNrModeState.DisableNsa, null)
     }
@@ -64,6 +83,7 @@ class Nr5GModeTests {
         val setCase = Set5gNrModeUseCase(systemManager).invoke(mode, simSlotId)
         assert(setCase is ApiResult.Success)
         val getCase = Get5gNrModeUseCase(systemManager).invoke(simSlotId)
+        println("Set mode: $mode, got mode: ${getCase.getOrNull()}, simSlotId: $simSlotId")
         assert(getCase is ApiResult.Success && getCase.data == mode)
     }
 

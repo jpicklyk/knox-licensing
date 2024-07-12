@@ -17,4 +17,14 @@ sealed class ApiResult<out T : Any> {
         is Success -> data
         else -> null
     }
+
+    fun getErrorOrNull(): ApiError? = when (this) {
+        is Error -> apiError
+        else -> null
+    }
+
+    fun getExceptionOrNull(): Exception? = when (this) {
+        is Error -> exception
+        else -> null
+    }
 }

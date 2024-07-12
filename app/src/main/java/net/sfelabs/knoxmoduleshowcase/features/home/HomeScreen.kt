@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.sfelabs.core.component.KeyValueComposable
 import net.sfelabs.core.component.OutlinedCardContainer
-import net.sfelabs.knox_tactical.domain.model.VersionInfo
+import net.sfelabs.knox_tactical.domain.model.TacticalEditionReleases
 
 
 @Composable
@@ -171,7 +171,7 @@ private fun TacticalVersionInformation(
             )
             KeyTextComposable(
                 key = "TE Version:",
-                value = VersionInfo(buildNumber).description,
+                value = TacticalEditionReleases.getVersionInfo(buildNumber).description,
                 modifier = modifierInternal
             )
             val rpPosition = buildNumber.length-10

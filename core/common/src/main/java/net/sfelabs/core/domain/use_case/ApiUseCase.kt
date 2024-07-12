@@ -1,6 +1,7 @@
 package net.sfelabs.core.domain.use_case
 
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.sfelabs.core.di.IoDispatcher
 import net.sfelabs.core.domain.UiText
@@ -20,7 +21,8 @@ interface ApiUseCase<in P, out R : Any> {
      * @param params The input parameters for the use case.
      * @return An [ApiResult] representing the result of the operation.
      */
-    suspend operator fun invoke(params: P): ApiResult<R>
+    @Suppress("UNCHECKED_CAST")
+    suspend operator fun invoke(params: P = Unit as P): ApiResult<R>
 }
 
 /**
@@ -28,13 +30,12 @@ interface ApiUseCase<in P, out R : Any> {
  *
  * @param P The type of input parameters for the use case. Use [Unit] if no parameters are required.
  * @param R The type of the result returned by the use case.
- * @param defaultDispatcher The default coroutine dispatcher to use for execution.
- * @param dispatcher The coroutine dispatcher to use for this specific use case. Defaults to defaultDispatcher.
+ * @param dispatcher The coroutine dispatcher to use for this specific use case. Defaults to an [IoDispatcher].
  */
 abstract class CoroutineApiUseCase<in P, out R : Any>(
-    @IoDispatcher defaultDispatcher: CoroutineDispatcher,
-    private val dispatcher: CoroutineDispatcher = defaultDispatcher
+    private val dispatcher: CoroutineDispatcher? = null
 ) : ApiUseCase<P, R> {
+    private val defaultDispatcher = Dispatchers.IO
 
     /**
      * Executes the use case with error handling and context switching.
@@ -42,7 +43,9 @@ abstract class CoroutineApiUseCase<in P, out R : Any>(
      * @param params The input parameters for the use case.
      * @return An [ApiResult] representing the result of the operation.
      */
-    override suspend operator fun invoke(params: P): ApiResult<R> = withContext(dispatcher) {
+    override suspend operator fun invoke(params: P): ApiResult<R> = withContext(
+        dispatcher ?: defaultDispatcher
+    ) {
         try {
             execute(params)
         } catch (e: Throwable) {
@@ -57,7 +60,8 @@ abstract class CoroutineApiUseCase<in P, out R : Any>(
      * @param params The input parameters for the use case.
      * @return An [ApiResult] representing the result of the operation.
      */
-    protected abstract suspend fun execute(params: P): ApiResult<R>
+    @Suppress("UNCHECKED_CAST")
+    protected abstract suspend fun execute(params: P = Unit as P): ApiResult<R>
 
     /**
      * Maps exceptions to appropriate [ApiResult.Error] instances.

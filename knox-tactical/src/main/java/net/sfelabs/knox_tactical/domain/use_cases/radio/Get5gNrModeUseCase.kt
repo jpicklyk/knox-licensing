@@ -23,7 +23,10 @@ class Get5gNrModeUseCase @Inject constructor(
             try {
                 val result = when (simSlotId) {
                     null -> systemManager.get5gNrModeState()
-                    else -> systemManager.get5gNrModeStatePerSimSlot(simSlotId)
+                    else -> {
+                        println("Calling get5gNrModeStatePerSimSlot")
+                        systemManager.get5gNrModeStatePerSimSlot(simSlotId)
+                    }
                 }
                 if( result == CustomDeviceManager.ERROR_FAIL ) {
                     ApiResult.Error(
