@@ -6,7 +6,7 @@ import android.provider.Settings
 import android.provider.Settings.Global.ADB_ENABLED
 import androidx.test.filters.AbstractFilter
 import androidx.test.platform.app.InstrumentationRegistry
-import net.sfelabs.knox_tactical.domain.model.VersionInfo
+import net.sfelabs.knox_tactical.domain.model.TacticalEditionReleases
 import org.junit.runner.Description
 
 @Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
@@ -33,7 +33,7 @@ annotation class TacticalSdkSuppress(
         }
 
         private fun deviceSupportsTest(annotation: TacticalSdkSuppress?): Boolean {
-            val versionInfo = VersionInfo(Build.DISPLAY.split(".").last())
+            val versionInfo = TacticalEditionReleases.getVersionInfo(Build.DISPLAY.split(".").last())
             val versionCheck =  annotation == null || (
                     versionInfo.releaseVersion >= annotation.minReleaseVersion &&
                     versionInfo.releaseVersion <= annotation.maxReleaseVersion
