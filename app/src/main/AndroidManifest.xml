@@ -91,13 +91,5 @@
                 <action android:name="android.app.action.DEVICE_OWNER_CHANGED" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name="net.sfelabs.knox_common.LicenseReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.samsung.android.knox.intent.action.KNOX_LICENSE_STATUS" />
-                <action android:name="com.samsung.android.knox.intent.action.LICENSE_STATUS" />
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>
