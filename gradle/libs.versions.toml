@@ -19,6 +19,10 @@ googleArVersion = "1.32.0"
 hilt-core = "2.51.1"
 hilt-navigation = "1.2.0"
 jackson-kotlin = "2.15.2"
+junit5ExtensionsVersion = "1.4.0"
+junit5PlatformVersion = "1.10.3"
+junit5PluginVersion = "1.10.0.0"
+junit5Version = "5.10.3"
 kotlin = "1.9.24"
 kotlinx-collections-immutable = "0.3.5"
 kotlinx-coroutines = "1.8.0"
@@ -46,6 +50,7 @@ testing-androidx-uiautomator = "2.3.0"
 testing-kotlin-coroutines = "1.7.1"
 junit4 = "4.13.2"
 uiAndroid = "1.7.0-beta02"
+runner = "1.6.1"
 
 
 
@@ -97,6 +102,13 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation"}
 
 jackson-module = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin"}
+# JUnit 5 dependencies
+junit-extensions = { group = "de.mannodermaus.junit5", name = "android-test-extensions", version.ref = "junit5ExtensionsVersion" }
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5Version" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5Version" }
+junit-platform-suite = { group = "org.junit.platform", name = "junit-platform-suite", version.ref = "junit5PlatformVersion" }
+junit-platform-runner = { group = "org.junit.platform", name = "junit-platform-runner", version.ref = "junit5PlatformVersion" }
+junit-vintage-engine = { group = "org.junit.jupiter", name = "junit-vintage-engine", version.ref = "junit5Version" }
 
 #kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
@@ -113,7 +125,6 @@ mockito-kotlin = { group = "org.mockito", name = "mockito-kotlin", version.ref =
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
 mockk-agent = { group = "io.mockk", name = "mockk-agent", version.ref = "mockk-version" }
 mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk-version" }
-
 spongycastle-prov = { module = "com.madgag.spongycastle:prov", version.ref = "spongycastle" }
 #testing-compose-ui = { module = "androidx.compose.ui:ui-test-junit4"}
 #testing-compose-manifest = { module = "androidx.compose.ui:ui-test-manifest"}
@@ -136,9 +147,12 @@ androidx-compose-materialIcons = [
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+android-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5PluginVersion"}
 #android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-core" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+convention-android-knox-license = { id = "convention.android.knox.license", version = "unspecified" }

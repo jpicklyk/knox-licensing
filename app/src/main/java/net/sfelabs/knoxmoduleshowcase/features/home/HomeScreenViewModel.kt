@@ -4,32 +4,38 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.samsung.android.knox.license.ActivationInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.knox_common.domain.use_cases.license.GetLicenseActivationInfoUseCase
+import net.sfelabs.knox_common.license.domain.usecase.GetLicenseActivationInfoUseCase
+import net.sfelabs.knox_common.license.domain.usecase.GetLicenseInfoUseCase
+import net.sfelabs.knox_common.license.domain.usecase.KnoxLicenseUseCase
+import net.sfelabs.knox_common.license.presentation.LicenseState
 import java.util.Date
 import javax.inject.Inject
 
 data class PermissionStatus(val name: String, val isEnabled: Boolean)
 data class KnoxLicenseStatus(
     val maskedKey: String? = null,
-    val state: ActivationInfo.State? = null,
-    val activationDate: Date? = null
+    val state: LicenseState = LicenseState.Loading,
+    val activationDate: Date? = null,
+    val error: String? = null
 )
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
-    private val getLicenseActivationInfoUseCase: GetLicenseActivationInfoUseCase
+    private val getLicenseActivationInfoUseCase: GetLicenseActivationInfoUseCase,
+    private val knoxLicenseUseCase: KnoxLicenseUseCase,
+    private val getLicenseInfoUseCase: GetLicenseInfoUseCase
 ): ViewModel(){
     private val _deviceBuildNumber = mutableStateOf(Build.DISPLAY.split(".").last())
     val deviceBuildNumber: State<String> = _deviceBuildNumber
@@ -46,22 +52,35 @@ class HomeScreenViewModel @Inject constructor(
     init {
 
         viewModelScope.launch {
+            var licenseState = getLicenseInfoUseCase()
+            if(licenseState.isNotActivated()) {
+                licenseState = knoxLicenseUseCase(activate = true)
+                Log.d("HomeScreenViewModel", "activationResult: $licenseState")
+            }
+
             _permissionList.addAll(getPermissionStatus(applicationContext))
-            updateKnoxActivationInfo()
+            updateKnoxActivationInfo(licenseState)
         }
     }
 
-    private suspend fun updateKnoxActivationInfo() {
-        val results = getLicenseActivationInfoUseCase()
-        if(results is ApiResult.Success) {
-            val info = results.data
+    private suspend fun updateKnoxActivationInfo(licenseState: LicenseState) {
+
+        val result = getLicenseActivationInfoUseCase()
+        if(result is ApiResult.Success) {
+            val info = result.data
             _knoxState.value = _knoxState.value.copy(
                 maskedKey = info.maskedLicenseKey,
-                state = info.state,
+                state = licenseState,
                 activationDate = info.activationDate
             )
+        } else {
+            _knoxState.value = _knoxState.value.copy(
+                maskedKey = null,
+                state = licenseState,
+                activationDate = null,
+                error = licenseState.getErrorOrNull()
+            )
         }
-
     }
     private fun getPermissionStatus(context: Context): List<PermissionStatus> {
         val manifestPermissionStatusList = ArrayList<PermissionStatus>()

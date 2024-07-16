@@ -1,7 +1,8 @@
 plugins {
-   id("sfelabs.android.application")
-   id("sfelabs.android.application.compose")
-   id("sfelabs.android.hilt")
+    id("sfelabs.android.application")
+    id("sfelabs.android.application.compose")
+    id("sfelabs.android.hilt")
+    alias(libs.plugins.android.junit5)
 
 
     //id("com.android.application")
@@ -15,12 +16,16 @@ android {
 
     defaultConfig {
 
+        testInstrumentationRunnerArguments += mapOf("runnerBuilder" to "de.mannodermaus.junit5.AndroidJUnit5Builder")
         applicationId = "net.sfelabs.knoxmoduleshowcase"
 
         versionCode = 1
         versionName = "0.0.1"
 
-        testInstrumentationRunner = "net.sfelabs.knox_tactical.TacticalJUnitRunner"
+        //testInstrumentationRunner = "net.sfelabs.knox_tactical.TacticalJUnitRunner"
+        testInstrumentationRunner = "net.sfelabs.knoxmoduleshowcase.di.HiltTestRunner"
+        // Use JUnit 5 for local unit tests
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -43,10 +48,13 @@ android {
 
     @Suppress("UnstableApiUsage")
     testOptions {
+
         unitTests {
+
             isIncludeAndroidResources = true
         }
     }
+
 }
 dependencies {
     implementation(project(":core:common"))
@@ -70,8 +78,13 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.jackson.module)
 
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+
     androidTestImplementation(project(":core:testing"))
-    androidTestImplementation(libs.androidx.test.runner)
-
-
+    androidTestImplementation(libs.junit.jupiter.api)
+    androidTestRuntimeOnly(libs.junit.jupiter.engine)
+    androidTestRuntimeOnly(libs.junit.extensions)
+    androidTestImplementation(libs.junit.platform.suite)
+    androidTestImplementation(libs.junit.platform.runner)
 }

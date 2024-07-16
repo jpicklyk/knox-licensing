@@ -65,6 +65,7 @@ internal fun HomeScreen(
             val modifier = Modifier
                 .fillMaxWidth(0.28f)
                 .height(24.dp)
+
             licenseStatus.maskedKey?.let {
                 KeyTextComposable(
                     key = "License Key:",
@@ -72,10 +73,15 @@ internal fun HomeScreen(
                     modifier = modifier
                 )
             }
-            licenseStatus.state?.let {
+            KeyTextComposable(
+                key = "State:",
+                value = licenseStatus.state.getName(),
+                modifier = modifier
+            )
+            licenseStatus.error?.let {
                 KeyTextComposable(
-                    key = "State:",
-                    value = it.name,
+                    key = "Error:",
+                    value = it,
                     modifier = modifier
                 )
             }
@@ -199,9 +205,11 @@ private fun KeyTextComposable(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(4.dp)
         ) {
             Text(
                 text = value,
+                maxLines = 2,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface
             )

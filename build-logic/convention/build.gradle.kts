@@ -61,5 +61,9 @@ gradlePlugin {
             id = "sfelabs.android.feature"
             implementationClass = "AndroidFeatureConventionPlugin"
         }
+        register("knoxLicense") {
+            id = "convention.android.knox.license"
+            implementationClass = "KnoxLicenseConventionPlugin"
+        }
     }
 }

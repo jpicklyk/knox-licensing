@@ -81,7 +81,7 @@ object TacticalEditionReleases {
             .releaseVersion(131)
             .generation(3)
             .buildNumber("G736U1UEU5CXB1_B2BF"),
-        Regex("(G736U1UEU[67]CX[FG][12]_B2BF|S911U1UEU4AXG2_B2BF)") to VersionInfo.Builder()
+        Regex("(G736U1UEU[67]CX[FG][1-9]_B2BF|S911U1UEU4AXG[1-9]_B2BF)") to VersionInfo.Builder()
             .description("TE3 Android 13 MR2 beta")
             .releaseVersion(132)
             .generation(3)

@@ -8,7 +8,7 @@ import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
-import net.sfelabs.knox_common.domain.use_cases.license.GetLicenseActivationInfoUseCase
+import net.sfelabs.knox_common.license.domain.usecase.GetLicenseActivationInfoUseCase
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test

@@ -2,6 +2,8 @@ package net.sfelabs.core.domain.use_case
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import net.sfelabs.core.di.IoDispatcher
 import net.sfelabs.core.domain.UiText
@@ -43,12 +45,13 @@ abstract class CoroutineApiUseCase<in P, out R : Any>(
      * @param params The input parameters for the use case.
      * @return An [ApiResult] representing the result of the operation.
      */
-    override suspend operator fun invoke(params: P): ApiResult<R> = withContext(
+    final override suspend operator fun invoke(params: P): ApiResult<R> = withContext(
         dispatcher ?: defaultDispatcher
     ) {
         try {
             execute(params)
         } catch (e: Throwable) {
+            currentCoroutineContext().ensureActive()
             mapError(e)
         }
     }

@@ -1,0 +1,22 @@
+package net.sfelabs.knoxmoduleshowcase.di
+
+import android.app.Application
+import android.content.Context
+import android.os.Bundle
+import androidx.test.runner.AndroidJUnitRunner
+import dagger.hilt.android.testing.HiltTestApplication
+import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
+
+class HiltTestRunner : AndroidJUnitRunner() {
+    override fun onCreate(bundle: Bundle) {
+        // add the Tactical SDK filter to the test runner's filter list
+        bundle.putString(
+            "filter",
+            TacticalSdkSuppress.Filter::class.java.name
+        )
+        super.onCreate(bundle)
+    }
+    override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application {
+        return super.newApplication(cl, HiltTestApplication::class.java.name, context)
+    }
+}
