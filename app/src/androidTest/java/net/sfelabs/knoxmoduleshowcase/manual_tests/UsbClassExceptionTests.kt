@@ -1,7 +1,6 @@
 package net.sfelabs.knoxmoduleshowcase.manual_tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.restriction.RestrictionPolicy.USBInterface
 import kotlinx.coroutines.test.runTest
@@ -15,7 +14,6 @@ import org.junit.runner.RunWith
  * Manual tests required for each of the below Test functions.
  */
 @RunWith(AndroidJUnit4::class)
-@SmallTest
 class UsbClassExceptionTests {
     private val appContext = InstrumentationRegistry.getInstrumentation().targetContext
     private val restrictionPolicy = KnoxModule.provideKnoxRestrictionPolicy(appContext)
