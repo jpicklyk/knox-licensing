@@ -6,10 +6,12 @@ import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.testing.rules.EthernetNotConnected
 import net.sfelabs.core.testing.rules.EthernetNotConnectedRule
+import net.sfelabs.core.testing.rules.EthernetRequired
 import net.sfelabs.core.testing.rules.EthernetRequiredRule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.AddIpAddressToEthernetInterfaceUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.ListIpAddressesUseCase
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -41,13 +43,18 @@ class AddIpAddressToInterfaceTests {
      * 192.168.2.199/24 is equal to 129.168.2.199 with subnet mask 255.255.255.0
      */
     @Test
-    //@EthernetRequired
+    @EthernetRequired
     fun addIpAddress_withPrefix24_returnsSuccess() = runTest {
         val interfaceName = "eth0"
         val ipAddress = "192.168.2.199/24"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
         assert(result is ApiResult.Success)
+
+        val ipAddressesResult = ListIpAddressesUseCase(settingsManager).invoke(interfaceName)
+        assert(ipAddressesResult is ApiResult.Success)
+        println("IP addresses: ${(ipAddressesResult as ApiResult.Success).data}")
+        assert(ipAddressesResult.data.contains("/192.168.2.199/24 [/192.168.2.255]"))
     }
 
     /**
@@ -68,13 +75,18 @@ class AddIpAddressToInterfaceTests {
      * 192.168.2.199/16 is equal to 129.168.2.199 with subnet mask 255.255.0.0
      */
     @Test
-    //@EthernetRequired
+    @EthernetRequired
     fun addIpAddress_withPrefix16_returnsSuccess() = runTest {
         val interfaceName = "eth0"
         val ipAddress = "192.168.2.199/16"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
             .invoke(interfaceName, ipAddress)
         assert(result is ApiResult.Success)
+
+        val ipAddressesResult = ListIpAddressesUseCase(settingsManager).invoke(interfaceName)
+        assert(ipAddressesResult is ApiResult.Success)
+        println("IP addresses: ${(ipAddressesResult as ApiResult.Success).data}")
+        assert(ipAddressesResult.data.contains("/192.168.2.199/16 [/192.168.255.255]"))
     }
 
     @Test
@@ -96,13 +108,18 @@ class AddIpAddressToInterfaceTests {
     }
 
     @Test
-    //@EthernetRequired
+    @EthernetRequired
     fun addIpAddress_withPrefix29_returnsSuccess() = runTest {
-        val interfaceNameBad = "eth0"
+        val interfaceName = "eth0"
         val ipAddress = "192.168.2.221/29"
         val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
-            .invoke(interfaceNameBad, ipAddress)
+            .invoke(interfaceName, ipAddress)
         assert(result is ApiResult.Success)
+
+        val ipAddressesResult = ListIpAddressesUseCase(settingsManager).invoke(interfaceName)
+        assert(ipAddressesResult is ApiResult.Success)
+        println("IP addresses: ${(ipAddressesResult as ApiResult.Success).data}")
+        assert(ipAddressesResult.data.contains("/192.168.2.221/29 [/192.168.2.223]"))
     }
 
     @Test
