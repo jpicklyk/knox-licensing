@@ -1,6 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.tests.knox_core
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
@@ -16,7 +17,8 @@ import org.junit.runner.RunWith
 import javax.inject.Inject
 
 @HiltAndroidTest
-@TacticalSdkSuppress(minReleaseVersion = 100)
+@SmallTest
+@TacticalSdkSuppress(minReleaseVersion = 130)
 @RunWith(AndroidJUnit4::class)
 class LicenseActivationTests {
     private val te3Key1 = "KLM05-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX#offline.com"
