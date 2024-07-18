@@ -5,24 +5,19 @@ import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.memberFunctions
 
 fun checkMethodExistence(kotlinClass: KClass<*>, methodName: String): Boolean {
-    try {
-
-
-
-        val declaredFunctions = kotlinClass.declaredMemberFunctions
-        val inheritedFunctions = kotlinClass.memberFunctions
-
-        val allFunctions = declaredFunctions + inheritedFunctions
-
-        for (function in allFunctions) {
-            if (function.name == methodName) {
-                return true
-            }
+    return runCatching {
+        kotlinClass.run {
+            (declaredMemberFunctions + memberFunctions)
+                .any { it.name.contains(methodName, ignoreCase = true) }
         }
-    } catch (e: ClassNotFoundException) {
-        // Handle class not found exception
-        e.printStackTrace()
+    }.getOrElse { e ->
+        when (e) {
+            is ClassNotFoundException -> {
+                println("Class not found: ${e.message}")
+                e.printStackTrace()
+            }
+            else -> println("An unexpected error occurred: ${e.message}")
+        }
+        false
     }
-
-    return false
 }
