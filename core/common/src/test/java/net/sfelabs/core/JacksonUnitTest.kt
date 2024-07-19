@@ -14,7 +14,7 @@ import org.junit.Test
 class JacksonUnitTest {
     @Test
     fun test_BooleanComponent() {
-        val json = "{\"key\":\"TacticalDeviceMode\",\"title\":\"Tactical Device Mode\",\"description\":\"Some description for the feature\",\"knoxFeatureValueType\":{\"@type\":\"KnoxFeatureValueType\$NoValue\"},\"enabled\":true}"
+        val json = "{\"key\":\"TacticalDeviceMode\",\"title\":\"Tactical Device Mode\",\"description\":\"Some description for the feature\",\"enabled\":true,\"knoxFeatureValueType\":{\"@type\":\"KnoxFeatureValueType\$NoValue\"}}"
         val feature = KnoxFeature(
             key = "TacticalDeviceMode",
             title = "Tactical Device Mode",
