@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import junit.framework.TestCase
 import junit.framework.TestCase.assertFalse
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
@@ -106,6 +107,7 @@ class PppdTtyUsbTests {
         val sm = KnoxModule.provideKnoxSystemManager()
         val useCase = StopPppdUseCase(sm)
         val result = useCase.invoke()
+        delay(1000)
         TestCase.assertTrue(
             "Knox API stopPPPD() was not successful.  $result",
             result is ApiResult.Success
