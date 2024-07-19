@@ -18,6 +18,8 @@ dependencies {
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.runtime)
     api(libs.androidx.lifecycle.vm.comp)
+    api(libs.androidx.datastore)
+    api(libs.androidx.datastore.preferences)
     testImplementation(libs.androidx.ui.android)
     //implementation(libs.hilt.android)
     //kapt("com.google.dagger:hilt-compiler")

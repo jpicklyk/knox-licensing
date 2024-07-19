@@ -12,11 +12,11 @@ import androidx.compose.ui.platform.LocalContext
 import net.sfelabs.core.component.AppNavigationBar
 import net.sfelabs.core.component.AppNavigationBarItem
 import net.sfelabs.core.component.TacticalTopAppBar
+import net.sfelabs.core.ui.theme.AppTheme
 import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.SetupNavGraph
 import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.TopLevelDestination
 import net.sfelabs.knoxmoduleshowcase.features.permissions.isDeviceAdminGranted
 import net.sfelabs.knoxmoduleshowcase.features.permissions.requestDeviceAdmin
-import net.sfelabs.core.ui.theme.AppTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)

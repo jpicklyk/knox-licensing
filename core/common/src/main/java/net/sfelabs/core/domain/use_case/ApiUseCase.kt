@@ -81,7 +81,7 @@ abstract class CoroutineApiUseCase<in P, out R : Any>(
             exception = throwable
         )
         else -> ApiResult.Error(
-            UiText.DynamicString("An unexpected error occurred"),
+            UiText.DynamicString(throwable.message?:"Unexpected error occurred"),
             apiError = DefaultApiError.UnexpectedError,
             exception = Exception(throwable)
         )
