@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.jackson.module)
 
+    testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
 
