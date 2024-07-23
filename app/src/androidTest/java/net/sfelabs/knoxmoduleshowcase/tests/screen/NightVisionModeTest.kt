@@ -98,6 +98,7 @@ class NightVisionModeTest {
 
     @After
     fun cleanup() = runTest {
+        delay(1000)
         (testDataStoreDataSource as TestDataStoreDataSourceImpl).clearAll()
         cleanupTurnOffNightVisionMode()
     }
