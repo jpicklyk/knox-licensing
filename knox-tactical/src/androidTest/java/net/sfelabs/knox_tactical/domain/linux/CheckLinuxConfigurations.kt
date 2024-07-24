@@ -6,6 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import org.junit.Assert
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.BufferedReader
@@ -77,6 +78,7 @@ class CheckLinuxConfigurations {
         )
     }
 
+    //Critical PPP driver
     @Test
     fun checkConfiguration_CONFIG_PPP_ASYNC() {
         val config = "CONFIG_PPP_ASYNC=y"
@@ -85,7 +87,16 @@ class CheckLinuxConfigurations {
             checkLinuxConfiguration(config)
         )
     }
-
+    //Critical PPP driver
+    @Test
+    fun checkConfiguration_CONFIG_USB_SERIAL_FTDI_SIO() {
+        val config = "CONFIG_USB_SERIAL_FTDI_SIO=y"
+        Assert.assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+    //Critical PPP driver
     @Test
     fun checkConfiguration_CONFIG_PPP_SYNC_TTY() {
         val config = "CONFIG_PPP_SYNC_TTY=y"
@@ -94,6 +105,7 @@ class CheckLinuxConfigurations {
             checkLinuxConfiguration(config)
         )
     }
+
     @Test
     fun checkCDCECM_isConfigured() {
         val config = "CONFIG_USB_CONFIGFS_ECM_SUBSET=y"
@@ -166,9 +178,9 @@ class CheckLinuxConfigurations {
             checkLinuxConfiguration(config)
         )
     }
-
+    // XC6P cannot support this apparently but it isn't clear why.
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 132)
+    @TacticalSdkSuppress(minReleaseVersion = 132, excludeModels = ["SM-G736U1"])
     fun check_rtl8153_ecm_isConfigured() {
         //prerequisite for the USB driver
         val config = "CONFIG_USB_RTL8153_ECM=y"
@@ -199,6 +211,48 @@ class CheckLinuxConfigurations {
         )
     }
 
+    @Test
+    fun ueventd_ttyAcm_wasAdded() {
+        val entryPattern = """^(/dev/ttyACM\*)\s+(0666)\s+(root)\s+(root)$"""
+        assertTrue(
+            "/dev/ttyACM* is not added in /system/etc/ueventd.rc!",
+                    checkForFileEntry(entryPattern.toRegex(), "/system/etc/ueventd.rc")
+        )
+    }
+
+    @Test
+    fun ueventd_ttyUsb_wasAdded() {
+        val entryPattern = """^(/dev/ttyUSB\*)\s+(0667)\s+(root)\s+(root)$"""
+        assertTrue(
+            "/dev/ttyUSB* is not added in /system/etc/ueventd.rc!",
+            checkForFileEntry(entryPattern.toRegex(), "/system/etc/ueventd.rc")
+        )
+    }
+    ///dev/ttyUSB[0-9]*       u:object_r:usb_serial_device:s0
+    ///dev/ttyACM[0-9]*       u:object_r:usb_serial_device:s0
+
+    @Suppress("RegExpRedundantEscape")
+    @Test
+    fun fileContexts_ttyAcm_wasAdded() {
+        val entry = """^(/dev/ttyACM\[0-9\]\*)\s+(u:object_r:usb_serial_device:s0)$"""
+        val file = "/system/etc/selinux/plat_file_contexts"
+        assertTrue(
+            "/dev/ttyACM[0-9]* is not added in /system/etc/selinux/plat_file_contexts!",
+            checkForFileEntry(entry.toRegex(), file)
+        )
+    }
+
+    @Suppress("RegExpRedundantEscape")
+    @Test
+    fun fileContexts_ttyUsb_wasAdded() {
+        val entry = """^(/dev/ttyUSB\[0-9\]\*)\s+(u:object_r:usb_serial_device:s0)$"""
+        val file = "/system/etc/selinux/plat_file_contexts"
+        assertTrue(
+            "dev/ttyUSB[0-9]* is not added in /system/etc/selinux/plat_file_contexts!",
+            checkForFileEntry(entry.toRegex(), file)
+        )
+    }
+
 
     private fun checkLinuxConfiguration(config: String) : Boolean {
         val uiDevice: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
@@ -214,6 +268,28 @@ class CheckLinuxConfigurations {
 
             if(line?.contains(config) ==true) {
                 println("Linux config value: $line")
+                success = true
+            }
+        }
+        // Close the reader
+        reader.close()
+        return success
+    }
+
+    private fun checkForFileEntry(entry: Regex, file: String) : Boolean {
+        val uiDevice: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        // Execute the adb shell command to print config.gz
+        val outputString = uiDevice.executeShellCommand("cat $file")
+        // Read the output of the command
+        val reader = BufferedReader(InputStreamReader(outputString.byteInputStream()))
+        val output = StringBuilder()
+        var line: String?
+        var success = false
+        while (reader.readLine().also { line = it } != null) {
+            output.append(line).append("\n")
+
+            if(line?.matches(entry) ==true) {
+                println("ueventd entry value: $line")
                 success = true
             }
         }
