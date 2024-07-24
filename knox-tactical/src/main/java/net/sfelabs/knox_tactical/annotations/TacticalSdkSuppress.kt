@@ -1,11 +1,7 @@
 package net.sfelabs.knox_tactical.annotations
 
 import android.os.Build
-import android.os.Debug
-import android.provider.Settings
-import android.provider.Settings.Global.ADB_ENABLED
 import androidx.test.filters.AbstractFilter
-import androidx.test.platform.app.InstrumentationRegistry
 import net.sfelabs.knox_tactical.domain.model.TacticalEditionReleases
 import org.junit.runner.Description
 
@@ -14,8 +10,8 @@ import org.junit.runner.Description
 annotation class TacticalSdkSuppress(
     val minReleaseVersion: Int = 1,
     val maxReleaseVersion: Int = Int.MAX_VALUE,
-    val requiresUsbDebugging: Boolean = false,
-    val requiresWifiDebugging: Boolean = false
+    val excludeModels: Array<String> = [],
+    val includeModels: Array<String> = []
 ) {
 
     @SuppressWarnings("unused")
@@ -33,39 +29,14 @@ annotation class TacticalSdkSuppress(
         }
 
         private fun deviceSupportsTest(annotation: TacticalSdkSuppress?): Boolean {
-            val versionInfo = TacticalEditionReleases.getVersionInfo(Build.DISPLAY.split(".").last())
-            val versionCheck =  annotation == null || (
-                    versionInfo.releaseVersion >= annotation.minReleaseVersion &&
-                    versionInfo.releaseVersion <= annotation.maxReleaseVersion
-                    )
-            if(annotation != null && annotation.requiresUsbDebugging) {
-                return versionCheck && isUsbDebuggingConnected()
-            }
-            if(annotation != null && annotation.requiresWifiDebugging) {
-                return versionCheck && isWifiDebuggingConnected()
-            }
-            return versionCheck
-        }
+            if (annotation == null) return true
 
-        /**
-         * Unfortunately these only determine if the setting is on, it does not confirm that the
-         * connection is made via USB or WiFi.  There does not appear to be a way to differentiate.
-         */
-        private fun isUsbDebuggingConnected(): Boolean {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            val adbEnabled = Settings.Global.getInt(context.contentResolver, ADB_ENABLED)
-            val connected = Debug.isDebuggerConnected()
-            val result = connected && adbEnabled == 1
-            return result
-        }
-        private fun isWifiDebuggingConnected(): Boolean {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            val adbEnabled = Settings.Global.getInt(context.contentResolver, "adb_wifi_enabled", 0)
-            val connected = Debug.isDebuggerConnected()
-            val result = connected && adbEnabled == 0
-            return result
-        }
+            val versionInfo = TacticalEditionReleases.getVersionInfo(Build.DISPLAY.substringAfterLast("."))
+            val versionCheck = versionInfo.releaseVersion in annotation.minReleaseVersion..annotation.maxReleaseVersion
 
+            return versionCheck &&
+                    (versionInfo.modelName !in annotation.excludeModels ||
+                        versionInfo.modelName in annotation.includeModels)
+        }
     }
-
 }

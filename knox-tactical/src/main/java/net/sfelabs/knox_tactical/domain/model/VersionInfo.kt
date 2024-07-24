@@ -5,6 +5,7 @@ class VersionInfo private constructor(
     val releaseVersion: Int,
     val generation: Int,
     val buildNumber: String,
+    val modelName: String,
     val additionalInfo: Map<String, String>
 ) {
     class Builder {
@@ -12,14 +13,18 @@ class VersionInfo private constructor(
         private var releaseVersion: Int = 0
         private var generation: Int = 0
         private var buildNumber: String = ""
+        private var modelName: String = ""
         private val additionalInfo: MutableMap<String, String> = mutableMapOf()
 
         fun description(description: String) = apply { this.description = description }
         fun releaseVersion(releaseVersion: Int) = apply { this.releaseVersion = releaseVersion }
         fun generation(generation: Int) = apply { this.generation = generation }
         fun buildNumber(buildNumber: String) = apply { this.buildNumber = buildNumber }
+        fun modelName(deviceModel: String) = apply { this.modelName = deviceModel }
         fun addInfo(key: String, value: String) = apply { this.additionalInfo[key] = value }
-        fun build() = VersionInfo(description, releaseVersion, generation, buildNumber, additionalInfo)
+        fun build() = VersionInfo(
+            description, releaseVersion, generation, buildNumber, modelName, additionalInfo
+        )
 
         companion object {
             fun createDefaultVersion(buildNumber: String) = Builder()

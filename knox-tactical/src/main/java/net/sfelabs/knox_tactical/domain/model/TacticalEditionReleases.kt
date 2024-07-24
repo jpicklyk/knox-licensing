@@ -61,10 +61,17 @@ object TacticalEditionReleases {
             .buildNumber("G981U1UES4AWC1_B2BF"),
 
         // TE3 Program
-        Regex("(G736U1UEU4CWH5|S911U1UEU1AWH5)_B2BF") to VersionInfo.Builder()
+        "S911U1UEU1AWH5_B2BF" to VersionInfo.Builder()
             .description("TE3 Android 13 GA")
             .releaseVersion(130)
             .generation(3)
+            .modelName("SM-S911U1")
+            .buildNumber(""),
+        "G736U1UEU4CWH5_B2BF" to VersionInfo.Builder()
+            .description("TE3 Android 13 GA")
+            .releaseVersion(130)
+            .generation(3)
+            .modelName("SM-G736U1")
             .buildNumber(""),
         Regex("(S911U1UEU2A(WL1|XA[1-3])|G736U1UEU5C(WL1|XA[1-3]))_B2BF") to VersionInfo.Builder()
             .description("TE3 Android 13 MR1 (beta)")
@@ -75,16 +82,25 @@ object TacticalEditionReleases {
             .description("TE3 Android 13 MR1")
             .releaseVersion(131)
             .generation(3)
+            .modelName("SM-S911U1")
             .buildNumber("S911U1UEU2AXA4_B2BF"),
         "G736U1UEU5CXB1_B2BF" to VersionInfo.Builder()
             .description("TE3 Android 13 MR1")
             .releaseVersion(131)
             .generation(3)
+            .modelName("SM-G736U1")
             .buildNumber("G736U1UEU5CXB1_B2BF"),
-        Regex("(G736U1UEU[67]CX[FG][1-9]_B2BF|S911U1UEU4AXG[1-9]_B2BF)") to VersionInfo.Builder()
+        Regex("(G736U1UEU[67]CX[FG][1-9]_B2BF)") to VersionInfo.Builder()
             .description("TE3 Android 13 MR2 beta")
             .releaseVersion(132)
             .generation(3)
+            .modelName("SM-G736U1")
+            .buildNumber(""),
+        Regex("(S911U1UEU4AXG[1-9]_B2BF)") to VersionInfo.Builder()
+            .description("TE3 Android 13 MR2 beta")
+            .releaseVersion(132)
+            .generation(3)
+            .modelName("SM-S911U1")
             .buildNumber("")
     )
 
