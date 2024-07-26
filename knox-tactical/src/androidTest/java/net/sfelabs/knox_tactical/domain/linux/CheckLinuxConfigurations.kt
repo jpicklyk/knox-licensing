@@ -220,6 +220,11 @@ class CheckLinuxConfigurations {
         )
     }
 
+    /**
+     * Currently the /dev/ttyUSB* permissions are being defined in /vendor/etc/ueventd.rc which
+     * we do not have access to for confirmation.  We should track this and move the permissions
+     * to the /system/etc/ueventd.rc file where the B2B ttyACM permissions are set.
+     */
     @Test
     fun ueventd_ttyUsb_wasAdded() {
         val entryPattern = """^(/dev/ttyUSB\*)\s+(0667)\s+(root)\s+(root)$"""
