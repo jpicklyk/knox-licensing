@@ -104,6 +104,15 @@ class BandLocking5gTests {
     @TacticalSdkSuppress(minReleaseVersion = 132)
     fun enable5gBandLockingPerSimSlotId0_confirmN78_returnSuccess() = runTest {
         testEnableBandLocking(0)
+
+        //confirm that SIM id 1 isn't also enabled
+        val result = Get5gBandLockingUseCase(systemManager).invoke(1)
+        assert(result is ApiResult.Success)
+        val state = result.getOrNull()
+        assertTrue("Band locking on SIM id 1 should not be enabled when configuring SIM 0.", state?.enabled == false)
+
+        //confirm SIM id 1 does not have the band applied
+        assertTrue("SIM id 1 should be returning -1 not ${state?.value}.", state?.value == -1)
     }
 
     private suspend fun testEnableBandLocking(simSlotId: Int?) {
