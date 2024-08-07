@@ -37,8 +37,6 @@ class GetBandLockingStateUseCase @Inject constructor(
                     ))
             } catch (nsm: NoSuchMethodError) {
                 ApiResult.NotSupported
-            } catch (ex: NoSuchMethodError) {
-                ApiResult.NotSupported
             }
         }
     }
