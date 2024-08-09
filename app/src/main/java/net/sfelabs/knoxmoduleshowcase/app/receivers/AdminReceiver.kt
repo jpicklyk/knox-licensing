@@ -3,15 +3,10 @@ package net.sfelabs.knoxmoduleshowcase.app.receivers
 import android.app.admin.DeviceAdminReceiver
 import android.content.Context
 import android.content.Intent
-import kotlinx.coroutines.DelicateCoroutinesApi
-import net.sfelabs.knox_common.license.domain.usecase.KnoxLicenseUseCase
-import javax.inject.Inject
 
 
-class AdminReceiver @Inject constructor(
-    private val knoxLicenseUseCase: KnoxLicenseUseCase
-): DeviceAdminReceiver() {
-    @OptIn(DelicateCoroutinesApi::class)
+class AdminReceiver: DeviceAdminReceiver() {
+
     override fun onEnabled(context: Context, intent: Intent) {
 
         super.onEnabled(context, intent)
