@@ -20,13 +20,14 @@ internal class KnoxLicenseUseCaseImpl @Inject constructor(
     private val tag = "KnoxLicenseUseCaseImpl"
     override suspend operator fun invoke(activate: Boolean, licenseKey: String): LicenseState = suspendCancellableCoroutine { continuation ->
         val callback = LicenseResultCallback { licenseResult ->
-            val state = when {
-                licenseResult == null -> LicenseState.Error("License result is null")
-                licenseResult.isSuccess ->
-                    if (activate) LicenseState.Activated("License activated successfully")
-                    else LicenseState.NotActivated
-                else -> {
+            val state = when(licenseResult.isSuccess) {
+                true -> {
+                    Log.d(tag, "Knox activation is successful")
+                    LicenseState.Activated("License activated successfully")
+                }
+                false -> {
                     val errorMessage = knoxErrorMapper.getKpeErrorMessage(licenseResult.errorCode)
+                    Log.d(tag, "Knox activation failed with error code: ${licenseResult.errorCode}")
                     LicenseState.Error("$errorMessage. Details: ${licenseResult.errorCode}")
                 }
             }
