@@ -166,7 +166,11 @@ class HdmTests {
         assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, nfcBitmask ))
     }
 
+    /**
+     * The XCP HW does not correctly support this HDM control and will be a NO-OP
+     */
     @Test
+    @TacticalSdkSuppress(excludeModels = ["SM-G736U1"])
     fun disableMicrophone() = runTest {
         val result = SetHdmMicrophoneState(context).invoke(disabled = true)
         assert(result is ApiResult.Success && result.data)
@@ -175,7 +179,11 @@ class HdmTests {
         assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, micBitmask ))
     }
 
+    /**
+     * The XCP HW does not correctly support this HDM control and will be a NO-OP
+     */
     @Test
+    @TacticalSdkSuppress(excludeModels = ["SM-G736U1"])
     fun enableMicrophone() = runTest {
         val result = SetHdmMicrophoneState(context).invoke(disabled = false)
         assert(result is ApiResult.Success && result.data)
@@ -202,7 +210,11 @@ class HdmTests {
         assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, modemBitmask ))
     }
 
+    /**
+     * The XCP HW does not correctly support this HDM control and will be a NO-OP
+     */
     @Test
+    @TacticalSdkSuppress(excludeModels = ["SM-G736U1"])
     fun disableSpeaker() = runTest {
         val result = SetHdmSpeakerState(context).invoke(disabled = true)
         assert(result is ApiResult.Success && result.data)
@@ -211,7 +223,11 @@ class HdmTests {
         assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, speakerBitmask ))
     }
 
+    /**
+     * The XCP HW does not correctly support this HDM control and will be a NO-OP
+     */
     @Test
+    @TacticalSdkSuppress(excludeModels = ["SM-G736U1"])
     fun enableSpeaker() = runTest {
         val result = SetHdmSpeakerState(context).invoke(disabled = false)
         assert(result is ApiResult.Success && result.data)
