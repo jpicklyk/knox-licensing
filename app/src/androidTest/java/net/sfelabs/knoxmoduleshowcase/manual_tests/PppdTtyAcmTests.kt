@@ -12,6 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
+import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
 import net.sfelabs.knoxmoduleshowcase.R
@@ -37,7 +38,7 @@ import java.net.NetworkInterface
 
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-//@TacticalSdkSuppress(minReleaseVersion = 110)
+@TacticalSdkSuppress(minReleaseVersion = 110)
 class PppdTtyAcmTests {
     private val tag = "TTYACMTEST"
     private lateinit var context: Context
