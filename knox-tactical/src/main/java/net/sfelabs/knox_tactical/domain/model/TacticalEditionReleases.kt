@@ -101,7 +101,13 @@ object TacticalEditionReleases {
             .releaseVersion(132)
             .generation(3)
             .modelName("SM-S911U1")
-            .buildNumber("")
+            .buildNumber(""),
+        "S911U1UEU4AXH1_B2BF" to VersionInfo.Builder()
+            .description("TE3 Android 13 MR2 RC")
+            .releaseVersion(132)
+            .generation(3)
+            .modelName("SM-S911U1")
+            .buildNumber("S911U1UEU4AXH1_B2BF"),
     )
 
     fun getVersionInfo(buildNumber: String): VersionInfo {
