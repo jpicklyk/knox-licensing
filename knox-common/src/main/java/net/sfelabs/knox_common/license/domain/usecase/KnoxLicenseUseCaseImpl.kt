@@ -37,6 +37,7 @@ internal class KnoxLicenseUseCaseImpl @Inject constructor(
         try {
             val knoxManager = getKnoxManager()
             if (activate) {
+                //Ensure you have the license key set in local.properties or else this will fail
                 Log.d(tag, "Activating License: $licenseKey")
                 knoxManager.activateLicense(licenseKey, callback)
             } else {

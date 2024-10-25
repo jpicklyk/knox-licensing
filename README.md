@@ -8,3 +8,6 @@ adb shell dpm set-device-owner net.sfelabs.knoxmoduleshowcase/.app.receivers.Adm
 
 Disable DPC: (Can only be done when AndroidManifest contains android:testOnly="true")
 adb shell dpm remove-active-admin net.sfelabs.knoxmoduleshowcase/.app.receivers.AdminReceiver
+
+Setting up the Knox License key:
+- Add the following line to your local.properties file: knox.license=KLM05-some-license-key
