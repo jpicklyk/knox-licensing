@@ -31,8 +31,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.sfelabs.core.domain.model.knox.KnoxFeature
-import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
+import net.sfelabs.core.knoxfeature.domain.model.old.KnoxFeature
+import net.sfelabs.core.knoxfeature.domain.model.old.KnoxFeatureValueType
 
 
 @Composable

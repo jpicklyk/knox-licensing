@@ -58,6 +58,7 @@ android {
 }
 dependencies {
     implementation(project(":core:common"))
+    implementation(project(":core:knoxfeature"))
     implementation(project(":core:ui"))
     implementation(project(":android-log-wrapper"))
     implementation(project(":knox-common"))

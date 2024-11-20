@@ -1,4 +1,4 @@
-package net.sfelabs.core.domain.model.knox
+package net.sfelabs.core.knoxfeature.domain.model.old
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 

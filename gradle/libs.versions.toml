@@ -23,7 +23,9 @@ junit5ExtensionsVersion = "1.4.0"
 junit5PlatformVersion = "1.10.3"
 junit5PluginVersion = "1.10.0.0"
 junit5Version = "5.10.3"
+konsistVersion = "0.16.1"
 kotlin = "1.9.24"
+kotlinPoetVersion = "1.14.2"
 kotlinx-collections-immutable = "0.3.5"
 kotlinx-coroutines = "1.8.0"
 #kotlinx-coroutines-core-jvm = "1.7.1"
@@ -111,8 +113,10 @@ junit-platform-suite = { group = "org.junit.platform", name = "junit-platform-su
 junit-platform-runner = { group = "org.junit.platform", name = "junit-platform-runner", version.ref = "junit5PlatformVersion" }
 junit-vintage-engine = { group = "org.junit.jupiter", name = "junit-vintage-engine", version.ref = "junit5Version" }
 
+konsist = { group = "com.lemonappdev", name = "konsist", version.ref = "konsistVersion" }
 #kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-
+kotlin-poet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinPoetVersion" }
+kotlin-poet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinPoetVersion" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin"}
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin"}
 #kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }

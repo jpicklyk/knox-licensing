@@ -4,7 +4,7 @@ import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.api.feature.FeatureState
+import net.sfelabs.core.knoxfeature.domain.model.FeatureState
 import net.sfelabs.core.domain.UiText
 import javax.inject.Inject
 
@@ -16,7 +16,12 @@ class GetExtraBrightnessUseCase @Inject constructor(
             try {
                 when (settingsManager.extraBrightness) {
                     CustomDeviceManager.ON ->
-                        ApiResult.Success(FeatureState(enabled = true, value = true))
+                        ApiResult.Success(
+                            FeatureState(
+                                enabled = true,
+                                value = true
+                            )
+                        )
                     CustomDeviceManager.OFF ->
                         ApiResult.Success(FeatureState(enabled = false, value = false))
                     else -> {

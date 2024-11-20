@@ -21,9 +21,12 @@ rootProject.name = "KnoxModuleShowcase"
 include( ":app")
 include(":android-log-wrapper")
 include(":core:common")
+include(":core:knoxfeature")
+include("core:knoxfeature-processor")
 include(":core:ui")
 include(":core:testing")
 include(":knox-common")
 include(":knox-tactical")
 
 include(":feature:ethernet")
+include(":core:knoxfeature-processor")

@@ -10,9 +10,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.sfelabs.android_log_wrapper.Log
 import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
-import net.sfelabs.core.domain.processFeatureList
-import net.sfelabs.core.presentation.KnoxFeatureState
+import net.sfelabs.core.knoxfeature.domain.model.KnoxFeatureState
+import net.sfelabs.core.knoxfeature.domain.model.old.KnoxFeatureValueType
 import net.sfelabs.knox_tactical.domain.model.TacticalFeature
 import net.sfelabs.knox_tactical.domain.services.TacticalFeatureService
 import net.sfelabs.knoxmoduleshowcase.R
@@ -55,7 +54,11 @@ class TacticalTesterViewModel @Inject constructor(
                     val updatedList = _knoxFeatureList.value.toMutableList()
                     val feature = updatedList.find { it.key == event.featureKey }
                     val index = updatedList.indexOf(feature)
-                    updatedList[index] = feature!!.copy(knoxFeatureValueType = KnoxFeatureValueType.StringValue(event.featureValue))
+                    updatedList[index] = feature!!.copy(
+                        knoxFeatureValueType = KnoxFeatureValueType.StringValue(
+                        event.featureValue
+                    )
+                    )
                     _knoxFeatureList.update {
                         updatedList
                     }
@@ -69,7 +72,8 @@ class TacticalTesterViewModel @Inject constructor(
      * and convert KnoxFeature to KnoxFeatureState object.
      */
     private suspend fun loadFeaturesFromJson() {
-        val featureList = processFeatureList(resources.openRawResource(R.raw.tactical_features))
+        val featureList =
+            net.sfelabs.core.knoxfeature.processFeatureList(resources.openRawResource(R.raw.tactical_features))
 
         _knoxFeatureList.update {
             featureList.map {knoxFeature ->
@@ -91,9 +95,15 @@ class TacticalTesterViewModel @Inject constructor(
 
                     is ApiResult.Success -> {
                         when(val value = apiCall.data.value) {
-                            is String -> KnoxFeatureValueType.StringValue(value)
-                            is Boolean -> KnoxFeatureValueType.BooleanValue(value)
-                            is Int -> KnoxFeatureValueType.IntegerValue(value)
+                            is String -> KnoxFeatureValueType.StringValue(
+                                value
+                            )
+                            is Boolean -> KnoxFeatureValueType.BooleanValue(
+                                value
+                            )
+                            is Int -> KnoxFeatureValueType.IntegerValue(
+                                value
+                            )
                             else -> KnoxFeatureValueType.NoValue
                         }
                         state.copy(

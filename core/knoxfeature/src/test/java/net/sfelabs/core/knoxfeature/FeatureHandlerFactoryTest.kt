@@ -3,7 +3,8 @@ package net.sfelabs.core.knoxfeature
 import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.knoxfeature.domain.FeatureHandler
 import net.sfelabs.core.knoxfeature.domain.FeatureHandlerFactory
-import net.sfelabs.core.knoxfeature.model.FeatureState
+import net.sfelabs.core.knoxfeature.domain.model.FeatureKey
+import net.sfelabs.core.knoxfeature.domain.model.FeatureState
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test

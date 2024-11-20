@@ -2,9 +2,9 @@ package net.sfelabs.core.knoxfeature.domain
 
 import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.knoxfeature.Feature
-import net.sfelabs.core.knoxfeature.FeatureKey
-import net.sfelabs.core.knoxfeature.model.FeatureState
+import net.sfelabs.core.knoxfeature.domain.model.Feature
+import net.sfelabs.core.knoxfeature.domain.model.FeatureKey
+import net.sfelabs.core.knoxfeature.domain.model.FeatureState
 import javax.inject.Inject
 import javax.inject.Singleton
 

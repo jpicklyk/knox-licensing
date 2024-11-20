@@ -1,9 +1,9 @@
-package net.sfelabs.core.domain
+package net.sfelabs.core.knoxfeature
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import net.sfelabs.core.domain.model.knox.KnoxFeature
+import net.sfelabs.core.knoxfeature.domain.model.old.KnoxFeature
 import java.io.InputStream
 
 private val mapper = jacksonObjectMapper()

@@ -11,7 +11,9 @@ import net.sfelabs.core.knoxfeature.domain.FeatureHandler
 import net.sfelabs.core.knoxfeature.domain.FeatureHandlerFactory
 import net.sfelabs.core.knoxfeature.domain.FeatureManager
 import net.sfelabs.core.knoxfeature.domain.FeatureRegistry
-import net.sfelabs.core.knoxfeature.model.FeatureState
+import net.sfelabs.core.knoxfeature.domain.model.Feature
+import net.sfelabs.core.knoxfeature.domain.model.FeatureKey
+import net.sfelabs.core.knoxfeature.domain.model.FeatureState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before

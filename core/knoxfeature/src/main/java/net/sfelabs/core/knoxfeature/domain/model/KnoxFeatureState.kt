@@ -1,6 +1,7 @@
-package net.sfelabs.core.presentation
+package net.sfelabs.core.knoxfeature.domain.model
 
-import net.sfelabs.core.domain.model.knox.KnoxFeatureValueType
+import net.sfelabs.core.knoxfeature.domain.model.old.KnoxFeatureValueType
+
 
 data class KnoxFeatureState(
     val key: String,

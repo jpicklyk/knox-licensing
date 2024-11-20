@@ -1,6 +1,6 @@
 package net.sfelabs.core.knoxfeature.domain
 
-import net.sfelabs.core.knoxfeature.FeatureKey
+import net.sfelabs.core.knoxfeature.domain.model.FeatureKey
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
