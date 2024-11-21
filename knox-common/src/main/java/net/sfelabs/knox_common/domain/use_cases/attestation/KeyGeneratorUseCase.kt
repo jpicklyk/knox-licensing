@@ -8,8 +8,8 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import java.math.BigInteger
 import java.security.SecureRandom
 import java.security.spec.ECGenParameterSpec
@@ -27,13 +27,13 @@ class KeyGeneratorUseCase @Inject constructor(
             try {
                 val result = generateKey()
                 if (result == null)
-                    ApiResult.Error(UiText.DynamicString("Error, generate keypair returned null"))
+                    ApiResult.Error(DefaultApiError.UnexpectedError("Error, generate keypair returned null"))
                 else {
                     println("Key generated: ${result.keyPair}")
                     ApiResult.Success(Unit)
                 }
             } catch (e: Exception) {
-                ApiResult.Error(UiText.DynamicString(e.toString()))
+                ApiResult.Error(DefaultApiError.UnexpectedError(e.toString()))
             }
         }
     }

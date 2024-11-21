@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import net.sfelabs.android_log_wrapper.domain.model.LogLine
 import net.sfelabs.android_log_wrapper.domain.repository.LogLineRepository
+import net.sfelabs.core.UiText
 import net.sfelabs.core.domain.Resource
-import net.sfelabs.core.domain.UiText
 import javax.inject.Inject
 
 class LogViewerUseCase @Inject constructor(

@@ -9,6 +9,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:knox-api"))
     api(libs.spongycastle.prov)
     api(libs.commons.lang)
     //The common Knox SDK and its APIs are available to other modules that depend on knox-common

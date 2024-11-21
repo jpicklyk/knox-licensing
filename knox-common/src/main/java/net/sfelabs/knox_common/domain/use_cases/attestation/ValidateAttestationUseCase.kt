@@ -2,8 +2,8 @@ package net.sfelabs.knox_common.domain.use_cases.attestation
 
 import com.samsung.knox.attesation.blobvalidator.library.AttestationResult
 import com.samsung.knox.attesation.blobvalidator.library.EABlobVerifier
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 
 /**
  * Attestation verifier from HQ integrated into a simple API use case call.
@@ -18,7 +18,7 @@ class ValidateAttestationUseCase {
         return try {
             ApiResult.Success(EABlobVerifier.verify(nonce, blob))
         } catch (e: Exception) {
-            ApiResult.Error(UiText.DynamicString(e.message!!))
+            ApiResult.Error(DefaultApiError.UnexpectedError(e.message!!))
         }
     }
 }

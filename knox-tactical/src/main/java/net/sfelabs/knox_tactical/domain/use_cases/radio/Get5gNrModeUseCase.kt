@@ -3,8 +3,8 @@ package net.sfelabs.knox_tactical.domain.use_cases.radio
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.UiText
-import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.LteNrModeState
 import javax.inject.Inject
@@ -16,7 +16,7 @@ class Get5gNrModeUseCase @Inject constructor(
     suspend operator fun invoke(simSlotId: Int? = null): ApiResult<LteNrModeState> {
         simSlotId?.let { slotId ->
             if (slotId !in 0..1) {
-                return ApiResult.Error(UiText.DynamicString("Invalid sim slot id: $slotId"))
+                return ApiResult.Error(DefaultApiError.UnexpectedError("Invalid sim slot id: $slotId"))
             }
         }
         return coroutineScope {
@@ -30,9 +30,10 @@ class Get5gNrModeUseCase @Inject constructor(
                 }
                 if( result == CustomDeviceManager.ERROR_FAIL ) {
                     ApiResult.Error(
-                        UiText.DynamicString(
+                        DefaultApiError.UnexpectedError(
                             "Getting 5gNrModeState error: Unknown reason"
-                        ))
+                        )
+                    )
                 } else {
                     ApiResult.Success(LteNrModeState.invoke(result))
                 }
@@ -40,10 +41,11 @@ class Get5gNrModeUseCase @Inject constructor(
                 ApiResult.NotSupported
             } catch (se: SecurityException) {
                 ApiResult.Error(
-                    UiText.DynamicString(
+                    DefaultApiError.UnexpectedError(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
-                    ))
+                    )
+                )
             }
         }
     }

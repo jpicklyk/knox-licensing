@@ -1,1 +1,1 @@
-net.sfelabs.core.knoxfeature.processor.UseCaseProcessorProvider
+net.sfelabs.core.knox.feature.processor.FeatureProcessorProvider

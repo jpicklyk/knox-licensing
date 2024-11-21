@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.tests.ethernet
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.testing.rules.EthernetNotConnected
 import net.sfelabs.core.testing.rules.EthernetNotConnectedRule
 import net.sfelabs.core.testing.rules.EthernetRequired

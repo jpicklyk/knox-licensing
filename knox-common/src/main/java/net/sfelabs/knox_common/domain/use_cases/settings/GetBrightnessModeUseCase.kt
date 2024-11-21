@@ -4,8 +4,8 @@ import android.content.Context
 import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import javax.inject.Inject
 
 /**
@@ -19,7 +19,7 @@ class GetBrightnessModeUseCase @Inject constructor(
             try {
                 ApiResult.Success(Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE))
             } catch (e: Settings.SettingNotFoundException) {
-                ApiResult.Error(UiText.DynamicString(e.message!!))
+                ApiResult.Error(DefaultApiError.UnexpectedError(e.message!!))
             }
         }
     }

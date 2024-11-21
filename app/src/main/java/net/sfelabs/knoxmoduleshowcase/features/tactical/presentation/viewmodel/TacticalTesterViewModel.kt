@@ -9,9 +9,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.sfelabs.android_log_wrapper.Log
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.knoxfeature.domain.model.KnoxFeatureState
-import net.sfelabs.core.knoxfeature.domain.model.old.KnoxFeatureValueType
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.feature.domain.model.old.KnoxFeatureState
+import net.sfelabs.core.knox.feature.domain.model.old.KnoxFeatureValueType
+import net.sfelabs.core.knox.feature.processFeatureList
 import net.sfelabs.knox_tactical.domain.model.TacticalFeature
 import net.sfelabs.knox_tactical.domain.services.TacticalFeatureService
 import net.sfelabs.knoxmoduleshowcase.R
@@ -73,7 +74,7 @@ class TacticalTesterViewModel @Inject constructor(
      */
     private suspend fun loadFeaturesFromJson() {
         val featureList =
-            net.sfelabs.core.knoxfeature.processFeatureList(resources.openRawResource(R.raw.tactical_features))
+            processFeatureList(resources.openRawResource(R.raw.tactical_features))
 
         _knoxFeatureList.update {
             featureList.map {knoxFeature ->
@@ -89,8 +90,8 @@ class TacticalTesterViewModel @Inject constructor(
                     }
 
                     is ApiResult.Error -> {
-                        log.e(apiCall.uiText.toString())
-                        state.copy(hasError = true, error = apiCall.uiText.toString())
+                        log.e(apiCall.apiError.message)
+                        state.copy(hasError = true, error = apiCall.apiError.message)
                     }
 
                     is ApiResult.Success -> {
@@ -132,8 +133,8 @@ class TacticalTesterViewModel @Inject constructor(
             }
 
             is ApiResult.Error -> {
-                log.e(apiCall.uiText.toString())
-                state.copy(hasError = true, error = apiCall.uiText.toString())
+                log.e(apiCall.apiError.message)
+                state.copy(hasError = true, error = apiCall.apiError.message)
             }
 
             is ApiResult.Success -> {

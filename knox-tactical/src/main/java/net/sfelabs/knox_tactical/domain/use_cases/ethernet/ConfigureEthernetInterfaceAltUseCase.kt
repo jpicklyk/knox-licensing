@@ -3,9 +3,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.ethernet
 import android.net.ConnectivityManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureDhcpEthernetInterface
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureStaticEthernetInterface
 import net.sfelabs.knox_tactical.di.TacticalSdk
@@ -38,10 +38,10 @@ class ConfigureEthernetInterfaceAltUseCase @Inject constructor(
                 if (isSuccessful) {
                     ApiResult.Success(Unit)
                 } else {
-                    ApiResult.Error(UiText.DynamicString("An unknown error occurred while configuring DHCP interface $interfaceName"))
+                    ApiResult.Error(DefaultApiError.UnexpectedError("An unknown error occurred while configuring DHCP interface $interfaceName"))
                 }
             }catch (e: SecurityException) {
-                ApiResult.Error(UiText.DynamicString(e.message!!))
+                ApiResult.Error(DefaultApiError.UnexpectedError(e.message!!))
             } catch (e: NoSuchMethodError) {
                 ApiResult.NotSupported
             }

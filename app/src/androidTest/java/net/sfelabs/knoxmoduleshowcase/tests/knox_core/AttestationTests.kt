@@ -8,7 +8,7 @@ import com.samsung.android.knox.integrity.EnhancedAttestationPolicy
 import com.samsung.knox.attesation.blobvalidator.library.Verdict
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.attestation.GetAttestationBlobUseCase
 import net.sfelabs.knox_common.domain.use_cases.attestation.IsAttestationSupportedUseCase

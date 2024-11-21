@@ -2,11 +2,11 @@ package net.sfelabs.core.domain
 
 import android.annotation.SuppressLint
 import android.os.Build
-import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.core.UiText
 import java.lang.reflect.Method
 
 typealias UnitResource = Resource<Unit>
-typealias UnitApiCall = ApiResult<Unit>
+typealias UnitApiCall = net.sfelabs.core.knox.api.domain.ApiResult<Unit>
 
 /**
  * Utility package for various Android helper functions.

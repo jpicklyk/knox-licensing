@@ -3,9 +3,9 @@ package net.sfelabs.knox_common.domain.use_cases.settings
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import javax.inject.Inject
 
 class SetBrightnessUseCase @Inject constructor(
@@ -22,12 +22,12 @@ class SetBrightnessUseCase @Inject constructor(
                     if (result == CustomDeviceManager.SUCCESS) {
                         ApiResult.Success(Unit)
                     } else {
-                        ApiResult.Error(UiText.DynamicString("An invalid brightness level of '$level' was passed"))
+                        ApiResult.Error(DefaultApiError.UnexpectedError("An invalid brightness level of '$level' was passed"))
                     }
                 }
             } catch (e: SecurityException) {
                 ApiResult.Error(
-                    UiText.DynamicString(
+                    DefaultApiError.UnexpectedError(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                     )
@@ -36,7 +36,7 @@ class SetBrightnessUseCase @Inject constructor(
                 ApiResult.NotSupported
             } catch (e: Exception) {
                 ApiResult.Error(
-                    UiText.DynamicString(
+                    DefaultApiError.UnexpectedError(
                         e.message!!
                     )
                 )

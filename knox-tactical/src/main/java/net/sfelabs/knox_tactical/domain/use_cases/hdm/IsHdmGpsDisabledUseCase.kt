@@ -4,9 +4,9 @@ import android.content.Context
 import com.samsung.android.knox.EnterpriseDeviceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.parseHdmPolicyBlock
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import java.util.UUID
 import javax.inject.Inject
 
@@ -25,7 +25,7 @@ class IsHdmGpsDisabledUseCase @Inject constructor(
             } catch (e: NoSuchMethodError) {
                 ApiResult.NotSupported
             } catch (e: Exception) {
-                ApiResult.Error(UiText.DynamicString("getHdmPolicy failed: ${e.message}"))
+                ApiResult.Error(DefaultApiError.UnexpectedError("getHdmPolicy failed: ${e.message}"))
             }
         }
     }

@@ -1,17 +1,27 @@
 package net.sfelabs.knox_tactical.domain.api.tdm
 
-import com.samsung.android.knox.restriction.RestrictionPolicy
-import kotlinx.coroutines.CoroutineDispatcher
-import net.sfelabs.core.knoxfeature.annotation.GeneratedFeatureUseCase
-import net.sfelabs.core.knoxfeature.domain.usecase.base.CoroutineFeatureUseCase
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import net.sfelabs.knox_tactical.domain.api.TacticalRestrictions
+import android.content.Context
+import com.samsung.android.knox.EnterpriseDeviceManager
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.DefaultApiError
+import net.sfelabs.core.knox.feature.annotation.FeatureUseCase
 
-@GeneratedFeatureUseCase(
-    feature = TacticalRestrictions.TacticalDeviceMode::class,
-    defaultBlocking = true
+@FeatureUseCase(
+    featureName = "tactical_device_mode",
+    type = FeatureUseCase.Type.SETTER,
+    config = Boolean::class
 )
-abstract class SetTacticalDeviceModeUseCase (
-    @TacticalSdk private val restrictionPolicy: RestrictionPolicy,
-    dispatcher: CoroutineDispatcher? = null
-) : CoroutineFeatureUseCase<Boolean, Unit, Boolean>(dispatcher)
+class SetTacticalDeviceModeUseCase(
+    private val context: Context
+) : CoroutineApiUseCase<Boolean, Unit>() {
+
+    override suspend fun execute(enable: Boolean): ApiResult<Unit> {
+        val restrictionPolicy = EnterpriseDeviceManager.getInstance(context).restrictionPolicy
+        val result = restrictionPolicy.enableTacticalDeviceMode(enable)
+        return when (result) {
+            true -> ApiResult.Success(Unit)
+            false -> ApiResult.Error(DefaultApiError.UnexpectedError())
+        }
+    }
+}

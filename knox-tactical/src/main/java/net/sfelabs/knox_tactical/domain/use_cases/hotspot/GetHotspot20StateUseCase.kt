@@ -3,9 +3,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.hotspot
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.UiText
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.knoxfeature.domain.model.FeatureState
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
+import net.sfelabs.core.knox.feature.domain.model.FeatureState
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
@@ -18,14 +18,19 @@ class GetHotspot20StateUseCase @Inject constructor(
                     when(val result = settingsManager.hotspot20State) {
                         CustomDeviceManager.ON -> ApiResult.Success(FeatureState(true, result))
                         CustomDeviceManager.OFF -> ApiResult.Success(FeatureState(false, result))
-                        else -> ApiResult.Error(UiText.DynamicString("Unexpected value returned: $result"))
+                        else -> ApiResult.Error(
+                            DefaultApiError.UnexpectedError(
+                                "Unexpected value returned: $result"
+                            )
+                        )
                     }
                 } catch (e: SecurityException) {
                     ApiResult.Error(
-                        UiText.DynamicString(
+                        DefaultApiError.UnexpectedError(
                             "The use of this API requires the caller to have the " +
                                     "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
-                        ))
+                        )
+                    )
                 } catch (nsm: NoSuchMethodError) {
                     ApiResult.NotSupported
                 }

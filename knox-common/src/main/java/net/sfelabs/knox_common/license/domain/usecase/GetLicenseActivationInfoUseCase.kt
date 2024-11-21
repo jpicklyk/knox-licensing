@@ -3,8 +3,8 @@ package net.sfelabs.knox_common.license.domain.usecase
 import com.samsung.android.knox.license.ActivationInfo
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import javax.inject.Inject
 
 class GetLicenseActivationInfoUseCase @Inject constructor(
@@ -17,7 +17,7 @@ class GetLicenseActivationInfoUseCase @Inject constructor(
             if(result != null) {
                 ApiResult.Success(result)
             } else {
-                ApiResult.Error(UiText.DynamicString("No information returned for activation info"))
+                ApiResult.Error(DefaultApiError.UnexpectedError("No information returned for activation info"))
             }
 
         }

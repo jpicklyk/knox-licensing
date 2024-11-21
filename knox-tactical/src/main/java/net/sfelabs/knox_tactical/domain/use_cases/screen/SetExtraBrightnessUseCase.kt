@@ -3,9 +3,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.screen
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import javax.inject.Inject
 
 class SetExtraBrightnessUseCase @Inject constructor(
@@ -23,12 +23,12 @@ class SetExtraBrightnessUseCase @Inject constructor(
                     CustomDeviceManager.SUCCESS -> ApiResult.Success(Unit)
                     CustomDeviceManager.ERROR_NOT_SUPPORTED -> ApiResult.NotSupported
                     else -> {
-                        ApiResult.Error(UiText.DynamicString("Unknown error occurred"))
+                        ApiResult.Error(DefaultApiError.UnexpectedError("Unknown error occurred"))
                     }
                 }
             } catch (e: SecurityException) {
                 ApiResult.Error(
-                    UiText.DynamicString(
+                    DefaultApiError.UnexpectedError(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                     )
@@ -37,7 +37,7 @@ class SetExtraBrightnessUseCase @Inject constructor(
                 ApiResult.NotSupported
             } catch (e: Exception) {
                 ApiResult.Error(
-                    UiText.DynamicString(
+                    DefaultApiError.UnexpectedError(
                         e.message!!
                     )
                 )

@@ -10,7 +10,7 @@ import junit.framework.TestCase
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase

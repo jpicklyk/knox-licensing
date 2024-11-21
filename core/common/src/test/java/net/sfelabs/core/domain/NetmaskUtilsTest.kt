@@ -7,19 +7,52 @@ class NetmaskUtilsTest {
 
     @Test
     fun testPrefixToNetmask() {
-        assertEquals("255.255.255.255", NetmaskUtils.prefixToNetmask(32))
-        assertEquals("255.255.255.0", NetmaskUtils.prefixToNetmask(24))
-        assertEquals("255.255.0.0", NetmaskUtils.prefixToNetmask(16))
-        assertEquals("255.0.0.0", NetmaskUtils.prefixToNetmask(8))
-        assertEquals("0.0.0.0", NetmaskUtils.prefixToNetmask(0))
+        assertEquals(
+            "255.255.255.255",
+            NetmaskUtils.prefixToNetmask(32)
+        )
+        assertEquals(
+            "255.255.255.0",
+            NetmaskUtils.prefixToNetmask(24)
+        )
+        assertEquals(
+            "255.255.0.0",
+            NetmaskUtils.prefixToNetmask(16)
+        )
+        assertEquals(
+            "255.0.0.0",
+            NetmaskUtils.prefixToNetmask(8)
+        )
+        assertEquals(
+            "0.0.0.0",
+            NetmaskUtils.prefixToNetmask(0)
+        )
 
         // Less common prefixes
-        assertEquals("255.255.255.248", NetmaskUtils.prefixToNetmask(29))
-        assertEquals("255.255.255.252", NetmaskUtils.prefixToNetmask(30))
-        assertEquals("255.255.255.254", NetmaskUtils.prefixToNetmask(31))
-        assertEquals("255.255.128.0", NetmaskUtils.prefixToNetmask(17))
-        assertEquals("255.255.224.0", NetmaskUtils.prefixToNetmask(19))
-        assertEquals("255.255.240.0", NetmaskUtils.prefixToNetmask(20))
+        assertEquals(
+            "255.255.255.248",
+            NetmaskUtils.prefixToNetmask(29)
+        )
+        assertEquals(
+            "255.255.255.252",
+            NetmaskUtils.prefixToNetmask(30)
+        )
+        assertEquals(
+            "255.255.255.254",
+            NetmaskUtils.prefixToNetmask(31)
+        )
+        assertEquals(
+            "255.255.128.0",
+            NetmaskUtils.prefixToNetmask(17)
+        )
+        assertEquals(
+            "255.255.224.0",
+            NetmaskUtils.prefixToNetmask(19)
+        )
+        assertEquals(
+            "255.255.240.0",
+            NetmaskUtils.prefixToNetmask(20)
+        )
     }
 
     @Test(expected = IllegalArgumentException::class)

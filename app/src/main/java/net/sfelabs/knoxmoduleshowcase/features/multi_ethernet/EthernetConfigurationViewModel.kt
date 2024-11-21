@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
@@ -190,7 +190,7 @@ class EthernetConfigurationViewModel @Inject constructor(
                 _state.update{_state.value.copy(autoConnectionState = result.data)}
             }
             is ApiResult.Error -> {
-                log.e(result.uiText.toString())
+                log.e(result.apiError.message)
             }
 
             is ApiResult.NotSupported -> {

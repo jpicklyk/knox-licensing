@@ -8,9 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import javax.inject.Inject
@@ -30,7 +30,8 @@ class SetEthernetAutoConnectionUseCase @Inject constructor(
                 emit(ApiResult.Success(Unit))
             else emit(
                 ApiResult.Error(
-                uiText = UiText.DynamicString("Device does not support this feature"))
+                    DefaultApiError.UnexpectedError("Device does not support this feature")
+                )
             )
 
         } else {
@@ -46,7 +47,8 @@ class SetEthernetAutoConnectionUseCase @Inject constructor(
                 emit(ApiResult.Success(Unit))
             else emit(
                 ApiResult.Error(
-                uiText = UiText.DynamicString("Device does not support this feature"))
+                    DefaultApiError.UnexpectedError("Device does not support this feature")
+                )
             )
         }
 

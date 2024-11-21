@@ -3,9 +3,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.calling
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupState
 import javax.inject.Inject
@@ -24,19 +24,20 @@ class SetAutoCallPickupStateUseCase @Inject constructor(
                         ApiResult.Success(Unit)
                     }
                     CustomDeviceManager.ERROR_INVALID_MODE_TYPE -> {
-                        ApiResult.Error(UiText.DynamicString("Error Invalid Mode Type"))
+                        ApiResult.Error(DefaultApiError.UnexpectedError("Error Invalid Mode Type"))
                     }
                     else -> {
-                        ApiResult.Error(UiText.DynamicString("Error not supported"))
+                        ApiResult.Error(DefaultApiError.UnexpectedError("Error not supported"))
                     }
                 }
 
             } catch (e: SecurityException) {
                 ApiResult.Error(
-                    UiText.DynamicString(
+                    DefaultApiError.UnexpectedError(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM\" permission"
-                    ))
+                    )
+                )
             } catch (nsm: NoSuchMethodError) {
                 ApiResult.NotSupported
             }

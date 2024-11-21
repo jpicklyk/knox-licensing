@@ -4,9 +4,9 @@ import android.util.Log
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import javax.inject.Inject
@@ -21,9 +21,10 @@ class ExecuteAdbCommandUseCase @Inject constructor(
                 val result = systemManager.executeAdbCommand(header.value, command)
                 if (result != CustomDeviceManager.SUCCESS) {
                     ApiResult.Error(
-                        UiText.DynamicString(
+                        DefaultApiError.UnexpectedError(
                             "ExecuteAdbCommand error: $result"
-                        ))
+                        )
+                    )
                 } else {
                     ApiResult.Success(Unit)
                 }
@@ -31,10 +32,11 @@ class ExecuteAdbCommandUseCase @Inject constructor(
             } catch (se: SecurityException) {
                 Log.e(null, se.message!!)
                 ApiResult.Error(
-                    UiText.DynamicString(
-                    "The use of this API requires the caller to have the " +
-                            "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
-                ))
+                    DefaultApiError.UnexpectedError(
+                        "The use of this API requires the caller to have the " +
+                                "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
+                    )
+                )
             }
         }
     }

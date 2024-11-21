@@ -3,8 +3,8 @@ package net.sfelabs.knox_common.domain.use_cases.adb
 import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.api.ApiResult
-import net.sfelabs.core.domain.UiText
+import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.DefaultApiError
 import javax.inject.Inject
 
 /**
@@ -25,16 +25,16 @@ class SetAdbStateUseCase @Inject constructor(
                     }
 
                     CustomDeviceManager.ERROR_POLICY_RESTRICTED -> {
-                        ApiResult.Error(UiText.DynamicString("ERROR_POLICY_RESTRICTED: USB debugging has been disabled via API"))
+                        ApiResult.Error(DefaultApiError.UnexpectedError("ERROR_POLICY_RESTRICTED: USB debugging has been disabled via API"))
                     }
 
                     else -> {
-                        ApiResult.Error(UiText.DynamicString("An error occurred calling setAdbState: $result"))
+                        ApiResult.Error(DefaultApiError.UnexpectedError("An error occurred calling setAdbState: $result"))
                     }
                 }
             } catch (se: SecurityException) {
                 ApiResult.Error(
-                    UiText.DynamicString(
+                    DefaultApiError.UnexpectedError(
                         "The use of this API requires the caller to have the " +
                                 "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
                     )

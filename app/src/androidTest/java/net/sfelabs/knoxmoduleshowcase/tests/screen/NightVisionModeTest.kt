@@ -8,7 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.data.datasource.DataStoreSource
 import net.sfelabs.core.di.PreferencesModule
-import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.screen.GetNightVisionModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.screen.GetNightVisionRedOverlayUseCase
