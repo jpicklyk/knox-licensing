@@ -1,8 +1,8 @@
-package net.sfelabs.core.knox.feature.domain
+package net.sfelabs.core.knox.feature.domain.registry
 
 import net.sfelabs.core.knox.feature.domain.model.Feature
 import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
-import net.sfelabs.core.knox.feature.domain.model.FeatureHandler
+import net.sfelabs.core.knox.feature.domain.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.domain.model.FeatureKey
 
 interface FeatureRegistry {

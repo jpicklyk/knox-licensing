@@ -1,12 +1,6 @@
 plugins {
-//    id("sfelabs.android.library")
-//    id("sfelabs.android.hilt")
     kotlin("jvm")
 }
-
-//android {
-//    namespace = "net.sfelabs.core.knoxfeature"
-//}
 
 dependencies {
     implementation(project(":core:knox-api"))
@@ -18,7 +12,7 @@ dependencies {
     implementation(libs.kotlin.poet.ksp)
     implementation(libs.ksp.gradlePlugin)
 
-    testImplementation(libs.konsist)
+    testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
 

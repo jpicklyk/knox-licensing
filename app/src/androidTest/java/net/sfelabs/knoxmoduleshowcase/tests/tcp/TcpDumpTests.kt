@@ -8,6 +8,11 @@ import android.provider.MediaStore
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
+import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
@@ -24,16 +29,18 @@ import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
-@TacticalSdkSuppress(minReleaseVersion = 100)
+//@TacticalSdkSuppress(minReleaseVersion = 100)
 class TcpDumpTests {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
     lateinit var context: Context
     lateinit var captureUri: Uri
+    private lateinit var testScope: TestScope
 
     @Before
     fun setup() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
         captureUri = createCaptureUri()
+        testScope = TestScope()
     }
     /*
     Where the value of captureFile.getAbsolutePath() is “/storage/emulated/0/ecap/any-2024-10-24-11-27-44-capture.pcap”
@@ -57,31 +64,33 @@ class TcpDumpTests {
         assert(checkMethodExistence(systemManager::class,"disableTcpDump"))
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun enableTcpDump_anyB10S200C10NoFileSpecified() = runTest {
+    fun enableTcpDump_anyB10S200C10NoFileSpecified() = testScope.runTest {
         val tcpCommand = "any" + " -B10 -s2000 -C10";
         val enableUseCase = EnableTcpDumpUseCase(systemManager)
         val result = enableUseCase.invoke(tcpCommand)
-        assert(result is ApiResult.Success)
-
+        assertTrue("Enabling TCP dump failed: ${result.getErrorOrNull()}",result is ApiResult.Success)
+        advanceTimeBy(1000)
         val checkUseCase = IsTcpDumpEnabled(systemManager)
         val checkResult = checkUseCase.invoke()
-        assert(checkResult is ApiResult.Success && checkResult.data)
+        assertTrue("Error, TCP Dump is not running!", checkResult is ApiResult.Success && checkResult.data)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun enableTcpDump_anyB10S200C10WithFile() = runTest {
+    fun enableTcpDump_anyB10S200C10WithFile() = testScope.runTest {
         assertMediaFileExists(context,captureUri)
         val path = getAbsolutePath(captureUri)
         println("Capture uri path: $path")
         val tcpCommand = "any" + " -B10 -s2000 -C10 -w /sdcard/Download/capture.pcap" //+ getAbsolutePath(captureUri)
         val enableUseCase = EnableTcpDumpUseCase(systemManager)
         val result = enableUseCase.invoke(tcpCommand)
-        assert(result is ApiResult.Success)
-
+        assertTrue("Enabling TCP dump failed: ${result.getErrorOrNull()}",result is ApiResult.Success)
+        advanceTimeBy(1000)
         val checkUseCase = IsTcpDumpEnabled(systemManager)
         val checkResult = checkUseCase.invoke()
-        assert(checkResult is ApiResult.Success && checkResult.data)
+        assertTrue("Error, TCP Dump is not running! ${checkResult.getExceptionOrNull()}", checkResult is ApiResult.Success && checkResult.data)
     }
 
     private fun createCaptureUri() : Uri {
@@ -144,7 +153,7 @@ class TcpDumpTests {
 
     @After
     fun cleanup() = runTest {
-        context.contentResolver.delete(captureUri, null, null)
         DisableTcpDumpUseCase(systemManager).invoke()
+        context.contentResolver.delete(captureUri, null, null)
     }
 }

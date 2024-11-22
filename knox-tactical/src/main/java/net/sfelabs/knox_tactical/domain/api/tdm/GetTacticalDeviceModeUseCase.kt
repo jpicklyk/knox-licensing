@@ -17,10 +17,6 @@ class GetTacticalDeviceModeUseCase(
 ) : CoroutineApiUseCase<Unit, Boolean>() {
     override suspend fun execute(params: Unit): ApiResult<Boolean> {
         val restrictionPolicy = EnterpriseDeviceManager.getInstance(context).restrictionPolicy
-        val result = restrictionPolicy.isTacticalDeviceModeEnabled
-        return when (result) {
-            true -> ApiResult.Success(true)
-            false -> ApiResult.Error(DefaultApiError.UnexpectedError())
-        }
+        return ApiResult.Success(restrictionPolicy.isTacticalDeviceModeEnabled)
     }
 }

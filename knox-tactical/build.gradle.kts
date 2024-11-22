@@ -16,6 +16,12 @@ android {
             java.srcDirs("build/generated/ksp/debug/kotlin")
         }
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{LICENSE.md,LICENSE-notice.md}"
+        }
+    }
 }
 
 
@@ -28,8 +34,13 @@ dependencies {
     implementation(project(":core:knox-feature"))
     implementation(project(":core:knoxfeature-processor"))
     ksp(project(":core:knoxfeature-processor"))
+    implementation(libs.androidx.test.runner)
     //The Tactical Knox SDK shall not be available outside this module (compileOnly)
     compileOnly(fileTree("libs/knoxsdk.jar"))
     androidTestCompileOnly(fileTree("libs/knoxsdk.jar"))
-    implementation(libs.androidx.test.runner)
+
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockk.agent)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+
 }
