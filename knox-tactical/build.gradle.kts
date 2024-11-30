@@ -1,5 +1,6 @@
 plugins {
-    id("sfelabs.android.feature")
+    alias(libs.plugins.convention.android.feature)
+    alias(libs.plugins.convention.hilt)
     alias(libs.plugins.ksp)
 }
 
@@ -32,9 +33,10 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:knox-api"))
     implementation(project(":core:knox-feature"))
-    implementation(project(":core:knoxfeature-processor"))
-    ksp(project(":core:knoxfeature-processor"))
+    implementation(project(":core:knox-feature-processor"))
+    "ksp"(project(":core:knox-feature-processor"))
     implementation(libs.androidx.test.runner)
+    implementation(libs.jetbrains.annotations)
     //The Tactical Knox SDK shall not be available outside this module (compileOnly)
     compileOnly(fileTree("libs/knoxsdk.jar"))
     androidTestCompileOnly(fileTree("libs/knoxsdk.jar"))

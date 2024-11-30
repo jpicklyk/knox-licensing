@@ -5,6 +5,7 @@ import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.feature.domain.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.domain.model.Feature
 import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
+import net.sfelabs.core.knox.feature.domain.model.FeatureImplementation
 import net.sfelabs.core.knox.feature.domain.model.FeatureKey
 
 class DefaultFeatureRegistry : FeatureRegistry {
@@ -25,6 +26,11 @@ class DefaultFeatureRegistry : FeatureRegistry {
         }
     }
 
+    override fun <T : Any> getRegistration(key: FeatureKey<T>): FeatureRegistration<T>? {
+        @Suppress("UNCHECKED_CAST")
+        return registrations[key.featureName] as? FeatureRegistration<T>
+    }
+
     override fun getFeatures(category: FeatureCategory): List<Feature<*>> {
         return registrations.values
             .filter { it.category == category }
@@ -40,5 +46,17 @@ class DefaultFeatureRegistry : FeatureRegistry {
 
     override fun isRegistered(key: FeatureKey<*>): Boolean {
         return registrations.containsKey(key.featureName)
+    }
+
+    private fun createRegistration(impl: FeatureImplementation<*>): FeatureRegistration<*> {
+        val featureKey = impl.
+        val featureCategory = impl.category
+        val featureHandler = impl
+
+        return FeatureRegistration(
+            key = featureKey,
+            category = featureCategory,
+            handler = featureHandler
+        )
     }
 }

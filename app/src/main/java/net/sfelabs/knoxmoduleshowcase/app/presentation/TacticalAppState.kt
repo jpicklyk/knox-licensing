@@ -24,6 +24,7 @@ import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.navigation.etherne
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.navigation.navigateToEthernet
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.presentation.navigation.navigateToNetworkManager
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.presentation.navigation.networkManagerNavigationRoute
+import net.sfelabs.knoxmoduleshowcase.features.policy.navigateToPolicy
 
 /**
  * Application level state container that can be passed down the composition tree to various
@@ -95,7 +96,7 @@ class TacticalAppState(
 
         when (topLevelDestination) {
             TopLevelDestination.HOME -> navHostController.navigateToHome(topLevelNavOptions)
-            TopLevelDestination.CONTROLS -> navHostController.navigateToControls(topLevelNavOptions)
+            TopLevelDestination.CONTROLS -> navHostController.navigateToPolicy(topLevelNavOptions)
             TopLevelDestination.ETHERNET -> navHostController.navigateToEthernet(topLevelNavOptions)
             TopLevelDestination.NetworkManager -> navHostController.navigateToNetworkManager(topLevelNavOptions)
             //TopLevelDestination.LOGGING -> navHostController.navigateToLogger(topLevelNavOptions)

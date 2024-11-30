@@ -8,4 +8,5 @@ interface FeatureRegistration<T : Any> {
     val key: FeatureKey<T>
     val handler: FeatureHandler<T>
     val category: FeatureCategory
+    val description: String
 }

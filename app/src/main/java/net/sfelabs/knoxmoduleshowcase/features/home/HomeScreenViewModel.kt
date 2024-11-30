@@ -102,7 +102,7 @@ class HomeScreenViewModel @Inject constructor(
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-        manifestPermissionStatusList.removeLast()
+        manifestPermissionStatusList.removeAt(manifestPermissionStatusList.lastIndex)
         return manifestPermissionStatusList
     }
 }

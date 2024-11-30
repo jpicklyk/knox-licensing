@@ -9,12 +9,11 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
-import net.sfelabs.core.knox.feature.domain.model.FeatureState
 import net.sfelabs.core.knox.feature.domain.registry.DefaultFeatureRegistry
-import net.sfelabs.core.knox.feature.generated.TacticalDeviceModeKey
-import net.sfelabs.core.knox.feature.generated.TacticalDeviceModeRegistration
 import net.sfelabs.knox_tactical.domain.api.tdm.GetTacticalDeviceModeUseCase
 import net.sfelabs.knox_tactical.domain.api.tdm.SetTacticalDeviceModeUseCase
+import net.sfelabs.knox_tactical.domain.api.tdm.generated.TacticalDeviceModeKey
+import net.sfelabs.knox_tactical.domain.api.tdm.generated.TacticalDeviceModeRegistration
 import org.junit.Before
 import org.junit.runner.RunWith
 import kotlin.test.Test
@@ -54,7 +53,7 @@ class TacticalDeviceModeIntegrationTest {
     @Test
     @SmallTest
     fun integrationTestFeatureAppearsInCorrectCategory() = runTest {
-        val features = registry.getFeatures(FeatureCategory.PRODUCTION)
+        val features = registry.getFeatures(FeatureCategory.Toggle)
         assertEquals(1, features.size)
         assertTrue(features[0].key is TacticalDeviceModeKey)
     }

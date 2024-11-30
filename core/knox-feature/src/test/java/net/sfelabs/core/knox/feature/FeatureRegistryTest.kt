@@ -31,7 +31,8 @@ class FeatureRegistryTest {
         mockRegistration = object : FeatureRegistration<Boolean> {
             override val key = mockKey
             override val handler = mockHandler
-            override val category = FeatureCategory.PRODUCTION
+            override val category = FeatureCategory.Toggle
+            override val description: String = "some description"
         }
     }
 
@@ -49,7 +50,7 @@ class FeatureRegistryTest {
 
         registry.register(mockRegistration)
 
-        val features = registry.getFeatures(FeatureCategory.PRODUCTION)
+        val features = registry.getFeatures(FeatureCategory.Toggle)
         assertEquals(1, features.size)
         assertEquals(mockKey, features[0].key)
     }
@@ -64,14 +65,14 @@ class FeatureRegistryTest {
         coEvery { mockHandler.getState() } returns ApiResult.Error(DefaultApiError.UnexpectedError())
         registry.register(mockRegistration)
 
-        val features = registry.getFeatures(FeatureCategory.PRODUCTION)
+        val features = registry.getFeatures(FeatureCategory.Toggle)
         assertTrue(features.isEmpty())
     }
 
     @Test
     fun `when getting features by different category then returns empty list`() = runTest {
         registry.register(mockRegistration) // PRODUCTION category
-        val features = registry.getFeatures(FeatureCategory.EXPERIMENTAL)
+        val features = registry.getFeatures(FeatureCategory.Stateful)
         assertTrue(features.isEmpty())
     }
 
@@ -83,7 +84,8 @@ class FeatureRegistryTest {
         val mockRegistration2 = object : FeatureRegistration<Boolean> {
             override val key = mockKey2
             override val handler = mockHandler2
-            override val category = FeatureCategory.PRODUCTION
+            override val category = FeatureCategory.Toggle
+            override val description: String = "some description"
         }
 
         coEvery { mockHandler.getState() } returns ApiResult.Success(FeatureState(true, true))
@@ -92,7 +94,7 @@ class FeatureRegistryTest {
         registry.register(mockRegistration)
         registry.register(mockRegistration2)
 
-        assertEquals(2, registry.getFeatures(FeatureCategory.PRODUCTION).size)
+        assertEquals(2, registry.getFeatures(FeatureCategory.Toggle).size)
     }
 
     @Test
@@ -108,7 +110,8 @@ class FeatureRegistryTest {
         val mockRegistration2 = object : FeatureRegistration<Boolean> {
             override val key = mockKey // Same key as original mockRegistration
             override val handler = mockHandler2
-            override val category = FeatureCategory.PRODUCTION
+            override val category = FeatureCategory.Toggle
+            override val description: String = "some description"
         }
 
         registry.register(mockRegistration)

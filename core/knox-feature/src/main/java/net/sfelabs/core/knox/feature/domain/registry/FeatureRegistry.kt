@@ -7,6 +7,7 @@ import net.sfelabs.core.knox.feature.domain.model.FeatureKey
 
 interface FeatureRegistry {
     fun <T : Any> getHandler(key: FeatureKey<T>): FeatureHandler<T>?
+    fun <T : Any> getRegistration(key: FeatureKey<T>): FeatureRegistration<T>?
     fun getFeatures(category: FeatureCategory): List<Feature<*>>
     fun isRegistered(key: FeatureKey<*>): Boolean
 }
