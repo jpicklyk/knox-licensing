@@ -17,7 +17,7 @@ fun getApplicationSignatures(packageName: String, context: Context): List<String
             context,
             PackageManager.GET_SIGNING_CERTIFICATES
         ).signingInfo
-    signatureList = if(signingInfo.hasMultipleSigners()) {
+    signatureList = if(signingInfo!!.hasMultipleSigners()) {
         signingInfo.apkContentsSigners.map {
             it.toCharsString()
         }
@@ -38,7 +38,7 @@ fun getApplicationSignatureThumbprints(packageName: String, context: Context): L
             context,
             PackageManager.GET_SIGNING_CERTIFICATES
         ).signingInfo
-    signatureList = if(signingInfo.hasMultipleSigners()) {
+    signatureList = if(signingInfo!!.hasMultipleSigners()) {
         signingInfo.apkContentsSigners.map {
             val sha = MessageDigest.getInstance("SHA")
             sha.update(it.toByteArray())
