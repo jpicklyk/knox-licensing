@@ -10,8 +10,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import net.sfelabs.core.domain.api.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
@@ -66,9 +68,12 @@ class TcpDumpTests {
 
     @Test
     fun test2_checkTcpDumpIsRunningReturnsTrue() = runTest {
-        val checkUseCase = IsTcpDumpEnabled(systemManager)
-        val checkResult = checkUseCase.invoke()
-        assert(checkResult is ApiResult.Success && checkResult.data)
+        withContext(Dispatchers.Default) {
+            delay(2000)
+            val checkUseCase = IsTcpDumpEnabled(systemManager)
+            val checkResult = checkUseCase.invoke()
+            assert(checkResult is ApiResult.Success && checkResult.data)
+        }
     }
 
     @Test
@@ -98,11 +103,12 @@ class TcpDumpTests {
 
     @Test
     fun test6_checkTcpDumpIsRunningReturnsTrue() = runTest {
-        delay(2000)
-        val checkUseCase = IsTcpDumpEnabled(systemManager)
-        val checkResult = checkUseCase.invoke()
-        assert(checkResult is ApiResult.Success && checkResult.data)
-
+        withContext(Dispatchers.Default) {
+            delay(2000)
+            val checkUseCase = IsTcpDumpEnabled(systemManager)
+            val checkResult = checkUseCase.invoke()
+            assert(checkResult is ApiResult.Success && checkResult.data)
+        }
     }
 
     @Test
