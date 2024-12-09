@@ -26,17 +26,21 @@ class PoliciesViewModel @Inject constructor(
 
     private fun loadFeatures() {
         viewModelScope.launch {
+            val allFeatures = featureRegistry.getFeatures(FeatureCategory.Toggle)
+            println("Found features: ${allFeatures.size}")
+
             val toggleFeatures = featureRegistry.getFeatures(FeatureCategory.Toggle)
                 .filterIsInstance<Feature<Boolean>>()
                 .mapNotNull { feature ->
-                featureRegistry.getRegistration(feature.key)?.let { registration ->
-                    FeatureUiState.Toggle(
-                        name = feature.key.featureName,
-                        description = registration.description,
-                        isEnabled = feature.state.enabled
-                    )
+                    featureRegistry.getComponent(feature.key)?.let { component ->
+                        FeatureUiState.Toggle(
+                            name = feature.key.featureName,
+                            description = component.description,
+                            isEnabled = feature.state.enabled
+                        )
+                    }
                 }
-            }
+            println("Final toggle features: ${toggleFeatures.size}") // Debug log
             _features.value = toggleFeatures
         }
     }
@@ -44,11 +48,15 @@ class PoliciesViewModel @Inject constructor(
     fun toggleFeature(name: String, enabled: Boolean) {
         viewModelScope.launch {
             try {
-                val feature = featureRegistry.getFeatures(FeatureCategory.Toggle)
+                val features = featureRegistry.getFeatures(FeatureCategory.Toggle)
                     .filterIsInstance<Feature<Boolean>>()
-                    .firstOrNull { it.key.featureName == name }
+                val feature = features.firstOrNull { it.key.featureName == name }
 
-                feature?.let { featureRegistry.getHandler(it.key)?.setState(FeatureState(enabled = enabled, value = enabled)) }
+                feature?.let {
+                    featureRegistry.getHandler(it.key)?.setState(
+                        FeatureState(enabled = enabled, value = enabled)
+                    )
+                }
                 loadFeatures() // Refresh state
             } catch (e: Exception) {
                 // Handle error

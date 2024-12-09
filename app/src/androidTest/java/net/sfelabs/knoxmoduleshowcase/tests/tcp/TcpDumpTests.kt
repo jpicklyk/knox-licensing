@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
-import net.sfelabs.core.domain.api.ApiResult
+import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
 import net.sfelabs.knox_tactical.di.KnoxModule

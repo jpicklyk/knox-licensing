@@ -6,6 +6,7 @@ import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.toClassName
+import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
 import net.sfelabs.core.knox.feature.processor.model.FeatureMetadata
 import net.sfelabs.core.knox.feature.processor.model.PackageName
 import net.sfelabs.core.knox.feature.processor.utils.capitalizeWords
@@ -15,183 +16,161 @@ class HiltModuleGenerator(
     private val environment: SymbolProcessorEnvironment
 ) {
     fun generate(features: List<FeatureMetadata>) {
-        generateFeatureImplementations(features)
-        generateFeatureModules(features)
-        generateMainModule()
-    }
-
-    private fun generateFeatureImplementations(features: List<FeatureMetadata>) {
-        features.forEach { feature ->
-            val implSpec = TypeSpec.classBuilder("${feature.name.capitalizeWords()}Implementation")
-                .addAnnotation(ClassName("javax.inject", "Inject"))
-                .addSuperinterface(
-                    ClassName(PackageName.FEATURE_MODEL.value, "FeatureImplementation")
-                        .parameterizedBy(feature.configType?.toClassName() ?: Any::class.asClassName())
-                )
-                .primaryConstructor(
-                    FunSpec.constructorBuilder()
-                        .addParameter("getter", getClassName(feature.getter!!))
-                        .addParameter("setter", getClassName(feature.setter!!))
-                        .build()
-                )
-                .addProperty(
-                    PropertySpec.builder("getter", getClassName(feature.getter!!))
-                        .addModifiers(KModifier.OVERRIDE)
-                        .initializer("getter")
-                        .build()
-                )
-                .addProperty(
-                    PropertySpec.builder("setter", getClassName(feature.setter!!))
-                        .addModifiers(KModifier.OVERRIDE)
-                        .initializer("setter")
-                        .build()
-                )
-                .build()
-
-            writeImplementationToFile(implSpec, feature)
+        if (features.isEmpty()) {
+            environment.logger.warn("No features found to process")
+            return
         }
+
+        generateFeatureModule(features)
+        generateUseCaseModule(features)
+        generateModuleIndex(features)
     }
 
-    private fun generateFeatureModules(features: List<FeatureMetadata>) {
-        features.forEach { feature ->
-            val moduleSpec = TypeSpec.objectBuilder("${feature.name.capitalizeWords()}Module")
-                .addAnnotation(ClassName("dagger", "Module"))
-                .addAnnotation(
-                    AnnotationSpec.builder(ClassName("dagger.hilt", "InstallIn"))
-                        .addMember("value = [%T::class]", ClassName("dagger.hilt.components", "SingletonComponent"))
-                        .build()
-                )
-                .addFunction(createFeatureProvideFunction(feature))
-                .build()
-
-            writeModuleToFile(moduleSpec, feature)
-        }
-    }
-
-    private fun generateMainModule() {
-        val moduleSpec = TypeSpec.objectBuilder("GeneratedFeatureModule")
+    private fun generateFeatureModule(features: List<FeatureMetadata>) {
+        val moduleSpec = TypeSpec.classBuilder("GeneratedFeatureModule")
+            .addModifiers(KModifier.ABSTRACT)  // Change to abstract class
             .addAnnotation(ClassName("dagger", "Module"))
             .addAnnotation(
                 AnnotationSpec.builder(ClassName("dagger.hilt", "InstallIn"))
                     .addMember("value = [%T::class]", ClassName("dagger.hilt.components", "SingletonComponent"))
                     .build()
             )
-            .addFunction(createRegistryProvideFunction())
-            .build()
-
-        writeMainModuleToFile(moduleSpec)
-    }
-
-    private fun createFeatureProvideFunction(feature: FeatureMetadata): FunSpec {
-        return FunSpec.builder("provide${feature.name.capitalizeWords()}Implementation")
-            .addAnnotation(ClassName("dagger", "Provides"))
-            .addAnnotation(ClassName("dagger.multibindings", "IntoSet"))
-            .addParameter("getter", getClassName(feature.getter!!))
-            .addParameter("setter", getClassName(feature.setter!!))
-            .returns(
-                ClassName(PackageName.FEATURE_MODEL.value, "FeatureImplementation")
-                    .parameterizedBy(STAR)
-            )
-            .addStatement(
-                "return %T(getter, setter)",
-                ClassName(
-                    getPackageName(feature.getter!!),
-                    "${feature.name.capitalizeWords()}Implementation"
-                )
-            )
-            .build()
-    }
-
-    private fun createRegistryProvideFunction(): FunSpec {
-        return FunSpec.builder("provideFeatureRegistry")
-            .addAnnotation(ClassName("dagger", "Provides"))
-            .addAnnotation(ClassName("javax.inject", "Singleton"))
-            .addParameter(
-                ParameterSpec.builder(
-                    "implementations",
-                    Set::class.asClassName().parameterizedBy(
-                        ClassName(PackageName.FEATURE_MODEL.value, "FeatureImplementation")
-                            .parameterizedBy(STAR)
+            .addFunction(
+                FunSpec.builder("bindFeatureRegistry")  // Change to bind method
+                    .addModifiers(KModifier.ABSTRACT)
+                    .addAnnotation(ClassName("dagger", "Binds"))
+                    .addAnnotation(ClassName("javax.inject", "Singleton"))
+                    .addParameter(
+                        "impl",
+                        ClassName(PackageName.FEATURE_HILT.value, "HiltFeatureRegistry")
                     )
-                ).addAnnotation(ClassName("org.jetbrains.annotations", "JvmSuppressWildcards")).build()
+                    .returns(ClassName(PackageName.FEATURE_REGISTRY.value, "FeatureRegistry"))
+                    .build()
             )
-            .returns(ClassName(PackageName.FEATURE_REGISTRY.value, "FeatureRegistry"))
-            .addCode("""
-                return %T().apply {
-                    implementations.forEach { impl ->
-                        register(createRegistration(impl))
-                    }
-                }
-            """.trimIndent(), ClassName(PackageName.FEATURE_REGISTRY.value, "DefaultFeatureRegistry"))
             .build()
+
+        writeModuleToFile(moduleSpec, "GeneratedFeatureModule", features)
     }
 
-    private fun writeImplementationToFile(implSpec: TypeSpec, feature: FeatureMetadata) {
+    private fun generateUseCaseModule(features: List<FeatureMetadata>) {
+        val moduleSpec = TypeSpec.objectBuilder("GeneratedUseCaseModule")
+            .addAnnotation(ClassName("dagger", "Module"))
+            .addAnnotation(
+                AnnotationSpec.builder(ClassName("dagger.hilt", "InstallIn"))
+                    .addMember("value = [%T::class]", ClassName("dagger.hilt.components", "SingletonComponent"))
+                    .build()
+            )
+            .apply {
+                features.forEach { feature ->
+                    addFunction(
+                        FunSpec.builder("provide${feature.name.capitalizeWords()}Getter")
+                            .addAnnotation(ClassName("dagger", "Provides"))
+                            .addAnnotation(ClassName("javax.inject", "Singleton"))
+                            .addParameter(
+                                ParameterSpec.builder("context", ClassName("android.content", "Context"))
+                                    .addAnnotation(ClassName("dagger.hilt.android.qualifiers", "ApplicationContext"))
+                                    .build()
+                            )
+                            .returns(getClassName(feature.getter!!))
+                            .addCode("return %T(context)", getClassName(feature.getter!!))
+                            .build()
+                    )
+                    addFunction(
+                        FunSpec.builder("provide${feature.name.capitalizeWords()}Setter")
+                            .addAnnotation(ClassName("dagger", "Provides"))
+                            .addAnnotation(ClassName("javax.inject", "Singleton"))
+                            .addParameter(
+                                ParameterSpec.builder("context", ClassName("android.content", "Context"))
+                                    .addAnnotation(ClassName("dagger.hilt.android.qualifiers", "ApplicationContext"))
+                                    .build()
+                            )
+                            .returns(getClassName(feature.setter!!))
+                            .addCode("return %T(context)", getClassName(feature.setter!!))
+                            .build()
+                    )
+                }
+            }
+            .build()
+
+        writeModuleToFile(moduleSpec, "GeneratedUseCaseModule", features)
+    }
+
+    private fun generateModuleIndex(features: List<FeatureMetadata>) {
         try {
-            // Write the feature implementation to a file
-            val packageName = (feature.getter as KSClassDeclaration).containingFile?.packageName?.asString()
-                ?.let { "$it.generated" }
-                ?: throw IllegalStateException("Could not determine package for ${feature.name}")
+            val packageName = features.firstOrNull()?.let { feature ->
+                (feature.getter as KSClassDeclaration).containingFile?.packageName?.asString()
+                    ?.let { "$it.generated" }
+            } ?: throw IllegalStateException("No features found to determine package")
+
+            // Include all modules - feature modules + generated modules
+            val moduleNames = listOf(
+                "GeneratedFeatureModule",
+                "GeneratedUseCaseModule"
+            ) + features.map { "${it.name.capitalizeWords()}Module" }
+
+            val indexSpec = TypeSpec.objectBuilder("GeneratedModuleIndex")
+                .addAnnotation(
+                    AnnotationSpec.builder(ClassName("dagger", "Module"))
+                        .addMember(
+                            "includes = [%L]",
+                            moduleNames.joinToString(", ") { "${it}::class" }
+                        )
+                        .build()
+                )
+                .addAnnotation(
+                    AnnotationSpec.builder(ClassName("dagger.hilt", "InstallIn"))
+                        .addMember("value = [%T::class]", ClassName("dagger.hilt.components", "SingletonComponent"))
+                        .build()
+                )
+                .build()
+
+            writeModuleIndexToFile(indexSpec, packageName)
+        } catch (e: Exception) {
+            environment.logger.error("Failed to generate module index: ${e.message}")
+        }
+    }
+
+    private fun writeModuleToFile(moduleSpec: TypeSpec, fileName: String, features: List<FeatureMetadata>) {
+        try {
+            val packageName = features.firstOrNull()?.let { feature ->
+                (feature.getter as KSClassDeclaration).containingFile?.packageName?.asString()
+                    ?.let { "$it.generated" }
+            } ?: throw IllegalStateException("No features found to determine package")
 
             environment.codeGenerator.createNewFile(
                 Dependencies(false),
                 packageName,
-                "${feature.name.capitalizeWords()}Implementation"
+                fileName
             ).use { output ->
                 output.writer().use { writer ->
-                    FileSpec.builder(packageName, "${feature.name.capitalizeWords()}Implementation")
-                        .addType(implSpec)
-                        .build()
-                        .writeTo(writer)
-                }
-            }
-        } catch (e: FileAlreadyExistsException) {
-            environment.logger.warn("Implementation file already exists for ${feature.name}. Skipping generation.")
-        }
-    }
-
-    private fun writeModuleToFile(moduleSpec: TypeSpec, feature: FeatureMetadata) {
-        try {
-            // Write the feature module to a file
-            environment.codeGenerator.createNewFile(
-                Dependencies(false),
-                PackageName.FEATURE_HILT.value,
-                "${feature.name.capitalizeWords()}Module"
-            ).use { output ->
-                output.writer().use { writer ->
-                    FileSpec.builder(PackageName.FEATURE_HILT.value, "${feature.name.capitalizeWords()}Module")
+                    FileSpec.builder(packageName, fileName)
                         .addType(moduleSpec)
                         .build()
                         .writeTo(writer)
                 }
             }
         } catch (e: FileAlreadyExistsException) {
-            environment.logger.warn("Module file already exists for ${feature.name}. Skipping generation.")
+            environment.logger.warn("Module file $fileName already exists. Skipping generation.")
         }
     }
 
-    private fun writeMainModuleToFile(moduleSpec: TypeSpec) {
+    private fun writeModuleIndexToFile(indexSpec: TypeSpec, packageName: String) {
         try {
-            // Write the main module to a file
             environment.codeGenerator.createNewFile(
                 Dependencies(false),
-                PackageName.FEATURE_HILT.value,
-                "GeneratedFeatureModule"
+                packageName,
+                "GeneratedModuleIndex"
             ).use { output ->
                 output.writer().use { writer ->
-                    FileSpec.builder(PackageName.FEATURE_HILT.value, "GeneratedFeatureModule")
-                        .addType(moduleSpec)
+                    FileSpec.builder(packageName, "GeneratedModuleIndex")
+                        .addType(indexSpec)
                         .build()
                         .writeTo(writer)
                 }
             }
+            environment.logger.info("Successfully wrote GeneratedModuleIndex")
         } catch (e: FileAlreadyExistsException) {
-            environment.logger.warn("Module file already exists. Skipping generation.")
+            environment.logger.warn("Module index file already exists. Skipping generation.")
         }
-    }
-
-    private fun getPackageName(symbol: KSClassDeclaration): String {
-        return symbol.containingFile?.packageName?.asString()
-            ?: throw IllegalStateException("Could not determine package for ${symbol.simpleName.asString()}")
     }
 }

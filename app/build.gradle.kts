@@ -42,7 +42,12 @@ android {
     }
     packaging {
         resources {
-            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+            excludes += arrayOf(
+                "/META-INF/{LICENSE.md,LICENSE-notice.md}",
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1",
+                "/META-INF/gradle/incremental.annotation.processors"
+            )
         }
     }
 
@@ -62,6 +67,7 @@ dependencies {
     implementation(project(":core:knox-feature"))
     implementation(project(":core:knox-feature-ui"))
     implementation(project(":core:knox-feature-compose"))
+    implementation(project(":core:knox-feature-hilt"))
     implementation(project(":core:ui"))
     implementation(project(":android-log-wrapper"))
     implementation(project(":knox-common"))

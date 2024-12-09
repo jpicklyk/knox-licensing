@@ -7,11 +7,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import net.sfelabs.core.knox.feature.domain.registry.DefaultFeatureRegistry
-import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
 import javax.inject.Singleton
+import net.sfelabs.knox_tactical.domain.api.tdm.generated.GeneratedModuleIndex
 
-@Module
+
+@Module(includes = [GeneratedModuleIndex::class])
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
@@ -20,11 +20,4 @@ object AppModule {
     fun provideResources(@ApplicationContext context: Context): Resources {
         return context.resources
     }
-
-    @Provides
-    @Singleton
-    fun provideFeatureRegistry() : FeatureRegistry {
-        return DefaultFeatureRegistry()
-    }
-
 }

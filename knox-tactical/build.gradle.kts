@@ -20,7 +20,10 @@ android {
 
     packaging {
         resources {
-            excludes += "/META-INF/{LICENSE.md,LICENSE-notice.md}"
+            excludes += arrayOf(
+                "/META-INF/{LICENSE.md,LICENSE-notice.md}",
+                "META-INF/gradle/incremental.annotation.processors"
+            )
         }
     }
 }
@@ -29,10 +32,14 @@ android {
 dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.jackson.module)
+    implementation(libs.jetbrains.annotations)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.compiler)
     implementation(project(":android-log-wrapper"))
     implementation(project(":core:common"))
     implementation(project(":core:knox-api"))
     implementation(project(":core:knox-feature"))
+    implementation(project(":core:knox-feature-hilt"))
     implementation(project(":core:knox-feature-processor"))
     "ksp"(project(":core:knox-feature-processor"))
     implementation(libs.androidx.test.runner)
