@@ -1,7 +1,7 @@
 package net.sfelabs.core.knox.feature.hilt
 
 import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
-import net.sfelabs.core.knox.feature.domain.model.FeatureComponent
+import net.sfelabs.core.knox.feature.domain.component.FeatureComponent
 import net.sfelabs.core.knox.feature.domain.model.FeatureKey
 import net.sfelabs.core.knox.feature.domain.registry.DefaultFeatureRegistry
 import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry

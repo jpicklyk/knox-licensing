@@ -10,7 +10,7 @@ import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.core.knox.feature.domain.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
-import net.sfelabs.core.knox.feature.domain.model.FeatureComponent
+import net.sfelabs.core.knox.feature.domain.component.FeatureComponent
 import net.sfelabs.core.knox.feature.domain.model.FeatureKey
 import net.sfelabs.core.knox.feature.domain.model.FeatureState
 import net.sfelabs.core.knox.feature.domain.registry.DefaultFeatureRegistry

@@ -1,4 +1,4 @@
-package net.sfelabs.core.knox.feature.domain.model
+package net.sfelabs.core.knox.feature.domain.component
 
 enum class StateMapping {
     DIRECT,     // enabled = value

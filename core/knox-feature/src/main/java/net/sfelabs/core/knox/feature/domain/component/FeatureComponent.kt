@@ -1,6 +1,8 @@
-package net.sfelabs.core.knox.feature.domain.model
+package net.sfelabs.core.knox.feature.domain.component
 
 import net.sfelabs.core.knox.feature.domain.handler.FeatureHandler
+import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
+import net.sfelabs.core.knox.feature.domain.model.FeatureKey
 
 interface FeatureComponent<T : Any> {
     val featureName: String

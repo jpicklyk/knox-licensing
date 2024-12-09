@@ -5,7 +5,7 @@ import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
-import net.sfelabs.core.knox.feature.domain.model.StateMapping
+import net.sfelabs.core.knox.feature.domain.component.StateMapping
 import net.sfelabs.core.knox.feature.processor.generator.HiltModuleGenerator
 import net.sfelabs.core.knox.feature.processor.model.FeatureMetadata
 import net.sfelabs.core.knox.feature.processor.model.PackageName
@@ -138,7 +138,7 @@ class FeatureProcessor(
                         .build()
                 )
                 .addSuperinterface(
-                    ClassName(PackageName.FEATURE_MODEL.value, "FeatureComponent")
+                    ClassName(PackageName.FEATURE_COMPONENT.value, "FeatureComponent")
                         .parameterizedBy(metadata.configType!!.toClassName())
                 )
                 .addInitializerBlock(
@@ -184,7 +184,7 @@ class FeatureProcessor(
                         .addModifiers(KModifier.OVERRIDE)
                         .initializer(
                             "DefaultFeatureHandler(getter, setter, %T.%L)",
-                            ClassName(PackageName.FEATURE_MODEL.value, "StateMapping"),
+                            ClassName(PackageName.FEATURE_COMPONENT.value, "StateMapping"),
                             metadata.stateMapping.name
                         )
                         .build()
@@ -236,7 +236,7 @@ class FeatureProcessor(
                         )
                     )
                     .returns(
-                        ClassName(PackageName.FEATURE_MODEL.value, "FeatureComponent")
+                        ClassName(PackageName.FEATURE_COMPONENT.value, "FeatureComponent")
                             .parameterizedBy(WildcardTypeName.producerOf(ANY))
                     )
                     .build()
@@ -280,7 +280,7 @@ class FeatureProcessor(
                 output.writer().use { writer ->
                     FileSpec.builder(packageName, "${metadata.name.capitalizeWords()}Component")
                         .addType(componentSpec)
-                        .addImport(PackageName.FEATURE_MODEL.value, "FeatureComponent")
+                        .addImport(PackageName.FEATURE_COMPONENT.value, "FeatureComponent")
                         .addImport(PackageName.FEATURE_HANDLER.value, "FeatureHandler")
                         .addImport(PackageName.FEATURE_HANDLER.value, "DefaultFeatureHandler")
                         .addImport(PackageName.FEATURE_MODEL.value, "FeatureCategory")
