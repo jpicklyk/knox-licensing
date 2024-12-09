@@ -4,11 +4,30 @@ import net.sfelabs.core.knox.api.domain.ApiResult
 
 data class FeatureState<out T>(val enabled: Boolean, val value: T)
 
-fun <T : Any> ApiResult<T>.wrapInFeatureState(): ApiResult<FeatureState<T>> {
+fun <T : Any> ApiResult<T>.wrapInFeatureState(stateMapping: StateMapping): ApiResult<FeatureState<T>> {
     return when (this) {
-        //TODO: This can't always be true, there needs to be a definition somewhere of what
-        //defines when a feature is enabled or not.
-        is ApiResult.Success -> ApiResult.Success(FeatureState(true, data))
+        is ApiResult.Success -> {
+            val enabled = when (stateMapping) {
+                StateMapping.DIRECT -> if (data is Boolean) data else true
+                StateMapping.INVERTED -> if (data is Boolean) !(data as Boolean) else true
+                StateMapping.CUSTOM -> {
+                    if (data is Boolean) {
+                        try {
+                            val className = this::class.java.name
+                            val packageName = className.substring(0, className.lastIndexOf('.'))
+                            val companionClass = Class.forName("$packageName.Companion")
+                            val mapStateMethod = companionClass.getDeclaredMethod("mapState", Boolean::class.java)
+                            mapStateMethod.invoke(null, data) as Boolean
+                        } catch (_: Exception) {
+                            data  // fallback to direct mapping
+                        }
+                    } else {
+                        true
+                    }
+                }
+            }
+            ApiResult.Success(FeatureState(enabled as Boolean, data))
+        }
         is ApiResult.Error -> this
         is ApiResult.NotSupported -> this
     }

@@ -5,6 +5,7 @@ import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
+import net.sfelabs.core.knox.feature.domain.model.StateMapping
 import net.sfelabs.core.knox.feature.processor.generator.HiltModuleGenerator
 import net.sfelabs.core.knox.feature.processor.model.FeatureMetadata
 import net.sfelabs.core.knox.feature.processor.model.PackageName
@@ -39,7 +40,14 @@ class FeatureProcessor(
                 FeatureCategory.valueOf(enumValue)
             }
 
-            features[name] = FeatureMetadata(name, description, category)
+            val stateMapping = featureAnnotation.arguments.find {
+                it.name?.asString() == "stateMapping"
+            }?.value?.let { value ->
+                val enumValue = (value as KSType).declaration.simpleName.asString()
+                StateMapping.valueOf(enumValue)
+            } ?: StateMapping.DIRECT
+
+            features[name] = FeatureMetadata(name, description, category, stateMapping)
         }
 
         // Second pass: find getters and setters
@@ -175,7 +183,9 @@ class FeatureProcessor(
                     )
                         .addModifiers(KModifier.OVERRIDE)
                         .initializer(
-                            "DefaultFeatureHandler(getter, setter)"
+                            "DefaultFeatureHandler(getter, setter, %T.%L)",
+                            ClassName(PackageName.FEATURE_MODEL.value, "StateMapping"),
+                            metadata.stateMapping.name
                         )
                         .build()
                 )

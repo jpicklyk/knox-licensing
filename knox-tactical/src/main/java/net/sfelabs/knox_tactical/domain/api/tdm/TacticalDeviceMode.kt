@@ -1,7 +1,8 @@
 @file:Feature(
     name = "tactical_device_mode",
     description = "Activates tactical device mode for enhanced mission capabilities",
-    category = FeatureCategory.Toggle
+    category = FeatureCategory.Toggle,
+    stateMapping = StateMapping.DIRECT,
 )
 package net.sfelabs.knox_tactical.domain.api.tdm
 
@@ -14,6 +15,7 @@ import net.sfelabs.core.knox.feature.annotation.Feature
 import net.sfelabs.core.knox.feature.annotation.FeatureGetter
 import net.sfelabs.core.knox.feature.annotation.FeatureSetter
 import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
+import net.sfelabs.core.knox.feature.domain.model.StateMapping
 
 @FeatureGetter
 class GetTacticalDeviceModeUseCase(
