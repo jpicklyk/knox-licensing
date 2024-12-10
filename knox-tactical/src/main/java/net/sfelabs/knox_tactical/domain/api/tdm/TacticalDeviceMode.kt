@@ -30,11 +30,12 @@ class GetTacticalDeviceModeUseCase(
 @FeatureSetter
 class SetTacticalDeviceModeUseCase(
     private val context: Context
-) : CoroutineApiUseCase<Boolean, Unit>() {
+) : CoroutineApiUseCase<SetTacticalDeviceModeUseCase.Params, Unit>() {
+    data class Params(val enable: Boolean)
 
-    override suspend fun execute(enable: Boolean): ApiResult<Unit> {
+    override suspend fun execute(params: Params): ApiResult<Unit> {
         val restrictionPolicy = EnterpriseDeviceManager.getInstance(context).restrictionPolicy
-        val result = restrictionPolicy.enableTacticalDeviceMode(enable)
+        val result = restrictionPolicy.enableTacticalDeviceMode(params.enable)
         return when (result) {
             true -> ApiResult.Success(Unit)
             false -> ApiResult.Error(DefaultApiError.UnexpectedError())

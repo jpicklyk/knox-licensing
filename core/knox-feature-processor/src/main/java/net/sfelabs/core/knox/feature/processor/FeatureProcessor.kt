@@ -119,6 +119,12 @@ class FeatureProcessor(
             // Generate Key first
             generateKey(metadata)
 
+            // Get setter parameter type
+            val setterParamsType = metadata.setter?.let { getSetterParamsType(it) }
+            val needsParamWrapper = setterParamsType != null &&
+                    setterParamsType.declaration.qualifiedName?.asString() != metadata.configType?.declaration?.qualifiedName?.asString()
+
+
             // Generate Component
             val componentSpec = TypeSpec.classBuilder("${metadata.name.capitalizeWords()}Component")
                 .primaryConstructor(
@@ -132,9 +138,6 @@ class FeatureProcessor(
                             "setter",
                             getClassName(metadata.setter!!)
                         )
-                        .addCode("""
-                            |println("Creating component: ${metadata.name}")
-                            |""".trimMargin())
                         .build()
                 )
                 .addSuperinterface(
@@ -183,9 +186,7 @@ class FeatureProcessor(
                     )
                         .addModifiers(KModifier.OVERRIDE)
                         .initializer(
-                            "DefaultFeatureHandler(getter, setter, %T.%L)",
-                            ClassName(PackageName.FEATURE_COMPONENT.value, "StateMapping"),
-                            metadata.stateMapping.name
+                            buildHandlerInitializer(metadata, needsParamWrapper)
                         )
                         .build()
                 )
@@ -351,5 +352,59 @@ class FeatureProcessor(
     private fun getGeneratedPackage(classDeclaration: KSClassDeclaration): String {
         return classDeclaration.containingFile?.packageName?.asString()?.let { "$it.generated" }
             ?: throw IllegalStateException("Could not determine package name")
+    }
+
+    private fun getSetterParamsType(setter: KSClassDeclaration): KSType? {
+        return setter.superTypes
+            .first() // Get CoroutineApiUseCase<P, Unit>
+            .resolve()
+            .arguments
+            .first() // Get P from <P, Unit>
+            .type
+            ?.resolve()
+    }
+
+    private fun buildHandlerInitializer(
+        metadata: FeatureMetadata,
+        needsParamWrapper: Boolean
+    ): CodeBlock {
+        return if (needsParamWrapper) {
+            val setterDeclaration = metadata.setter!!
+            val paramsClassName = setterDeclaration.declarations
+                .filterIsInstance<KSClassDeclaration>()
+                .first() // Get the inner class declaration
+                .qualifiedName!!.asString() // Get its fully qualified name
+
+            CodeBlock.builder()
+                .add(
+                    """
+                |DefaultFeatureHandler(
+                |    getter = getter,
+                |    setter = setter,
+                |    stateMapping = %T.%L,
+                |    parameterWrapper = { value -> %T(value) }
+                |)
+                """.trimMargin(),
+                    ClassName(PackageName.FEATURE_COMPONENT.value, "StateMapping"),
+                    metadata.stateMapping.name,
+                    ClassName.bestGuess(paramsClassName)
+                )
+                .build()
+        } else {
+            CodeBlock.builder()
+                .add(
+                    """
+                |DefaultFeatureHandler(
+                |    getter = getter,
+                |    setter = setter,
+                |    stateMapping = %T.%L,
+                |    parameterWrapper = { it }
+                |)
+                """.trimMargin(),
+                    ClassName(PackageName.FEATURE_COMPONENT.value, "StateMapping"),
+                    metadata.stateMapping.name
+                )
+                .build()
+        }
     }
 }
