@@ -148,7 +148,10 @@ class UseCaseExecutorTest {
         }
         assertEquals(3, attempts)
         assertTrue(result is ApiResult.Error)
-        assertEquals("Persistent Error", (result as ApiResult.Error).toString())
+        assertEquals(
+            "Persistent Error",
+            (result as ApiResult.Error).apiError.message  // Get just the message instead of toString()
+        )
     }
 
     @Test
@@ -344,7 +347,7 @@ class UseCaseExecutorTest {
 
         assertTrue(results[1] is ApiResult.Error)
         assertEquals("Second call error",
-            (results[0] as ApiResult.Error).apiError.message
+            (results[1] as ApiResult.Error).apiError.message  // Fixed index from [0] to [1]
         )
 
         assertTrue(results[2] is ApiResult.Success)
