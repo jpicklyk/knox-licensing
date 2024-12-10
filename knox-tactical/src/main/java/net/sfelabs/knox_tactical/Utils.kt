@@ -34,6 +34,7 @@ fun registerNetwork(
     registerNetwork(context, interfaceName, networkCallback)
 }
 
+@Suppress("DEPRECATION")
 fun registerNetwork(context: Context, interfaceName: String, networkCallback: NetworkCallback) {
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
