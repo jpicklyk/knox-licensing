@@ -8,12 +8,12 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.core.knox.feature.domain.handler.FeatureHandler
-import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
-import net.sfelabs.core.knox.feature.domain.component.FeatureComponent
-import net.sfelabs.core.knox.feature.domain.model.FeatureKey
-import net.sfelabs.core.knox.feature.domain.model.FeatureState
-import net.sfelabs.core.knox.feature.domain.registry.DefaultFeatureRegistry
+import net.sfelabs.core.knox.feature.internal.handler.FeatureHandler
+import net.sfelabs.core.knox.feature.api.FeatureCategory
+import net.sfelabs.core.knox.feature.internal.component.FeatureComponent
+import net.sfelabs.core.knox.feature.api.FeatureKey
+import net.sfelabs.core.knox.feature.internal.model.FeatureState
+import net.sfelabs.core.knox.feature.internal.registry.DefaultFeatureRegistry
 import org.junit.Before
 import org.junit.Test
 
@@ -30,6 +30,7 @@ class DefaultFeatureRegistryTest {
         registry = DefaultFeatureRegistry()
         mockComponent = object : FeatureComponent<Boolean> {
             override val featureName = "test_feature"
+            override val title = "Test Feature"
             override val description = "some description"
             override val category = FeatureCategory.Toggle
             override val handler = mockHandler
@@ -82,6 +83,7 @@ class DefaultFeatureRegistryTest {
         val mockHandler2 = mockk<FeatureHandler<Boolean>>()
         val mockComponent2 = object : FeatureComponent<Boolean> {
             override val featureName = "test_feature_2"
+            override val title = "Test Feature 2"
             override val description = "some description 2"
             override val category = FeatureCategory.Toggle
             override val handler = mockHandler2
@@ -129,6 +131,7 @@ class DefaultFeatureRegistryTest {
         val mockHandler2 = mockk<FeatureHandler<Boolean>>()
         val mockComponent2 = object : FeatureComponent<Boolean> {
             override val featureName = "test_feature_2"
+            override val title = "Test Feature 2"
             override val description = "some description 2"
             override val category = FeatureCategory.Toggle
             override val handler = mockHandler2

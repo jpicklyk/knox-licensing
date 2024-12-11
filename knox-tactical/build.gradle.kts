@@ -28,6 +28,9 @@ android {
     }
 }
 
+ksp {
+    arg("android.namespace", android.namespace ?: "")
+}
 
 dependencies {
     implementation(libs.kotlin.reflect)

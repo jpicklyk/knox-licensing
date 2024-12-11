@@ -1,10 +1,10 @@
 package net.sfelabs.core.knox.feature.hilt
 
-import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
-import net.sfelabs.core.knox.feature.domain.component.FeatureComponent
-import net.sfelabs.core.knox.feature.domain.model.FeatureKey
-import net.sfelabs.core.knox.feature.domain.registry.DefaultFeatureRegistry
-import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
+import net.sfelabs.core.knox.feature.api.FeatureCategory
+import net.sfelabs.core.knox.feature.internal.component.FeatureComponent
+import net.sfelabs.core.knox.feature.api.FeatureKey
+import net.sfelabs.core.knox.feature.internal.registry.DefaultFeatureRegistry
+import net.sfelabs.core.knox.feature.internal.registry.FeatureRegistry
 import javax.inject.Inject
 import javax.inject.Singleton
 

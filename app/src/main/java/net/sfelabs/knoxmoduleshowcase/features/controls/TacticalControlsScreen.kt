@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import net.sfelabs.core.knox.feature.domain.model.old.KnoxFeatureValueType
+import net.sfelabs.core.knox.feature.internal.model.old.KnoxFeatureValueType
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.TacticalKnoxState
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.components.KnoxApiComponent
 import net.sfelabs.knoxmoduleshowcase.features.tactical.presentation.components.KnoxApiTextComponent

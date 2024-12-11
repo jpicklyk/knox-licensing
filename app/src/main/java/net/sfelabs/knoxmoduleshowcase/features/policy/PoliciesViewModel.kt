@@ -6,10 +6,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import net.sfelabs.core.knox.feature.domain.model.Feature
-import net.sfelabs.core.knox.feature.domain.model.FeatureCategory
-import net.sfelabs.core.knox.feature.domain.model.FeatureState
-import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
+import net.sfelabs.core.knox.feature.internal.model.Feature
+import net.sfelabs.core.knox.feature.api.FeatureCategory
+import net.sfelabs.core.knox.feature.internal.model.FeatureState
+import net.sfelabs.core.knox.feature.internal.registry.FeatureRegistry
 import net.sfelabs.core.knox.feature.ui.model.FeatureUiState
 import javax.inject.Inject
 
@@ -34,7 +34,7 @@ class PoliciesViewModel @Inject constructor(
                 .mapNotNull { feature ->
                     featureRegistry.getComponent(feature.key)?.let { component ->
                         FeatureUiState.Toggle(
-                            name = feature.key.featureName,
+                            name = component.title,
                             description = component.description,
                             isEnabled = feature.state.enabled
                         )

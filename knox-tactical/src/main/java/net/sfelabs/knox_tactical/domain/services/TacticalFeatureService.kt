@@ -4,8 +4,8 @@ import net.sfelabs.android_log_wrapper.Log
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.core.knox.feature.domain.model.FeatureState
-import net.sfelabs.core.knox.feature.domain.model.old.KnoxFeatureValueType
+import net.sfelabs.core.knox.feature.internal.model.FeatureState
+import net.sfelabs.core.knox.feature.internal.model.old.KnoxFeatureValueType
 import net.sfelabs.knox_tactical.domain.model.TacticalFeature
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensitivityUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.SetAutoTouchSensitivityUseCase

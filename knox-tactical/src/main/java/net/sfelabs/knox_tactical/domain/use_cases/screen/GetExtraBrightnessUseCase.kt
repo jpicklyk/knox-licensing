@@ -5,7 +5,7 @@ import com.samsung.android.knox.custom.SettingsManager
 import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.core.knox.feature.domain.model.FeatureState
+import net.sfelabs.core.knox.feature.internal.model.FeatureState
 import javax.inject.Inject
 
 class GetExtraBrightnessUseCase @Inject constructor(

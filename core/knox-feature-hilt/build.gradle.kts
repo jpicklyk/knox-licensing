@@ -6,6 +6,14 @@ plugins {
 
 android {
     namespace = "net.sfelabs.core.knox.feature.hilt"
+
+    packaging {
+        resources {
+            excludes += arrayOf(
+                "/META-INF/{LICENSE.md,LICENSE-notice.md}"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -15,6 +23,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

@@ -35,8 +35,7 @@ kotlinx-serialization-json = "1.6.3"
 
 kotlinxIo = "0.1.13"
 ksp = "1.9.24-1.0.20"
-mockito = "3.12.4"
-mockito-kotlin = "3.2.0"
+mockito = "5.4.0"
 mockk-version = "1.13.11"
 
 detekt = "1.17.0"
@@ -133,7 +132,7 @@ kotlinx-io = { module = "org.jetbrains.kotlinx:kotlinx-io", version.ref = "kotli
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 #ktlintPlugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito"}
-mockito-kotlin = { group = "org.mockito", name = "mockito-kotlin", version.ref = "mockito-kotlin"}
+mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito"}
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
 mockk-agent = { group = "io.mockk", name = "mockk-agent", version.ref = "mockk-version" }
 mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk-version" }
