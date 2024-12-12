@@ -93,6 +93,7 @@ dependencies {
     testRuntimeOnly(libs.junit.jupiter.engine)
 
     androidTestImplementation(project(":core:testing"))
+    androidTestImplementation(project(":core:knox-api"))
     androidTestImplementation(libs.junit.jupiter.api)
     androidTestRuntimeOnly(libs.junit.jupiter.engine)
     androidTestRuntimeOnly(libs.junit.extensions)
