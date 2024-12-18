@@ -18,13 +18,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @TacticalSdkSuppress(minReleaseVersion = 132)
 class BridgeTests {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
-    private lateinit var context: Context
-
-    @Before
-    fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().context
-    }
 
     private val allCommands = listOf(
         "link set dummy0 down",
@@ -33,14 +26,12 @@ class BridgeTests {
         "link set dummy0 up",
         "link set dev br0 up"
     )
-    /*
-    This requires a fix to the executeAdbCommand implementation to synchronize the command executions.
-     */
+
     @Test
     fun createBridgeSlaveDummy0_bulk() = runBlocking {
         allCommands.forEach { command ->
             println("Running command: $command")
-            val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
+            val apiResult = ExecuteAdbCommandUseCase().invoke(AdbHeader.IP, command)
             assert(apiResult is ApiResult.Success)
         }
     }

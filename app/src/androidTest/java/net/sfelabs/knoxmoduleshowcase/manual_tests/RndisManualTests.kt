@@ -23,7 +23,6 @@ import org.junit.runner.RunWith
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class RndisManualTests {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
-    private val settingsManager = KnoxModule.provideKnoxSettingsManager()
     private lateinit var context: Context
     private lateinit var connectivityManager: ConnectivityManager
 
@@ -56,14 +55,14 @@ class RndisManualTests {
     @Test
     fun configureRndis0Static() = runBlocking {
         val ipAddress = "10.0.2.3"
-        val route = "10.0.2.0/24"
-        val defaultGateway = "10.0.2.1"
+        //val route = "10.0.2.0/24"
+        //val defaultGateway = "10.0.2.1"
 
         val removeRndis0 = "addr flush dev rndis0"
         val downRndis0 = "link set rndis0 down"
         val addRndis0 = "addr add ${ipAddress}/24 brd + dev rndis0"
         val upRndis0 = "link set rndis0 up"
-        val routeChange = "route change $route via $defaultGateway"
+        //val routeChange = "route change $route via $defaultGateway"
 
         val commands = listOf(
             removeRndis0,
@@ -73,7 +72,7 @@ class RndisManualTests {
             )
         var result = true
         for(command in commands) {
-            val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
+            val apiResult = ExecuteAdbCommandUseCase().invoke(AdbHeader.IP, command)
             result = if(apiResult is ApiResult.Success)
                 result and true
             else
@@ -87,9 +86,9 @@ class RndisManualTests {
 
     @Test
     fun configureRndisDhcp() = runTest {
-        ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, "addr flush dev rndis0")
+        ExecuteAdbCommandUseCase().invoke(AdbHeader.IP, "addr flush dev rndis0")
         delay(350)
-        val dhcpResult =ExecuteAdbCommandUseCase(systemManager).invoke(
+        val dhcpResult =ExecuteAdbCommandUseCase().invoke(
             AdbHeader.DHCPDBG, "rndis0"
         )
         delay(350)
@@ -98,7 +97,7 @@ class RndisManualTests {
          *delay(350)
          */
 
-        ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, "link set rndis0 up")
+        ExecuteAdbCommandUseCase().invoke(AdbHeader.IP, "link set rndis0 up")
         assert(dhcpResult is ApiResult.Success)
         delay(350)
         //setupNetworkRulesAndRoutes()
@@ -106,7 +105,7 @@ class RndisManualTests {
 
     @Test
     fun addNetworkRoute() = runTest {
-        val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, "route add 10.0.2.0/24 dev rndis0 src 10.0.2.3")
+        val apiResult = ExecuteAdbCommandUseCase().invoke(AdbHeader.IP, "route add 10.0.2.0/24 dev rndis0 src 10.0.2.3")
         Thread.sleep(150)
         assert(apiResult is ApiResult.Success)
     }
@@ -144,7 +143,7 @@ class RndisManualTests {
 
         commands.forEach {command ->
             println("Running adb command: $command")
-            val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP,command)
+            val apiResult = ExecuteAdbCommandUseCase().invoke(AdbHeader.IP,command)
             assert(apiResult is ApiResult.Success)
             Thread.sleep(500)
         }

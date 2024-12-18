@@ -84,7 +84,13 @@ class ComponentGenerator(
 
             PropertySpec.builder("defaultValue", feature.valueType.toClassName())
                 .addModifiers(KModifier.OVERRIDE)
-                .initializer(getDefaultValueForType(feature.valueType))
+                .initializer(
+                    try {
+                        getDefaultValueForType(feature.valueType)
+                    } catch (e: IllegalStateException) {
+                        "featureImpl.defaultValue"
+                    }
+                )
                 .build(),
 
             PropertySpec.builder("key",
@@ -102,26 +108,33 @@ class ComponentGenerator(
 
     private fun buildHandlerInitializer(feature: ProcessedFeature): CodeBlock {
         return CodeBlock.builder()
-            .add(
-                """
-            |object : %T<%T> {
-            |    override suspend fun getState(): %T<%T<%T>> {
-            |        return featureImpl.getState().wrapInFeatureState(%T.%L)
-            |    }
-            |    override suspend fun setState(newState: %T<%T>) = 
-            |        featureImpl.setState(newState.value)
-            |}
-            """.trimMargin(),
+            .beginControlFlow(
+                "object : %T<%T>",
                 ClassName(PackageName.FEATURE_HANDLER.value, "FeatureHandler"),
-                feature.valueType.toClassName(),
+                feature.valueType.toClassName()
+            )
+            .beginControlFlow(
+                "override suspend fun getState(parameters: %T): %T<%T<%T>>",
+                ClassName(PackageName.FEATURE_PUBLIC.value, "FeatureParameters"),
                 ClassName(PackageName.API_DOMAIN.value, "ApiResult"),
-                ClassName(PackageName.FEATURE_MODEL.value, "FeatureState"),
-                feature.valueType.toClassName(),
-                ClassName(PackageName.FEATURE_COMPONENT.value, "StateMapping"),
-                feature.stateMapping.name,
                 ClassName(PackageName.FEATURE_MODEL.value, "FeatureState"),
                 feature.valueType.toClassName()
             )
+            .addStatement(
+                "return featureImpl.getState(parameters).wrapInFeatureState(%T.%L)",
+                ClassName(PackageName.FEATURE_COMPONENT.value, "StateMapping"),
+                feature.stateMapping.name
+            )
+            .endControlFlow()
+            .beginControlFlow(
+                "override suspend fun setState(newState: %T<%T>): %T<Unit>",
+                ClassName(PackageName.FEATURE_MODEL.value, "FeatureState"),
+                feature.valueType.toClassName(),
+                ClassName(PackageName.API_DOMAIN.value, "ApiResult")
+            )
+            .addStatement("return featureImpl.setState(newState.value)")
+            .endControlFlow()
+            .endControlFlow()
             .build()
     }
 
@@ -133,7 +146,17 @@ class ComponentGenerator(
             "Float" -> "0f"
             "Double" -> "0.0"
             "String" -> "\"\""
-            else -> "null"
+            else -> throw IllegalStateException(
+                """
+            No default value defined for type: ${type.declaration.simpleName.asString()}
+            For complex types, you must provide a default value by implementing the defaultValue property in your FeatureContract:
+            
+            class YourFeature : FeatureContract<YourType> {
+                override val defaultValue = YourType(...)  // Provide your default instance
+                // ... rest of implementation
+            }
+            """.trimIndent()
+            )
         }
     }
 
@@ -153,7 +176,9 @@ class ComponentGenerator(
                         .addImport(PackageName.FEATURE_HANDLER.value, "FeatureHandler")
                         .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureCategory")
                         .addImport(PackageName.FEATURE_MODEL.value, "FeatureState")
+                        .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureParameters")
                         .addImport(PackageName.FEATURE_MODEL.value, "wrapInFeatureState")
+                        .addImport(PackageName.API_DOMAIN.value, "map")
                         .build()
                         .writeTo(writer)
                 }

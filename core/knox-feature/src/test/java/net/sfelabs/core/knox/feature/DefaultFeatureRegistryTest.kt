@@ -72,7 +72,7 @@ class DefaultFeatureRegistryTest {
     @Test
     fun `when getting features by different category then returns empty list`() = runTest {
         registry.components = setOf(mockComponent)
-        val features = registry.getFeatures(FeatureCategory.Stateful)
+        val features = registry.getFeatures(FeatureCategory.Toggle)
         assertTrue(features.isEmpty())
     }
 

@@ -9,9 +9,8 @@ import net.sfelabs.core.di.AndroidServiceModule
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_common.domain.use_cases.settings.GetBrightnessValueUseCase
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
-import net.sfelabs.knox_tactical.domain.use_cases.backlight.GetBacklightStateUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.backlight.SetBacklightStateUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.backlight.GetLcdBacklightEnabledUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.backlight.SetLcdBacklightEnabledUseCase
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,16 +19,15 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class LcdBacklightStateTest {
-    private val sm = KnoxModule.provideKnoxSystemManager()
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val powerManager = AndroidServiceModule.providePowerManager(context = context)
 
     @Test
     fun enableLcdBacklight() = runTest {
-        val result = SetBacklightStateUseCase(sm).invoke(true)
+        val result = SetLcdBacklightEnabledUseCase().invoke(true)
         assert(result is ApiResult.Success)
 
-        val result2 = GetBacklightStateUseCase(sm).invoke()
+        val result2 = GetLcdBacklightEnabledUseCase().invoke()
         assert(result2 is ApiResult.Success && result2.data)
         val brightness = Settings.System.getInt(
             context.contentResolver, Settings.System.SCREEN_BRIGHTNESS
@@ -46,10 +44,10 @@ class LcdBacklightStateTest {
     @Test
     fun disableLcdBacklightTest() = runTest {
 
-        val result = SetBacklightStateUseCase(sm).invoke(false)
+        val result = SetLcdBacklightEnabledUseCase().invoke(false)
         assert(result is ApiResult.Success)
 
-        val result2 = GetBacklightStateUseCase(sm).invoke()
+        val result2 = GetLcdBacklightEnabledUseCase().invoke()
         assert(result2 is ApiResult.Success && !result2.data)
 
         val brightness = Settings.System.getInt(

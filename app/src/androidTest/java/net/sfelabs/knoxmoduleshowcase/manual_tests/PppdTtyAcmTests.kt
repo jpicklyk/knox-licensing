@@ -11,8 +11,8 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
+import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
 import net.sfelabs.knoxmoduleshowcase.R
@@ -73,16 +73,12 @@ class PppdTtyAcmTests {
 
     @Test
     fun setupPpp() = runBlocking<Unit> {
-        val sm = KnoxModule.provideKnoxSystemManager()
-        val useCase =
-            ExecuteAdbCommandUseCase(
-                sm
-            )
+        val useCase = ExecuteAdbCommandUseCase()
         println("options file location: $optionsFileLocation")
         assertTrue("Options file was not copied to device!",optionsFileLocation.exists())
         //KnoxCustomManagerService: executeAdbCommand - java.lang.IllegalArgumentException: value of system property 'knoxsdk.tac.body' is longer than 91 bytes: /dev/ttyUSB0 file /storage/emulated/0/Android/data/net.sfelabs.knoxmoduleshowcase/files/options
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file $optionsFileLocation")
-        val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file /sdcard/options")
+        val result = useCase.invoke(AdbHeader.PPPD, "/dev/ttyACM0 file /sdcard/options")
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
         assert(result is ApiResult.Success)
     }
@@ -104,8 +100,7 @@ class PppdTtyAcmTests {
     @Test
     fun testStopPppd() = runBlocking<Unit> {
         Thread.sleep(1000)
-        val sm = KnoxModule.provideKnoxSystemManager()
-        val useCase = StopPppdUseCase(sm)
+        val useCase = StopPppdUseCase()
         val result = useCase.invoke()
         delay(1000)
         assertTrue("Knox API stopPPPD() was not successful.  $result", result is ApiResult.Success)

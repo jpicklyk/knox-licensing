@@ -16,8 +16,6 @@ import kotlinx.coroutines.launch
 import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.TopLevelDestination
 import net.sfelabs.knoxmoduleshowcase.features.about.navigation.aboutNavigationRoute
 import net.sfelabs.knoxmoduleshowcase.features.about.navigation.navigateToAbout
-import net.sfelabs.knoxmoduleshowcase.features.controls.navigation.controlsNavigationRoute
-import net.sfelabs.knoxmoduleshowcase.features.controls.navigation.navigateToControls
 import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeNavigationRoute
 import net.sfelabs.knoxmoduleshowcase.features.home.navigation.navigateToHome
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.navigation.ethernetNavigationRoute
@@ -58,7 +56,6 @@ class TacticalAppState(
     val currentTopLevelDestination: TopLevelDestination?
         @Composable get() = when (currentDestination?.route) {
             homeNavigationRoute -> TopLevelDestination.HOME
-            controlsNavigationRoute -> TopLevelDestination.CONTROLS
             ethernetNavigationRoute -> TopLevelDestination.ETHERNET
             networkManagerNavigationRoute -> TopLevelDestination.NetworkManager
             //loggerNavigationRoute -> TopLevelDestination.LOGGING

@@ -1,42 +1,21 @@
 package net.sfelabs.knox_tactical.domain.use_cases.adb
 
-import android.util.Log
 import com.samsung.android.knox.EnterpriseDeviceManager
-import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class SetUsbDebuggingUseCase @Inject constructor(
-    @TacticalSdk private val enterpriseDeviceManager: EnterpriseDeviceManager
-) {
+class SetUsbDebuggingUseCase : KnoxContextAwareUseCase<Boolean, Unit>() {
+    val restrictionPolicy = EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
 
-    suspend operator fun invoke(enable: Boolean): UnitApiCall {
-        val restrictionPolicy = enterpriseDeviceManager.restrictionPolicy
-        return coroutineScope {
-            try {
-                val result = restrictionPolicy.setUsbDebuggingEnabled(enable)
-                if (!result) {
-                    ApiResult.Error(
-                        DefaultApiError.UnexpectedError(
-                            "setUsbDebuggingEnabled API error"
-                        )
-                    )
-                } else {
-                    ApiResult.Success(Unit)
-                }
-
-            } catch (se: SecurityException) {
-                Log.e(null, se.message!!)
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" permission"
-                    )
+    override suspend fun execute(params: Boolean): ApiResult<Unit> {
+        return when(restrictionPolicy.setUsbDebuggingEnabled(params)) {
+            true -> ApiResult.Success(Unit)
+            false -> ApiResult.Error(
+                DefaultApiError.UnexpectedError(
+                    "Unexpected setUsbDebuggingEnabled API error"
                 )
-            }
+            )
         }
     }
 }

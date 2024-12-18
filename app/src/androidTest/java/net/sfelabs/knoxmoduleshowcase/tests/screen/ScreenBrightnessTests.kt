@@ -11,7 +11,6 @@ import net.sfelabs.knox_common.domain.use_cases.settings.GetBrightnessModeUseCas
 import net.sfelabs.knox_common.domain.use_cases.settings.GetBrightnessValueUseCase
 import net.sfelabs.knox_common.domain.use_cases.settings.SetBrightnessUseCase
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.screen.GetExtraBrightnessUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.screen.SetExtraBrightnessUseCase
 import org.junit.After
@@ -22,10 +21,9 @@ import org.junit.runner.RunWith
 @SmallTest
 class ScreenBrightnessTests {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val settingsManager = KnoxModule.provideKnoxSettingsManager()
     @Test
     fun setBrightnessTo50() = runTest {
-        val result = SetBrightnessUseCase(settingsManager).invoke(true, 50)
+        val result = SetBrightnessUseCase().invoke(true, 50)
         assert(result is ApiResult.Success)
         val result2 = GetBrightnessValueUseCase(context).invoke()
         assert(result2 is ApiResult.Success && result2.data == 50)
@@ -35,7 +33,7 @@ class ScreenBrightnessTests {
 
     @Test
     fun setBrightnessToAdaptive() = runTest {
-        val result = SetBrightnessUseCase(settingsManager).invoke(false)
+        val result = SetBrightnessUseCase().invoke(false)
         assert(result is ApiResult.Success)
         val result2 = GetBrightnessModeUseCase(context).invoke()
         assert(result2 is ApiResult.Success && result2.data == SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
@@ -45,27 +43,27 @@ class ScreenBrightnessTests {
     @TacticalSdkSuppress(minReleaseVersion = 131)
     fun setExtraBrightness_On() = runTest {
         setBrightnessTo50()
-        val result = SetExtraBrightnessUseCase(settingsManager).invoke(true)
+        val result = SetExtraBrightnessUseCase().invoke(true)
         assert(result is ApiResult.Success)
 
-        val result2 = GetExtraBrightnessUseCase(settingsManager).invoke()
-        assert(result2 is ApiResult.Success && result2.data.value)
+        val result2 = GetExtraBrightnessUseCase().invoke()
+        assert(result2 is ApiResult.Success && result2.data)
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 131)
     fun setExtraBrightness_Off() = runTest {
         setBrightnessTo50()
-        val result = SetExtraBrightnessUseCase(settingsManager).invoke(false)
+        val result = SetExtraBrightnessUseCase().invoke(false)
         assert(result is ApiResult.Success)
 
-        val result2 = GetExtraBrightnessUseCase(settingsManager).invoke()
-        assert(result2 is ApiResult.Success && !result2.data.value)
+        val result2 = GetExtraBrightnessUseCase().invoke()
+        assert(result2 is ApiResult.Success && !result2.data)
     }
 
     @After
     fun cleanup() = runTest {
-        SetBrightnessUseCase(settingsManager).invoke(false)
-        SetExtraBrightnessUseCase(settingsManager).invoke(false)
+        SetBrightnessUseCase().invoke(false)
+        SetExtraBrightnessUseCase().invoke(false)
     }
 }

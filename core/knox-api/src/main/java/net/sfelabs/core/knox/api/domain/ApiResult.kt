@@ -26,3 +26,24 @@ sealed class ApiResult<out T : Any> {
         else -> null
     }
 }
+
+/**
+ * Transforms the success value of an ApiResult while preserving its result state.
+ *
+ * When the ApiResult is:
+ * - Success: Applies the transform function to the data and wraps it in a new Success
+ * - Error: Returns the original error with its apiError and exception
+ * - NotSupported: Returns NotSupported unchanged
+ *
+ * @param T The type of the original success value
+ * @param R The type of the transformed success value
+ * @param transform A function to transform the success value from type T to type R
+ * @return A new ApiResult with the transformed success value or the original error state
+ */
+fun <T : Any, R : Any> ApiResult<T>.map(transform: (T) -> R): ApiResult<R> {
+    return when (this) {
+        is ApiResult.Success -> ApiResult.Success(transform(data))
+        is ApiResult.Error -> ApiResult.Error(apiError, exception)
+        ApiResult.NotSupported -> ApiResult.NotSupported
+    }
+}

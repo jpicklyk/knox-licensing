@@ -34,7 +34,8 @@ class PoliciesViewModel @Inject constructor(
                 .mapNotNull { feature ->
                     featureRegistry.getComponent(feature.key)?.let { component ->
                         FeatureUiState.Toggle(
-                            name = component.title,
+                            title = component.title,
+                            featureName = component.featureName,
                             description = component.description,
                             isEnabled = feature.state.enabled
                         )
@@ -45,12 +46,12 @@ class PoliciesViewModel @Inject constructor(
         }
     }
 
-    fun toggleFeature(name: String, enabled: Boolean) {
+    fun toggleFeature(featureName: String, enabled: Boolean) {
         viewModelScope.launch {
             try {
                 val features = featureRegistry.getFeatures(FeatureCategory.Toggle)
                     .filterIsInstance<Feature<Boolean>>()
-                val feature = features.firstOrNull { it.key.featureName == name }
+                val feature = features.firstOrNull { it.key.featureName == featureName }
 
                 feature?.let {
                     featureRegistry.getHandler(it.key)?.setState(

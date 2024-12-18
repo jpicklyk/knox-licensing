@@ -1,48 +1,32 @@
 package net.sfelabs.knox_tactical.domain.use_cases.screen
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SettingsManager
-import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import javax.inject.Inject
 
-class SetExtraBrightnessUseCase @Inject constructor(
-    private val settingsManager: SettingsManager
-){
+class SetExtraBrightnessUseCase: CoroutineApiUseCase<SetExtraBrightnessUseCase.Params, Unit>() {
+    data class Params(val enable: Boolean)
+
+    private val settingsManager = CustomDeviceManager.getInstance().settingsManager
+
     suspend operator fun invoke(enable: Boolean): UnitApiCall {
-        return coroutineScope {
-            try {
-                val result = if(enable) {
-                    settingsManager.setExtraBrightness(CustomDeviceManager.ON)
-                } else {
-                    settingsManager.setExtraBrightness(CustomDeviceManager.OFF)
-                }
-                when (result) {
-                    CustomDeviceManager.SUCCESS -> ApiResult.Success(Unit)
-                    CustomDeviceManager.ERROR_NOT_SUPPORTED -> ApiResult.NotSupported
-                    else -> {
-                        ApiResult.Error(DefaultApiError.UnexpectedError("Unknown error occurred"))
-                    }
-                }
-            } catch (e: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
-                    )
-                )
-            } catch (e: NoSuchMethodError) {
-                ApiResult.NotSupported
-            } catch (e: Exception) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        e.message!!
-                    )
-                )
-            }
+        return invoke(Params(enable))
+    }
 
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        val result = if(params.enable) {
+            settingsManager.setExtraBrightness(CustomDeviceManager.ON)
+        } else {
+            settingsManager.setExtraBrightness(CustomDeviceManager.OFF)
+        }
+        return when (result) {
+            CustomDeviceManager.SUCCESS -> ApiResult.Success(Unit)
+            CustomDeviceManager.ERROR_NOT_SUPPORTED -> ApiResult.NotSupported
+            else -> {
+                ApiResult.Error(DefaultApiError.UnexpectedError("Unknown error occurred"))
+            }
         }
     }
 }

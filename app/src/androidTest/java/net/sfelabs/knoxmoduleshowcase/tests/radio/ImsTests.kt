@@ -1,8 +1,10 @@
 package net.sfelabs.knoxmoduleshowcase.tests.radio
 
+import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
+import net.sfelabs.core.knox.android.KnoxContextProvider
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
@@ -18,12 +20,18 @@ import kotlin.properties.Delegates
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class ImsTests {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val phoneRestrictionPolicy = KnoxModule.providePhoneRestrictionPolicy(context)
     private var imsEnabled by Delegates.notNull<Boolean>()
 
     @Before
     fun readCurrentState() = runTest {
-        val result = IsImsEnabledUseCase(phoneRestrictionPolicy).invoke(1, 0)
+        val testProvider = object: KnoxContextProvider {
+            override fun getContext(): Context {
+                return context
+            }
+        }
+        KnoxContextProvider.init(testProvider)
+
+        val result = IsImsEnabledUseCase().invoke(1, 0)
         if(result is ApiResult.Success) {
             imsEnabled = result.data
         }
@@ -31,34 +39,34 @@ class ImsTests {
 
     @Test
     fun setImsEnabled() = runTest {
-        val result = SetImsEnabled(phoneRestrictionPolicy).invoke(enable = true)
+        val result = SetImsEnabled().invoke(enable = true)
         assert(result is ApiResult.Success)
-        val result2 = IsImsEnabledUseCase(phoneRestrictionPolicy).invoke(1, 0)
+        val result2 = IsImsEnabledUseCase().invoke(1, 0)
         assert(result2 is ApiResult.Success && result2.data)
     }
 
     @Test
     fun setImsDisabled() = runTest {
-        val result = SetImsEnabled(phoneRestrictionPolicy).invoke(enable = false)
+        val result = SetImsEnabled().invoke(enable = false)
         assert(result is ApiResult.Success)
-        val result2 = IsImsEnabledUseCase(phoneRestrictionPolicy).invoke(1, 0)
+        val result2 = IsImsEnabledUseCase().invoke(1, 0)
         assert(result2 is ApiResult.Success && !result2.data)
     }
 
     @Test
     fun setInvalidImsFeature() = runTest {
-        val result = SetImsEnabled(phoneRestrictionPolicy).invoke(0, 0, false)
+        val result = SetImsEnabled().invoke(0, 0, false)
         assert(result is ApiResult.Error)
     }
 
     @Test
     fun setInvalidSimSlotId() = runTest {
-        val result = SetImsEnabled(phoneRestrictionPolicy).invoke(1, 2, false)
+        val result = SetImsEnabled().invoke(1, 2, false)
         assert(result is ApiResult.Error)
     }
 
     @After
     fun resetImsState() = runTest {
-        SetImsEnabled(phoneRestrictionPolicy).invoke(enable = imsEnabled)
+        SetImsEnabled().invoke(enable = imsEnabled)
     }
 }

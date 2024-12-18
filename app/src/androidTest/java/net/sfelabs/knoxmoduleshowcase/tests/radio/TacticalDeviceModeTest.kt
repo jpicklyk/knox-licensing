@@ -1,14 +1,14 @@
 package net.sfelabs.knoxmoduleshowcase.tests.radio
 
+import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.samsung.android.knox.EnterpriseDeviceManager
 import kotlinx.coroutines.test.runTest
+import net.sfelabs.core.knox.android.KnoxContextProvider
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
-import net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeEnabledUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeEnabledUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -18,38 +18,42 @@ import kotlin.properties.Delegates
 @RunWith(AndroidJUnit4::class)
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class TacticalDeviceModeTest {
-
-    private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val restrictionPolicy = KnoxModule.provideKnoxRestrictionPolicy(
-        EnterpriseDeviceManager.getInstance(context)
-    )
+    private lateinit var context: Context
     private var currentlyEnabled by Delegates.notNull<Boolean>()
 
     @Before
     fun setup() = runTest {
-        val result = GetTacticalDeviceModeUseCase(restrictionPolicy).invoke()
+        context = InstrumentationRegistry.getInstrumentation().targetContext
+        val testProvider = object: KnoxContextProvider {
+            override fun getContext(): Context {
+                return context
+            }
+        }
+        KnoxContextProvider.init(testProvider)
+
+        val result = GetTacticalDeviceModeEnabledUseCase().invoke()
         if(result is ApiResult.Success) {
-            currentlyEnabled = result.data.enabled
+            currentlyEnabled = result.data
         }
     }
     @Test
     fun enableTacticalDeviceMode() = runTest {
-        val res1 = SetTacticalDeviceModeUseCase(restrictionPolicy).invoke(true)
+        val res1 = SetTacticalDeviceModeEnabledUseCase().invoke(true)
         assert(res1 is ApiResult.Success)
-        val res2 = GetTacticalDeviceModeUseCase(restrictionPolicy).invoke()
-        assert(res2 is ApiResult.Success && res2.data.enabled)
+        val res2 = GetTacticalDeviceModeEnabledUseCase().invoke()
+        assert(res2 is ApiResult.Success && res2.data)
     }
 
     @Test
     fun disableTacticalDeviceMode() = runTest {
-        val res1 = SetTacticalDeviceModeUseCase(restrictionPolicy).invoke(false)
+        val res1 = SetTacticalDeviceModeEnabledUseCase().invoke(false)
         assert(res1 is ApiResult.Success)
-        val res2 = GetTacticalDeviceModeUseCase(restrictionPolicy).invoke()
-        assert(res2 is ApiResult.Success && !res2.data.enabled)
+        val res2 = GetTacticalDeviceModeEnabledUseCase().invoke()
+        assert(res2 is ApiResult.Success && !res2.data)
     }
 
     @After
     fun cleanup() = runTest {
-        SetTacticalDeviceModeUseCase(restrictionPolicy).invoke(currentlyEnabled)
+        SetTacticalDeviceModeEnabledUseCase().invoke(currentlyEnabled)
     }
 }

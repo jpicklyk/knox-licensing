@@ -33,27 +33,27 @@ class AutoRecordCallTest {
 
     @Test
     fun setAutoRecordCallEnabledState_Enabled() = runTest {
-        val useCase = SetAutoRecordCallEnabledUseCase(systemManager)
+        val useCase = SetAutoRecordCallEnabledUseCase()
         val result = useCase.invoke(true)
         assert(result is ApiResult.Success)
-        val getCase = GetAutoRecordCallEnabledUseCase(systemManager)
+        val getCase = GetAutoRecordCallEnabledUseCase()
         val result2 = getCase.invoke()
         assert(result2 is ApiResult.Success && result2.data)
     }
 
     @Test
     fun setAutoRecordCallEnabledState_Disabled() = runTest {
-        val useCase = SetAutoRecordCallEnabledUseCase(systemManager)
+        val useCase = SetAutoRecordCallEnabledUseCase()
         val result = useCase.invoke(false)
         assert(result is ApiResult.Success)
-        val getCase = GetAutoRecordCallEnabledUseCase(systemManager)
+        val getCase = GetAutoRecordCallEnabledUseCase()
         val result2 = getCase.invoke()
         assert(result2 is ApiResult.Success && !result2.data)
     }
 
     @After
     fun disableAutoRecordCall() = runTest {
-        val useCase = SetAutoRecordCallEnabledUseCase(systemManager)
+        val useCase = SetAutoRecordCallEnabledUseCase()
         useCase.invoke(false)
     }
 }

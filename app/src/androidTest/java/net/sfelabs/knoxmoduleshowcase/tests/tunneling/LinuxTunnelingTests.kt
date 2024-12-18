@@ -1,18 +1,12 @@
 package net.sfelabs.knoxmoduleshowcase.tests.tunneling
 
-import android.content.Context
-import android.net.ConnectivityManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.di.AndroidServiceModule
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -20,16 +14,6 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 132)
 class LinuxTunnelingTests {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
-    private val settingsManager = KnoxModule.provideKnoxSettingsManager()
-    private lateinit var context: Context
-    private lateinit var connectivityManager: ConnectivityManager
-
-    @Before
-    fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().context
-        connectivityManager = AndroidServiceModule.provideConnectivityManager(context)
-    }
 
     /**
      * Assume you have two servers: Android device (node1) 192.168.2.200 and node2 192.168.2.201.
@@ -51,7 +35,7 @@ class LinuxTunnelingTests {
         //"route add $remoteInternalSubnet dev $tunnelName"
         var result = true
         for(command in commands) {
-            val apiResult = ExecuteAdbCommandUseCase(systemManager).invoke(AdbHeader.IP, command)
+            val apiResult = ExecuteAdbCommandUseCase().invoke(AdbHeader.IP, command)
             result = if(apiResult is ApiResult.Success)
                 result and true
             else

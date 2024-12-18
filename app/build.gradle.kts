@@ -63,6 +63,7 @@ android {
 }
 dependencies {
     implementation(project(":core:common"))
+    implementation(project(":core:knox-android"))
     implementation(project(":core:knox-api"))
     implementation(project(":core:knox-feature"))
     implementation(project(":core:knox-feature-ui"))

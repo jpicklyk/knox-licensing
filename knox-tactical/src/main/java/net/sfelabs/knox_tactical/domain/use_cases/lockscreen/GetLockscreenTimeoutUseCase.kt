@@ -1,23 +1,13 @@
 package net.sfelabs.knox_tactical.domain.use_cases.lockscreen
 
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
+import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 
-class GetLockscreenTimeoutUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
-    suspend operator fun invoke(): ApiResult<Int> {
-        return coroutineScope {
-            try {
-                ApiResult.Success(
-                    data = systemManager.activityTime
-                )
-            } catch (nsm: NoSuchMethodError) {
-                ApiResult.NotSupported
-            }
-        }
+class GetLockscreenTimeoutUseCase: CoroutineApiUseCase<Unit, Int>() {
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
+
+    override suspend fun execute(params: Unit): ApiResult<Int> {
+        return ApiResult.Success(systemManager.activityTime)
     }
 }

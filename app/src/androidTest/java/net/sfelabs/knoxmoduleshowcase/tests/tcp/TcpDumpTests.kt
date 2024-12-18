@@ -61,7 +61,7 @@ class TcpDumpTests {
     @Test
     fun test1_enableTcpDump_anyB10S200C10NoFileSpecified() = runTest {
         val tcpCommand = "any" + " -B10 -s2000 -C10"
-        val enableUseCase = EnableTcpDumpUseCase(systemManager)
+        val enableUseCase = EnableTcpDumpUseCase()
         val result = enableUseCase.invoke(tcpCommand)
         assert(result is ApiResult.Success)
     }
@@ -70,7 +70,7 @@ class TcpDumpTests {
     fun test2_checkTcpDumpIsRunningReturnsTrue() = runTest {
         withContext(Dispatchers.Default) {
             delay(2000)
-            val checkUseCase = IsTcpDumpEnabled(systemManager)
+            val checkUseCase = IsTcpDumpEnabled()
             val checkResult = checkUseCase.invoke()
             assert(checkResult is ApiResult.Success && checkResult.data)
         }
@@ -78,14 +78,14 @@ class TcpDumpTests {
 
     @Test
     fun test3_disableTcpDump() = runTest {
-        val disableUseCase = DisableTcpDumpUseCase(systemManager)
+        val disableUseCase = DisableTcpDumpUseCase()
         val result = disableUseCase.invoke()
         assert(result is ApiResult.Success)
     }
 
     @Test
     fun test4_checkTcpDumpIsRunningReturnsFalse() = runTest {
-        val checkUseCase = IsTcpDumpEnabled(systemManager)
+        val checkUseCase = IsTcpDumpEnabled()
         val checkResult = checkUseCase.invoke()
         assert(checkResult is ApiResult.Success && !checkResult.data)
     }
@@ -96,7 +96,7 @@ class TcpDumpTests {
         val path = getAbsolutePath(captureUri)
         println("Capture uri path: $path")
         val tcpCommand = "any" + " -B10 -s2000 -C10 -w/sdcard/Download/${filename}" //+ getAbsolutePath(captureUri)
-        val enableUseCase = EnableTcpDumpUseCase(systemManager)
+        val enableUseCase = EnableTcpDumpUseCase()
         val result = enableUseCase.invoke(tcpCommand)
         assertTrue("Enabling TCP Dump failed.  Cmd used: $tcpCommand", result is ApiResult.Success)
     }
@@ -105,7 +105,7 @@ class TcpDumpTests {
     fun test6_checkTcpDumpIsRunningReturnsTrue() = runTest {
         withContext(Dispatchers.Default) {
             delay(2000)
-            val checkUseCase = IsTcpDumpEnabled(systemManager)
+            val checkUseCase = IsTcpDumpEnabled()
             val checkResult = checkUseCase.invoke()
             assert(checkResult is ApiResult.Success && checkResult.data)
         }
@@ -113,7 +113,7 @@ class TcpDumpTests {
 
     @Test
     fun test7_disableTcpDump() = runTest {
-        val disableUseCase = DisableTcpDumpUseCase(systemManager)
+        val disableUseCase = DisableTcpDumpUseCase()
         val result = disableUseCase.invoke()
         assert(result is ApiResult.Success)
         //Can delete the pcap file here
@@ -122,7 +122,7 @@ class TcpDumpTests {
 
     @Test
     fun test8_checkTcpDumpIsRunningReturnsFalse() = runTest {
-        val checkUseCase = IsTcpDumpEnabled(systemManager)
+        val checkUseCase = IsTcpDumpEnabled()
         val checkResult = checkUseCase.invoke()
         assert(checkResult is ApiResult.Success && !checkResult.data)
     }

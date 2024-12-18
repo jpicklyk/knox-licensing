@@ -16,13 +16,13 @@ import org.junit.runner.RunWith
 @SmallTest
 class CheckTacticalDefaults {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
+
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 130)
     fun ramPlusState_Disabled() = runTest {
-        val getUseCase = GetRamPlusDisabledStateUseCase(systemManager)
+        val getUseCase = GetRamPlusDisabledStateUseCase()
         val result2 = getUseCase.invoke()
-        assert(result2 is ApiResult.Success && !result2.data.enabled)
+        assert(result2 is ApiResult.Success && !result2.data)
     }
 
     @Test

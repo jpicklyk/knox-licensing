@@ -1,37 +1,13 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ramplus
 
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
+import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.core.knox.feature.internal.model.FeatureState
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 
-class GetRamPlusDisabledStateUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class GetRamPlusDisabledStateUseCase: CoroutineApiUseCase<Unit, Boolean>() {
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
-    suspend operator fun invoke(): ApiResult<FeatureState<Boolean>> {
-        return coroutineScope {
-            try {
-                val result = systemManager.ramPlusDisableState
-                ApiResult.Success(
-                    FeatureState(
-                        !result,
-                        result
-                    )
-                )
-            } catch (e: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM\" permission"
-                    )
-                )
-            } catch (nsm: NoSuchMethodError) {
-                ApiResult.NotSupported
-            }
-        }
+    override suspend fun execute(params: Unit): ApiResult<Boolean> {
+        return ApiResult.Success(systemManager.ramPlusDisableState)
     }
 }

@@ -1,45 +1,27 @@
 package net.sfelabs.knox_tactical.domain.use_cases.calling
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupState
-import javax.inject.Inject
 
 /**
  * This Knox API isn't TE specific but the flag ENABLED_ALWAYS_ACCEPT is.
  */
-class SetAutoCallPickupStateUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-){
-    suspend operator fun invoke(state: AutoCallPickupState): UnitApiCall {
-        return coroutineScope {
-            try {
-                when (systemManager.setAutoCallPickupState(state.value)) {
-                    CustomDeviceManager.SUCCESS -> {
-                        ApiResult.Success(Unit)
-                    }
-                    CustomDeviceManager.ERROR_INVALID_MODE_TYPE -> {
-                        ApiResult.Error(DefaultApiError.UnexpectedError("Error Invalid Mode Type"))
-                    }
-                    else -> {
-                        ApiResult.Error(DefaultApiError.UnexpectedError("Error not supported"))
-                    }
-                }
+class SetAutoCallPickupStateUseCase: CoroutineApiUseCase<AutoCallPickupState, Unit>() {
+    val systemManager = CustomDeviceManager.getInstance().systemManager
 
-            } catch (e: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM\" permission"
-                    )
-                )
-            } catch (nsm: NoSuchMethodError) {
-                ApiResult.NotSupported
+    override suspend fun execute(params: AutoCallPickupState): ApiResult<Unit> {
+        return when (systemManager.setAutoCallPickupState(params.value)) {
+            CustomDeviceManager.SUCCESS -> {
+                ApiResult.Success(Unit)
+            }
+            CustomDeviceManager.ERROR_INVALID_MODE_TYPE -> {
+                ApiResult.Error(DefaultApiError.UnexpectedError("Error Invalid Mode Type"))
+            }
+            else -> {
+                ApiResult.Error(DefaultApiError.UnexpectedError("Error not supported"))
             }
         }
     }

@@ -23,9 +23,9 @@ class LockscreenTests {
     @Test
     fun setLockscreenTimeout20s() = runTest {
         val timeout = 20
-        val result = SetLockscreenTimeoutUseCase(systemManager).invoke(timeout)
+        val result = SetLockscreenTimeoutUseCase().invoke(timeout)
         assert(result is ApiResult.Success)
-        val res2 = GetLockscreenTimeoutUseCase(systemManager).invoke()
+        val res2 = GetLockscreenTimeoutUseCase().invoke()
         assert(res2 is ApiResult.Success && res2.data == timeout)
     }
 

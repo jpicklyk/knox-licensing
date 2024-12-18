@@ -1,42 +1,35 @@
 package net.sfelabs.knox_tactical.domain.use_cases.hdm
 
-import android.content.Context
 import com.samsung.android.knox.EnterpriseDeviceManager
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.parseHdmPolicyBlock
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
 import java.util.UUID
-import javax.inject.Inject
 
-class SetHdmModemState @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+class SetHdmModemState : KnoxContextAwareUseCase<SetHdmModemState.Params, Boolean>() {
+
+    data class Params(val disabled: Boolean, val reboot: Boolean = false)
+
     private val bitmask = 256
     suspend operator fun invoke(disabled: Boolean, reboot: Boolean = false): ApiResult<Boolean> {
-        return coroutineScope {
-            try {
-                val hdmManager =
-                    EnterpriseDeviceManager.getInstance(context).hypervisorDeviceManager
-                val currentPolicy = parseHdmPolicyBlock(
-                    hdmManager.getHdmPolicy(
-                        UUID.randomUUID().toString(),
-                        "stealth"
-                    )
-                )
-                val newPolicy =
-                    if (disabled) {
-                        currentPolicy or bitmask
-                    } else {
-                        currentPolicy and bitmask.inv()
-                    }
-                ApiResult.Success(hdmManager.stealthHwControl(newPolicy, reboot))
-            } catch(e: NoSuchMethodError) {
-                ApiResult.NotSupported
-            } catch (e: Exception) {
-                ApiResult.Error(DefaultApiError.UnexpectedError("getHdmPolicy failed: ${e.message}"))
+        return invoke(Params(disabled, reboot))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Boolean> {
+        val hdmManager =
+            EnterpriseDeviceManager.getInstance(knoxContext).hypervisorDeviceManager
+        val currentPolicy = parseHdmPolicyBlock(
+            hdmManager.getHdmPolicy(
+                UUID.randomUUID().toString(),
+                "stealth"
+            )
+        )
+        val newPolicy =
+            if (params.disabled) {
+                currentPolicy or bitmask
+            } else {
+                currentPolicy and bitmask.inv()
             }
-        }
+        return ApiResult.Success(hdmManager.stealthHwControl(newPolicy, params.reboot))
     }
 }

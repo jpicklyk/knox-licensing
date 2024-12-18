@@ -1,37 +1,24 @@
 package net.sfelabs.knox_tactical.domain.use_cases.sim
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SettingsManager
-import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import javax.inject.Inject
 
-class SetElectronicSimEnabledUseCase  @Inject constructor(
-    private val settingsManager: SettingsManager
-) {
+class SetElectronicSimEnabledUseCase: CoroutineApiUseCase<SetElectronicSimEnabledUseCase.Params, Unit>() {
+    data class Params(val enable: Boolean)
+    private val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
     suspend operator fun invoke(enable: Boolean): UnitApiCall {
-        return coroutineScope {
-            try {
-                val result = settingsManager.setEsimEnabled(enable)
-                if(result == CustomDeviceManager.SUCCESS)
-                    ApiResult.Success(Unit)
-                else
-                    ApiResult.Error(DefaultApiError.UnexpectedError("setEsimEnabled API call failed"))
-            } catch (e: NoSuchMethodError) {
-              ApiResult.NotSupported
-            } catch (e: SecurityException) {
-                println(e.message)
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTINGS\" permission"
-                    )
-                )
-            }
-        }
+        return invoke(Params(enable))
+    }
 
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        val result = settingsManager.setEsimEnabled(params.enable)
+        return if(result == CustomDeviceManager.SUCCESS)
+            ApiResult.Success(Unit)
+        else
+            ApiResult.Error(DefaultApiError.UnexpectedError("setEsimEnabled API call failed"))
     }
 }

@@ -1,9 +1,8 @@
 package net.sfelabs.knoxmoduleshowcase.tests.adb
 
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
+import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import org.junit.jupiter.api.Test
 
@@ -13,34 +12,23 @@ import org.junit.jupiter.api.Test
  */
 @TacticalSdkSuppress(minReleaseVersion = 110)
 class ExecuteAdbCommandTest {
-    private val sm = KnoxModule.provideKnoxSystemManager()
 
     @Test
     fun testIpCommand() = runTest {
-        val useCase =
-            ExecuteAdbCommandUseCase(
-                sm
-            )
+        val useCase = ExecuteAdbCommandUseCase()
 
-        val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.IP, "rule flush")
+        val result = useCase(AdbHeader.IP, "rule flush")
         assert(result is net.sfelabs.core.knox.api.domain.ApiResult.Success)
     }
     @Test
     fun testIpRouting() = runTest {
-        val useCase =
-            ExecuteAdbCommandUseCase(
-                sm
-            )
-
-        val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.IP, "rule add from all uidrange 10345-10345 lookup 1021")
+        val useCase = ExecuteAdbCommandUseCase()
+        val result = useCase.invoke(AdbHeader.IP, "rule add from all uidrange 10345-10345 lookup 1021")
         assert(result is net.sfelabs.core.knox.api.domain.ApiResult.Success)
     }
     @Test
     fun testDhcpDbgCommand() = runTest {
-        val useCase =
-            ExecuteAdbCommandUseCase(
-                sm
-            )
+        val useCase = ExecuteAdbCommandUseCase()
 
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.DHCPDBG, "eth0")
         assert(result is net.sfelabs.core.knox.api.domain.ApiResult.Success)
@@ -48,10 +36,7 @@ class ExecuteAdbCommandTest {
 
     @Test
     fun testPppdCommand() = runTest {
-        val useCase =
-            ExecuteAdbCommandUseCase(
-                sm
-            )
+        val useCase = ExecuteAdbCommandUseCase()
 
         val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM2 file /storage/emulated/0/atak/tools/.options.new")
         assert(result is net.sfelabs.core.knox.api.domain.ApiResult.Success)

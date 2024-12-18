@@ -1,30 +1,27 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ims
 
-import com.samsung.android.knox.restriction.PhoneRestrictionPolicy
-import kotlinx.coroutines.coroutineScope
+import com.samsung.android.knox.EnterpriseDeviceManager
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
+import net.sfelabs.knox_tactical.domain.model.ImsState
 
-class IsImsEnabledUseCase @Inject constructor(
-    @TacticalSdk private val phoneRestrictionPolicy: PhoneRestrictionPolicy
-) {
+class IsImsEnabledUseCase: KnoxContextAwareUseCase<ImsState, Boolean>() {
+
+
+    private val phoneRestrictionPolicy =
+        EnterpriseDeviceManager.getInstance(knoxContext).phoneRestrictionPolicy
 
     suspend operator fun invoke(feature: Int, simSlotId: Int): ApiResult<Boolean> {
-        return coroutineScope {
-            try {
-                ApiResult.Success(phoneRestrictionPolicy.isIMSEnabled(feature, simSlotId))
-            } catch (se: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_PHONE_RESTRICTION\" permission"
-                    )
-                )
-            } catch (ex: NoSuchMethodError) {
-                ApiResult.NotSupported
-            }
-        }
+        return invoke(ImsState(
+            isEnabled = false, //doesn't matter what we set this to
+            simSlotId = simSlotId,
+            feature = feature
+        ))
+    }
+
+    override suspend fun execute(state: ImsState): ApiResult<Boolean> {
+        return ApiResult.Success(
+            phoneRestrictionPolicy.isIMSEnabled(state.feature, state.simSlotId)
+        )
     }
 }

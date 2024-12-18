@@ -19,38 +19,36 @@ import kotlin.properties.Delegates
 @RunWith(AndroidJUnit4::class)
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class ElectronicSimTests {
-    private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val settingsManager = KnoxModule.provideKnoxSettingsManager()
     private var esimEnabled by Delegates.notNull<Boolean>()
 
     @Before
     fun readCurrentState() = runTest {
-        val result = GetElectronicSimEnabledUseCase(settingsManager).invoke()
+        val result = GetElectronicSimEnabledUseCase().invoke()
         if(result is ApiResult.Success) {
-            esimEnabled = result.data.value
+            esimEnabled = result.data
         }
     }
 
     @Test
     fun disableElectronicSim() = runTest {
-        val result = SetElectronicSimEnabledUseCase(settingsManager).invoke(false)
+        val result = SetElectronicSimEnabledUseCase().invoke(false)
         assert(result is ApiResult.Success)
 
-        val result2 = GetElectronicSimEnabledUseCase(settingsManager).invoke()
-        assert(result2 is ApiResult.Success && !result2.data.value)
+        val result2 = GetElectronicSimEnabledUseCase().invoke()
+        assert(result2 is ApiResult.Success && !result2.data)
     }
 
     @Test
     fun enableElectronicSim() = runTest {
-        val result = SetElectronicSimEnabledUseCase(settingsManager).invoke(true)
+        val result = SetElectronicSimEnabledUseCase().invoke(true)
         assert(result is ApiResult.Success)
 
-        val result2 = GetElectronicSimEnabledUseCase(settingsManager).invoke()
-        assert(result2 is ApiResult.Success && result2.data.value)
+        val result2 = GetElectronicSimEnabledUseCase().invoke()
+        assert(result2 is ApiResult.Success && result2.data)
     }
 
     @After
     fun resetElectronicSimSettings() = runTest {
-        SetElectronicSimEnabledUseCase(settingsManager).invoke(esimEnabled)
+        SetElectronicSimEnabledUseCase().invoke(esimEnabled)
     }
 }

@@ -1,32 +1,19 @@
 package net.sfelabs.knox_tactical.domain.use_cases.hdm
 
-import android.content.Context
 import com.samsung.android.knox.EnterpriseDeviceManager
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.parseHdmPolicyBlock
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
 import java.util.UUID
-import javax.inject.Inject
 
-class IsHdmSpeakerDisabledUseCase @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+class IsHdmSpeakerDisabledUseCase: KnoxContextAwareUseCase<Unit, Boolean>() {
     private val hdmFeatureBitmask = 512
-    suspend operator fun invoke(): ApiResult<Boolean> {
-        return coroutineScope {
-            try {
-                val hdmPolicy = parseHdmPolicyBlock(
-                    EnterpriseDeviceManager.getInstance(context).hypervisorDeviceManager
-                        .getHdmPolicy(UUID.randomUUID().toString(), "stealth")
-                )
-                ApiResult.Success(hdmPolicy and hdmFeatureBitmask != 0)
-            } catch (e: NoSuchMethodError) {
-                ApiResult.NotSupported
-            } catch (e: Exception) {
-                ApiResult.Error(DefaultApiError.UnexpectedError("getHdmPolicy failed: ${e.message}"))
-            }
-        }
+
+    override suspend fun execute(params: Unit): ApiResult<Boolean> {
+        val hdmPolicy = parseHdmPolicyBlock(
+            EnterpriseDeviceManager.getInstance(knoxContext).hypervisorDeviceManager
+                .getHdmPolicy(UUID.randomUUID().toString(), "stealth")
+        )
+        return ApiResult.Success(hdmPolicy and hdmFeatureBitmask != 0)
     }
 }

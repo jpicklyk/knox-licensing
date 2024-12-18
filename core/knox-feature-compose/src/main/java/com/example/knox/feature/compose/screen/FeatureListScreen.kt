@@ -22,11 +22,11 @@ fun FeatureLazyList(
     ) {
         items(features) { feature ->
             FeatureCard(
-                title = feature.name,
+                title = feature.title,
                 description = feature.description,
                 isEnabled = feature.isEnabled,
                 isSupported = feature.error == null,
-                onToggle = { enabled -> onToggle(feature.name, enabled) }
+                onToggle = { enabled -> onToggle(feature.featureName, enabled) }
             )
         }
     }

@@ -1,36 +1,28 @@
 package net.sfelabs.knox_tactical.domain.use_cases.lockscreen
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class SetLockscreenTimeoutUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class SetLockscreenTimeoutUseCase: CoroutineApiUseCase<SetLockscreenTimeoutUseCase.Params, Unit>() {
+    data class Params(val seconds: Int)
+
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
+
     suspend operator fun invoke(seconds: Int): UnitApiCall {
-        return coroutineScope {
-            try {
-                val result = systemManager.setActivityTime(seconds)
-                if (result == CustomDeviceManager.SUCCESS) {
-                    ApiResult.Success(Unit)
-                } else {
-                    ApiResult.Error(DefaultApiError.UnexpectedError("An invalid timeout $seconds has been specified"))
-                }
+        return invoke(Params(seconds))
+    }
 
-            } catch (e: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        e.message ?: "Calling application does not have the required permission"
-                    )
-                )
-            } catch (nsm: NoSuchMethodError) {
-                ApiResult.NotSupported
-            }
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        val result = systemManager.setActivityTime(params.seconds)
+        return if (result == CustomDeviceManager.SUCCESS) {
+            ApiResult.Success(Unit)
+        } else {
+            ApiResult.Error(DefaultApiError.UnexpectedError(
+                "An invalid timeout ${params.seconds} has been specified"
+            ))
         }
     }
 }

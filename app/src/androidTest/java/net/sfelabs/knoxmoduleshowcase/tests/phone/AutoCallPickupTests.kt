@@ -34,40 +34,40 @@ class AutoCallPickupTests {
 
     @Test
     fun setAutoCallPickupState_Enable() = runTest {
-        val useCase = SetAutoCallPickupStateUseCase(systemManager)
+        val useCase = SetAutoCallPickupStateUseCase()
         val result = useCase.invoke(AutoCallPickupState.Enable)
         assert(result is ApiResult.Success)
 
-        val getCase = GetAutoCallPickupStateUseCase(systemManager)
+        val getCase = GetAutoCallPickupStateUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data is AutoCallPickupState.Enable)
     }
 
     @Test
     fun setAutoCallPickupState_EnableAlwaysAccept() = runTest {
-        val useCase = SetAutoCallPickupStateUseCase(systemManager)
+        val useCase = SetAutoCallPickupStateUseCase()
         val result = useCase.invoke(AutoCallPickupState.EnableAlwaysAccept)
         assert(result is ApiResult.Success)
 
-        val getCase = GetAutoCallPickupStateUseCase(systemManager)
+        val getCase = GetAutoCallPickupStateUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data is AutoCallPickupState.EnableAlwaysAccept)
     }
 
     @Test
     fun setAutoCallPickupState_Disable() = runTest {
-        val useCase = SetAutoCallPickupStateUseCase(systemManager)
+        val useCase = SetAutoCallPickupStateUseCase()
         val result = useCase.invoke(AutoCallPickupState.Disable)
         assert(result is ApiResult.Success)
 
-        val getCase = GetAutoCallPickupStateUseCase(systemManager)
+        val getCase = GetAutoCallPickupStateUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data is AutoCallPickupState.Disable)
     }
 
     @After
     fun disableAutoCallPickupState() = runTest {
-        val useCase = SetAutoCallPickupStateUseCase(systemManager)
+        val useCase = SetAutoCallPickupStateUseCase()
         useCase.invoke(AutoCallPickupState.Disable)
     }
 }

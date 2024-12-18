@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import net.sfelabs.knoxmoduleshowcase.app.presentation.TacticalAppState
 import net.sfelabs.knoxmoduleshowcase.features.about.navigation.aboutScreen
-import net.sfelabs.knoxmoduleshowcase.features.controls.navigation.controlsScreen
 import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeNavigationRoute
 import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeScreen
 import net.sfelabs.knoxmoduleshowcase.features.logviewer.navigation.loggerScreen
@@ -26,7 +25,6 @@ fun SetupNavGraph(
         modifier = Modifier.padding(padding)
     ) {
         homeScreen()
-        //controlsScreen()
         policyScreen()
         ethernetScreen()
         networkManagerScreen()

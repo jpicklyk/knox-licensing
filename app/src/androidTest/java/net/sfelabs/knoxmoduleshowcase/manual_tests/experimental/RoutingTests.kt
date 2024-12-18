@@ -29,7 +29,6 @@ class RoutingTests {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val packageManager = AndroidServiceModule.providePackageManager(context)
     private val settingsManager = KnoxModule.provideKnoxSettingsManager()
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
 
     /**
      * Test requires eth0 connection to function
@@ -65,25 +64,25 @@ class RoutingTests {
             val rule = "rule add from all uidrange ${chromeUid}-${chromeUid} lookup 70 prio 10"
             val block = "rule add from all uidrange ${chromeUid}-${chromeUid} blackhole prio 11"
 
-            val route1Result = ExecuteAdbCommandUseCase(systemManager).invoke(
+            val route1Result = ExecuteAdbCommandUseCase().invoke(
                 AdbHeader.IP,
                 route1
             )
             assert(route1Result is ApiResult.Success)
 
-            val route2Result = ExecuteAdbCommandUseCase(systemManager).invoke(
+            val route2Result = ExecuteAdbCommandUseCase().invoke(
                 AdbHeader.IP,
                 route2
             )
             assert(route2Result is ApiResult.Success)
 
-            val ruleResult = ExecuteAdbCommandUseCase(systemManager).invoke(
+            val ruleResult = ExecuteAdbCommandUseCase().invoke(
                 AdbHeader.IP,
                 rule
             )
             assert(ruleResult is ApiResult.Success)
 
-            val blockResult = ExecuteAdbCommandUseCase(systemManager).invoke(
+            val blockResult = ExecuteAdbCommandUseCase().invoke(
                 AdbHeader.IP,
                 block
             )
