@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.test.runner.AndroidJUnitRunner
 import dagger.hilt.android.testing.HiltTestApplication
+import net.sfelabs.core.knox.android.KnoxContextProvider
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 
 class HiltTestRunner : AndroidJUnitRunner() {
@@ -14,6 +15,15 @@ class HiltTestRunner : AndroidJUnitRunner() {
             "filter",
             TacticalSdkSuppress.Filter::class.java.name
         )
+
+        //Initialize the Knox Context Provider
+        val testProvider = object : KnoxContextProvider {
+            override fun getContext(): Context {
+                return context
+            }
+        }
+        KnoxContextProvider.init(testProvider)
+
         super.onCreate(bundle)
     }
     override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application {

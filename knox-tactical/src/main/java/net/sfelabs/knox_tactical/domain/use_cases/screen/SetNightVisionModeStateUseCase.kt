@@ -17,14 +17,14 @@ class SetNightVisionModeStateUseCase(
     }
 
     //This function contains unique business logic for the specific API we are wrapping in a use case.
-    override suspend fun execute(state: NightVisionState): ApiResult<Unit> {
+    override suspend fun execute(params: NightVisionState): ApiResult<Unit> {
         val systemManager = CustomDeviceManager.getInstance().systemManager
-        val result = systemManager.setNightVisionModeState(state.isEnabled, state.useRedOverlay)
+        val result = systemManager.setNightVisionModeState(params.isEnabled, params.useRedOverlay)
 
         return when (result) {
             CustomDeviceManager.SUCCESS -> {
-                if(state.isEnabled)
-                    preferenceRepository.setValue("night_vision_red_overlay_enabled", state.useRedOverlay)
+                if(params.isEnabled)
+                    preferenceRepository.setValue("night_vision_red_overlay_enabled", params.useRedOverlay)
                 ApiResult.Success(Unit)
             }
             else -> ApiResult.Error(DefaultApiError.UnexpectedError("Failed to set night vision mode state"))

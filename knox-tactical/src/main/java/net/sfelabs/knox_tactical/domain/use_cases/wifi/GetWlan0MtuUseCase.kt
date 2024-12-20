@@ -1,28 +1,13 @@
 package net.sfelabs.knox_tactical.domain.use_cases.wifi
 
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
+import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 
-class GetWlan0MtuUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class GetWlan0MtuUseCase: CoroutineApiUseCase<Unit, Int>() {
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
-    suspend operator fun invoke(): ApiResult<Int> {
-        return coroutineScope {
-            try {
-                ApiResult.Success(systemManager.knoxWlanZeroMtu)
-            } catch (ex: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM\" permission"
-                    )
-                )
-            }
-        }
+    override suspend fun execute(params: Unit): ApiResult<Int> {
+        return ApiResult.Success(systemManager.knoxWlanZeroMtu)
     }
 }

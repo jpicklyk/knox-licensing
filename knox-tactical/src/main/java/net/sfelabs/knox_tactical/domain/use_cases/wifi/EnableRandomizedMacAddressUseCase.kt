@@ -1,35 +1,26 @@
 package net.sfelabs.knox_tactical.domain.use_cases.wifi
 
-import com.samsung.android.knox.restriction.RestrictionPolicy
-import kotlinx.coroutines.coroutineScope
+import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class EnableRandomizedMacAddressUseCase @Inject constructor(
-    @TacticalSdk private val restrictionPolicy: RestrictionPolicy
-) {
+class EnableRandomizedMacAddressUseCase: KnoxContextAwareUseCase<EnableRandomizedMacAddressUseCase.Params, Unit>() {
+    data class Params(val enable: Boolean)
+
+    private val restrictionPolicy =
+        EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
+
     suspend operator fun invoke(enable: Boolean): UnitApiCall {
-        return coroutineScope {
-            try {
-                val result = restrictionPolicy.enableRandomisedMacAddress(enable)
-                if (result)
-                    ApiResult.Success(Unit)
-                else
-                    ApiResult.Error(DefaultApiError.UnexpectedError("Setting Randomized Mac Address failed"))
-            } catch(se: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" " +
-                                "permission."
-                    )
-                )
-            }catch (ex: NoSuchMethodError) {
-                ApiResult.NotSupported
-            }
-        }
+        return invoke(Params(enable))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        val result = restrictionPolicy.enableRandomisedMacAddress(params.enable)
+        return if (result)
+            ApiResult.Success(Unit)
+        else
+            ApiResult.Error(DefaultApiError.UnexpectedError("Setting Randomized Mac Address failed"))
     }
 }

@@ -57,33 +57,33 @@ class RandomizedMacAddressTests {
 
     @Test
     fun testGetRandomizedMacAddressApi() = runTest {
-        val useCase = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
+        val useCase = GetRandomizedMacAddressEnabledUseCase()
         val result = useCase.invoke()
         assert(result is ApiResult.Success)
     }
 
     @Test
     fun testDisableRandomizedMacAddress() = runTest {
-        val useCase = EnableRandomizedMacAddressUseCase(restrictionPolicy)
+        val useCase = EnableRandomizedMacAddressUseCase()
         val result = useCase.invoke(false)
         assert(result is ApiResult.Success)
-        val useCase2 = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
+        val useCase2 = GetRandomizedMacAddressEnabledUseCase()
         val result2 = useCase2.invoke()
-        assert(result2 is ApiResult.Success && !result2.data.enabled )
+        assert(result2 is ApiResult.Success && !result2.data )
     }
 
     @Test
     fun testEnableRandomizedMacAddress() = runTest {
-        val useCase = EnableRandomizedMacAddressUseCase(restrictionPolicy)
+        val useCase = EnableRandomizedMacAddressUseCase()
         val result = useCase.invoke(true)
         assert(result is ApiResult.Success)
-        val useCase2 = GetRandomizedMacAddressEnabledUseCase(restrictionPolicy)
+        val useCase2 = GetRandomizedMacAddressEnabledUseCase()
         val result2 = useCase2.invoke()
-        assert(result2 is ApiResult.Success && result2.data.enabled )
+        assert(result2 is ApiResult.Success && result2.data )
     }
 
     @After
     fun cleanup() = runTest {
-        EnableRandomizedMacAddressUseCase(restrictionPolicy).invoke(true)
+        EnableRandomizedMacAddressUseCase().invoke(true)
     }
 }

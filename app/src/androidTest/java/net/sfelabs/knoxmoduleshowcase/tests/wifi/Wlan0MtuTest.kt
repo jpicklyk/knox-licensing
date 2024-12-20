@@ -19,11 +19,11 @@ class Wlan0MtuTest {
 
     @Test
     fun testSetWlan0Mtu() = runTest {
-        val useCase = SetWlan0MtuUseCase(sm)
+        val useCase = SetWlan0MtuUseCase()
         val result = useCase.invoke(1430)
         assert(result is ApiResult.Success)
 
-        val useCase2 = GetWlan0MtuUseCase(sm)
+        val useCase2 = GetWlan0MtuUseCase()
         val result2 = useCase2.invoke()
         assert(result2 is ApiResult.Success && result2.data == 1430)
     }

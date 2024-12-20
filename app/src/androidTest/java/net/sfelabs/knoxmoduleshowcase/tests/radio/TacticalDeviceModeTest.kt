@@ -18,19 +18,10 @@ import kotlin.properties.Delegates
 @RunWith(AndroidJUnit4::class)
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class TacticalDeviceModeTest {
-    private lateinit var context: Context
     private var currentlyEnabled by Delegates.notNull<Boolean>()
 
     @Before
     fun setup() = runTest {
-        context = InstrumentationRegistry.getInstrumentation().targetContext
-        val testProvider = object: KnoxContextProvider {
-            override fun getContext(): Context {
-                return context
-            }
-        }
-        KnoxContextProvider.init(testProvider)
-
         val result = GetTacticalDeviceModeEnabledUseCase().invoke()
         if(result is ApiResult.Success) {
             currentlyEnabled = result.data

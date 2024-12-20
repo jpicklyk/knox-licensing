@@ -22,5 +22,5 @@ class AutoTouchSensitivityFeature() : FeatureContract<Boolean> {
 
     override suspend fun getState(parameters: FeatureParameters): ApiResult<Boolean> = getUseCase()
 
-    override suspend fun setState(value: Boolean): ApiResult<Unit> = setUseCase(value)
+    override suspend fun setState(state: Boolean): ApiResult<Unit> = setUseCase(state)
 }

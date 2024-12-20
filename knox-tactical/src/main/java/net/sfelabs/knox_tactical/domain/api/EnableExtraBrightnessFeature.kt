@@ -23,7 +23,7 @@ class EnableExtraBrightnessFeature: FeatureContract<Boolean> {
         return getUseCase()
     }
 
-    override suspend fun setState(value: Boolean): ApiResult<Unit> {
-        return setUseCase(value)
+    override suspend fun setState(state: Boolean): ApiResult<Unit> {
+        return setUseCase(state)
     }
 }

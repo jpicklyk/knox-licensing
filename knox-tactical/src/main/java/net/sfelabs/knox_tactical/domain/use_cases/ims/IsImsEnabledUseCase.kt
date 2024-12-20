@@ -19,9 +19,9 @@ class IsImsEnabledUseCase: KnoxContextAwareUseCase<ImsState, Boolean>() {
         ))
     }
 
-    override suspend fun execute(state: ImsState): ApiResult<Boolean> {
+    override suspend fun execute(params: ImsState): ApiResult<Boolean> {
         return ApiResult.Success(
-            phoneRestrictionPolicy.isIMSEnabled(state.feature, state.simSlotId)
+            phoneRestrictionPolicy.isIMSEnabled(params.feature, params.simSlotId)
         )
     }
 }

@@ -1,33 +1,25 @@
 package net.sfelabs.knox_tactical.domain.use_cases.wifi
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class SetWlan0MtuUseCase @Inject constructor(
-        @TacticalSdk private val systemManager: SystemManager
-    ) {
-        suspend operator fun invoke(value: Int): UnitApiCall {
-            return coroutineScope {
-                try {
-                    val result = systemManager.setWlanZeroMtu(value)
-                    if(result == CustomDeviceManager.SUCCESS)
-                        ApiResult.Success(Unit)
-                    else
-                        ApiResult.Error(DefaultApiError.UnexpectedError("The wlan interface MTU was not set correctly"))
-                } catch (e: Exception) {
-                    ApiResult.Error(
-                        DefaultApiError.UnexpectedError(
-                            e.message!!
-                        )
-                    )
-                }
-            }
-        }
+class SetWlan0MtuUseCase: CoroutineApiUseCase<SetWlan0MtuUseCase.Params, Unit>() {
+    data class Params(val mtu: Int)
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
+
+    suspend operator fun invoke(value: Int): UnitApiCall {
+        return invoke(Params(value))
     }
+
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        val result = systemManager.setWlanZeroMtu(params.mtu)
+        return if(result == CustomDeviceManager.SUCCESS)
+            ApiResult.Success(Unit)
+        else
+            ApiResult.Error(DefaultApiError.UnexpectedError("The wlan interface MTU was not set correctly"))
+    }
+}
 
