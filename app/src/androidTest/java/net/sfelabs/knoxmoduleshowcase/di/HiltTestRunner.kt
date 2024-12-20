@@ -8,6 +8,7 @@ import dagger.hilt.android.testing.HiltTestApplication
 import net.sfelabs.core.knox.android.KnoxContextProvider
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 
+@Suppress("unused")
 class HiltTestRunner : AndroidJUnitRunner() {
     override fun onCreate(bundle: Bundle) {
         // add the Tactical SDK filter to the test runner's filter list
