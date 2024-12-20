@@ -196,4 +196,44 @@ class ApiUseCaseExecutor {
         //Log.d(tag, "Operation result: $result")
         return result
     }
+
+    /**
+     * Executes multiple operations of the same type and combines their results.
+     *
+     * This function will:
+     * 1. Execute all operations in sequence
+     * 2. Return immediately if any operation results in an error
+     * 3. Combine all successful results using the provided combiner function
+     *
+     * @param T The type of data returned by individual operations
+     * @param R The type of the combined result
+     * @param operations List of operations to execute
+     * @param type Class type of individual operation results
+     * @param combiner Function to combine successful results into final type
+     * @return ApiResult.Success with combined result if all operations succeed,
+     *         ApiResult.Error from first failed operation, or
+     *         ApiResult.Error with UnexpectedError if results count doesn't match operations
+     */
+    suspend fun <T : Any, R : Any> executeAndCombine(
+        operations: List<suspend () -> ApiResult<T>>,
+        type: Class<T>,
+        combiner: (List<T>) -> R
+    ): ApiResult<R> {
+        operations.forEach { operation ->
+            when (val result = execute(operation, type)) {
+                is ApiResult.NotSupported -> return ApiResult.NotSupported
+                else -> Unit // Continue execution
+            }
+        }
+
+        // Return first error if any operation failed
+        getErrors().firstOrNull()?.let { return it }
+
+        val results = getResults(type)
+        return if (results.size == operations.size) {
+            ApiResult.Success(combiner(results))
+        } else {
+            ApiResult.Error(DefaultApiError.UnexpectedError())
+        }
+    }
 }

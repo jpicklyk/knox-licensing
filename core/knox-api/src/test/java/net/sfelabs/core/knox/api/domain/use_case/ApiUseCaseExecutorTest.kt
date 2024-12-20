@@ -1,6 +1,7 @@
 package net.sfelabs.core.knox.api.domain.use_case
 
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
@@ -299,5 +300,118 @@ class ApiUseCaseExecutorTest {
             val secondAttemptDelay = previousAttemptTime - startTime - 100 // first delay is 100ms
             assertTrue("Second attempt delay should be around 200ms", secondAttemptDelay in 180..220)
         }
+    }
+
+    @Test
+    fun `executeAndCombine successfully combines results`() = runTest {
+        data class Combined(val first: String, val second: Int)
+
+        val result = executor.executeAndCombine(
+            operations = listOf(
+                { ApiResult.Success("test") },
+                { ApiResult.Success(42) }
+            ),
+            type = Any::class.java
+        ) { results ->
+            Combined(
+                results[0] as String,
+                results[1] as Int
+            )
+        }
+
+        assertTrue(result is ApiResult.Success)
+        assertEquals("test", (result as ApiResult.Success).data.first)
+        assertEquals(42, result.data.second)
+    }
+
+    @Test
+    fun `executeAndCombine returns first error encountered`() = runTest {
+        data class Combined(val first: String, val second: String)
+        val expectedError = ApiResult.Error(DefaultApiError.UnexpectedError("Test error"))
+
+        val result = executor.executeAndCombine(
+            operations = listOf(
+                { ApiResult.Success("test") },
+                { expectedError }
+            ),
+            type = String::class.java
+        ) { Combined(it[0], it[1]) }
+
+        assertTrue(result is ApiResult.Error)
+        assertEquals(expectedError.apiError.message, (result as ApiResult.Error).apiError.message)
+    }
+
+    @Test
+    fun `executeAndCombine handles NotSupported result`() = runTest {
+        val result = executor.executeAndCombine(
+            operations = listOf(
+                { ApiResult.Success("test") },
+                { ApiResult.NotSupported }
+            ),
+            type = String::class.java
+        ) { it.joinToString() }
+
+        assertEquals(ApiResult.NotSupported, result)
+    }
+
+    @Test
+    fun `executeAndCombine with NightVisionState example`() = runTest {
+        data class SomeDataState(val isEnabled: Boolean, val useRedOverlay: Boolean)
+
+        val result = executor.executeAndCombine(
+            operations = listOf(
+                { ApiResult.Success(true) },  // isEnabled
+                { ApiResult.Success(false) }  // useRedOverlay
+            ),
+            type = Boolean::class.java
+        ) { results ->
+            SomeDataState(
+                isEnabled = results[0],
+                useRedOverlay = results[1]
+            )
+        }
+
+        assertTrue(result is ApiResult.Success)
+        with((result as ApiResult.Success).data) {
+            assertTrue(isEnabled)
+            assertFalse(useRedOverlay)
+        }
+    }
+
+    @Test
+    fun `executeAndCombine successfully combines multiple operations`() = runTest {
+        data class CombinedState(val isEnabled: Boolean, val useFeature: Boolean)
+
+        val result = executor.executeAndCombine(
+            operations = listOf(
+                { ApiResult.Success(true) },
+                { ApiResult.Success(false) }
+            ),
+            type = Boolean::class.java
+        ) { results ->
+            CombinedState(
+                isEnabled = results[0],
+                useFeature = results[1]
+            )
+        }
+
+        assertTrue(result is ApiResult.Success)
+        with((result as ApiResult.Success).data) {
+            assertTrue(isEnabled)
+            assertFalse(useFeature)
+        }
+    }
+
+    @Test
+    fun `executeAndCombine returns NotSupported when encountered`() = runTest {
+        val result = executor.executeAndCombine(
+            operations = listOf(
+                { ApiResult.Success(true) },
+                { ApiResult.NotSupported }
+            ),
+            type = Boolean::class.java
+        ) { results -> results[0] } // Combiner won't be called due to NotSupported
+
+        assertEquals(ApiResult.NotSupported, result)
     }
 }
