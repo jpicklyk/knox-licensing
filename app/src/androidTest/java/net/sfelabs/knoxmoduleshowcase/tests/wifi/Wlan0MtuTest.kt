@@ -5,7 +5,6 @@ import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.GetWlan0MtuUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.SetWlan0MtuUseCase
 import org.junit.Test
@@ -15,7 +14,6 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class Wlan0MtuTest {
-    private val sm = KnoxModule.provideKnoxSystemManager()
 
     @Test
     fun testSetWlan0Mtu() = runTest {

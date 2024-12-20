@@ -9,7 +9,6 @@ import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.hotspot.IsHotspot20EnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hotspot.SetHotspot20EnabledUseCase
 import org.junit.After
@@ -22,7 +21,6 @@ import org.junit.runner.RunWith
 @TacticalSdkSuppress(minReleaseVersion = 110)
 class HotspotTest {
     private lateinit var context: Context
-    private val sm = KnoxModule.provideKnoxSettingsManager()
     private lateinit var wifiManager: WifiManager
 
     @Before
