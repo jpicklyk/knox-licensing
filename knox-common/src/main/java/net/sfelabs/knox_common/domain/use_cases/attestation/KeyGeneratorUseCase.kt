@@ -7,36 +7,17 @@ import android.security.AttestedKeyPair
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
-import kotlinx.coroutines.coroutineScope
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import java.math.BigInteger
 import java.security.SecureRandom
 import java.security.spec.ECGenParameterSpec
 import java.util.Date
-import javax.inject.Inject
 import javax.security.auth.x500.X500Principal
 
-class KeyGeneratorUseCase @Inject constructor(
-    private val devicePolicyManager: DevicePolicyManager
-){
-
-    @RequiresApi(Build.VERSION_CODES.S)
-    suspend operator fun invoke(): ApiResult<Unit> {
-        return coroutineScope {
-            try {
-                val result = generateKey()
-                if (result == null)
-                    ApiResult.Error(DefaultApiError.UnexpectedError("Error, generate keypair returned null"))
-                else {
-                    println("Key generated: ${result.keyPair}")
-                    ApiResult.Success(Unit)
-                }
-            } catch (e: Exception) {
-                ApiResult.Error(DefaultApiError.UnexpectedError(e.toString()))
-            }
-        }
-    }
+class KeyGeneratorUseCase: KnoxContextAwareUseCase<Unit, Unit>() {
+    private val devicePolicyManager = knoxContext.getSystemService(DevicePolicyManager::class.java)
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun generateKey(): AttestedKeyPair? {
@@ -70,6 +51,17 @@ class KeyGeneratorUseCase @Inject constructor(
             builder.build(),
             DevicePolicyManager.ID_TYPE_BASE_INFO or DevicePolicyManager.ID_TYPE_SERIAL
         )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    override suspend fun execute(params: Unit): ApiResult<Unit> {
+        val result = generateKey()
+        return if (result == null)
+            ApiResult.Error(DefaultApiError.UnexpectedError("Error, generate keypair returned null"))
+        else {
+            println("Key generated: ${result.keyPair}")
+            ApiResult.Success(Unit)
+        }
     }
 
 }

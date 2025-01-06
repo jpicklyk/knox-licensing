@@ -1,19 +1,14 @@
 package net.sfelabs.knoxmoduleshowcase.tests.knox_core
 
-import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import androidx.test.platform.app.InstrumentationRegistry
-import com.samsung.android.knox.integrity.EnhancedAttestationPolicy
 import com.samsung.knox.attesation.blobvalidator.library.Verdict
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.attestation.GetAttestationBlobUseCase
 import net.sfelabs.knox_common.domain.use_cases.attestation.IsAttestationSupportedUseCase
 import net.sfelabs.knox_common.domain.use_cases.attestation.ValidateAttestationUseCase
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.UUID
@@ -21,18 +16,10 @@ import java.util.UUID
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class AttestationTests {
-    private lateinit var context: Context
-    private lateinit var attestationPolicy: EnhancedAttestationPolicy
-
-    @Before
-    fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().targetContext
-        attestationPolicy = KnoxModule.provideAttestationPolicy(context)
-    }
 
     @Test
     fun isAttestationSupported() = runTest {
-        val useCase = IsAttestationSupportedUseCase(attestationPolicy)
+        val useCase = IsAttestationSupportedUseCase()
         val result = useCase.invoke()
         assert(result is ApiResult.Success && result.data)
     }
@@ -40,7 +27,7 @@ class AttestationTests {
     @Test
     fun validateAttestationBlob() = runTest {
         val nonce = UUID.randomUUID().toString()
-        val useCaseResult = GetAttestationBlobUseCase(attestationPolicy).invoke(nonce)
+        val useCaseResult = GetAttestationBlobUseCase().invoke(nonce)
         assert(useCaseResult is ApiResult.Success)
         if(useCaseResult is ApiResult.Success) {
             val result = ValidateAttestationUseCase().invoke(nonce, useCaseResult.data)

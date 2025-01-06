@@ -1,36 +1,25 @@
 package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
-import kotlinx.coroutines.coroutineScope
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import javax.inject.Inject
 
-class AllowOtaUpgradeUseCase @Inject constructor(
-    private val enterpriseDeviceManager: EnterpriseDeviceManager
-) {
+class AllowOtaUpgradeUseCase: KnoxContextAwareUseCase<AllowOtaUpgradeUseCase.Params, Boolean>() {
+    data class Params(val enable: Boolean)
+
+    private val restrictionPolicy = EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
 
     suspend operator fun invoke(enable: Boolean): ApiResult<Boolean> {
-        val restrictionPolicy = enterpriseDeviceManager.restrictionPolicy
-        return coroutineScope {
-            try {
-                when (val result = restrictionPolicy.allowOTAUpgrade(enable)) {
-                    true -> {
-                        ApiResult.Success(data = enable)
-                    }
+        return invoke(Params(enable))
+    }
 
-                    false -> {
-                        ApiResult.Error(DefaultApiError.UnexpectedError("Failure occurred applying API allowOTAUpgrade(${enable})"))
-                    }
-                }
-            } catch (se: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" permission"
-                    )
-                )
-            }
+    override suspend fun execute(params: Params): ApiResult<Boolean> {
+        return when (restrictionPolicy.allowOTAUpgrade(params.enable)) {
+            true -> ApiResult.Success(data = params.enable)
+
+            false -> ApiResult.Error(DefaultApiError
+                .UnexpectedError("Failure occurred applying API allowOTAUpgrade(${params.enable})"))
         }
     }
 }
