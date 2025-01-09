@@ -17,7 +17,6 @@ class CheckKnoxPermissionsGranted {
 
     @Before
     fun setup() {
-        val context = InstrumentationRegistry.getInstrumentation().context
         cdm = KnoxModule.provideKnoxCustomDeviceManager()
     }
 

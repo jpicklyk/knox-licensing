@@ -24,8 +24,8 @@ class LinuxTunnelingTests {
         val tunnelName = "ipip0"
         val localAddr = "10.10.10.11"
         val remotePubAddr = "192.168.4.94"
-        val internalAddr = "10.1.1.0/24"
-        val remoteInternalSubnet = "/24"
+//        val internalAddr = "10.1.1.0/24"
+//        val remoteInternalSubnet = "/24"
         val commands = listOf(
             "link name $tunnelName type ipip local $localAddr remote $remotePubAddr",
             "link set $tunnelName up",

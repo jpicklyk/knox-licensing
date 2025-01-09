@@ -1,33 +1,29 @@
 package net.sfelabs.knox_common.domain.use_cases
 
-import com.samsung.android.knox.restriction.RestrictionPolicy
-import kotlinx.coroutines.coroutineScope
+import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import javax.inject.Inject
 
-class SetUsbExceptionListUseCase @Inject constructor(
-    private val restrictionPolicy: RestrictionPolicy
-) {
+class SetUsbExceptionListUseCase: KnoxContextAwareUseCase<SetUsbExceptionListUseCase.Params, Unit>() {
+    class Params(val usbClassList: Int)
+
+    private val restrictionPolicy =
+        EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
+
     suspend operator fun invoke(usbClassList: Int): UnitApiCall {
-        return coroutineScope {
-            try {
-                if (restrictionPolicy.setUsbExceptionList(usbClassList))
-                    ApiResult.Success(Unit)
-                else
-                    ApiResult.Error(DefaultApiError.UnexpectedError("The API setUsbExceptionList($usbClassList) failed"))
-            } catch (se: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" " +
-                                "permission which has a protection level of signature."
-                    )
+        return invoke(Params(usbClassList))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        return if (restrictionPolicy.setUsbExceptionList(params.usbClassList))
+            ApiResult.Success(Unit)
+        else
+            ApiResult.Error(
+                DefaultApiError.UnexpectedError(
+                    "The API setUsbExceptionList($params.usbClassList) failed"
                 )
-            } catch (ex: NoSuchMethodException) {
-                ApiResult.NotSupported
-            }
-        }
+            )
     }
 }

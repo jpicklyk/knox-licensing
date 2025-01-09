@@ -101,6 +101,6 @@ class UsbDeviceAccessTests {
     fun cleanup() = runTest {
         val vidpid = "1234:4321"
         val useCase = SetUsbDeviceAccessAllowedListUseCase(systemManager)
-        val result = useCase.invoke(false, vidpid)
+        useCase.invoke(false, vidpid)
     }
 }

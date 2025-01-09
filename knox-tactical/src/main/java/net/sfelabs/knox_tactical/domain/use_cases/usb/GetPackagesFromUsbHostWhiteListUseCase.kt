@@ -1,29 +1,13 @@
 package net.sfelabs.knox_tactical.domain.use_cases.usb
 
 import com.samsung.android.knox.EnterpriseDeviceManager
-import com.samsung.android.knox.application.ApplicationPolicy
-import kotlinx.coroutines.coroutineScope
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class GetPackagesFromUsbHostWhiteListUseCase @Inject constructor(
-    @TacticalSdk private val enterpriseDeviceManager: EnterpriseDeviceManager
-) {
-    suspend operator fun invoke(): ApiResult<List<String>> {
-        return coroutineScope {
-            try {
-                val appPolicy: ApplicationPolicy = enterpriseDeviceManager.applicationPolicy
-                ApiResult.Success(appPolicy.packagesFromUsbHostWhiteList)
+class GetPackagesFromUsbHostWhiteListUseCase: KnoxContextAwareUseCase<Unit,List<String>>() {
+    private val appPolicy = EnterpriseDeviceManager.getInstance(knoxContext).applicationPolicy
 
-            } catch (e: Exception) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        e.message!!
-                    )
-                )
-            }
-        }
+    override suspend fun execute(params: Unit): ApiResult<List<String>> {
+        return ApiResult.Success(appPolicy.packagesFromUsbHostWhiteList)
     }
 }

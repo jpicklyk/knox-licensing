@@ -101,7 +101,6 @@ class PppdTtyUsbTests {
     @Test
     fun testStopPppd() = runBlocking<Unit> {
         Thread.sleep(1000)
-        val sm = KnoxModule.provideKnoxSystemManager()
         val useCase = StopPppdUseCase()
         val result = useCase.invoke()
         delay(1000)

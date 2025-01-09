@@ -33,7 +33,7 @@ class LcdBacklightStateTest {
             context.contentResolver, Settings.System.SCREEN_BRIGHTNESS
         )
         println("Screen brightness settings set to $brightness")
-        val result3 = GetBrightnessValueUseCase(context).invoke()
+        val result3 = GetBrightnessValueUseCase().invoke()
         if(result3 is ApiResult.Success) {
             println("Screen brightness set to ${result3.data}")
             println("Is screen on? ${powerManager.isScreenOn}")
@@ -56,7 +56,7 @@ class LcdBacklightStateTest {
         println("Screen brightness settings set to $brightness")
         println("Is screen on? ${powerManager.isScreenOn}")
         println("Is interactive? ${powerManager.isInteractive}")
-        val result3 = GetBrightnessValueUseCase(context).invoke()
+        val result3 = GetBrightnessValueUseCase().invoke()
         if(result3 is ApiResult.Success) {
             println("Screen brightness set to ${result3.data}")
         }

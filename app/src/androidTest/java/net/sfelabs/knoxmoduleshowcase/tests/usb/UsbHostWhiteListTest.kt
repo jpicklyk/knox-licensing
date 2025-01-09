@@ -38,22 +38,21 @@ import org.junit.runners.MethodSorters
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class UsbHostWhiteListTest {
     private val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-    private val edm: EnterpriseDeviceManager = EnterpriseDeviceManager.getInstance(appContext)
     private val mtpPackage = "com.samsung.android.mtp"
 
     @Test
     fun step1_disableUsbHostMode() = runTest {
-        val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
+        val hostStorageUseCase = AllowUsbHostStorageUseCase()
         val res = hostStorageUseCase.invoke(false)
         assert(res is ApiResult.Success)
 
-        val result = IsUsbHostStorageAllowedUseCase(edm.restrictionPolicy).invoke()
+        val result = IsUsbHostStorageAllowedUseCase().invoke()
         assert(result is ApiResult.Success && !result.data)
     }
 
     @Test
     fun step2_addPackageToUsbWhitelist() = runTest {
-        val useCase = AddPackageToUsbHostWhiteListUseCase(edm)
+        val useCase = AddPackageToUsbHostWhiteListUseCase()
 
         val signatures = getApplicationSignatures(mtpPackage, appContext)
         val sig = signatures[0]
@@ -62,7 +61,7 @@ class UsbHostWhiteListTest {
         val result = useCase.invoke(true, appIdentity)
         assert(result is ApiResult.Success)
 
-        val useCase2 = GetPackagesFromUsbHostWhiteListUseCase(edm)
+        val useCase2 = GetPackagesFromUsbHostWhiteListUseCase()
         val result2 =  useCase2.invoke()
         assert(result2 is ApiResult.Success && result2.data.contains(mtpPackage))
 
@@ -70,7 +69,7 @@ class UsbHostWhiteListTest {
 
     @Test
     fun step3_removePackageFromUsbWhiteList() = runTest {
-        val useCase = RemovePackageFromUsbHostWhiteListUseCase(edm)
+        val useCase = RemovePackageFromUsbHostWhiteListUseCase()
 
         val signatures = getApplicationSignatures(mtpPackage, appContext)
         val sig = signatures[0]
@@ -79,18 +78,18 @@ class UsbHostWhiteListTest {
         val result = useCase.invoke(appIdentity)
         assert(result is ApiResult.Success)
 
-        val useCase2 = GetPackagesFromUsbHostWhiteListUseCase(edm)
+        val useCase2 = GetPackagesFromUsbHostWhiteListUseCase()
         val result2 =  useCase2.invoke()
         assert(result2 is ApiResult.Success && result2.data.isEmpty())
     }
 
     @Test
     fun step4_allowUsbHostTest() = runTest {
-        val hostStorageUseCase = AllowUsbHostStorageUseCase(edm.restrictionPolicy)
+        val hostStorageUseCase = AllowUsbHostStorageUseCase()
         val res = hostStorageUseCase.invoke(true)
         assert(res is ApiResult.Success)
 
-        val result = IsUsbHostStorageAllowedUseCase(edm.restrictionPolicy).invoke()
+        val result = IsUsbHostStorageAllowedUseCase().invoke()
         assert(result is ApiResult.Success && result.data)
     }
 

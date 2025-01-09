@@ -26,7 +26,7 @@ class Testing {
                     if (connection.claimInterface(usbInterface, true)) {
 
                         // Now you can interact with the endpoints of this interface
-                        val endpoint: UsbEndpoint = usbInterface.getEndpoint(0)
+                        // val endpoint: UsbEndpoint = usbInterface.getEndpoint(0)
                         // Perform I/O operations with the endpoint
 
                         // After you are done, release the interface

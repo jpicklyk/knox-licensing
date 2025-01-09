@@ -1,34 +1,30 @@
 package net.sfelabs.knox_common.domain.use_cases
 
-import com.samsung.android.knox.restriction.RestrictionPolicy
-import kotlinx.coroutines.coroutineScope
-import net.sfelabs.core.domain.UnitApiCall
+import com.samsung.android.knox.EnterpriseDeviceManager
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.core.knox.api.domain.DefaultApiError
-import javax.inject.Inject
 
-class AllowUsbHostStorageUseCase @Inject constructor(
-    private val restrictionPolicy: RestrictionPolicy
-) {
-    suspend operator fun invoke(allow: Boolean): UnitApiCall {
-        return coroutineScope {
-            try {
-                val result = restrictionPolicy.allowUsbHostStorage(allow)
-                if (result)
-                    ApiResult.Success(Unit)
-                else
-                    ApiResult.Error(DefaultApiError.UnexpectedError("The API allowUsbHostStorage($allow) failed"))
-            } catch (se: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" " +
-                                "permission which has a protection level of signature."
-                    )
+class AllowUsbHostStorageUseCase: KnoxContextAwareUseCase<AllowUsbHostStorageUseCase.Params, Unit>() {
+    class Params(val allow: Boolean)
+
+    private val restrictionPolicy =
+        EnterpriseDeviceManager.getInstance(knoxContext)
+        .restrictionPolicy
+
+    suspend fun invoke(allow: Boolean): ApiResult<Unit> {
+        return invoke(Params(allow))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        val result = restrictionPolicy.allowUsbHostStorage(params.allow)
+        return if (result)
+            ApiResult.Success(Unit)
+        else
+            ApiResult.Error(
+                DefaultApiError.UnexpectedError(
+                    "The API allowUsbHostStorage($params.allow) failed"
                 )
-            } catch (ex: NoSuchMethodException) {
-                ApiResult.NotSupported
-            }
-        }
+            )
     }
 }

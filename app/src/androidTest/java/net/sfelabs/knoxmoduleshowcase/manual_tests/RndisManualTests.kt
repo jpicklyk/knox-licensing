@@ -126,9 +126,9 @@ class RndisManualTests {
      */
     @Test
     fun setupNetworkRulesAndRoutes() = runBlocking {
-        val broadcastAddress = "255.255.255.255"
-        val ipAddress = "10.0.2.3"
-        val network = "10.0.2.0/24"
+//        val broadcastAddress = "255.255.255.255"
+//        val ipAddress = "10.0.2.3"
+//        val network = "10.0.2.0/24"
         val gateway = "10.0.2.1"
         val tableId = "97"
         val device = "rndis0"

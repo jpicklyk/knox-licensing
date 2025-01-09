@@ -1,11 +1,9 @@
 package net.sfelabs.knoxmoduleshowcase.manual_tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.restriction.RestrictionPolicy.USBInterface
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.knox_common.di.KnoxModule
 import net.sfelabs.knox_common.domain.use_cases.SetUsbExceptionListUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,8 +13,6 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class UsbClassExceptionTests {
-    private val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-    private val restrictionPolicy = KnoxModule.provideKnoxRestrictionPolicy(appContext)
 
     /**
      * After running this function, verify if using a USB ethernet dongle can successfully be used
@@ -25,7 +21,7 @@ class UsbClassExceptionTests {
     @Test
     fun setCdcOnly() = runTest {
         val usbClasses: Int = USBInterface.CDC.value
-        val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
+        val useCase = SetUsbExceptionListUseCase().invoke(usbClasses)
         assert(useCase is ApiResult.Success)
     }
 
@@ -36,14 +32,14 @@ class UsbClassExceptionTests {
     @Test
     fun setCdcAndMas() = runTest {
         val usbClasses: Int = USBInterface.CDC.value or USBInterface.MAS.value
-        val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
+        val useCase = SetUsbExceptionListUseCase().invoke(usbClasses)
         assert(useCase is ApiResult.Success)
     }
 
     @Test
     fun setMasOnly() = runTest {
         val usbClasses: Int = USBInterface.MAS.value
-        val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
+        val useCase = SetUsbExceptionListUseCase().invoke(usbClasses)
         assert(useCase is ApiResult.Success)
     }
 
@@ -51,7 +47,7 @@ class UsbClassExceptionTests {
     @Test
     fun setAllOpen() = runTest {
         val usbClasses: Int = USBInterface.OFF.value
-        val useCase = SetUsbExceptionListUseCase(restrictionPolicy).invoke(usbClasses)
+        val useCase = SetUsbExceptionListUseCase().invoke(usbClasses)
         assert(useCase is ApiResult.Success)
     }
 }

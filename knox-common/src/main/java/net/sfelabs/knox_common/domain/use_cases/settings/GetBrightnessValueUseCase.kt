@@ -1,23 +1,14 @@
 package net.sfelabs.knox_common.domain.use_cases.settings
 
-import android.content.Context
 import android.provider.Settings
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.coroutineScope
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
-import javax.inject.Inject
 
-class GetBrightnessValueUseCase @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
-    suspend operator fun invoke(): ApiResult<Int> {
-        return coroutineScope {
-            try {
-                ApiResult.Success(Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS))
-            } catch (e: Settings.SettingNotFoundException) {
-                ApiResult.Error(DefaultApiError.UnexpectedError(e.message!!))
-            }
-        }
+class GetBrightnessValueUseCase : KnoxContextAwareUseCase<Unit, Int>() {
+
+    override suspend fun execute(params: Unit): ApiResult<Int> {
+        return ApiResult.Success(
+            Settings.System.getInt(knoxContext.contentResolver, Settings.System.SCREEN_BRIGHTNESS)
+        )
     }
 }

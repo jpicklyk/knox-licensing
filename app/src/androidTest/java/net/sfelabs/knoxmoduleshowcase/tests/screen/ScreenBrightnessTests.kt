@@ -20,14 +20,13 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class ScreenBrightnessTests {
-    private val context = InstrumentationRegistry.getInstrumentation().targetContext
     @Test
     fun setBrightnessTo50() = runTest {
         val result = SetBrightnessUseCase().invoke(true, 50)
         assert(result is ApiResult.Success)
-        val result2 = GetBrightnessValueUseCase(context).invoke()
+        val result2 = GetBrightnessValueUseCase().invoke()
         assert(result2 is ApiResult.Success && result2.data == 50)
-        val result3 = GetBrightnessModeUseCase(context).invoke()
+        val result3 = GetBrightnessModeUseCase().invoke()
         assert(result3 is ApiResult.Success && result3.data == SCREEN_BRIGHTNESS_MODE_MANUAL)
     }
 
@@ -35,7 +34,7 @@ class ScreenBrightnessTests {
     fun setBrightnessToAdaptive() = runTest {
         val result = SetBrightnessUseCase().invoke(false)
         assert(result is ApiResult.Success)
-        val result2 = GetBrightnessModeUseCase(context).invoke()
+        val result2 = GetBrightnessModeUseCase().invoke()
         assert(result2 is ApiResult.Success && result2.data == SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
     }
 

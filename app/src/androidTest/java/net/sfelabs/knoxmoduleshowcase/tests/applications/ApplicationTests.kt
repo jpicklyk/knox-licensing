@@ -6,10 +6,7 @@ import net.sfelabs.core.domain.isPackageInstalled
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
-import org.junit.platform.suite.api.UseTechnicalNames
 
-
-@UseTechnicalNames
 @SmallTest
 class ApplicationTests {
     private val pm = InstrumentationRegistry.getInstrumentation().targetContext.packageManager

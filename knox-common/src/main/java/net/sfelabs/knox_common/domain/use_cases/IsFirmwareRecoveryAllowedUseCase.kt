@@ -1,32 +1,22 @@
 package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
-import kotlinx.coroutines.coroutineScope
+import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
-import javax.inject.Inject
 
-class IsFirmwareRecoveryAllowedUseCase @Inject constructor(
-    private val enterpriseDeviceManager: EnterpriseDeviceManager
-) {
+class IsFirmwareRecoveryAllowedUseCase: KnoxContextAwareUseCase<IsFirmwareRecoveryAllowedUseCase.Params, Boolean>() {
+    class Params(val showMsg: Boolean)
+    private val restrictionPolicy = EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
 
     suspend operator fun invoke(showMsg: Boolean = true): ApiResult<Boolean> {
-        val restrictionPolicy = enterpriseDeviceManager.restrictionPolicy
-        return coroutineScope {
-            try {
-                ApiResult.Success(
-                    restrictionPolicy.isFirmwareRecoveryAllowed(
-                        showMsg
-                    )
-                )
-            } catch (se: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_RESTRICTION_MGMT\" permission"
-                    )
-                )
-            }
-        }
+        return invoke(Params(showMsg))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Boolean> {
+        return ApiResult.Success(
+            restrictionPolicy.isFirmwareRecoveryAllowed(
+                params.showMsg
+            )
+        )
     }
 }

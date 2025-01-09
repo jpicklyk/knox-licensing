@@ -33,10 +33,12 @@ data class KnoxLicenseStatus(
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
-    private val getLicenseActivationInfoUseCase: GetLicenseActivationInfoUseCase,
     private val knoxLicenseUseCase: KnoxLicenseUseCase,
     private val getLicenseInfoUseCase: GetLicenseInfoUseCase
 ): ViewModel(){
+
+    private val getLicenseActivationInfoUseCase = GetLicenseActivationInfoUseCase()
+
     private val _deviceBuildNumber = mutableStateOf(Build.DISPLAY.split(".").last())
     val deviceBuildNumber: State<String> = _deviceBuildNumber
 

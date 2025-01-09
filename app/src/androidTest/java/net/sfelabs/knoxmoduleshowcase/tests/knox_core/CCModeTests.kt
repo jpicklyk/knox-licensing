@@ -1,8 +1,6 @@
 package net.sfelabs.knoxmoduleshowcase.tests.knox_core
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import com.samsung.android.knox.EnterpriseKnoxManager
 import com.samsung.android.knox.restriction.AdvancedRestrictionPolicy
 import junit.framework.TestCase
 import kotlinx.coroutines.test.runTest
@@ -18,9 +16,7 @@ class CCModeTests {
 
     @Test
     fun checkCCModeState_isDisabled() = runTest {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        val ekm = EnterpriseKnoxManager.getInstance(context)
-        val getUseCase = GetCCModeUseCase(ekm)
+        val getUseCase = GetCCModeUseCase()
         val result = getUseCase.invoke()
         if(result is ApiResult.Success) {
             println("CCMode state is set to: ${result.data}")
@@ -32,10 +28,7 @@ class CCModeTests {
 
     @Test
     fun setCCMode_enabled() = runTest {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        val ekm = EnterpriseKnoxManager.getInstance(context)
-
-        val setUseCase = SetCCModeUseCase(ekm)
+        val setUseCase = SetCCModeUseCase()
 
         val setResult = setUseCase.invoke(true)
         assert(setResult is ApiResult.Success)
@@ -44,9 +37,7 @@ class CCModeTests {
 
     @Test
     fun checkCCModeState_isEnabled() = runTest {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        val ekm = EnterpriseKnoxManager.getInstance(context)
-        val getUseCase = GetCCModeUseCase(ekm)
+        val getUseCase = GetCCModeUseCase()
 
         val getResult = getUseCase.invoke()
         if(getResult is ApiResult.Success) {
@@ -58,10 +49,7 @@ class CCModeTests {
 
     @Test
     fun setCCMode_disabled() = runTest {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        val ekm = EnterpriseKnoxManager.getInstance(context)
-
-        val setUseCase = SetCCModeUseCase(ekm)
+        val setUseCase = SetCCModeUseCase()
 
         val setResult = setUseCase.invoke(false)
         assert(setResult is ApiResult.Success)
