@@ -2,15 +2,16 @@ package net.sfelabs.knox_tactical.domain.use_cases.hdm
 
 import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.parseHdmPolicyBlock
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import java.util.UUID
 
-class GetHdmPolicyUseCase : KnoxContextAwareUseCase<Unit, Int>() {
+class GetHdmPolicyUseCase : WithAndroidApplicationContext, CoroutineApiUseCase<Unit, Int>() {
 
     override suspend fun execute(params: Unit): ApiResult<Int> {
         val hdmManager =
-            EnterpriseDeviceManager.getInstance(knoxContext).hypervisorDeviceManager
+            EnterpriseDeviceManager.getInstance(applicationContext).hypervisorDeviceManager
         val response = hdmManager.getHdmPolicy(UUID.randomUUID().toString(), "stealth")
         return ApiResult.Success(parseHdmPolicyBlock(response))
     }

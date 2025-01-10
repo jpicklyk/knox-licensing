@@ -4,15 +4,15 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import net.sfelabs.core.knox.android.KnoxContextProvider
+import net.sfelabs.core.knox.android.AndroidApplicationContextProvider
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class KnoxContextModule {
+abstract class AndroidContextProviderModule {
     @Binds
     @Singleton
     abstract fun bindKnoxContextProvider(
-        impl: HiltKnoxContextProvider
-    ): KnoxContextProvider
+        impl: HiltAndroidApplicationContextProvider
+    ): AndroidApplicationContextProvider
 }

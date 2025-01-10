@@ -1,14 +1,15 @@
 package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class AllowOtaUpgradeUseCase: KnoxContextAwareUseCase<AllowOtaUpgradeUseCase.Params, Boolean>() {
+class AllowOtaUpgradeUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<AllowOtaUpgradeUseCase.Params, Boolean>() {
     data class Params(val enable: Boolean)
 
-    private val restrictionPolicy = EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
+    private val restrictionPolicy = EnterpriseDeviceManager.getInstance(applicationContext).restrictionPolicy
 
     suspend operator fun invoke(enable: Boolean): ApiResult<Boolean> {
         return invoke(Params(enable))

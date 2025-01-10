@@ -1,11 +1,12 @@
 package net.sfelabs.knox_tactical.domain.use_cases.tdm
 
 import com.samsung.android.knox.EnterpriseDeviceManager
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 
-class GetTacticalDeviceModeEnabledUseCase: KnoxContextAwareUseCase<Unit, Boolean>() {
-    val restrictionPolicy = EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
+class GetTacticalDeviceModeEnabledUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<Unit, Boolean>() {
+    val restrictionPolicy = EnterpriseDeviceManager.getInstance(applicationContext).restrictionPolicy
     override suspend fun execute(params: Unit): ApiResult<Boolean> {
         return ApiResult.Success(restrictionPolicy.isTacticalDeviceModeEnabled)
     }

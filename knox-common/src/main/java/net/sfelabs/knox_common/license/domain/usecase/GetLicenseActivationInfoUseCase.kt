@@ -2,12 +2,13 @@ package net.sfelabs.knox_common.license.domain.usecase
 
 import com.samsung.android.knox.license.ActivationInfo
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class GetLicenseActivationInfoUseCase: KnoxContextAwareUseCase<Unit, ActivationInfo>() {
-    private val licenseManager = KnoxEnterpriseLicenseManager.getInstance(knoxContext)
+class GetLicenseActivationInfoUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<Unit, ActivationInfo>() {
+    private val licenseManager = KnoxEnterpriseLicenseManager.getInstance(applicationContext)
 
     override suspend fun execute(params: Unit): ApiResult<ActivationInfo> {
         val result = licenseManager.licenseActivationInfo

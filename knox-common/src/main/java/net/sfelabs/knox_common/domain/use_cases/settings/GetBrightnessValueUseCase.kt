@@ -1,14 +1,15 @@
 package net.sfelabs.knox_common.domain.use_cases.settings
 
 import android.provider.Settings
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 
-class GetBrightnessValueUseCase : KnoxContextAwareUseCase<Unit, Int>() {
+class GetBrightnessValueUseCase : WithAndroidApplicationContext, CoroutineApiUseCase<Unit, Int>() {
 
     override suspend fun execute(params: Unit): ApiResult<Int> {
         return ApiResult.Success(
-            Settings.System.getInt(knoxContext.contentResolver, Settings.System.SCREEN_BRIGHTNESS)
+            Settings.System.getInt(this@GetBrightnessValueUseCase.applicationContext.contentResolver, Settings.System.SCREEN_BRIGHTNESS)
         )
     }
 }

@@ -1,15 +1,16 @@
 package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseKnoxManager
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class SetCCModeUseCase: KnoxContextAwareUseCase<SetCCModeUseCase.Params, Boolean>() {
+class SetCCModeUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<SetCCModeUseCase.Params, Boolean>() {
     class Params(val enable: Boolean)
 
     private val restrictionPolicy =
-        EnterpriseKnoxManager.getInstance(knoxContext).advancedRestrictionPolicy
+        EnterpriseKnoxManager.getInstance(applicationContext).advancedRestrictionPolicy
 
     suspend operator fun invoke(enable: Boolean): ApiResult<Boolean> {
         return invoke(Params(enable))

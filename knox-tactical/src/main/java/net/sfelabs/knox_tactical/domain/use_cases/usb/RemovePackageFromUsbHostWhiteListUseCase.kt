@@ -4,14 +4,15 @@ import com.samsung.android.knox.AppIdentity
 import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.application.ApplicationPolicy
 import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class RemovePackageFromUsbHostWhiteListUseCase: KnoxContextAwareUseCase<RemovePackageFromUsbHostWhiteListUseCase.Params, Unit>() {
+class RemovePackageFromUsbHostWhiteListUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<RemovePackageFromUsbHostWhiteListUseCase.Params, Unit>() {
     class Params(val appIdentity: AppIdentity)
 
-    private val appPolicy = EnterpriseDeviceManager.getInstance(knoxContext).applicationPolicy
+    private val appPolicy = EnterpriseDeviceManager.getInstance(applicationContext).applicationPolicy
 
     suspend operator fun invoke(appIdentity: AppIdentity): UnitApiCall {
         return invoke(Params(appIdentity))

@@ -2,15 +2,16 @@ package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class SetUsbExceptionListUseCase: KnoxContextAwareUseCase<SetUsbExceptionListUseCase.Params, Unit>() {
+class SetUsbExceptionListUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<SetUsbExceptionListUseCase.Params, Unit>() {
     class Params(val usbClassList: Int)
 
     private val restrictionPolicy =
-        EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
+        EnterpriseDeviceManager.getInstance(applicationContext).restrictionPolicy
 
     suspend operator fun invoke(usbClassList: Int): UnitApiCall {
         return invoke(Params(usbClassList))

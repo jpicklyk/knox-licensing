@@ -5,14 +5,15 @@ import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_INVALID
 import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_NONE
 import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_NOT_SUPPORTED
 import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.domain.model.ImsState
 
-class SetImsEnabled: KnoxContextAwareUseCase<ImsState, Unit>() {
+class SetImsEnabled: WithAndroidApplicationContext, CoroutineApiUseCase<ImsState, Unit>() {
     private val phoneRestrictionPolicy =
-        EnterpriseDeviceManager.getInstance(knoxContext).phoneRestrictionPolicy
+        EnterpriseDeviceManager.getInstance(applicationContext).phoneRestrictionPolicy
 
     suspend operator fun invoke(feature: Int = 1, simSlotId: Int = 0, enable: Boolean): UnitApiCall {
         return invoke(ImsState(

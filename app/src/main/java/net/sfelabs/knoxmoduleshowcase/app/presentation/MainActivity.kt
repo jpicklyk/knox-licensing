@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val manager: DevicePolicyManager =
             getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        if(manager.isDeviceOwnerApp(applicationContext.packageName)) {
+        if(manager.isDeviceOwnerApp(this@MainActivity.applicationContext.packageName)) {
             Log.d(TAG, "The application is the device owner")
         } else {
             Log.d(TAG, "The application is not the device owner")

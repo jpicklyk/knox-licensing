@@ -4,10 +4,9 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.android.KnoxContextProvider
+import net.sfelabs.core.knox.android.AndroidApplicationContextProvider
 import net.sfelabs.core.knox.api.domain.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.ims.IsImsEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ims.SetImsEnabled
 import org.junit.After
@@ -24,12 +23,12 @@ class ImsTests {
 
     @Before
     fun readCurrentState() = runTest {
-        val testProvider = object: KnoxContextProvider {
+        val testProvider = object: AndroidApplicationContextProvider {
             override fun getContext(): Context {
                 return context
             }
         }
-        KnoxContextProvider.init(testProvider)
+        AndroidApplicationContextProvider.init(testProvider)
 
         val result = IsImsEnabledUseCase().invoke(1, 0)
         if(result is ApiResult.Success) {

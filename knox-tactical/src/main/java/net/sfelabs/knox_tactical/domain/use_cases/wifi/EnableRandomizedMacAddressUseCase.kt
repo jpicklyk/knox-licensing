@@ -2,15 +2,16 @@ package net.sfelabs.knox_tactical.domain.use_cases.wifi
 
 import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class EnableRandomizedMacAddressUseCase: KnoxContextAwareUseCase<EnableRandomizedMacAddressUseCase.Params, Unit>() {
+class EnableRandomizedMacAddressUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<EnableRandomizedMacAddressUseCase.Params, Unit>() {
     data class Params(val enable: Boolean)
 
     private val restrictionPolicy =
-        EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
+        EnterpriseDeviceManager.getInstance(applicationContext).restrictionPolicy
 
     suspend operator fun invoke(enable: Boolean): UnitApiCall {
         return invoke(Params(enable))

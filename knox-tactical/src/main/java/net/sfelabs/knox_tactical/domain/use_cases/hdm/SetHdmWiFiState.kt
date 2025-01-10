@@ -2,11 +2,12 @@ package net.sfelabs.knox_tactical.domain.use_cases.hdm
 
 import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.parseHdmPolicyBlock
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import java.util.UUID
 
-class SetHdmWiFiState: KnoxContextAwareUseCase<SetHdmWiFiState.Params, Boolean>() {
+class SetHdmWiFiState: WithAndroidApplicationContext, CoroutineApiUseCase<SetHdmWiFiState.Params, Boolean>() {
     data class Params(val disabled: Boolean, val reboot: Boolean = false)
 
     private val bitmask = 8
@@ -17,7 +18,7 @@ class SetHdmWiFiState: KnoxContextAwareUseCase<SetHdmWiFiState.Params, Boolean>(
 
     override suspend fun execute(params: Params): ApiResult<Boolean> {
         val hdmManager =
-            EnterpriseDeviceManager.getInstance(knoxContext).hypervisorDeviceManager
+            EnterpriseDeviceManager.getInstance(applicationContext).hypervisorDeviceManager
         val currentPolicy = parseHdmPolicyBlock(
             hdmManager.getHdmPolicy(
                 UUID.randomUUID().toString(),

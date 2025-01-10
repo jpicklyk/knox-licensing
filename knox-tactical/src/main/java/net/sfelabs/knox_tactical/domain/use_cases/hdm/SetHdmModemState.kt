@@ -2,11 +2,12 @@ package net.sfelabs.knox_tactical.domain.use_cases.hdm
 
 import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.parseHdmPolicyBlock
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import java.util.UUID
 
-class SetHdmModemState : KnoxContextAwareUseCase<SetHdmModemState.Params, Boolean>() {
+class SetHdmModemState : WithAndroidApplicationContext, CoroutineApiUseCase<SetHdmModemState.Params, Boolean>() {
 
     data class Params(val disabled: Boolean, val reboot: Boolean = false)
 
@@ -17,7 +18,7 @@ class SetHdmModemState : KnoxContextAwareUseCase<SetHdmModemState.Params, Boolea
 
     override suspend fun execute(params: Params): ApiResult<Boolean> {
         val hdmManager =
-            EnterpriseDeviceManager.getInstance(knoxContext).hypervisorDeviceManager
+            EnterpriseDeviceManager.getInstance(applicationContext).hypervisorDeviceManager
         val currentPolicy = parseHdmPolicyBlock(
             hdmManager.getHdmPolicy(
                 UUID.randomUUID().toString(),

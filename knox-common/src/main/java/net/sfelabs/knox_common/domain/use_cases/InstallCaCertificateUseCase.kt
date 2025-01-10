@@ -2,13 +2,14 @@ package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_common.domain.model.CertificateType
 import net.sfelabs.knox_common.domain.model.TargetKeystore
 
-class InstallCaCertificateUseCase: KnoxContextAwareUseCase<InstallCaCertificateUseCase.Params, Unit>() {
+class InstallCaCertificateUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<InstallCaCertificateUseCase.Params, Unit>() {
     class Params(
         val keystore: TargetKeystore,
         val certificateType: CertificateType,
@@ -17,7 +18,7 @@ class InstallCaCertificateUseCase: KnoxContextAwareUseCase<InstallCaCertificateU
         val password: String
     )
 
-    private val enterpriseDeviceManager = EnterpriseDeviceManager.getInstance(knoxContext)
+    private val enterpriseDeviceManager = EnterpriseDeviceManager.getInstance(applicationContext)
 
     suspend operator fun invoke(
         keystore: TargetKeystore,

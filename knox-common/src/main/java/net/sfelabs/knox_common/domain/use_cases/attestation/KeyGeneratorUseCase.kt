@@ -7,8 +7,9 @@ import android.security.AttestedKeyPair
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import java.math.BigInteger
 import java.security.SecureRandom
@@ -16,8 +17,8 @@ import java.security.spec.ECGenParameterSpec
 import java.util.Date
 import javax.security.auth.x500.X500Principal
 
-class KeyGeneratorUseCase: KnoxContextAwareUseCase<Unit, Unit>() {
-    private val devicePolicyManager = knoxContext.getSystemService(DevicePolicyManager::class.java)
+class KeyGeneratorUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<Unit, Unit>() {
+    private val devicePolicyManager = this@KeyGeneratorUseCase.applicationContext.getSystemService(DevicePolicyManager::class.java)
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun generateKey(): AttestedKeyPair? {

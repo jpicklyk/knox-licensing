@@ -1,12 +1,13 @@
 package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
-import net.sfelabs.core.knox.android.KnoxContextAwareUseCase
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
 
-class IsFirmwareRecoveryAllowedUseCase: KnoxContextAwareUseCase<IsFirmwareRecoveryAllowedUseCase.Params, Boolean>() {
+class IsFirmwareRecoveryAllowedUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<IsFirmwareRecoveryAllowedUseCase.Params, Boolean>() {
     class Params(val showMsg: Boolean)
-    private val restrictionPolicy = EnterpriseDeviceManager.getInstance(knoxContext).restrictionPolicy
+    private val restrictionPolicy = EnterpriseDeviceManager.getInstance(applicationContext).restrictionPolicy
 
     suspend operator fun invoke(showMsg: Boolean = true): ApiResult<Boolean> {
         return invoke(Params(showMsg))
