@@ -3,10 +3,10 @@ package net.sfelabs.knox_tactical.domain.use_cases.ims
 import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.knox_tactical.domain.model.ImsState
 
-class IsImsEnabledUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<ImsState, Boolean>() {
+class IsImsEnabledUseCase: WithAndroidApplicationContext, SuspendingUseCase<ImsState, Boolean>() {
 
 
     private val phoneRestrictionPolicy =

@@ -4,13 +4,13 @@ import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.repository.PreferencesRepository
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.domain.model.NightVisionState
 
 class SetNightVisionModeStateUseCase(
     private val preferenceRepository: PreferencesRepository = PreferencesRepository.getInstance()
-): CoroutineApiUseCase<NightVisionState, Unit>() {
+): SuspendingUseCase<NightVisionState, Unit>() {
     // Quality of life invoke function
     suspend operator fun invoke(enable: Boolean, useRedOverlay: Boolean = false): UnitApiCall {
         return invoke(NightVisionState(enable, useRedOverlay))

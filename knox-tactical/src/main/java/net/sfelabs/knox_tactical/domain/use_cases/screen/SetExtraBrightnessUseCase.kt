@@ -3,10 +3,10 @@ package net.sfelabs.knox_tactical.domain.use_cases.screen
 import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class SetExtraBrightnessUseCase: CoroutineApiUseCase<SetExtraBrightnessUseCase.Params, Unit>() {
+class SetExtraBrightnessUseCase: SuspendingUseCase<SetExtraBrightnessUseCase.Params, Unit>() {
     data class Params(val enable: Boolean)
 
     private val settingsManager = CustomDeviceManager.getInstance().settingsManager

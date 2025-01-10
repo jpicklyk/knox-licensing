@@ -3,10 +3,10 @@ package net.sfelabs.knox_common.domain.use_cases
 import com.samsung.android.knox.EnterpriseKnoxManager
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class SetCCModeUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<SetCCModeUseCase.Params, Boolean>() {
+class SetCCModeUseCase: WithAndroidApplicationContext, SuspendingUseCase<SetCCModeUseCase.Params, Boolean>() {
     class Params(val enable: Boolean)
 
     private val restrictionPolicy =

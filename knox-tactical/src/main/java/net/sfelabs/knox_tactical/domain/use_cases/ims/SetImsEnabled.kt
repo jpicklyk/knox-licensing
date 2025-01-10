@@ -7,11 +7,11 @@ import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_NOT_SUP
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.domain.model.ImsState
 
-class SetImsEnabled: WithAndroidApplicationContext, CoroutineApiUseCase<ImsState, Unit>() {
+class SetImsEnabled: WithAndroidApplicationContext, SuspendingUseCase<ImsState, Unit>() {
     private val phoneRestrictionPolicy =
         EnterpriseDeviceManager.getInstance(applicationContext).phoneRestrictionPolicy
 

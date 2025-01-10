@@ -6,7 +6,7 @@ import com.samsung.android.knox.integrity.EnhancedAttestationResult
 import com.samsung.android.knox.integrity.EnhancedAttestationResult.ERROR_NONE
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import java.util.UUID
 import kotlin.coroutines.suspendCoroutine
@@ -15,7 +15,7 @@ import kotlin.coroutines.suspendCoroutine
  * Use case to wrap the asynchronous callback into sequential code since we are not attempting to
  * make an external call to a server.
  */
-class GetAttestationBlobUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<GetAttestationBlobUseCase.Params, ByteArray>() {
+class GetAttestationBlobUseCase: WithAndroidApplicationContext, SuspendingUseCase<GetAttestationBlobUseCase.Params, ByteArray>() {
     data class Params(val nonce: String = UUID.randomUUID().toString())
 
     private val attestationPolicy =

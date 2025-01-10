@@ -2,12 +2,12 @@ package net.sfelabs.knox_tactical.domain.use_cases.adb
 
 import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase.AdbCommand
 
-class ExecuteAdbCommandUseCase: CoroutineApiUseCase<AdbCommand, Unit>() {
+class ExecuteAdbCommandUseCase: SuspendingUseCase<AdbCommand, Unit>() {
     val systemManager = CustomDeviceManager.getInstance().systemManager
 
     suspend operator fun invoke(header: AdbHeader, command: String): ApiResult<Unit> {

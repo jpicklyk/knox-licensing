@@ -3,10 +3,10 @@ package net.sfelabs.knox_tactical.domain.use_cases.lockscreen
 import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class SetLockscreenTimeoutUseCase: CoroutineApiUseCase<SetLockscreenTimeoutUseCase.Params, Unit>() {
+class SetLockscreenTimeoutUseCase: SuspendingUseCase<SetLockscreenTimeoutUseCase.Params, Unit>() {
     data class Params(val seconds: Int)
 
     private val systemManager = CustomDeviceManager.getInstance().systemManager

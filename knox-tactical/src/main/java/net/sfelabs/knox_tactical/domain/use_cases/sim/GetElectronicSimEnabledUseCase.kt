@@ -2,9 +2,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.sim
 
 import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 
-class GetElectronicSimEnabledUseCase: CoroutineApiUseCase<Unit, Boolean>() {
+class GetElectronicSimEnabledUseCase: SuspendingUseCase<Unit, Boolean>() {
     val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
     override suspend fun execute(params: Unit): ApiResult<Boolean> {

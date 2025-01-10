@@ -4,10 +4,10 @@ import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.parseHdmPolicyBlock
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import java.util.UUID
 
-class SetHdmModemState : WithAndroidApplicationContext, CoroutineApiUseCase<SetHdmModemState.Params, Boolean>() {
+class SetHdmModemState : WithAndroidApplicationContext, SuspendingUseCase<SetHdmModemState.Params, Boolean>() {
 
     data class Params(val disabled: Boolean, val reboot: Boolean = false)
 

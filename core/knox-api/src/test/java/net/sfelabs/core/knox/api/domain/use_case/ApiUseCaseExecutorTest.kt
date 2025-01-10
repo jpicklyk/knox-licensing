@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.ApiUseCaseExecutor
+import net.sfelabs.core.knox.api.domain.UseCaseExecutor
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import org.junit.Assert.fail
 import org.junit.Before
@@ -24,11 +24,11 @@ import org.junit.Test
 import java.util.concurrent.TimeUnit
 
 class ApiUseCaseExecutorTest {
-    private lateinit var executor: ApiUseCaseExecutor
+    private lateinit var executor: UseCaseExecutor
 
     @Before
     fun setup() {
-        executor = ApiUseCaseExecutor()
+        executor = UseCaseExecutor()
     }
 
     @Test

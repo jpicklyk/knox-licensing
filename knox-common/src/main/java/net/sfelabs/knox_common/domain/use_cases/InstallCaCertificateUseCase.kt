@@ -4,12 +4,12 @@ import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_common.domain.model.CertificateType
 import net.sfelabs.knox_common.domain.model.TargetKeystore
 
-class InstallCaCertificateUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<InstallCaCertificateUseCase.Params, Unit>() {
+class InstallCaCertificateUseCase: WithAndroidApplicationContext, SuspendingUseCase<InstallCaCertificateUseCase.Params, Unit>() {
     class Params(
         val keystore: TargetKeystore,
         val certificateType: CertificateType,

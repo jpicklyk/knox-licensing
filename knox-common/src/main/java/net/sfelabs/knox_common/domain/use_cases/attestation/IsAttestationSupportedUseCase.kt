@@ -3,9 +3,9 @@ package net.sfelabs.knox_common.domain.use_cases.attestation
 import com.samsung.android.knox.EnterpriseKnoxManager
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 
-class IsAttestationSupportedUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<Unit, Boolean>() {
+class IsAttestationSupportedUseCase: WithAndroidApplicationContext, SuspendingUseCase<Unit, Boolean>() {
     private val attestationPolicy =
         EnterpriseKnoxManager.getInstance(applicationContext).enhancedAttestationPolicy
 

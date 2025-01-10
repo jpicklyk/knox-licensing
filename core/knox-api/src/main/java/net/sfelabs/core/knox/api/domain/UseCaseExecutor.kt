@@ -12,7 +12,7 @@ package net.sfelabs.core.knox.api.domain
  *
  * @property operations Internal storage for tracked API operation results
  */
-class ApiUseCaseExecutor {
+class UseCaseExecutor {
     /**
      * Internal representation of a stored API operation
      */

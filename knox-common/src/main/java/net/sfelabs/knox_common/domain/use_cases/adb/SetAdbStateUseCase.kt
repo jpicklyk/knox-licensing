@@ -2,7 +2,7 @@ package net.sfelabs.knox_common.domain.use_cases.adb
 
 import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
 /**
@@ -10,7 +10,7 @@ import net.sfelabs.core.knox.api.domain.DefaultApiError
  * Note: There is no getAdbState equivalent API so it will be necessary to track the state within
  * the app and stave it to a datastore
  */
-class SetAdbStateUseCase: CoroutineApiUseCase<Boolean, Boolean>() {
+class SetAdbStateUseCase: SuspendingUseCase<Boolean, Boolean>() {
     private val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
     override suspend fun execute(params: Boolean): ApiResult<Boolean> {

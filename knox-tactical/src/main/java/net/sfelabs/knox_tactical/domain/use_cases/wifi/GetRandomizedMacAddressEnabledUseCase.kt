@@ -3,9 +3,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.wifi
 import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 
-class GetRandomizedMacAddressEnabledUseCase: WithAndroidApplicationContext, CoroutineApiUseCase<Unit, Boolean>() {
+class GetRandomizedMacAddressEnabledUseCase: WithAndroidApplicationContext, SuspendingUseCase<Unit, Boolean>() {
     private val restrictionPolicy =
         EnterpriseDeviceManager.getInstance(applicationContext).restrictionPolicy
 

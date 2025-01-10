@@ -2,11 +2,11 @@ package net.sfelabs.knox_tactical.domain.use_cases.auto_touch
 
 import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 import net.sfelabs.knox_tactical.toOnOrOff
 
-class SetAutoTouchSensitivityEnabledUseCase () : CoroutineApiUseCase<Boolean, Unit>() {
+class SetAutoTouchSensitivityEnabledUseCase () : SuspendingUseCase<Boolean, Unit>() {
     val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
     override suspend fun execute(params: Boolean): ApiResult<Unit> {

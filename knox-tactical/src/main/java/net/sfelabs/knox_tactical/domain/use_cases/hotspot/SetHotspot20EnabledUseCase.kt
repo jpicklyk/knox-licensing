@@ -2,10 +2,10 @@ package net.sfelabs.knox_tactical.domain.use_cases.hotspot
 
 import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.CoroutineApiUseCase
+import net.sfelabs.core.knox.api.domain.SuspendingUseCase
 import net.sfelabs.core.knox.api.domain.DefaultApiError
 
-class SetHotspot20EnabledUseCase: CoroutineApiUseCase<Boolean, Unit>() {
+class SetHotspot20EnabledUseCase: SuspendingUseCase<Boolean, Unit>() {
     val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
     override suspend fun execute(params: Boolean): ApiResult<Unit> {

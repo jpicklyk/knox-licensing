@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
  * @param P The type of input parameters for the use case. Use [Unit] if no parameters are required.
  * @param R The type of the result returned by the use case.
  */
-interface ApiUseCase<in P, out R : Any> {
+interface UseCase<in P, out R : Any> {
     /**
      * Executes the use case.
      *
@@ -24,15 +24,15 @@ interface ApiUseCase<in P, out R : Any> {
 }
 
 /**
- * An abstract implementation of [ApiUseCase] that provides coroutine context switching and error handling.
+ * An abstract implementation of [UseCase] that provides coroutine context switching and error handling.
  *
  * @param P The type of input parameters for the use case. Use [Unit] if no parameters are required.
  * @param R The type of the result returned by the use case.
  * @param dispatcher The coroutine dispatcher to use for this specific use case. Defaults to an [IoDispatcher].
  */
-abstract class CoroutineApiUseCase<in P, out R : Any>(
+abstract class SuspendingUseCase<in P, out R : Any>(
     private val dispatcher: CoroutineDispatcher? = null
-) : ApiUseCase<P, R> {
+) : UseCase<P, R> {
     private val defaultDispatcher = Dispatchers.IO
 
     /**
