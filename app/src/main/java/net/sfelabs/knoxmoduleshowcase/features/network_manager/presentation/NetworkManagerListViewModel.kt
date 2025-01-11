@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.model.ApiResult
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.NetworkManagerState
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.Interface

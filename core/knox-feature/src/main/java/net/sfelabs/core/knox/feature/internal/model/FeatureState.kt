@@ -1,6 +1,6 @@
 package net.sfelabs.core.knox.feature.internal.model
 
-import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.model.ApiResult
 import net.sfelabs.core.knox.feature.internal.component.StateMapping
 
 data class FeatureState<out T>(val enabled: Boolean, val value: T)

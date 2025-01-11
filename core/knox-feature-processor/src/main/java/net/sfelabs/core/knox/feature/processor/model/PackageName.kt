@@ -8,6 +8,6 @@ enum class PackageName(val value: String) {
     FEATURE_REGISTRY("net.sfelabs.core.knox.feature.internal.registry"),
     FEATURE_HANDLER("net.sfelabs.core.knox.feature.internal.handler"),
     FEATURE_HILT("net.sfelabs.core.knox.feature.hilt"),
-    API_DOMAIN("net.sfelabs.core.knox.api.domain")
+    API_DOMAIN_MODEL("net.sfelabs.core.knox.api.domain.model")
 
 }

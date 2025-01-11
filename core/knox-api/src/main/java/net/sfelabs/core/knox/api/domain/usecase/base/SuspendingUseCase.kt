@@ -1,13 +1,15 @@
-package net.sfelabs.core.knox.api.domain
+package net.sfelabs.core.knox.api.domain.usecase.base
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.model.DefaultApiError
 
 /**
- * An abstract implementation of [UseCase] that provides coroutine context switching and error handling.
+ * An abstract implementation of [net.sfelabs.core.knox.api.domain.usecase.base.UseCase] that provides coroutine context switching and error handling.
  *
  * @param P The type of input parameters for the use case. Use [Unit] if no parameters are required.
  * @param R The type of the result returned by the use case.
@@ -22,7 +24,7 @@ abstract class SuspendingUseCase<in P, out R : Any>(
      * Executes the use case with error handling and context switching.
      *
      * @param params The input parameters for the use case.
-     * @return An [ApiResult] representing the result of the operation.
+     * @return An [net.sfelabs.core.knox.api.domain.model.ApiResult] representing the result of the operation.
      */
     final override suspend operator fun invoke(params: P): ApiResult<R> =
         withContext(
@@ -41,17 +43,17 @@ abstract class SuspendingUseCase<in P, out R : Any>(
      * This method should be implemented by subclasses to define the specific behavior of the use case.
      *
      * @param params The input parameters for the use case.
-     * @return An [ApiResult] representing the result of the operation.
+     * @return An [net.sfelabs.core.knox.api.domain.model.ApiResult] representing the result of the operation.
      */
     @Suppress("UNCHECKED_CAST")
     protected abstract suspend fun execute(params: P = Unit as P): ApiResult<R>
 
     /**
-     * Maps exceptions to appropriate [ApiResult.Error] instances.
+     * Maps exceptions to appropriate [net.sfelabs.core.knox.api.domain.model.ApiResult.Error] instances.
      * This method can be overridden in subclasses to provide custom error mapping.
      *
      * @param throwable The throwable to be mapped.
-     * @return An [ApiResult] representing the error state.
+     * @return An [net.sfelabs.core.knox.api.domain.model.ApiResult] representing the error state.
      */
     protected open fun mapError(throwable: Throwable): ApiResult<R> = when (throwable) {
         is NoSuchMethodError -> ApiResult.NotSupported

@@ -116,7 +116,7 @@ class ComponentGenerator(
             .beginControlFlow(
                 "override suspend fun getState(parameters: %T): %T<%T<%T>>",
                 ClassName(PackageName.FEATURE_PUBLIC.value, "FeatureParameters"),
-                ClassName(PackageName.API_DOMAIN.value, "ApiResult"),
+                ClassName(PackageName.API_DOMAIN_MODEL.value, "ApiResult"),
                 ClassName(PackageName.FEATURE_MODEL.value, "FeatureState"),
                 feature.valueType.toClassName()
             )
@@ -130,7 +130,7 @@ class ComponentGenerator(
                 "override suspend fun setState(newState: %T<%T>): %T<Unit>",
                 ClassName(PackageName.FEATURE_MODEL.value, "FeatureState"),
                 feature.valueType.toClassName(),
-                ClassName(PackageName.API_DOMAIN.value, "ApiResult")
+                ClassName(PackageName.API_DOMAIN_MODEL.value, "ApiResult")
             )
             .addStatement("return featureImpl.setState(newState.value)")
             .endControlFlow()
@@ -178,7 +178,7 @@ class ComponentGenerator(
                         .addImport(PackageName.FEATURE_MODEL.value, "FeatureState")
                         .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureParameters")
                         .addImport(PackageName.FEATURE_MODEL.value, "wrapInFeatureState")
-                        .addImport(PackageName.API_DOMAIN.value, "map")
+                        .addImport(PackageName.API_DOMAIN_MODEL.value, "map")
                         .build()
                         .writeTo(writer)
                 }

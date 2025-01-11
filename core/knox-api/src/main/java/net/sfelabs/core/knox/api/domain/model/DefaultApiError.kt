@@ -1,4 +1,4 @@
-package net.sfelabs.core.knox.api.domain
+package net.sfelabs.core.knox.api.domain.model
 
 sealed interface ApiError {
     val message: String

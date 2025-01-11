@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.tests.knox_core
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.model.ApiResult
 import net.sfelabs.knox_common.domain.use_cases.AllowFirmwareRecoveryUseCase
 import net.sfelabs.knox_common.domain.use_cases.IsFirmwareRecoveryAllowedUseCase
 import org.junit.After

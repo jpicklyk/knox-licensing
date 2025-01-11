@@ -4,9 +4,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.SuspendingUseCase
-import net.sfelabs.core.knox.api.domain.DefaultApiError
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.knox.api.domain.model.DefaultApiError
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test

@@ -1,4 +1,4 @@
-package net.sfelabs.core.knox.api.domain
+package net.sfelabs.core.knox.api.domain.model
 
 sealed class ApiResult<out T : Any> {
     data class Success<out T : Any>(val data: T): ApiResult<T>()

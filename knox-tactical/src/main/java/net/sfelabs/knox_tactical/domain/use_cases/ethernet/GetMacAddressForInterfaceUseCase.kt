@@ -1,8 +1,8 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ethernet
 
 import com.samsung.android.knox.custom.SystemManager
-import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.model.DefaultApiError
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 
@@ -10,7 +10,7 @@ class GetMacAddressForInterfaceUseCase @Inject constructor(
     @TacticalSdk private val systemManager: SystemManager
 ) {
 
-    operator fun invoke(interfaceName: String): net.sfelabs.core.knox.api.domain.ApiResult<String> {
+    operator fun invoke(interfaceName: String): ApiResult<String> {
         return try {
             val result = systemManager.getMacAddressForEthernetInterface(interfaceName)
             if (result == null) {

@@ -1,4 +1,4 @@
-package net.sfelabs.core.knox.api.domain
+package net.sfelabs.core.knox.api.domain.usecase.executor
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +10,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import net.sfelabs.core.knox.api.domain.UseCaseBuilder.Builder.RetryPolicy
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.model.DefaultApiError
 import java.lang.ref.WeakReference
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -163,14 +164,14 @@ import kotlin.time.Duration.Companion.milliseconds
  * }
  * ```
  *
- * All operations return [ApiResult] instances, and the builder maintains proper error
+ * All operations return [net.sfelabs.core.knox.api.domain.model.ApiResult] instances, and the builder maintains proper error
  * handling and cancellation support throughout the execution chain. Resources are automatically
  * cleaned up after execution completes.
  *
  * @see UseCase
  * @see BaseUseCase
  * @see SuspendingUseCase
- * @see ApiResult
+ * @see net.sfelabs.core.knox.api.domain.model.ApiResult
  */
 
 class UseCaseBuilder {
@@ -180,7 +181,7 @@ class UseCaseBuilder {
             val predicate: (suspend () -> Boolean)? = null,
             val fallback: (suspend () -> ApiResult<*>)? = null,
             val errorHandler: WeakReference<((ApiResult.Error) -> Unit)>? = null,
-            val retryPolicy: RetryPolicy? = null
+            val retryPolicy: Builder.RetryPolicy? = null
         ) : ExecutionUnit()
 
         data class OperationGroup(

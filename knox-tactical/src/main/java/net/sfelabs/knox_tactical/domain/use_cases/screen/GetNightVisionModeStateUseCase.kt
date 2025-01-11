@@ -1,9 +1,9 @@
 package net.sfelabs.knox_tactical.domain.use_cases.screen
 
 import net.sfelabs.core.domain.repository.PreferencesRepository
-import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.UseCaseExecutor
-import net.sfelabs.core.knox.api.domain.SuspendingUseCase
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.usecase.executor.UseCaseExecutor
+import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.knox_tactical.domain.model.NightVisionState
 
 class GetNightVisionModeStateUseCase(

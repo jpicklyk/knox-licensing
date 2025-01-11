@@ -6,10 +6,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.DefaultApiError
-import net.sfelabs.core.knox.api.domain.UseCaseBuilder
-import net.sfelabs.core.knox.api.domain.UseCaseBuilder.UseCaseBuilderState
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.model.DefaultApiError
+import net.sfelabs.core.knox.api.domain.usecase.executor.UseCaseBuilder
+import net.sfelabs.core.knox.api.domain.usecase.executor.UseCaseBuilder.UseCaseBuilderState
 import net.sfelabs.core.knox.api.domain.use_case.MainCoroutineRule
 import org.junit.Before
 import org.junit.Rule

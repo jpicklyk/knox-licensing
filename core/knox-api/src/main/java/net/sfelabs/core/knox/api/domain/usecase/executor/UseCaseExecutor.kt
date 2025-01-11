@@ -1,4 +1,8 @@
-package net.sfelabs.core.knox.api.domain
+package net.sfelabs.core.knox.api.domain.usecase.executor
+
+import kotlinx.coroutines.delay
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.model.DefaultApiError
 
 /**
  * A utility class for executing and managing API operations with various execution strategies.
@@ -95,7 +99,7 @@ class UseCaseExecutor {
                 is ApiResult.Success -> return result
                 is ApiResult.Error -> {
                     if (!predicate(result) || attempt == maxAttempts - 1) return result
-                    kotlinx.coroutines.delay(currentDelay)
+                    delay(currentDelay)
                     currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
                 }
                 is ApiResult.NotSupported -> return result

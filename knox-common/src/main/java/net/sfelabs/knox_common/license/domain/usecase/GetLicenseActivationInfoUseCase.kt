@@ -3,9 +3,9 @@ package net.sfelabs.knox_common.license.domain.usecase
 import com.samsung.android.knox.license.ActivationInfo
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
-import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.SuspendingUseCase
-import net.sfelabs.core.knox.api.domain.DefaultApiError
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.knox.api.domain.model.DefaultApiError
 
 class GetLicenseActivationInfoUseCase: WithAndroidApplicationContext, SuspendingUseCase<Unit, ActivationInfo>() {
     private val licenseManager = KnoxEnterpriseLicenseManager.getInstance(applicationContext)

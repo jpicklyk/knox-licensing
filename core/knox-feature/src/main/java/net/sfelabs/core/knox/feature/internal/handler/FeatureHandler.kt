@@ -1,6 +1,6 @@
 package net.sfelabs.core.knox.feature.internal.handler
 
-import net.sfelabs.core.knox.api.domain.ApiResult
+import net.sfelabs.core.knox.api.domain.model.ApiResult
 import net.sfelabs.core.knox.feature.api.FeatureParameters
 import net.sfelabs.core.knox.feature.internal.model.FeatureState
 

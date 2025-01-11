@@ -2,9 +2,9 @@ package net.sfelabs.knox_common.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
-import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.SuspendingUseCase
-import net.sfelabs.core.knox.api.domain.DefaultApiError
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.knox.api.domain.model.DefaultApiError
 
 class AllowFirmwareRecoveryUseCase: WithAndroidApplicationContext, SuspendingUseCase<AllowFirmwareRecoveryUseCase.Params, Boolean>() {
     data class Params(val enable: Boolean)

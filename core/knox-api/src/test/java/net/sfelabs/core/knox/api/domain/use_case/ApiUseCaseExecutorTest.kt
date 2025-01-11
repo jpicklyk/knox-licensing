@@ -15,9 +15,9 @@ import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-import net.sfelabs.core.knox.api.domain.ApiResult
-import net.sfelabs.core.knox.api.domain.UseCaseExecutor
-import net.sfelabs.core.knox.api.domain.DefaultApiError
+import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.knox.api.domain.usecase.executor.UseCaseExecutor
+import net.sfelabs.core.knox.api.domain.model.DefaultApiError
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test

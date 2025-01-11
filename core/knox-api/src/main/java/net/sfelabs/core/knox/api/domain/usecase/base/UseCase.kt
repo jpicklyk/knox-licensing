@@ -1,10 +1,6 @@
-package net.sfelabs.core.knox.api.domain
+package net.sfelabs.core.knox.api.domain.usecase.base
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.withContext
+import net.sfelabs.core.knox.api.domain.model.ApiResult
 
 /**
  * Represents a use case for API operations.
@@ -17,7 +13,7 @@ interface UseCase<in P, out R : Any> {
      * Executes the use case.
      *
      * @param params The input parameters for the use case.
-     * @return An [ApiResult] representing the result of the operation.
+     * @return An [net.sfelabs.core.knox.api.domain.model.ApiResult] representing the result of the operation.
      */
     @Suppress("UNCHECKED_CAST")
     suspend operator fun invoke(params: P = Unit as P): ApiResult<R>
