@@ -6,9 +6,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.knox_common.domain.use_cases.settings.GetBrightnessModeUseCase
-import net.sfelabs.knox_common.domain.use_cases.settings.GetBrightnessValueUseCase
-import net.sfelabs.knox_common.domain.use_cases.settings.SetBrightnessUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.settings.GetBrightnessModeUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.settings.GetBrightnessValueUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.settings.SetBrightnessUseCase
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.screen.GetExtraBrightnessUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.screen.SetExtraBrightnessUseCase

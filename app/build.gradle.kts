@@ -71,7 +71,7 @@ dependencies {
     implementation(project(":core:knox-feature-hilt"))
     implementation(project(":core:ui"))
     implementation(project(":android-log-wrapper"))
-    implementation(project(":knox-common"))
+    implementation(project(":knox-enterprise"))
     implementation(project(":knox-tactical"))
 
     implementation(libs.androidx.core.ktx)

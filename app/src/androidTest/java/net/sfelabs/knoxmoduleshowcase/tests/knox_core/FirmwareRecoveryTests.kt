@@ -4,8 +4,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.knox_common.domain.use_cases.AllowFirmwareRecoveryUseCase
-import net.sfelabs.knox_common.domain.use_cases.IsFirmwareRecoveryAllowedUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.AllowFirmwareRecoveryUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.IsFirmwareRecoveryAllowedUseCase
 import org.junit.After
 import org.junit.FixMethodOrder
 import org.junit.Test

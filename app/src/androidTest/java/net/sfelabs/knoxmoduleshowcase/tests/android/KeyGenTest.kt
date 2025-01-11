@@ -4,9 +4,9 @@ import androidx.test.filters.FlakyTest
 import com.samsung.knox.attesation.blobvalidator.library.Verdict
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.knox_common.domain.use_cases.attestation.GetAttestationBlobUseCase
-import net.sfelabs.knox_common.domain.use_cases.attestation.KeyGeneratorUseCase
-import net.sfelabs.knox_common.domain.use_cases.attestation.ValidateAttestationUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.attestation.GetAttestationBlobUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.attestation.KeyGeneratorUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.attestation.ValidateAttestationUseCase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.UUID

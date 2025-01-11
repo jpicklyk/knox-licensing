@@ -15,10 +15,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.knox_common.license.domain.usecase.GetLicenseActivationInfoUseCase
-import net.sfelabs.knox_common.license.domain.usecase.GetLicenseInfoUseCase
-import net.sfelabs.knox_common.license.domain.usecase.KnoxLicenseUseCase
-import net.sfelabs.knox_common.license.presentation.LicenseState
+import net.sfelabs.knox_enterprise.license.domain.usecase.GetLicenseActivationInfoUseCase
+import net.sfelabs.knox_enterprise.license.domain.usecase.GetLicenseInfoUseCase
+import net.sfelabs.knox_enterprise.license.domain.usecase.KnoxLicenseUseCase
+import net.sfelabs.knox_enterprise.license.presentation.LicenseState
 import java.util.Date
 import javax.inject.Inject
 

@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.samsung.android.knox.restriction.RestrictionPolicy.USBInterface
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.knox_common.domain.use_cases.SetUsbExceptionListUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.SetUsbExceptionListUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 

@@ -5,9 +5,9 @@ import androidx.test.filters.SmallTest
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.knox_common.license.domain.usecase.GetLicenseInfoUseCase
-import net.sfelabs.knox_common.license.domain.usecase.KnoxLicenseUseCase
-import net.sfelabs.knox_common.license.presentation.LicenseState
+import net.sfelabs.knox_enterprise.license.domain.usecase.GetLicenseInfoUseCase
+import net.sfelabs.knox_enterprise.license.domain.usecase.KnoxLicenseUseCase
+import net.sfelabs.knox_enterprise.license.presentation.LicenseState
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import org.junit.Assert.assertTrue
 import org.junit.Before

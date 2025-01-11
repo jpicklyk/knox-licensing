@@ -3,8 +3,8 @@ package net.sfelabs.knoxmoduleshowcase.tests.knox_core
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.knox_common.domain.use_cases.AllowOtaUpgradeUseCase
-import net.sfelabs.knox_common.domain.use_cases.IsOtaUpgradeAllowedUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.AllowOtaUpgradeUseCase
+import net.sfelabs.knox_enterprise.domain.use_cases.IsOtaUpgradeAllowedUseCase
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith

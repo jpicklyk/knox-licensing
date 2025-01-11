@@ -5,7 +5,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
 import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.knox_common.di.KnoxModule
+import net.sfelabs.knox_enterprise.di.KnoxModule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
