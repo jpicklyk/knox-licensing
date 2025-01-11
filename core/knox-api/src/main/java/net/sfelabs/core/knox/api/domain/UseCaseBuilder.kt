@@ -5,7 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import net.sfelabs.core.knox.api.domain.UseCaseBuilder.Builder.RetryPolicy
@@ -229,9 +231,12 @@ class UseCaseBuilder {
         }
 
         private fun notifyStateChanged() {
+            val currentExecutedOperations = executedOperations.toList()
+            val currentResults = results.toList()
+
             val state = object : UseCaseBuilderState {
-                override val executedOperations: List<ExecutedOperation> = this@Builder.executedOperations
-                override val currentResults: List<ApiResult<*>> = results
+                override val executedOperations: List<ExecutedOperation> = currentExecutedOperations
+                override val currentResults: List<ApiResult<*>> = currentResults
             }
             stateListener?.get()?.invoke(state)
         }
@@ -317,57 +322,59 @@ class UseCaseBuilder {
         }
 
         suspend fun execute(): List<ApiResult<*>> {
-            try {
-                // Add the final group if it has operations
-                if (currentGroup.operations.isNotEmpty()) {
-                    executionUnits.add(currentGroup)
+            if (currentGroup.operations.isNotEmpty()) {
+                executionUnits.add(currentGroup)
+            }
+
+            val scope = coroutineScope?.get() ?: CoroutineScope(Dispatchers.IO)
+
+            return withContext(scope.coroutineContext) {  // Use the provided scope's context
+                try {
+                    withTimeoutOrNull(timeoutDuration?.inWholeMilliseconds ?: Long.MAX_VALUE) {
+                        executeOperations()
+                    } ?: emptyList()
+                } finally {
+                    cleanup()
                 }
-                val scope = coroutineScope?.get() ?: CoroutineScope(Dispatchers.IO)
-                return withContext(scope.coroutineContext + Dispatchers.IO) {
-                    timeoutDuration?.let { timeout ->
-                        withTimeoutOrNull(timeout.inWholeMilliseconds) {
-                            executeOperations()
-                        }
-                    } ?: executeOperations()
-                }
-            } finally {
-                cleanup()
             }
         }
 
         private suspend fun executeSingleOperation(
             operation: ExecutionUnit.SingleOperation
         ): ApiResult<*> {
+            // First add the result to our results list
+            fun addResult(result: ApiResult<*>) {
+                results.add(result)
+                executedOperations.add(ExecutedOperation(
+                    id = operation.hashCode().toString(),
+                    timestamp = System.currentTimeMillis(),
+                    wasSuccessful = result is ApiResult.Success,
+                    skipped = false
+                ))
+                notifyStateChanged()
+            }
+
             // Check predicate if exists
             if (operation.predicate?.invoke() == false) {
                 val result = ApiResult.Success(Unit)
+                results.add(result)
                 executedOperations.add(ExecutedOperation(
                     id = operation.hashCode().toString(),
                     timestamp = System.currentTimeMillis(),
                     wasSuccessful = true,
-                    skipped = true  // New field to indicate skipped due to predicate
+                    skipped = true
                 ))
-                results.add(result)
                 notifyStateChanged()
                 return result
             }
 
             val result = executeWithRetry(operation)
+            addResult(result)  // Add result and notify
 
             // Handle errors if handler exists
             if (result is ApiResult.Error) {
                 operation.errorHandler?.get()?.invoke(result)
             }
-
-            // Track operation execution
-            executedOperations.add(ExecutedOperation(
-                id = operation.hashCode().toString(),
-                timestamp = System.currentTimeMillis(),
-                wasSuccessful = result is ApiResult.Success,
-                skipped = false
-            ))
-            results.add(result)
-            notifyStateChanged()
 
             // Try fallback if main operation failed
             return when {
@@ -380,7 +387,7 @@ class UseCaseBuilder {
                         wasSuccessful = fallbackResult is ApiResult.Success,
                         skipped = false
                     ))
-                    results[results.lastIndex] = fallbackResult
+                    results[results.lastIndex] = fallbackResult  // Replace the previous result
                     notifyStateChanged()
                     fallbackResult
                 }
@@ -391,21 +398,38 @@ class UseCaseBuilder {
         private suspend fun executeWithRetry(
             operation: ExecutionUnit.SingleOperation
         ): ApiResult<*> {
-            val policy = operation.retryPolicy ?: retryPolicy ?: return operation.execute()
+            val policy = operation.retryPolicy ?: retryPolicy ?: return try {
+                operation.execute()
+            } catch (e: Throwable) {
+                currentCoroutineContext().ensureActive()
+                ApiResult.Error(DefaultApiError.UnexpectedError(), Exception(e))
+            }
 
             var currentDelay = policy.initialDelay
             repeat(policy.maxAttempts) { attempt ->
-                val result = operation.execute()
-                when (result) {
-                    is ApiResult.Success -> return result
-                    is ApiResult.Error -> {
-                        if (!policy.predicate(result) || attempt == policy.maxAttempts - 1) return result
-                        delay(currentDelay.inWholeMilliseconds)
-                        currentDelay = (currentDelay.inWholeMilliseconds * policy.factor)
-                            .milliseconds
-                            .coerceAtMost(policy.maxDelay)
+                try {
+                    val result = operation.execute()
+                    when (result) {
+                        is ApiResult.Success -> return result
+                        is ApiResult.Error -> {
+                            if (!policy.predicate(result) || attempt == policy.maxAttempts - 1) return result
+                            currentCoroutineContext().ensureActive()
+                            delay(currentDelay.inWholeMilliseconds)
+                            currentDelay = (currentDelay.inWholeMilliseconds * policy.factor)
+                                .milliseconds
+                                .coerceAtMost(policy.maxDelay)
+                        }
+                        is ApiResult.NotSupported -> return result
                     }
-                    is ApiResult.NotSupported -> return result
+                } catch (e: Throwable) {
+                    currentCoroutineContext().ensureActive()
+                    if (attempt == policy.maxAttempts - 1) {
+                        return ApiResult.Error(DefaultApiError.UnexpectedError(), Exception(e))
+                    }
+                    delay(currentDelay.inWholeMilliseconds)
+                    currentDelay = (currentDelay.inWholeMilliseconds * policy.factor)
+                        .milliseconds
+                        .coerceAtMost(policy.maxDelay)
                 }
             }
             throw IllegalStateException("Unexpected state in executeWithRetry")
@@ -425,9 +449,14 @@ class UseCaseBuilder {
         private suspend fun executeParallel(
             operations: List<ExecutionUnit.SingleOperation>
         ): List<ApiResult<*>> = coroutineScope {
-            operations.map { operation ->
+            val results = operations.map { operation ->
                 async { executeSingleOperation(operation) }
             }.awaitAll()
+
+            // Ensure we have a final state update with all operations
+            notifyStateChanged()
+
+            results
         }
 
         private suspend fun executeAny(
