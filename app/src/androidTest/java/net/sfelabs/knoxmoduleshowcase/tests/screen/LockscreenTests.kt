@@ -6,7 +6,6 @@ import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.annotations.ApiExists
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.lockscreen.GetLockscreenTimeoutUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.lockscreen.SetLockscreenTimeoutUseCase
 import org.junit.Test

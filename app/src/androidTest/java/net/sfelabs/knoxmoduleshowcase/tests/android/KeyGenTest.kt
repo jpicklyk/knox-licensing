@@ -3,7 +3,6 @@ package net.sfelabs.knoxmoduleshowcase.tests.android
 import androidx.test.filters.FlakyTest
 import com.samsung.knox.attesation.blobvalidator.library.Verdict
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_enterprise.domain.use_cases.attestation.GetAttestationBlobUseCase
 import net.sfelabs.knox_enterprise.domain.use_cases.attestation.KeyGeneratorUseCase
