@@ -1,7 +1,6 @@
 package net.sfelabs.core.knox.feature.processor.model
 
 enum class PackageName(val value: String) {
-    FEATURE_ANNOTATION("net.sfelabs.core.knox.feature.annotation"),
     FEATURE_PUBLIC("net.sfelabs.core.knox.feature.api"),
     FEATURE_COMPONENT("net.sfelabs.core.knox.feature.internal.component"),
     FEATURE_MODEL("net.sfelabs.core.knox.feature.internal.model"),
