@@ -9,7 +9,6 @@ import net.sfelabs.core.testing.rules.SimRemoved
 import net.sfelabs.core.testing.rules.SimRequired
 import net.sfelabs.core.testing.rules.SimRequiredRule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Disable5gBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Enable5gBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Get5gBandLockingUseCase
@@ -25,7 +24,6 @@ import kotlin.properties.Delegates
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class BandLocking5gTests {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
     private var currentBand by Delegates.notNull<Int>()
 
     @get:Rule
@@ -35,7 +33,7 @@ class BandLocking5gTests {
 
     @Before
     fun recordCurrentBandLocking() = runTest {
-        val result = Get5gBandLockingUseCase(systemManager).invoke()
+        val result = Get5gBandLockingUseCase().invoke(null)
         if (result is ApiResult.Success) {
             currentBand = result.data.value
         }
@@ -44,7 +42,7 @@ class BandLocking5gTests {
     @Test
     @SimRemoved
     fun disable5gBandLocking_simRemoved_returnError() = runTest {
-        val result = Disable5gBandLockingUseCase(systemManager).invoke()
+        val result = Disable5gBandLockingUseCase().invoke(null)
         assertTrue(
             "disableBandLocking API should return error when there is no sim card present",
             result is ApiResult.Error
@@ -55,7 +53,7 @@ class BandLocking5gTests {
     @SimRemoved
     @TacticalSdkSuppress(minReleaseVersion = 132)
     fun disable5gBandLockingPerSimSlotId0_simRemoved_returnError() = runTest {
-        val result = Disable5gBandLockingUseCase(systemManager).invoke(0)
+        val result = Disable5gBandLockingUseCase().invoke(0)
         assertTrue(
             "disableBandLocking API should return error when there is no sim card present for simSlotId 0",
             result is ApiResult.Error
@@ -65,7 +63,7 @@ class BandLocking5gTests {
     @Test
     @SimRemoved
     fun enable5gBandLocking_simRemoved_returnError() = runTest {
-        val result = Enable5gBandLockingUseCase(systemManager).invoke(78)
+        val result = Enable5gBandLockingUseCase().invoke(78)
         assertTrue("enable5gBandLocking API should return an error", result is ApiResult.Error)
     }
 
@@ -73,7 +71,7 @@ class BandLocking5gTests {
     @SimRemoved
     @TacticalSdkSuppress(minReleaseVersion = 132)
     fun enable5gBandLockingPerSimSlotId0_simRemoved_returnError() = runTest {
-        val result = Enable5gBandLockingUseCase(systemManager).invoke(78, 0)
+        val result = Enable5gBandLockingUseCase().invoke(78, 0)
         assertTrue("enable5gBandLocking API should return an error for simSlotId 0", result is ApiResult.Error)
     }
 
@@ -81,7 +79,7 @@ class BandLocking5gTests {
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
     fun enable5gBandLockingPerSimSlotId1_simRequiredSlot0_returnError() = runTest {
-        val result = Enable5gBandLockingUseCase(systemManager).invoke(78, 1)
+        val result = Enable5gBandLockingUseCase().invoke(78, 1)
         assertTrue("enable5gBandLocking API should return an error for simSlotId 1 when there is no eSIM installed.", result is ApiResult.Error)
     }
 
@@ -89,7 +87,7 @@ class BandLocking5gTests {
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
     fun disable5gBandLockingPerSimSlotId1_simRequiredSlot0_returnError() = runTest {
-        val result = Disable5gBandLockingUseCase(systemManager).invoke(1)
+        val result = Disable5gBandLockingUseCase().invoke(1)
         assertTrue("disable5gBandLocking API should return an error for simSlotId 1 when there is no eSIM installed.", result is ApiResult.Error)
     }
 
@@ -106,7 +104,7 @@ class BandLocking5gTests {
         testEnableBandLocking(0)
 
         //confirm that SIM id 1 isn't also enabled
-        val result = Get5gBandLockingUseCase(systemManager).invoke(1)
+        val result = Get5gBandLockingUseCase().invoke(1)
         assert(result is ApiResult.Success)
         val state = result.getOrNull()
         assertTrue("Band locking on SIM id 1 should not be enabled when configuring SIM 0.", state?.enabled == false)
@@ -117,10 +115,10 @@ class BandLocking5gTests {
 
     private suspend fun testEnableBandLocking(simSlotId: Int?) {
         val band = 78
-        val result = Enable5gBandLockingUseCase(systemManager).invoke(band, simSlotId)
+        val result = Enable5gBandLockingUseCase().invoke(band, simSlotId)
         assertTrue("enable5gBandLocking API should return success.  Error: $result",result is ApiResult.Success)
 
-        val result2 = Get5gBandLockingUseCase(systemManager).invoke(simSlotId)
+        val result2 = Get5gBandLockingUseCase().invoke(simSlotId)
         assert(result2 is ApiResult.Success && result2.data.enabled && result2.data.value == band)
     }
 
@@ -139,10 +137,10 @@ class BandLocking5gTests {
 
     private suspend fun testBandLockNoneNotAllowed(simSlotId: Int?) {
         val band = -1
-        val result = Enable5gBandLockingUseCase(systemManager).invoke(band, simSlotId)
+        val result = Enable5gBandLockingUseCase().invoke(band, simSlotId)
         assertTrue("enable5gBandLocking API should return an error", result is ApiResult.Error)
 
-        val result2 = Get5gBandLockingUseCase(systemManager).invoke(simSlotId)
+        val result2 = Get5gBandLockingUseCase().invoke(simSlotId)
         assert(result2 is ApiResult.Success)
         assertTrue("Band locking should be disabled", !(result2 as ApiResult.Success).data.enabled)
         assertTrue("Band locking state should report BAND_LOCKING_NONE", result2.data.value == band)
@@ -161,7 +159,7 @@ class BandLocking5gTests {
 
     private suspend fun testInvalidParameter(simSlotId: Int?) {
         val band = -2
-        val result = Enable5gBandLockingUseCase(systemManager).invoke(band, simSlotId)
+        val result = Enable5gBandLockingUseCase().invoke(band, simSlotId)
         assert(result is ApiResult.Error)
     }
 
@@ -179,15 +177,15 @@ class BandLocking5gTests {
     }
 
     private suspend fun testDisableBandLocking(simSlotId: Int?) {
-        val result = Disable5gBandLockingUseCase(systemManager).invoke(simSlotId)
+        val result = Disable5gBandLockingUseCase().invoke(simSlotId)
         assertTrue("disable5GBandLocking API should return success.  Error: $result",result is ApiResult.Success)
 
-        val result2 = Get5gBandLockingUseCase(systemManager).invoke(simSlotId)
+        val result2 = Get5gBandLockingUseCase().invoke(simSlotId)
         assert(result2 is ApiResult.Success && !result2.data.enabled)
     }
 
     @After
     fun cleanup() = runTest {
-        Disable5gBandLockingUseCase(systemManager).invoke()
+        Disable5gBandLockingUseCase().invoke(null)
     }
 }

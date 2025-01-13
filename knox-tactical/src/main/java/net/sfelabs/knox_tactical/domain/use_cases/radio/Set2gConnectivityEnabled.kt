@@ -1,30 +1,24 @@
 package net.sfelabs.knox_tactical.domain.use_cases.radio
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class Set2gConnectivityEnabled @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class Set2gConnectivityEnabled: SuspendingUseCase<Set2gConnectivityEnabled.Params, Unit>() {
+    class Params(val enabled: Boolean)
+
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
     suspend operator fun invoke(enabled: Boolean): UnitApiCall {
-        return coroutineScope {
-            try {
-                when(systemManager.set2GConnectivityState(enabled)) {
-                    CustomDeviceManager.SUCCESS -> ApiResult.Success(Unit)
-                    else -> ApiResult.Error(DefaultApiError.UnexpectedError("The operation failed for an unknown reason."))
-                }
-            } catch (nsm: NoSuchMethodError) {
-                ApiResult.NotSupported
-            } catch (ex: NoSuchMethodError) {
-                ApiResult.NotSupported
-            }
+        return invoke(Params(enabled))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        return when(systemManager.set2GConnectivityState(params.enabled)) {
+            CustomDeviceManager.SUCCESS -> ApiResult.Success(Unit)
+            else -> ApiResult.Error(DefaultApiError.UnexpectedError("The operation failed for an unknown reason."))
         }
     }
 }

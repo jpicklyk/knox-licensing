@@ -1,50 +1,39 @@
 package net.sfelabs.knox_tactical.domain.use_cases.radio
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.LteNrModeState
-import javax.inject.Inject
 
-class Set5gNrModeUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class Set5gNrModeUseCase: SuspendingUseCase<Set5gNrModeUseCase.Params, Unit>() {
+    class Params(val state: LteNrModeState, val simSlotId: Int? = null)
+
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
     suspend operator fun invoke(state: LteNrModeState, simSlotId: Int? = null): UnitApiCall {
-        simSlotId?.let { slotId ->
+        return invoke(Params(state, simSlotId))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        params.simSlotId?.let { slotId ->
             if (slotId !in 0..1) {
                 return ApiResult.Error(DefaultApiError.UnexpectedError("Invalid sim slot id: $slotId"))
             }
         }
-        return coroutineScope {
-            try {
-                val result = when (simSlotId) {
-                    null -> systemManager.set5gNrModeState(state.value)
-                    else -> systemManager.set5gNrModeStatePerSimSlot(state.value, simSlotId)
-                }
-                if( result != CustomDeviceManager.SUCCESS ) {
-                    ApiResult.Error(
-                        DefaultApiError.UnexpectedError(
-                            "Setting 5gNrModeState error: $result"
-                        )
-                    )
-                } else {
-                    ApiResult.Success(Unit)
-                }
-            } catch (nsm: NoSuchMethodError) {
-                ApiResult.NotSupported
-            } catch (se: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
-                    )
+        val result = when (params.simSlotId) {
+            null -> systemManager.set5gNrModeState(params.state.value)
+            else -> systemManager.set5gNrModeStatePerSimSlot(params.state.value, params.simSlotId)
+        }
+        return if( result != CustomDeviceManager.SUCCESS ) {
+            ApiResult.Error(
+                DefaultApiError.UnexpectedError(
+                    "Setting 5gNrModeState error: $result"
                 )
-            }
+            )
+        } else {
+            ApiResult.Success(Unit)
         }
     }
 }

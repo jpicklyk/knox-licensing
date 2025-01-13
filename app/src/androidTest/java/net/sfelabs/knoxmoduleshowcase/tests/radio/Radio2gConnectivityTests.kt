@@ -23,13 +23,11 @@ import kotlin.properties.Delegates
 @RunWith(AndroidJUnit4::class)
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class Radio2gConnectivityTests {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
     private var radio2gAllowed by Delegates.notNull<Boolean>()
-    private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Before
     fun getCurrentState() = runTest {
-        val result = Is2gConnectivityEnabledUseCase(systemManager).invoke()
+        val result = Is2gConnectivityEnabledUseCase().invoke()
         if(result is ApiResult.Success) {
             radio2gAllowed = result.data
         }
@@ -37,9 +35,9 @@ class Radio2gConnectivityTests {
 
     @Test
     fun set2G_disabled() = runTest {
-        val result = Set2gConnectivityEnabled(systemManager).invoke(false)
+        val result = Set2gConnectivityEnabled().invoke(false)
         assert(result is ApiResult.Success)
-        val result2 = Is2gConnectivityEnabledUseCase(systemManager).invoke()
+        val result2 = Is2gConnectivityEnabledUseCase().invoke()
         assert(result2 is ApiResult.Success && !result2.data )
         //println("2G available? ${is2GSupported()}")
 
@@ -48,15 +46,15 @@ class Radio2gConnectivityTests {
 
     @Test
     fun set2G_enabled() = runTest {
-        val result = Set2gConnectivityEnabled(systemManager).invoke(true)
+        val result = Set2gConnectivityEnabled().invoke(true)
         assert(result is ApiResult.Success)
-        val result2 = Is2gConnectivityEnabledUseCase(systemManager).invoke()
+        val result2 = Is2gConnectivityEnabledUseCase().invoke()
         assert(result2 is ApiResult.Success && result2.data)
     }
 
     @After
     fun cleanup() = runTest {
-        Set2gConnectivityEnabled(systemManager).invoke(radio2gAllowed)
+        Set2gConnectivityEnabled().invoke(radio2gAllowed)
     }
 
     // Method to check if 2G (GSM) connectivity is available

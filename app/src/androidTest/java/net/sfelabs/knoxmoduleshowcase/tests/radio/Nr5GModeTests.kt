@@ -5,7 +5,6 @@ import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.LteNrModeState
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Get5gNrModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Set5gNrModeUseCase
@@ -19,12 +18,11 @@ import kotlin.properties.Delegates
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class Nr5GModeTests {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
     private var currentState by Delegates.notNull<Int>()
 
     @Before
     fun recordCurrentConfiguration() = runTest {
-        val result = Get5gNrModeUseCase(systemManager).invoke()
+        val result = Get5gNrModeUseCase().invoke()
         if (result is ApiResult.Success) {
             currentState = result.data.value
         }
@@ -47,12 +45,12 @@ class Nr5GModeTests {
 
     @Test
     fun setNsaModeSlotId0_and_setSaModeSlotId1() = runTest {
-        val setCaseNsa = Set5gNrModeUseCase(systemManager).invoke(LteNrModeState.DisableSa, 0)
-        val setCaseSa = Set5gNrModeUseCase(systemManager).invoke(LteNrModeState.DisableNsa, 1)
+        val setCaseNsa = Set5gNrModeUseCase().invoke(LteNrModeState.DisableSa, 0)
+        val setCaseSa = Set5gNrModeUseCase().invoke(LteNrModeState.DisableNsa, 1)
         assert(setCaseNsa is ApiResult.Success)
         assert(setCaseSa is ApiResult.Success)
-        val getCaseNsa = Get5gNrModeUseCase(systemManager).invoke(0)
-        val getCaseSa = Get5gNrModeUseCase(systemManager).invoke(1)
+        val getCaseNsa = Get5gNrModeUseCase().invoke(0)
+        val getCaseSa = Get5gNrModeUseCase().invoke(1)
         println("Set mode: DisableSa, got mode: ${getCaseNsa.getOrNull()}, simSlotId: 0")
         println("Set mode: DisableNsa, got mode: ${getCaseSa.getOrNull()}, simSlotId: 1")
         assert(getCaseNsa is ApiResult.Success && getCaseNsa.data == LteNrModeState.DisableSa)
@@ -80,15 +78,15 @@ class Nr5GModeTests {
     }
 
     private suspend fun testSetNrMode(mode: LteNrModeState, simSlotId: Int?) {
-        val setCase = Set5gNrModeUseCase(systemManager).invoke(mode, simSlotId)
+        val setCase = Set5gNrModeUseCase().invoke(mode, simSlotId)
         assert(setCase is ApiResult.Success)
-        val getCase = Get5gNrModeUseCase(systemManager).invoke(simSlotId)
+        val getCase = Get5gNrModeUseCase().invoke(simSlotId)
         println("Set mode: $mode, got mode: ${getCase.getOrNull()}, simSlotId: $simSlotId")
         assert(getCase is ApiResult.Success && getCase.data == mode)
     }
 
     @After
     fun cleanup() = runTest {
-        Set5gNrModeUseCase(systemManager).invoke(LteNrModeState(currentState))
+        Set5gNrModeUseCase().invoke(LteNrModeState(currentState))
     }
 }

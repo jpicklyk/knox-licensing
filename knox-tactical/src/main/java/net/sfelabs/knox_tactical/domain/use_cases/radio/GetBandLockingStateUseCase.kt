@@ -1,44 +1,38 @@
 package net.sfelabs.knox_tactical.domain.use_cases.radio
 
+import com.samsung.android.knox.custom.CustomDeviceManager
 import com.samsung.android.knox.custom.CustomDeviceManager.BANDLOCK_NONE
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.core.knox.feature.internal.model.FeatureState
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class GetBandLockingStateUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class GetBandLockingStateUseCase: SuspendingUseCase<GetBandLockingStateUseCase.Params, FeatureState<Int>>() {
+    class Params(val simSlotId: Int? = null)
+
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
+
+    suspend operator fun invoke(): ApiResult<FeatureState<Int>> {
+        return invoke(Params(null))
+    }
 
     suspend operator fun invoke(simSlotId: Int? = null): ApiResult<FeatureState<Int>> {
-        simSlotId?.let { slotId ->
+        return invoke(Params(simSlotId))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<FeatureState<Int>> {
+        params.simSlotId?.let { slotId ->
             if (slotId !in 0..1) {
                 return ApiResult.Error(DefaultApiError.UnexpectedError("Invalid sim slot id: $slotId"))
             }
         }
-        return coroutineScope {
-            try {
-                val result = when (simSlotId) {
-                    null -> systemManager.lteBandLocking
-                    else -> systemManager.getLteBandLockingPerSimSlot(simSlotId)
-                }
-                when(result) {
-                    BANDLOCK_NONE -> ApiResult.Success(FeatureState(false, result))
-                    else -> ApiResult.Success(FeatureState(true, result))
-                }
-            } catch (se: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
-                    )
-                )
-            } catch (nsm: NoSuchMethodError) {
-                ApiResult.NotSupported
-            }
+        val result = when (params.simSlotId) {
+            null -> systemManager.lteBandLocking
+            else -> systemManager.getLteBandLockingPerSimSlot(params.simSlotId)
+        }
+        return when(result) {
+            BANDLOCK_NONE -> ApiResult.Success(FeatureState(false, result))
+            else -> ApiResult.Success(FeatureState(true, result))
         }
     }
 }

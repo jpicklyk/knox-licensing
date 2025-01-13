@@ -1,22 +1,13 @@
 package net.sfelabs.knox_tactical.domain.use_cases.radio
 
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
+import com.samsung.android.knox.custom.CustomDeviceManager
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class Is2gConnectivityEnabledUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class Is2gConnectivityEnabledUseCase: SuspendingUseCase<Unit, Boolean>() {
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
-    suspend operator fun invoke(): ApiResult<Boolean> {
-        return coroutineScope {
-            try {
-                ApiResult.Success(systemManager.get2GConnectivityState())
-            } catch (ex: NoSuchMethodError) {
-                ApiResult.NotSupported
-            }
-        }
+    override suspend fun execute(params: Unit): ApiResult<Boolean> {
+        return ApiResult.Success(systemManager.get2GConnectivityState())
     }
 }

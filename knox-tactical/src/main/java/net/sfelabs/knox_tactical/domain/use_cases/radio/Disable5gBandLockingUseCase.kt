@@ -1,48 +1,40 @@
 package net.sfelabs.knox_tactical.domain.use_cases.radio
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class Disable5gBandLockingUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class Disable5gBandLockingUseCase: SuspendingUseCase<Disable5gBandLockingUseCase.Params, Unit>() {
+
+    class Params(val simSlotId: Int? = null)
+
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
+
     suspend operator fun invoke(simSlotId: Int? = null): UnitApiCall {
-        simSlotId?.let { slotId ->
+        return invoke(Params(simSlotId))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        params.simSlotId?.let { slotId ->
             if (slotId !in 0..1) {
                 return ApiResult.Error(DefaultApiError.UnexpectedError("Invalid sim slot id: $slotId"))
             }
         }
-        return coroutineScope {
-            try {
-                val result = when (simSlotId) {
-                    null -> systemManager.disable5GBandLocking()
-                    else -> systemManager.disable5GBandLockingPerSimSlot(simSlotId)
-                }
-                if( result != CustomDeviceManager.SUCCESS ) {
-                    ApiResult.Error(
-                        DefaultApiError.UnexpectedError(
-                            "Disable5gBandLocking error: $result"
-                        )
-                    )
-                } else {
-                    ApiResult.Success(Unit)
-                }
-            } catch (nsm: NoSuchMethodError) {
-                ApiResult.NotSupported
-            } catch (se: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "The use of this API requires the caller to have the " +
-                                "\"com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING\" permission"
-                    )
+
+        val result = when (params.simSlotId) {
+            null -> systemManager.disable5GBandLocking()
+            else -> systemManager.disable5GBandLockingPerSimSlot(params.simSlotId)
+        }
+        return if( result != CustomDeviceManager.SUCCESS ) {
+            ApiResult.Error(
+                DefaultApiError.UnexpectedError(
+                    "Disable5gBandLocking error: $result"
                 )
-            }
+            )
+        } else {
+            ApiResult.Success(Unit)
         }
     }
 }
