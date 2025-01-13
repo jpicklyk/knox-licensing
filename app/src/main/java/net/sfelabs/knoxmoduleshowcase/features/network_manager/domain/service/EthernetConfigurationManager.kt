@@ -6,17 +6,14 @@ import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnec
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.InterfaceAddressConfigurationType
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.InterfaceConfiguration
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.InterfaceType
-import java.net.NetworkInterface
-import javax.inject.Inject
 
 /**
  * Service to manage Ethernet interface configurations
  */
 
-class EthernetConfigurationManager @Inject constructor(
-    private val setEthernetAutoConfigurationAltUseCase: SetEthernetAutoConnectionAltUseCase,
-    private val configureEthernetInterfaceAltUseCase: ConfigureEthernetInterfaceAltUseCase
-) {
+class EthernetConfigurationManager() {
+    private val setEthernetAutoConfigurationAltUseCase = SetEthernetAutoConnectionAltUseCase()
+    private val configureEthernetInterfaceAltUseCase = ConfigureEthernetInterfaceAltUseCase()
 
     suspend fun applyConfiguration(configurations: List<InterfaceConfiguration>) {
         setEthernetAutoConfigurationAltUseCase(false)
@@ -25,13 +22,6 @@ class EthernetConfigurationManager @Inject constructor(
         }
         setEthernetAutoConfigurationAltUseCase(true)
 
-    }
-
-
-    private fun getCurrentNetworkInterface(interfaceName: String): NetworkInterface? {
-        return NetworkInterface.getNetworkInterfaces().toList().firstOrNull {
-            it.name == interfaceName
-        }
     }
 
     private suspend fun configureInterface(configuration: InterfaceConfiguration) {

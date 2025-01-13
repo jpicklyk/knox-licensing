@@ -40,9 +40,7 @@ import javax.inject.Inject
 class EthernetConfigurationViewModel @Inject constructor(
     @ApplicationContext
     private val context: Context,
-    //private val connectivityManager: ConnectivityManager,
-    private val configureEthernetInterfaceUseCase: ConfigureEthernetInterfaceUseCase,
-    private val setEthernetAutoConnectionUseCase: SetEthernetAutoConnectionUseCase,
+    connectivityManager: ConnectivityManager,
 
     private val log: net.sfelabs.android_log_wrapper.Log,
     private val networkService: NetworkConnectivityService
@@ -51,6 +49,8 @@ class EthernetConfigurationViewModel @Inject constructor(
 
     private val getEthernetAutoConnection = GetEthernetAutoConnectionUseCase()
     private val getEthernetMacAddressUseCase = GetMacAddressForInterfaceUseCase()
+    private val configureEthernetInterfaceUseCase = ConfigureEthernetInterfaceUseCase(connectivityManager)
+    private val setEthernetAutoConnectionUseCase = SetEthernetAutoConnectionUseCase(connectivityManager)
 
     private val _state = MutableStateFlow(EthernetConfigurationState(isLoading = true))
     val stateFlow: StateFlow<EthernetConfigurationState> = _state.asStateFlow()

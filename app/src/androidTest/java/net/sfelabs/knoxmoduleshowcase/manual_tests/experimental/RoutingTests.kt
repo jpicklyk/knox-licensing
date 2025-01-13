@@ -5,7 +5,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox_enterprise.di.KnoxModule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
@@ -28,7 +27,6 @@ import org.junit.runner.RunWith
 class RoutingTests {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val packageManager = AndroidServiceModule.providePackageManager(context)
-    private val settingsManager = KnoxModule.provideKnoxSettingsManager()
 
     /**
      * Test requires eth0 connection to function
@@ -55,7 +53,7 @@ class RoutingTests {
         val packageName = "com.android.chrome"
         val chromeUid = packageManager.getPackageUid(packageName, 0)
         val ipSrc = "192.168.2.244"
-        val result = ListIpAddressesUseCase(settingsManager).invoke("eth0")
+        val result = ListIpAddressesUseCase().invoke("eth0")
         assert(result is ApiResult.Success)
         if(result is ApiResult.Success) {
             //val ipList = result.data

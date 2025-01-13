@@ -1,34 +1,31 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ethernet
 
-import com.samsung.android.knox.custom.SystemManager
+import com.samsung.android.knox.custom.CustomDeviceManager
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class GetEthernetInterfaceNameForMacAddressUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class GetEthernetInterfaceNameForMacAddressUseCase
+    : SuspendingUseCase<GetEthernetInterfaceNameForMacAddressUseCase.Params, String>() {
+    class Params(
+        val macAddress: String
+    )
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
-    operator fun invoke(macAddress: String): ApiResult<String> {
-        return try {
-            val result = systemManager.getEthernetInterfaceNameForMacAddress(macAddress)
-            if(result == null) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "MAC Address doesn't exist"
-                    )
-                )
-            } else {
-                ApiResult.Success(result)
-            }
+    suspend operator fun invoke(macAddress: String): ApiResult<String> {
+        return invoke(Params(macAddress))
+    }
 
-        } catch (e: Exception) {
+    override suspend fun execute(params: Params): ApiResult<String> {
+        val result = systemManager.getEthernetInterfaceNameForMacAddress(params.macAddress)
+        return if(result == null) {
             ApiResult.Error(
                 DefaultApiError.UnexpectedError(
-                    e.message!!
+                    "MAC Address doesn't exist"
                 )
             )
+        } else {
+            ApiResult.Success(result)
         }
     }
 }

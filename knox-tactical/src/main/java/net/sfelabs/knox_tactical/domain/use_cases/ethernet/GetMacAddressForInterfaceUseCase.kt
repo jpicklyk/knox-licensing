@@ -5,7 +5,8 @@ import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 
-class GetMacAddressForInterfaceUseCase: SuspendingUseCase<GetMacAddressForInterfaceUseCase.Params, String>() {
+class GetMacAddressForInterfaceUseCase
+    : SuspendingUseCase<GetMacAddressForInterfaceUseCase.Params, String>() {
     class Params(
         val interfaceName: String
     )

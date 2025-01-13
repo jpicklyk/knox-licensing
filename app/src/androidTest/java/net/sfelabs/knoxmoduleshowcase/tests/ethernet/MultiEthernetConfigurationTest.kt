@@ -31,7 +31,6 @@ import org.junit.runner.RunWith
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class MultiEthernetConfigurationTest {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
-    private val settingsManager = KnoxModule.provideKnoxSettingsManager()
     private lateinit var context: Context
     private lateinit var connectivityManager: ConnectivityManager
 
@@ -43,7 +42,7 @@ class MultiEthernetConfigurationTest {
 
     @Test
     fun disableEthernetAutoConfig() = runTest {
-        val resultFlow = SetEthernetAutoConnectionUseCase(settingsManager, connectivityManager)
+        val resultFlow = SetEthernetAutoConnectionUseCase(connectivityManager)
             .invoke(AutoConnectionState.OFF, listOf(ConnectivityManager.NetworkCallback()))
 
         assert(resultFlow.first() is ApiResult.Success)
@@ -54,7 +53,7 @@ class MultiEthernetConfigurationTest {
 
     @Test
     fun enableEthernetAutoConfig() = runTest {
-        val resultFlow = SetEthernetAutoConnectionUseCase(settingsManager, connectivityManager)
+        val resultFlow = SetEthernetAutoConnectionUseCase(connectivityManager)
             .invoke(AutoConnectionState.ON, listOf(ConnectivityManager.NetworkCallback()))
 
         assert(resultFlow.first() is ApiResult.Success)
@@ -66,9 +65,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth0DHCP() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(DhcpConfiguration("eth0"), getNetworkCallback())
         enableEthernetAutoConfig()
         assert(resultFlow.first() is ApiResult.Success)
@@ -77,9 +74,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth1DHCP() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(DhcpConfiguration("eth1"), getNetworkCallback())
         enableEthernetAutoConfig()
         assert(resultFlow.first() is ApiResult.Success)
@@ -88,9 +83,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth2DHCP() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(DhcpConfiguration("eth2"), getNetworkCallback())
         enableEthernetAutoConfig()
         assert(resultFlow.first() is ApiResult.Success)
@@ -99,9 +92,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth3DHCP() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(DhcpConfiguration("eth3"), getNetworkCallback())
         enableEthernetAutoConfig()
         assert(resultFlow.first() is ApiResult.Success)
@@ -110,9 +101,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth4DHCP() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(DhcpConfiguration("eth4"), getNetworkCallback())
         enableEthernetAutoConfig()
         assert(resultFlow.first() is ApiResult.Success)
@@ -121,9 +110,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth5DHCP() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(DhcpConfiguration("eth5"), getNetworkCallback())
         enableEthernetAutoConfig()
         assert(resultFlow.first() is ApiResult.Success)
@@ -132,9 +119,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth0Static() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(StaticConfiguration(
                 name = "eth1",
                 ipAddress = "192.168.45.123",
@@ -149,9 +134,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth0StaticWithNullGateway() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(StaticConfiguration(
                 name = "eth1",
                 ipAddress = "192.168.45.123",
@@ -166,9 +149,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth0StaticWithNoDns() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(StaticConfiguration(
                 name = "eth1",
                 ipAddress = "192.168.45.123",
@@ -183,9 +164,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth0StaticWithNoDnsAndNoGateway() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(StaticConfiguration(
                 name = "eth1",
                 ipAddress = "192.168.45.123",
@@ -200,9 +179,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun configureEth0StaticWithNullDnsAndNullGateway() = runTest {
         disableEthernetAutoConfig()
-        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager,
-            this@MultiEthernetConfigurationTest.systemManager
-        )
+        val resultFlow = ConfigureEthernetInterfaceUseCase(connectivityManager)
             .invoke(StaticConfiguration(
                 name = "eth1",
                 ipAddress = "192.168.45.123",
@@ -218,7 +195,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun testSetEthernetConfigurations_Nulls() = runTest {
         try {
-            val result = this@MultiEthernetConfigurationTest.systemManager.testSetEthernetConfigurations(
+            val result = systemManager.testSetEthernetConfigurations(
                 "eth0",
                 "192.168.2.244",
                 "255.255.255.0",
@@ -227,7 +204,7 @@ class MultiEthernetConfigurationTest {
 
             )
             assertTrue("Calling setEthernetConfigurations failed", result)
-        }catch (npe: NullPointerException) {
+        }catch (_: NullPointerException) {
             assertTrue("Null pointer exception received!",false)
         }
     }
@@ -236,7 +213,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun testSetEthernetConfigurations_EmptyStrings() = runTest {
         try {
-            val result = this@MultiEthernetConfigurationTest.systemManager.testSetEthernetConfigurations(
+            val result = systemManager.testSetEthernetConfigurations(
                 "eth0",
                 "192.168.2.244",
                 "255.255.255.0",
@@ -245,7 +222,7 @@ class MultiEthernetConfigurationTest {
 
             )
             assertTrue("Calling setEthernetConfigurations failed", result)
-        }catch (npe: NullPointerException) {
+        }catch (_: NullPointerException) {
             assertTrue("Null pointer exception received!",false)
         }
     }
@@ -255,7 +232,7 @@ class MultiEthernetConfigurationTest {
     fun testSetEthernetConfigurationsMultiDns_Nulls() = runTest {
         disableEthernetAutoConfig()
         try {
-            val result = this@MultiEthernetConfigurationTest.systemManager.testSetEthernetConfigurationsMultiDns(
+            val result = systemManager.testSetEthernetConfigurationsMultiDns(
                 "eth0",
                 "192.168.2.244",
                 "255.255.255.0",
@@ -265,7 +242,7 @@ class MultiEthernetConfigurationTest {
             )
             enableEthernetAutoConfig()
             assertTrue("Calling setEthernetConfigurationsMultiDns failed", result)
-        }catch (npe: NullPointerException) {
+        }catch (_: NullPointerException) {
             assertTrue("Null pointer exception received!",false)
         }
     }
@@ -274,7 +251,7 @@ class MultiEthernetConfigurationTest {
     @Test
     fun testSetEthernetConfigurationsMultiDns_EmptyStrings() = runTest {
         try {
-            val result = this@MultiEthernetConfigurationTest.systemManager.testSetEthernetConfigurationsMultiDns(
+            val result = systemManager.testSetEthernetConfigurationsMultiDns(
                 "eth0",
                 "192.168.2.244",
                 "255.255.255.0",
@@ -283,7 +260,7 @@ class MultiEthernetConfigurationTest {
 
             )
             assertTrue("Calling setEthernetConfigurationsMultiDns failed", result)
-        }catch (npe: NullPointerException) {
+        }catch (_: NullPointerException) {
             assertTrue("Null pointer exception received!",false)
         }
     }

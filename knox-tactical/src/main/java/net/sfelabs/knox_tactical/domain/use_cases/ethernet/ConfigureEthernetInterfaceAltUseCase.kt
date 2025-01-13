@@ -1,20 +1,26 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ethernet
 
-import android.net.ConnectivityManager
-import com.samsung.android.knox.custom.SystemManager
-import kotlinx.coroutines.coroutineScope
+import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureDhcpEthernetInterface
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureStaticEthernetInterface
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class ConfigureEthernetInterfaceAltUseCase @Inject constructor(
-    private val connectivityManager: ConnectivityManager,
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class ConfigureEthernetInterfaceAltUseCase
+    : SuspendingUseCase<ConfigureEthernetInterfaceAltUseCase.Params, Unit>() {
+    class Params(
+        val interfaceName: String,
+        val useDhcp: Boolean,
+        val ipAddress: String,
+        val netmask: String,
+        val dnsAddressList: List<String> = emptyList(),
+        val defaultRouter: String? = null
+    )
+
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
+
     suspend operator fun invoke(
         interfaceName: String,
         useDhcp: Boolean,
@@ -23,28 +29,35 @@ class ConfigureEthernetInterfaceAltUseCase @Inject constructor(
         dnsAddressList: List<String> = emptyList(),
         defaultRouter: String? = null
     ):UnitApiCall {
-        return coroutineScope {
-            try {
-                val isSuccessful = when (useDhcp) {
-                    true -> systemManager.configureDhcpEthernetInterface(interfaceName)
-                    false -> systemManager.configureStaticEthernetInterface(
-                        interfaceName,
-                        ipAddress,
-                        dnsAddressList,
-                        defaultRouter,
-                        netmask
-                    )
-                }
-                if (isSuccessful) {
-                    ApiResult.Success(Unit)
-                } else {
-                    ApiResult.Error(DefaultApiError.UnexpectedError("An unknown error occurred while configuring DHCP interface $interfaceName"))
-                }
-            }catch (e: SecurityException) {
-                ApiResult.Error(DefaultApiError.UnexpectedError(e.message!!))
-            } catch (e: NoSuchMethodError) {
-                ApiResult.NotSupported
-            }
+        return invoke(
+            Params(
+                interfaceName,
+                useDhcp,
+                ipAddress,
+                netmask,
+                dnsAddressList,
+                defaultRouter
+            )
+        )
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Unit> {
+        val isSuccessful = when (params.useDhcp) {
+            true -> systemManager.configureDhcpEthernetInterface(params.interfaceName)
+            false -> systemManager.configureStaticEthernetInterface(
+                params.interfaceName,
+                params.ipAddress,
+                params.dnsAddressList,
+                params.defaultRouter,
+                params.netmask
+            )
+        }
+        return if (isSuccessful) {
+            ApiResult.Success(Unit)
+        } else {
+            ApiResult.Error(DefaultApiError.UnexpectedError(
+                "An unknown error occurred while configuring DHCP interface $params.interfaceName")
+            )
         }
     }
 }

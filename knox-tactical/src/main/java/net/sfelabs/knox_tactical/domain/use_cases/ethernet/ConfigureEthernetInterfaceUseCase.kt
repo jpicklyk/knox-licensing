@@ -9,7 +9,7 @@ import android.net.NetworkRequest
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import com.samsung.android.knox.custom.SystemManager
+import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -19,16 +19,15 @@ import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureDhcpEthernetInterface
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureStaticEthernetInterface
-import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
 import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
-import javax.inject.Inject
 
-class ConfigureEthernetInterfaceUseCase @Inject constructor(
-    private val connectivityManager: ConnectivityManager,
-    @TacticalSdk private val systemManager: SystemManager
+class ConfigureEthernetInterfaceUseCase(
+    private val connectivityManager: ConnectivityManager
 ) {
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
+
     /**
      * Generally we are performing this function several times (minimum of 2 or more when using
      * greater than 2 ethernet connections) so I will expose this as a flow scoped to the ViewScope

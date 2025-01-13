@@ -15,10 +15,11 @@ import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import javax.inject.Inject
 
-class SetEthernetAutoConnectionUseCase @Inject constructor(
-    @TacticalSdk private val settingsManager: SettingsManager,
+class SetEthernetAutoConnectionUseCase (
     private val connectivityManager: ConnectivityManager
 ) {
+
+    private val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
     operator fun invoke(
         autoConnectionState: AutoConnectionState,

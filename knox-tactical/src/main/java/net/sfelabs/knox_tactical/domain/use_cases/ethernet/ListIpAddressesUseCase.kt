@@ -1,40 +1,22 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ethernet
 
-import com.samsung.android.knox.custom.SettingsManager
-import kotlinx.coroutines.coroutineScope
+import com.samsung.android.knox.custom.CustomDeviceManager
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
 
-class ListIpAddressesUseCase @Inject constructor(
-    @TacticalSdk private val settingsManager: SettingsManager
-) {
+class ListIpAddressesUseCase: SuspendingUseCase<ListIpAddressesUseCase.Params, List<String>>() {
+    class Params(
+        val interfaceName: String
+    )
+    private val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
     suspend operator fun invoke(interfaceName: String): ApiResult<List<String>> {
-        return coroutineScope {
-            try {
-                ApiResult.Success(
-                    settingsManager.listIpAddress(interfaceName)
-                )
-            } catch(e: IllegalArgumentException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        e.message ?: "An illegal argument was passed"
-                    )
-                )
-            } catch (e: NoSuchMethodError) {
-                ApiResult.NotSupported
-            } catch (e: SecurityException) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        e.message ?: (
-                                "The use of this API requires the caller to have permission " +
-                                        "'com.samsung.android.knox.permission.KNOX_CUSTOM_SETTING'."
-                                )
-                    )
-                )
-            }
-        }
+        return invoke(Params(interfaceName))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<List<String>> {
+        return ApiResult.Success(
+            settingsManager.listIpAddress(params.interfaceName)
+        )
     }
 }

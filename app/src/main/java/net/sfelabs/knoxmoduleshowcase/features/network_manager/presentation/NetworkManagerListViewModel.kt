@@ -37,13 +37,12 @@ import javax.inject.Inject
 class NetworkManagerListViewModel @Inject constructor(
     @ApplicationContext
     private val context: Context,
-    private val ethernetConfigurationManager: EthernetConfigurationManager
 ): ViewModel() {
     private val serviceScope = CoroutineScope(Dispatchers.Default)
     private val _state = MutableStateFlow(NetworkManagerState())
     val state: StateFlow<NetworkManagerState> get() = _state
 
-
+    private val ethernetConfigurationManager = EthernetConfigurationManager()
     private val getMacAddressForInterfaceUseCase = GetMacAddressForInterfaceUseCase()
 
     private val monitoredInterfaceDefaults: ArrayList<String> =
