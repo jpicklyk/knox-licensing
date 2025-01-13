@@ -1,7 +1,7 @@
 package net.sfelabs.knox_tactical.domain.api
 
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.model.map
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.map
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureContract

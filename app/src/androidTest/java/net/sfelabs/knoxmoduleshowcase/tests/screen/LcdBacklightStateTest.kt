@@ -6,7 +6,7 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_enterprise.domain.use_cases.settings.GetBrightnessValueUseCase
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.backlight.GetLcdBacklightEnabledUseCase
@@ -36,6 +36,7 @@ class LcdBacklightStateTest {
         val result3 = GetBrightnessValueUseCase().invoke()
         if(result3 is ApiResult.Success) {
             println("Screen brightness set to ${result3.data}")
+            @Suppress("DEPRECATION")
             println("Is screen on? ${powerManager.isScreenOn}")
             println("Is interactive? ${powerManager.isInteractive}")
         }
@@ -54,6 +55,7 @@ class LcdBacklightStateTest {
             context.contentResolver, Settings.System.SCREEN_BRIGHTNESS
         )
         println("Screen brightness settings set to $brightness")
+        @Suppress("DEPRECATION")
         println("Is screen on? ${powerManager.isScreenOn}")
         println("Is interactive? ${powerManager.isInteractive}")
         val result3 = GetBrightnessValueUseCase().invoke()

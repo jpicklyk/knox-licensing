@@ -1,25 +1,14 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ethernet
 
-import com.samsung.android.knox.custom.SettingsManager
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
+import com.samsung.android.knox.custom.CustomDeviceManager
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
-import javax.inject.Inject
 
-class GetEthernetAutoConnectionUseCase @Inject constructor(
-    @TacticalSdk private val settingsManager: SettingsManager
-) {
+class GetEthernetAutoConnectionUseCase: SuspendingUseCase<Unit, AutoConnectionState>() {
+    private val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
-    operator fun invoke(): ApiResult<AutoConnectionState> {
-        return try {
-            ApiResult.Success(AutoConnectionState(settingsManager.ethernetAutoConnectionState))
-        } catch (e: Exception) {
-            ApiResult.Error(
-                DefaultApiError.UnexpectedError(
-                    e.message!!
-                )
-            )
-        }
+    override suspend fun execute(params: Unit): ApiResult<AutoConnectionState> {
+        return ApiResult.Success(AutoConnectionState(settingsManager.ethernetAutoConnectionState))
     }
 }

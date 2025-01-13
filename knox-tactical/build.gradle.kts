@@ -40,7 +40,7 @@ dependencies {
     implementation(libs.hilt.compiler)
     implementation(project(":android-log-wrapper"))
     implementation(project(":core:common"))
-    implementation(project(":core:knox-api"))
+    implementation(project(":core:usecase-executor"))
     implementation(project(":core:knox-android"))
     implementation(project(":core:knox-feature"))
     implementation(project(":core:knox-feature-ui"))

@@ -3,9 +3,9 @@ package net.sfelabs.knox_tactical.domain.use_cases.screen
 import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.repository.PreferencesRepository
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.knox_tactical.domain.model.NightVisionState
 
 class SetNightVisionModeStateUseCase(

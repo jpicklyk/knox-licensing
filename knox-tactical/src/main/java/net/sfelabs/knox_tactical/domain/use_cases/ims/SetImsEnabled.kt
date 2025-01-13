@@ -6,9 +6,9 @@ import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_NONE
 import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_NOT_SUPPORTED
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.knox_tactical.domain.model.ImsState
 
 class SetImsEnabled: WithAndroidApplicationContext, SuspendingUseCase<ImsState, Unit>() {

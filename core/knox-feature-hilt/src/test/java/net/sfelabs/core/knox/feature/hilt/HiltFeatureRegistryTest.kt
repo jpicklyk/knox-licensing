@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.internal.component.FeatureComponent
 import net.sfelabs.core.knox.feature.internal.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.api.FeatureCategory

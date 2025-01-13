@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.NetworkManagerState
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.Interface
@@ -37,7 +37,6 @@ import javax.inject.Inject
 class NetworkManagerListViewModel @Inject constructor(
     @ApplicationContext
     private val context: Context,
-    private val getMacAddressForInterfaceUseCase: GetMacAddressForInterfaceUseCase,
     private val ethernetConfigurationManager: EthernetConfigurationManager
 ): ViewModel() {
     private val serviceScope = CoroutineScope(Dispatchers.Default)
@@ -45,14 +44,18 @@ class NetworkManagerListViewModel @Inject constructor(
     val state: StateFlow<NetworkManagerState> get() = _state
 
 
+    private val getMacAddressForInterfaceUseCase = GetMacAddressForInterfaceUseCase()
+
     private val monitoredInterfaceDefaults: ArrayList<String> =
         arrayListOf("eth0", "eth1", "eth2", "wlan0", "usb0", "rndis0", "br0")
 
     init {
-        scanCurrentInterfaces()
-        observeNetworkState()
-        startNetworkMonitorService()
-        //pollInterfacesForUpdates()
+        viewModelScope.launch {
+            scanCurrentInterfaces()
+            observeNetworkState()
+            startNetworkMonitorService()
+            //pollInterfacesForUpdates()
+        }
     }
 
     fun onNewNetworkClicked() {
@@ -271,7 +274,7 @@ class NetworkManagerListViewModel @Inject constructor(
      * Load the current interfaces from the system.  Only interfaces that have an address will be
      * seen.  Function filters out the lo and dummy0 interfaces which shouldn't be used.
      */
-    private fun scanCurrentInterfaces() {
+    private suspend fun scanCurrentInterfaces() {
         NetworkInterface.getNetworkInterfaces().toList()
             .filter {it.name != "lo" && it.name != "dummy0"}
             .forEach {
@@ -309,7 +312,7 @@ class NetworkManagerListViewModel @Inject constructor(
      * Called when the ConnectivityManager sends an interface state change when there
      * is no corresponding InterfaceConfiguration.
      */
-    private fun addInterfaceConfiguration(interfaceName: String, interfaceState: Interface) {
+    private suspend fun addInterfaceConfiguration(interfaceName: String, interfaceState: Interface) {
         val macAddress = lookupMacAddress(interfaceName)
         _state.update { currentState ->
             val newConfig = InterfaceConfiguration(
@@ -344,7 +347,7 @@ class NetworkManagerListViewModel @Inject constructor(
     /**
      * To be used to update the current state of the Interface configuration.
      */
-    private fun updateInterfaceConfigurationFromStateChange(index: Int, interfaceState: Interface) {
+    private suspend fun updateInterfaceConfigurationFromStateChange(index: Int, interfaceState: Interface) {
         if(index == -1) return
 
         if (interfaceState.networkStatus == NetworkInterfaceState.Connected) {
@@ -376,7 +379,7 @@ class NetworkManagerListViewModel @Inject constructor(
         }
     }
 
-    private fun lookupMacAddress(interfaceName: String): String {
+    private suspend fun lookupMacAddress(interfaceName: String): String {
         val result = getMacAddressForInterfaceUseCase(interfaceName)
         return if (result is ApiResult.Success) {
             result.data

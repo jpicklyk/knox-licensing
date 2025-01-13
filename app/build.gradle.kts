@@ -64,7 +64,7 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:knox-android"))
-    implementation(project(":core:knox-api"))
+    implementation(project(":core:usecase-executor"))
     implementation(project(":core:knox-feature"))
     implementation(project(":core:knox-feature-ui"))
     implementation(project(":core:knox-feature-compose"))
@@ -94,7 +94,7 @@ dependencies {
     testRuntimeOnly(libs.junit.jupiter.engine)
 
     androidTestImplementation(project(":core:testing"))
-    androidTestImplementation(project(":core:knox-api"))
+    androidTestImplementation(project(":core:usecase-executor"))
     androidTestImplementation(libs.junit.jupiter.api)
     androidTestRuntimeOnly(libs.junit.jupiter.engine)
     androidTestRuntimeOnly(libs.junit.extensions)

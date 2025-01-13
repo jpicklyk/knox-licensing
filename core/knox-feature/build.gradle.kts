@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":core:knox-api"))
+    implementation(project(":core:usecase-executor"))
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.coroutines.core)

@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import javax.inject.Inject

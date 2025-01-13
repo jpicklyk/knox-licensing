@@ -1,6 +1,6 @@
 package net.sfelabs.core.knox.feature.internal.handler
 
-import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.knox.feature.api.FeatureParameters
 import net.sfelabs.core.knox.feature.internal.model.FeatureState
 import net.sfelabs.core.knox.feature.internal.component.StateMapping

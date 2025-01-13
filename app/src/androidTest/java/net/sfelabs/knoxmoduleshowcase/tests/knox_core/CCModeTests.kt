@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.samsung.android.knox.restriction.AdvancedRestrictionPolicy
 import junit.framework.TestCase
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_enterprise.domain.use_cases.GetCCModeUseCase
 import net.sfelabs.knox_enterprise.domain.use_cases.SetCCModeUseCase
 import org.junit.Test

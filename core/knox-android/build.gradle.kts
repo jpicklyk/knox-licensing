@@ -9,7 +9,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:knox-api"))
+    implementation(project(":core:usecase-executor"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

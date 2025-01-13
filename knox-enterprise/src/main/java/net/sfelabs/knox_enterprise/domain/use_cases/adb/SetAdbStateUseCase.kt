@@ -1,9 +1,9 @@
 package net.sfelabs.knox_enterprise.domain.use_cases.adb
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
 
 /**
  * Use case to turn on or off the Android Debug Bridge.

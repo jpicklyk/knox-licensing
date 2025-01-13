@@ -82,7 +82,7 @@ class LicenseActivationTests {
         return knoxLicenseUseCase(activate = false, licenseKey = licenseKey)
     }
 
-    private suspend fun getLicenseInfo(licenseKey: String) {
+    private suspend fun getLicenseInfo() {
         val activateInfo = licenseInfoUseCase()
         assert(activateInfo.isActivated())
     }

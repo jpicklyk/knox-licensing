@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.tests.ethernet
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.testing.rules.EthernetNotConnected
 import net.sfelabs.core.testing.rules.EthernetNotConnectedRule
 import net.sfelabs.core.testing.rules.EthernetRequired
@@ -47,7 +47,7 @@ class AddIpAddressToInterfaceTests {
     fun addIpAddress_withPrefix24_returnsSuccess() = runTest {
         val interfaceName = "eth0"
         val ipAddress = "192.168.2.199/24"
-        val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
+        val result = AddIpAddressToEthernetInterfaceUseCase()
             .invoke(interfaceName, ipAddress)
         assert(result is ApiResult.Success)
 
@@ -65,7 +65,7 @@ class AddIpAddressToInterfaceTests {
     fun addIpAddress_withoutPrefix_returnsError() = runTest {
         val interfaceName = "eth0"
         val ipAddress ="192.168.2.199"
-        val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
+        val result = AddIpAddressToEthernetInterfaceUseCase()
             .invoke(interfaceName, ipAddress)
         assert(result is ApiResult.Error)
     }
@@ -79,7 +79,7 @@ class AddIpAddressToInterfaceTests {
     fun addIpAddress_withPrefix16_returnsSuccess() = runTest {
         val interfaceName = "eth0"
         val ipAddress = "192.168.2.199/16"
-        val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
+        val result = AddIpAddressToEthernetInterfaceUseCase()
             .invoke(interfaceName, ipAddress)
         assert(result is ApiResult.Success)
 
@@ -93,7 +93,7 @@ class AddIpAddressToInterfaceTests {
     fun addIpAddress_withInvalidInterfaceName_returnsError() = runTest {
         val interfaceNameBad = "ether0"
         val ipAddress = "192.168.2.199"
-        val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
+        val result = AddIpAddressToEthernetInterfaceUseCase()
             .invoke(interfaceNameBad, ipAddress)
         assert(result is ApiResult.Error)
     }
@@ -102,7 +102,7 @@ class AddIpAddressToInterfaceTests {
     fun addIpAddress_withInvalidIpAddress_returnsError() = runTest {
         val interfaceNameBad = "eth0"
         val ipAddress = "192.168.2.1999"
-        val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
+        val result = AddIpAddressToEthernetInterfaceUseCase()
             .invoke(interfaceNameBad, ipAddress)
         assert(result is ApiResult.Error)
     }
@@ -112,7 +112,7 @@ class AddIpAddressToInterfaceTests {
     fun addIpAddress_withPrefix29_returnsSuccess() = runTest {
         val interfaceName = "eth0"
         val ipAddress = "192.168.2.221/29"
-        val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
+        val result = AddIpAddressToEthernetInterfaceUseCase()
             .invoke(interfaceName, ipAddress)
         assert(result is ApiResult.Success)
 
@@ -132,7 +132,7 @@ class AddIpAddressToInterfaceTests {
     fun addIpAddress_noEthernetConnection_returnsError() = runTest {
         val interfaceNameBad = "eth0"
         val ipAddress = "192.168.2.22/24"
-        val result = AddIpAddressToEthernetInterfaceUseCase(settingsManager)
+        val result = AddIpAddressToEthernetInterfaceUseCase()
             .invoke(interfaceNameBad, ipAddress)
         assertTrue(
             "Adding IP address should return an Error when there is no ethernet connection",

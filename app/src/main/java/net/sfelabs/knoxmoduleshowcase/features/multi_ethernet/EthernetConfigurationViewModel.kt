@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
@@ -43,12 +43,15 @@ class EthernetConfigurationViewModel @Inject constructor(
     //private val connectivityManager: ConnectivityManager,
     private val configureEthernetInterfaceUseCase: ConfigureEthernetInterfaceUseCase,
     private val setEthernetAutoConnectionUseCase: SetEthernetAutoConnectionUseCase,
-    private val getEthernetAutoConnection: GetEthernetAutoConnectionUseCase,
-    private val getEthernetMacAddressUseCase: GetMacAddressForInterfaceUseCase,
+
     private val log: net.sfelabs.android_log_wrapper.Log,
     private val networkService: NetworkConnectivityService
 ): ViewModel() {
     private val tag = "EthernetConfigurationVM"
+
+    private val getEthernetAutoConnection = GetEthernetAutoConnectionUseCase()
+    private val getEthernetMacAddressUseCase = GetMacAddressForInterfaceUseCase()
+
     private val _state = MutableStateFlow(EthernetConfigurationState(isLoading = true))
     val stateFlow: StateFlow<EthernetConfigurationState> = _state.asStateFlow()
     private val _ethernetState = MutableStateFlow(mapOf<String, EthernetInterface>())
@@ -185,16 +188,19 @@ class EthernetConfigurationViewModel @Inject constructor(
     }
 
     private fun getAutoEthernetConnectionState() {
-        when(val result: ApiResult<AutoConnectionState> = getEthernetAutoConnection()) {
-            is ApiResult.Success -> {
-                _state.update{_state.value.copy(autoConnectionState = result.data)}
-            }
-            is ApiResult.Error -> {
-                log.e(result.apiError.message)
-            }
+        viewModelScope.launch {
+            when (val result: ApiResult<AutoConnectionState> = getEthernetAutoConnection()) {
+                is ApiResult.Success -> {
+                    _state.update { _state.value.copy(autoConnectionState = result.data) }
+                }
 
-            is ApiResult.NotSupported -> {
-                log.e("getEthernetAutoConnection method is not supported")
+                is ApiResult.Error -> {
+                    log.e(result.apiError.message)
+                }
+
+                is ApiResult.NotSupported -> {
+                    log.e("getEthernetAutoConnection method is not supported")
+                }
             }
         }
     }
@@ -286,7 +292,7 @@ class EthernetConfigurationViewModel @Inject constructor(
                 )
         }
     }
-    private fun updateInterfaceConnectivityState(networkUpdate: NetworkUpdate) {
+    private suspend fun updateInterfaceConnectivityState(networkUpdate: NetworkUpdate) {
         Log.d(tag, "State Changed: Interface [${networkUpdate.handle}] ${networkUpdate.interfaceName} is ${networkUpdate.isConnected}")
         if(networkUpdate.isConnected == NetworkInterfaceState.Connected) {
             interfaceHandleMap[networkUpdate.handle] = networkUpdate.interfaceName!!
@@ -324,15 +330,16 @@ class EthernetConfigurationViewModel @Inject constructor(
         }
     }
 
-    private fun getEthernetMacAddress(name: String?): String? {
+    private suspend fun getEthernetMacAddress(name: String?): String? {
         if(name == null)
             return null
-        val result = getEthernetMacAddressUseCase.invoke(name)
-        return if(result is ApiResult.Success) {
-            result.data
-        } else {
-            "(Api Not Supported)"
-        }
+            val result = getEthernetMacAddressUseCase.invoke(name)
+            return if(result is ApiResult.Success) {
+                result.data
+            } else {
+                "(Api Not Supported)"
+            }
+
     }
 
     private fun getAssignedEthernetInterfaces(connectivityManager: ConnectivityManager): List<String> {

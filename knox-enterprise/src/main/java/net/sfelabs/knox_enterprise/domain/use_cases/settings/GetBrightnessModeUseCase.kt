@@ -2,8 +2,8 @@ package net.sfelabs.knox_enterprise.domain.use_cases.settings
 
 import android.provider.Settings
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 
 /**
  *

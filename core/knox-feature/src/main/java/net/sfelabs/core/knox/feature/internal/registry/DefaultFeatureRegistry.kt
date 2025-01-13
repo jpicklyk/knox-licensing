@@ -1,6 +1,6 @@
 package net.sfelabs.core.knox.feature.internal.registry
 
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.internal.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.internal.model.Feature
 import net.sfelabs.core.knox.feature.api.FeatureCategory

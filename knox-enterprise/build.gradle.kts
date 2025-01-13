@@ -9,7 +9,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:knox-api"))
+    implementation(project(":core:usecase-executor"))
     implementation(project(":core:knox-android"))
     api(libs.spongycastle.prov)
     api(libs.commons.lang)

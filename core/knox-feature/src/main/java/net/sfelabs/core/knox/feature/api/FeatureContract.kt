@@ -1,6 +1,6 @@
 package net.sfelabs.core.knox.feature.api
 
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 
 interface FeatureContract<T : Any> {
     suspend fun getState(parameters: FeatureParameters = FeatureParameters.None): ApiResult<T>

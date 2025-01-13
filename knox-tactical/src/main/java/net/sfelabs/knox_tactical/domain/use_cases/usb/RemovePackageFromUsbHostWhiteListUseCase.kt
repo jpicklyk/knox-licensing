@@ -5,9 +5,9 @@ import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.application.ApplicationPolicy
 import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
 
 class RemovePackageFromUsbHostWhiteListUseCase: WithAndroidApplicationContext, SuspendingUseCase<RemovePackageFromUsbHostWhiteListUseCase.Params, Unit>() {
     class Params(val appIdentity: AppIdentity)

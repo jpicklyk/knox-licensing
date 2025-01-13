@@ -8,9 +8,9 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import java.math.BigInteger
 import java.security.SecureRandom
 import java.security.spec.ECGenParameterSpec

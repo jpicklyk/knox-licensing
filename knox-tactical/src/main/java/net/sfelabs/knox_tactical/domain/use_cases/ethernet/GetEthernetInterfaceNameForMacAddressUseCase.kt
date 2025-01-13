@@ -1,8 +1,8 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ethernet
 
 import com.samsung.android.knox.custom.SystemManager
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.knox_tactical.di.TacticalSdk
 import javax.inject.Inject
 

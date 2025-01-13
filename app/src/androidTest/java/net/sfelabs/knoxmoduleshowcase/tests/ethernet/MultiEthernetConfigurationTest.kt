@@ -9,7 +9,7 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurations
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurationsMultiDns
 import net.sfelabs.knox_tactical.TestingVisibilityOnly
@@ -48,7 +48,7 @@ class MultiEthernetConfigurationTest {
 
         assert(resultFlow.first() is ApiResult.Success)
 
-        val result = GetEthernetAutoConnectionUseCase(settingsManager).invoke()
+        val result = GetEthernetAutoConnectionUseCase().invoke()
         assert(result is ApiResult.Success && result.data is AutoConnectionState.OFF)
     }
 
@@ -59,7 +59,7 @@ class MultiEthernetConfigurationTest {
 
         assert(resultFlow.first() is ApiResult.Success)
 
-        val result = GetEthernetAutoConnectionUseCase(settingsManager).invoke()
+        val result = GetEthernetAutoConnectionUseCase().invoke()
         assert(result is ApiResult.Success && result.data is AutoConnectionState.ON)
     }
 

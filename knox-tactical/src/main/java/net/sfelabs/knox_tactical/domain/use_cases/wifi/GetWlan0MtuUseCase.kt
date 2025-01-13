@@ -1,8 +1,8 @@
 package net.sfelabs.knox_tactical.domain.use_cases.wifi
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 
 class GetWlan0MtuUseCase: SuspendingUseCase<Unit, Int>() {
     private val systemManager = CustomDeviceManager.getInstance().systemManager

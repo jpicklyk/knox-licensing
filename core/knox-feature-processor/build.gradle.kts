@@ -10,7 +10,7 @@ dependencies {
     implementation(libs.ksp.gradlePlugin)
     implementation(libs.kotlin.poet)
     implementation(libs.kotlin.poet.ksp)
-    implementation(project(":core:knox-api"))
+    implementation(project(":core:usecase-executor"))
     implementation(project(":core:knox-feature"))
     // For shared models/interfaces
 }

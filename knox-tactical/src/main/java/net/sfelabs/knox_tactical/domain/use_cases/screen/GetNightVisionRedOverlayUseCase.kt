@@ -2,8 +2,8 @@ package net.sfelabs.knox_tactical.domain.use_cases.screen
 
 import kotlinx.coroutines.flow.first
 import net.sfelabs.core.domain.repository.PreferencesRepository
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 
 class GetNightVisionRedOverlayUseCase (
     private val preferenceRepository: PreferencesRepository = PreferencesRepository.getInstance()

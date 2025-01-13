@@ -1,40 +1,30 @@
 package net.sfelabs.knox_tactical.domain.use_cases.ethernet
 
-import com.samsung.android.knox.custom.SystemManager
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
-import net.sfelabs.knox_tactical.di.TacticalSdk
-import javax.inject.Inject
+import com.samsung.android.knox.custom.CustomDeviceManager
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
+import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 
-class GetMacAddressForInterfaceUseCase @Inject constructor(
-    @TacticalSdk private val systemManager: SystemManager
-) {
+class GetMacAddressForInterfaceUseCase: SuspendingUseCase<GetMacAddressForInterfaceUseCase.Params, String>() {
+    class Params(
+        val interfaceName: String
+    )
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
-    operator fun invoke(interfaceName: String): ApiResult<String> {
-        return try {
-            val result = systemManager.getMacAddressForEthernetInterface(interfaceName)
-            if (result == null) {
-                ApiResult.Error(
-                    DefaultApiError.UnexpectedError(
-                        "Ethernet interface doesn't exist"
-                    )
-                )
-            } else {
-                ApiResult.Success(result)
-            }
+    suspend operator fun invoke(interfaceName: String): ApiResult<String> {
+        return invoke(Params(interfaceName))
+    }
 
-        } catch (nsm: NoSuchMethodError) {
+    override suspend fun execute(params: Params): ApiResult<String> {
+        val result = systemManager.getMacAddressForEthernetInterface(params.interfaceName)
+        return if (result == null) {
             ApiResult.Error(
                 DefaultApiError.UnexpectedError(
-                    "getMacAddressForEthernetInterface API does not exist on this device"
+                    "Ethernet interface doesn't exist"
                 )
             )
-        } catch (e: Exception) {
-            ApiResult.Error(
-                DefaultApiError.UnexpectedError(
-                    e.message!!
-                )
-            )
+        } else {
+            ApiResult.Success(result)
         }
     }
 }

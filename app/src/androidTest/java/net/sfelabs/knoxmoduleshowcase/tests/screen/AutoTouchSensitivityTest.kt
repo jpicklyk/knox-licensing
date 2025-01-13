@@ -5,7 +5,7 @@ import androidx.test.filters.SmallTest
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensitivityEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.SetAutoTouchSensitivityEnabledUseCase

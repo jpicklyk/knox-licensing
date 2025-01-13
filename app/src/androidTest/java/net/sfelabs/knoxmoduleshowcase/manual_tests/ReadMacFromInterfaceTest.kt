@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.manual_tests
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.api.domain.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetInterfaceNameForMacAddressUseCase
@@ -23,7 +23,7 @@ class ReadMacFromInterfaceTest {
     @Test
     fun readHardwareAddress_eth0() = runBlocking {
         val name = "eth0"
-        val useCase1 = GetMacAddressForInterfaceUseCase(systemManager)
+        val useCase1 = GetMacAddressForInterfaceUseCase()
         val useCase2 = GetEthernetInterfaceNameForMacAddressUseCase(systemManager)
         val result = useCase1.invoke(name)
         assert(result is ApiResult.Success)
@@ -36,7 +36,7 @@ class ReadMacFromInterfaceTest {
     @Test
     fun readHardwareAddress_br0() = runTest {
         val name = "br0"
-        val result = GetMacAddressForInterfaceUseCase(systemManager).invoke(name)
+        val result = GetMacAddressForInterfaceUseCase().invoke(name)
         assert(result is ApiResult.Success)
         if(result is ApiResult.Success) {
             println("MAC: ${result.data}")
@@ -46,7 +46,7 @@ class ReadMacFromInterfaceTest {
     @Test
     fun readHardwareAddress_wlan0() = runTest {
         val name = "wlan0"
-        val result = GetMacAddressForInterfaceUseCase(systemManager).invoke(name)
+        val result = GetMacAddressForInterfaceUseCase().invoke(name)
         assert(result is ApiResult.Success)
         if(result is ApiResult.Success) {
             println("MAC: ${result.data}")

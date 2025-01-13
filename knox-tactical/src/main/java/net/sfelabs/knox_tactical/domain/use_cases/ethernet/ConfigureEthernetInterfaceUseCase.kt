@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.knox.api.domain.model.ApiResult
-import net.sfelabs.core.knox.api.domain.model.DefaultApiError
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureDhcpEthernetInterface
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.configureStaticEthernetInterface
 import net.sfelabs.knox_tactical.di.TacticalSdk
