@@ -42,6 +42,9 @@ class AutoCallPickupPolicy : FeatureContract<AutoCallPickupState> {
     }
 
     override suspend fun setState(state: AutoCallPickupState): ApiResult<Unit> {
-        return setUseCase(state.mode)
+        return if(!state.isEnabled)
+            setUseCase(AutoCallPickupMode.Disable)
+        else
+            setUseCase(state.mode)
     }
 }
