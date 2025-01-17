@@ -99,6 +99,48 @@ class PoliciesViewModel @Inject constructor(
         }
     }
 
+    private fun updateFeatureUiState(
+        feature: Feature<*>,
+        state: PolicyState,
+        featureName: String
+    ) {
+        createFeatureUiState(Feature(
+            key = feature.key,
+            state = PolicyStateWrapper(state)
+        ))?.let { uiState ->
+            _features.value = _features.value.map {
+                if (it.featureName == featureName) uiState else it
+            }
+        }
+    }
+
+    private fun handleSetStateResult(
+        result: ApiResult<Unit>,
+        feature: Feature<*>,
+        updatedState: PolicyState,
+        featureName: String
+    ) {
+        when (result) {
+            is ApiResult.Success -> updateFeatureUiState(feature, updatedState, featureName)
+            is ApiResult.Error -> updateFeatureUiState(
+                feature,
+                updatedState.withError(result.apiError, result.exception),
+                featureName
+            )
+            ApiResult.NotSupported -> { /* No need to handle this case */ }
+        }
+    }
+
+    private suspend fun refreshFeatureState(featureName: String) {
+        featureRegistry.getFeature(featureName)?.let { updatedFeature ->
+            createFeatureUiState(updatedFeature)?.let { uiState ->
+                _features.value = _features.value.map {
+                    if (it.featureName == featureName) uiState else it
+                }
+            }
+        }
+    }
+
     fun toggleFeature(featureName: String, enabled: Boolean) {
         viewModelScope.launch {
             try {
@@ -116,83 +158,15 @@ class PoliciesViewModel @Inject constructor(
                     else -> return@launch
                 }
 
-                // Attempt to set the state
-                when (val result = handler.setState(updatedState)) {
-                    is ApiResult.Success -> {
-                        // Update UI with successful state
-                        createFeatureUiState(Feature(
-                            key = feature.key,
-                            state = feature.state.copy(value = updatedState)
-                        ))?.let { uiState ->
-                            _features.value = _features.value.map {
-                                if (it.featureName == featureName) uiState else it
-                            }
-                        }
-                    }
-                    is ApiResult.Error -> {
-                        // Update UI with error state
-                        val errorState = when (currentState) {
-                            is BooleanPolicyState -> currentState.copy(
-                                error = result.apiError,
-                                exception = result.exception
-                            )
-                            is BandLockingState -> currentState.copy(
-                                error = result.apiError,
-                                exception = result.exception
-                            )
-                            is AutoCallPickupState -> currentState.copy(
-                                error = result.apiError,
-                                exception = result.exception
-                            )
-                            is NightVisionState -> currentState.copy(
-                                error = result.apiError,
-                                exception = result.exception
-                            )
-                            is ImsState -> currentState.copy(
-                                error = result.apiError,
-                                exception = result.exception
-                            )
-                            else -> currentState
-                        }
-                        createFeatureUiState(Feature(
-                            key = feature.key,
-                            state = feature.state.copy(value = errorState)
-                        ))?.let { uiState ->
-                            _features.value = _features.value.map {
-                                if (it.featureName == featureName) uiState else it
-                            }
-                        }
-                    }
-                    ApiResult.NotSupported -> {
-                        // Update UI with not supported state
-                        val notSupportedState = when (currentState) {
-                            is BooleanPolicyState -> currentState.copy(isSupported = false)
-                            is BandLockingState -> currentState.copy(isSupported = false)
-                            is AutoCallPickupState -> currentState.copy(isSupported = false)
-                            is NightVisionState -> currentState.copy(isSupported = false)
-                            is ImsState -> currentState.copy(isSupported = false)
-                            else -> currentState
-                        }
-                        createFeatureUiState(Feature(
-                            key = feature.key,
-                            state = feature.state.copy(value = notSupportedState)
-                        ))?.let { uiState ->
-                            _features.value = _features.value.map {
-                                if (it.featureName == featureName) uiState else it
-                            }
-                        }
-                    }
-                }
+                handleSetStateResult(
+                    result = handler.setState(updatedState),
+                    feature = feature,
+                    updatedState = updatedState,
+                    featureName = featureName
+                )
             } catch (e: Exception) {
                 println("Error toggling feature: ${e.message}")
-                // Refresh the actual state on exception
-                featureRegistry.getFeature(featureName)?.let { updatedFeature ->
-                    createFeatureUiState(updatedFeature)?.let { uiState ->
-                        _features.value = _features.value.map {
-                            if (it.featureName == featureName) uiState else it
-                        }
-                    }
-                }
+                refreshFeatureState(featureName)
             }
         }
     }
@@ -227,41 +201,15 @@ class PoliciesViewModel @Inject constructor(
                     else -> return@launch
                 }
 
-                // Attempt to set the state
-                when (val result = handler.setState(updatedState)) {
-                    is ApiResult.Success -> {
-                        createFeatureUiState(Feature(
-                            key = feature.key,
-                            state = PolicyStateWrapper(updatedState)
-                        ))?.let { uiState ->
-                            _features.value = _features.value.map {
-                                if (it.featureName == featureName) uiState else it
-                            }
-                        }
-                    }
-                    is ApiResult.Error -> {
-                        val errorState = updatedState.withError(result.apiError, result.exception)
-                        createFeatureUiState(Feature(
-                            key = feature.key,
-                            state = PolicyStateWrapper(errorState)
-                        ))?.let { uiState ->
-                            _features.value = _features.value.map {
-                                if (it.featureName == featureName) uiState else it
-                            }
-                        }
-                    }
-                    ApiResult.NotSupported -> { /* No need to handle this case */ }
-                }
+                handleSetStateResult(
+                    result = handler.setState(updatedState),
+                    feature = feature,
+                    updatedState = updatedState,
+                    featureName = featureName
+                )
             } catch (e: Exception) {
                 println("Error updating feature config: ${e.message}")
-                // Refresh the actual state on exception
-                featureRegistry.getFeature(featureName)?.let { updatedFeature ->
-                    createFeatureUiState(updatedFeature)?.let { uiState ->
-                        _features.value = _features.value.map {
-                            if (it.featureName == featureName) uiState else it
-                        }
-                    }
-                }
+                refreshFeatureState(featureName)
             }
         }
     }
