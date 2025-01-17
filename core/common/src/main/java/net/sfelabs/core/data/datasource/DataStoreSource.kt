@@ -11,7 +11,7 @@ interface DataStoreSource {
     fun <T> getValue(key: String, defaultValue: T): Flow<T>
 
     companion object Factory {
-        private const val DATASTORE_FILE_NAME = "knox_showcase_settings.pb"
+        private const val DATASTORE_FILE_NAME = "knox_showcase_settings.preferences_pb"
         private var instance: DataStoreSource? = null
 
         @Synchronized
