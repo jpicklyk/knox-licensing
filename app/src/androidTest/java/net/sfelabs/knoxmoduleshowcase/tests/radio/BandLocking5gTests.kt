@@ -34,8 +34,10 @@ class BandLocking5gTests {
     @Before
     fun recordCurrentBandLocking() = runTest {
         val result = Get5gBandLockingUseCase().invoke(null)
-        if (result is ApiResult.Success) {
-            currentBand = result.data
+        currentBand = if (result is ApiResult.Success) {
+            result.data
+        } else {
+            -1
         }
     }
 

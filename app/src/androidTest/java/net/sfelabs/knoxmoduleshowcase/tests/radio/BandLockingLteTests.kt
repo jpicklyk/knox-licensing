@@ -34,8 +34,10 @@ class BandLockingLteTests {
     @Before
     fun recordCurrentBandLocking() = runTest {
         val result = GetBandLockingStateUseCase().invoke(null)
-        if (result is ApiResult.Success) {
-            currentBand = result.data
+        currentBand = if (result is ApiResult.Success) {
+            result.data
+        } else {
+            -1
         }
     }
 
