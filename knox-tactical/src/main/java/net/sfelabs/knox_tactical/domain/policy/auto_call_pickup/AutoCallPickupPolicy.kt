@@ -28,7 +28,7 @@ class AutoCallPickupPolicy : FeatureContract<AutoCallPickupState> {
     override suspend fun getState(parameters: FeatureParameters): AutoCallPickupState {
         return when (val result = getUseCase()) {
             is ApiResult.Success -> AutoCallPickupState(
-                isEnabled = true,
+                isEnabled = result.data != AutoCallPickupMode.Disable,
                 mode = result.data
             )
             is ApiResult.NotSupported -> defaultValue.copy(
@@ -42,6 +42,6 @@ class AutoCallPickupPolicy : FeatureContract<AutoCallPickupState> {
     }
 
     override suspend fun setState(state: AutoCallPickupState): ApiResult<Unit> {
-        return setUseCase(state)
+        return setUseCase(state.mode)
     }
 }
