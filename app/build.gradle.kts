@@ -67,7 +67,6 @@ dependencies {
     implementation(project(":core:usecase-executor"))
     implementation(project(":core:knox-feature"))
     implementation(project(":core:knox-feature-ui"))
-    implementation(project(":core:knox-feature-compose"))
     implementation(project(":core:knox-feature-hilt"))
     implementation(project(":core:ui"))
     implementation(project(":android-log-wrapper"))
