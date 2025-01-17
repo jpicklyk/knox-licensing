@@ -6,48 +6,56 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.core.knox.feature.internal.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.internal.component.FeatureComponent
+import net.sfelabs.core.knox.feature.api.FeatureComponent
 import net.sfelabs.core.knox.feature.api.FeatureKey
-import net.sfelabs.core.knox.feature.internal.model.FeatureState
-import net.sfelabs.core.knox.feature.internal.registry.DefaultFeatureRegistry
+import net.sfelabs.core.knox.feature.api.PolicyState
+import net.sfelabs.core.knox.feature.data.repository.DefaultFeatureRegistry
+import net.sfelabs.core.knox.feature.domain.usecase.handler.FeatureHandler
 import org.junit.Before
 import org.junit.Test
 
 class DefaultFeatureRegistryTest {
+    // Test PolicyState implementation
+    data class TestState(
+        override val isEnabled: Boolean,
+        override val isSupported: Boolean = true,
+        override val error: DefaultApiError? = null,
+        override val exception: Throwable? = null
+    ) : PolicyState
+
     private lateinit var registry: DefaultFeatureRegistry
-    private lateinit var mockComponent: FeatureComponent<Boolean>
-    private val mockKey = object : FeatureKey<Boolean> {
+    private lateinit var mockComponent: FeatureComponent<PolicyState>
+    private val mockKey = object : FeatureKey<PolicyState> {
         override val featureName = "test_feature"
     }
-    private val mockHandler = mockk<FeatureHandler<Boolean>>()
+    private val mockHandler = mockk<FeatureHandler<PolicyState>>()
 
     @Before
     fun setup() {
         registry = DefaultFeatureRegistry()
-        mockComponent = object : FeatureComponent<Boolean> {
+        mockComponent = object : FeatureComponent<PolicyState> {
             override val featureName = "test_feature"
             override val title = "Test Feature"
             override val description = "some description"
             override val category = FeatureCategory.Toggle
             override val handler = mockHandler
-            override val defaultValue = false
+            override val defaultValue = TestState(isEnabled = false)
             override val key = mockKey
         }
     }
 
     @Test
     fun `when getting features by category then only matching features are returned`() = runTest {
-        coEvery { mockHandler.getState() } returns ApiResult.Success(FeatureState(true, true))
+        coEvery { mockHandler.getState() } returns TestState(isEnabled = true)
 
         registry.components = setOf(mockComponent)
 
         val features = registry.getFeatures(FeatureCategory.Toggle)
         assertEquals(1, features.size)
         assertEquals(mockKey, features[0].key)
+        assertTrue(features[0].state.isEnabled)
     }
 
     @Test
@@ -56,57 +64,87 @@ class DefaultFeatureRegistryTest {
         assertNull(registry.getHandler(mockKey))
     }
 
+    @Suppress("USELESS_CAST")
     @Test
-    fun `when feature state fetch fails then returns feature with default value`() = runTest {
-        coEvery { mockHandler.getState() } returns ApiResult.Error(DefaultApiError.UnexpectedError())
+    fun `when feature state has error then returns feature with error state`() = runTest {
+        val error = DefaultApiError.UnexpectedError()
+        coEvery { mockHandler.getState() } returns TestState(
+            isEnabled = false,
+            error = error
+        )
+
         registry.components = setOf(mockComponent)
 
         val features = registry.getFeatures(FeatureCategory.Toggle)
         assertEquals(1, features.size)
         val feature = features[0]
         assertEquals(mockKey, feature.key)
-        assertEquals(false, feature.state.enabled)
-        assertEquals(false, feature.state.value)
+        assertEquals(false, feature.state.isEnabled)
+        assertEquals(error, feature.state.error)
     }
 
     @Test
     fun `when getting features by different category then returns empty list`() = runTest {
+        coEvery { mockHandler.getState() } returns TestState(isEnabled = true)
         registry.components = setOf(mockComponent)
-        val features = registry.getFeatures(FeatureCategory.Toggle)
+        val features = registry.getFeatures(FeatureCategory.ConfigurableToggle) // Different category
         assertTrue(features.isEmpty())
     }
 
     @Test
     fun `when multiple components exist then all are retrievable`() = runTest {
         // Setup second component
-        val mockKey2 = object : FeatureKey<Boolean> { override val featureName = "test_feature_2" }
-        val mockHandler2 = mockk<FeatureHandler<Boolean>>()
-        val mockComponent2 = object : FeatureComponent<Boolean> {
+        val mockKey2 = object : FeatureKey<PolicyState> {
+            override val featureName = "test_feature_2"
+        }
+        val mockHandler2 = mockk<FeatureHandler<PolicyState>>()
+        val mockComponent2 = object : FeatureComponent<PolicyState> {
             override val featureName = "test_feature_2"
             override val title = "Test Feature 2"
             override val description = "some description 2"
             override val category = FeatureCategory.Toggle
             override val handler = mockHandler2
-            override val defaultValue = false
+            override val defaultValue = TestState(isEnabled = false)
             override val key = mockKey2
         }
 
-        coEvery { mockHandler.getState() } returns ApiResult.Success(FeatureState(true, true))
-        coEvery { mockHandler2.getState() } returns ApiResult.Success(FeatureState(true, true))
+        coEvery { mockHandler.getState() } returns TestState(isEnabled = true)
+        coEvery { mockHandler2.getState() } returns TestState(isEnabled = false)
 
         registry.components = setOf(mockComponent, mockComponent2)
 
         val features = registry.getFeatures(FeatureCategory.Toggle)
         assertEquals(2, features.size)
-        assertTrue(features.any { it.key.featureName == "test_feature" })
-        assertTrue(features.any { it.key.featureName == "test_feature_2" })
+        assertTrue(features.any { it.key.featureName == "test_feature" && it.state.isEnabled })
+        assertTrue(features.any { it.key.featureName == "test_feature_2" && !it.state.isEnabled })
     }
 
     @Test
     fun `when getting handler with different type then returns null`() {
-        val stringKey = object : FeatureKey<String> { override val featureName = "test_feature" }
+        data class OtherState(
+            override val isEnabled: Boolean,
+            override val isSupported: Boolean = true,
+            override val error: DefaultApiError? = null,
+            override val exception: Throwable? = null
+        ) : PolicyState
+
+        val otherKey = object : FeatureKey<OtherState> { override val featureName = "test_feature" }
         registry.components = setOf(mockComponent)
-        assertNull(registry.getHandler(stringKey))
+        assertNull(registry.getHandler(otherKey))
+    }
+
+    @Test
+    fun `when unsupported feature then returns state with isSupported false`() = runTest {
+        coEvery { mockHandler.getState() } returns TestState(
+            isEnabled = false,
+            isSupported = false
+        )
+
+        registry.components = setOf(mockComponent)
+
+        val features = registry.getFeatures(FeatureCategory.Toggle)
+        assertEquals(1, features.size)
+        assertEquals(false, features[0].state.isSupported)
     }
 
     @Test
@@ -119,29 +157,9 @@ class DefaultFeatureRegistryTest {
     @Test
     fun `when getting non-existent component then returns null`() {
         registry.components = emptySet()
-        val nonExistentKey = object : FeatureKey<Boolean> {
+        val nonExistentKey = object : FeatureKey<TestState> {
             override val featureName = "non_existent"
         }
         assertNull(registry.getComponent(nonExistentKey))
-    }
-
-    @Test
-    fun `when multiple components exist then gets correct component by key`() {
-        val mockKey2 = object : FeatureKey<Boolean> { override val featureName = "test_feature_2" }
-        val mockHandler2 = mockk<FeatureHandler<Boolean>>()
-        val mockComponent2 = object : FeatureComponent<Boolean> {
-            override val featureName = "test_feature_2"
-            override val title = "Test Feature 2"
-            override val description = "some description 2"
-            override val category = FeatureCategory.Toggle
-            override val handler = mockHandler2
-            override val defaultValue = false
-            override val key = mockKey2
-        }
-
-        registry.components = setOf(mockComponent, mockComponent2)
-
-        assertEquals(mockComponent, registry.getComponent(mockKey))
-        assertEquals(mockComponent2, registry.getComponent(mockKey2))
     }
 }

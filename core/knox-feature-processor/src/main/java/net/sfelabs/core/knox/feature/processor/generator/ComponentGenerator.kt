@@ -2,7 +2,6 @@ package net.sfelabs.core.knox.feature.processor.generator
 
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
-import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
@@ -11,8 +10,13 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.processor.model.PackageName
+import net.sfelabs.core.knox.feature.api.FeatureComponent
+import net.sfelabs.core.knox.feature.api.FeatureKey
+import net.sfelabs.core.knox.feature.api.FeatureParameters
+import net.sfelabs.core.knox.feature.api.StateMapping
+import net.sfelabs.core.knox.feature.domain.usecase.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
 import net.sfelabs.core.knox.feature.processor.utils.GeneratedPackages
 import net.sfelabs.core.knox.feature.processor.utils.NameUtils.classNameToFeatureName
@@ -31,11 +35,11 @@ class ComponentGenerator(
         val componentSpec = TypeSpec.classBuilder("${feature.className}Component")
             .primaryConstructor(
                 FunSpec.constructorBuilder()
-                    .addAnnotation(ClassName("javax.inject", "Inject"))
+                    .addAnnotation(ClassName.bestGuess("javax.inject.Inject"))
                     .build()
             )
             .addSuperinterface(
-                ClassName(PackageName.FEATURE_COMPONENT.value, "FeatureComponent")
+                ClassName.bestGuess(FeatureComponent::class.qualifiedName!!)
                     .parameterizedBy(feature.valueType.toClassName())
             )
             .addProperty(
@@ -73,7 +77,7 @@ class ComponentGenerator(
                 .build(),
 
             PropertySpec.builder("handler",
-                ClassName(PackageName.FEATURE_HANDLER.value, "FeatureHandler")
+                ClassName.bestGuess(FeatureHandler::class.qualifiedName!!)
                     .parameterizedBy(feature.valueType.toClassName())
             )
                 .addModifiers(KModifier.OVERRIDE)
@@ -84,17 +88,11 @@ class ComponentGenerator(
 
             PropertySpec.builder("defaultValue", feature.valueType.toClassName())
                 .addModifiers(KModifier.OVERRIDE)
-                .initializer(
-                    try {
-                        getDefaultValueForType(feature.valueType)
-                    } catch (e: IllegalStateException) {
-                        "featureImpl.defaultValue"
-                    }
-                )
+                .initializer("featureImpl.defaultValue")
                 .build(),
 
             PropertySpec.builder("key",
-                ClassName(PackageName.FEATURE_PUBLIC.value, "FeatureKey")
+                ClassName.bestGuess(FeatureKey::class.qualifiedName!!)
                     .parameterizedBy(feature.valueType.toClassName())
             )
                 .addModifiers(KModifier.OVERRIDE)
@@ -110,54 +108,44 @@ class ComponentGenerator(
         return CodeBlock.builder()
             .beginControlFlow(
                 "object : %T<%T>",
-                ClassName(PackageName.FEATURE_HANDLER.value, "FeatureHandler"),
+                ClassName.bestGuess(FeatureHandler::class.qualifiedName!!),
                 feature.valueType.toClassName()
             )
             .beginControlFlow(
-                "override suspend fun getState(parameters: %T): %T<%T<%T>>",
-                ClassName(PackageName.FEATURE_PUBLIC.value, "FeatureParameters"),
-                ClassName(PackageName.API_DOMAIN_MODEL.value, "ApiResult"),
-                ClassName(PackageName.FEATURE_MODEL.value, "FeatureState"),
+                "override suspend fun getState(parameters: %T): %T",
+                ClassName.bestGuess(FeatureParameters::class.qualifiedName!!),
                 feature.valueType.toClassName()
             )
             .addStatement(
-                "return featureImpl.getState(parameters).wrapInFeatureState(%T.%L)",
-                ClassName(PackageName.FEATURE_COMPONENT.value, "StateMapping"),
-                feature.stateMapping.name
+                """
+            val result = featureImpl.getState(parameters)
+            // Apply state mapping to the enabled state
+            val mappedEnabled = when(${StateMapping::class.qualifiedName}.${feature.stateMapping.name}) {
+                ${StateMapping::class.qualifiedName}.DIRECT -> result.isEnabled
+                ${StateMapping::class.qualifiedName}.INVERTED -> !result.isEnabled
+                ${StateMapping::class.qualifiedName}.CUSTOM -> {
+                    try {
+                        val companionClass = Class.forName("${feature.packageName}.${feature.className}.Companion")
+                        val mapStateMethod = companionClass.getDeclaredMethod("mapState", Boolean::class.java)
+                        mapStateMethod.invoke(null, result.isEnabled) as Boolean
+                    } catch (_: Exception) {
+                        result.isEnabled
+                    }
+                }
+            }
+            return result.copy(isEnabled = mappedEnabled)
+            """.trimIndent()
             )
             .endControlFlow()
             .beginControlFlow(
-                "override suspend fun setState(newState: %T<%T>): %T<Unit>",
-                ClassName(PackageName.FEATURE_MODEL.value, "FeatureState"),
+                "override suspend fun setState(newState: %T): %T<Unit>",
                 feature.valueType.toClassName(),
-                ClassName(PackageName.API_DOMAIN_MODEL.value, "ApiResult")
+                ClassName.bestGuess(ApiResult::class.qualifiedName!!)
             )
-            .addStatement("return featureImpl.setState(newState.value)")
+            .addStatement("return featureImpl.setState(newState)")
             .endControlFlow()
             .endControlFlow()
             .build()
-    }
-
-    private fun getDefaultValueForType(type: KSType): String {
-        return when (type.declaration.simpleName.asString()) {
-            "Boolean" -> "false"
-            "Int" -> "0"
-            "Long" -> "0L"
-            "Float" -> "0f"
-            "Double" -> "0.0"
-            "String" -> "\"\""
-            else -> throw IllegalStateException(
-                """
-            No default value defined for type: ${type.declaration.simpleName.asString()}
-            For complex types, you must provide a default value by implementing the defaultValue property in your FeatureContract:
-            
-            class YourFeature : FeatureContract<YourType> {
-                override val defaultValue = YourType(...)  // Provide your default instance
-                // ... rest of implementation
-            }
-            """.trimIndent()
-            )
-        }
     }
 
     private fun writeToFile(componentSpec: TypeSpec, feature: ProcessedFeature) {
@@ -172,13 +160,7 @@ class ComponentGenerator(
                 output.writer().use { writer ->
                     FileSpec.builder(packageName, "${feature.className}Component")
                         .addType(componentSpec)
-                        .addImport(PackageName.FEATURE_COMPONENT.value, "FeatureComponent")
-                        .addImport(PackageName.FEATURE_HANDLER.value, "FeatureHandler")
-                        .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureCategory")
-                        .addImport(PackageName.FEATURE_MODEL.value, "FeatureState")
-                        .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureParameters")
-                        .addImport(PackageName.FEATURE_MODEL.value, "wrapInFeatureState")
-                        .addImport(PackageName.API_DOMAIN_MODEL.value, "map")
+                        // No need for imports as we're using fully qualified names
                         .build()
                         .writeTo(writer)
                 }

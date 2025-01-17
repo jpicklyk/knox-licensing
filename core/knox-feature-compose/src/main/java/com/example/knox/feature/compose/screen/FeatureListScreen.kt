@@ -12,8 +12,9 @@ import net.sfelabs.core.knox.feature.ui.model.FeatureUiState
 
 @Composable
 fun FeatureLazyList(
-    features: List<FeatureUiState.Toggle>,
+    features: List<FeatureUiState>,
     onToggle: (String, Boolean) -> Unit,
+    onConfigChange: (String, String, Any) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -21,13 +22,26 @@ fun FeatureLazyList(
         contentPadding = PaddingValues(4.dp)
     ) {
         items(features) { feature ->
-            FeatureCard(
-                title = feature.title,
-                description = feature.description,
-                isEnabled = feature.isEnabled,
-                isSupported = feature.error == null,
-                onToggle = { enabled -> onToggle(feature.featureName, enabled) }
-            )
+            when (feature) {
+                is FeatureUiState.Toggle -> FeatureCard(
+                    title = feature.title,
+                    description = feature.description,
+                    isEnabled = feature.isEnabled,
+                    isSupported = feature.error == null,
+                    onToggle = { enabled -> onToggle(feature.featureName, enabled) }
+                )
+                is FeatureUiState.ConfigurableToggle -> FeatureCard(
+                    title = feature.title,
+                    description = feature.description,
+                    isEnabled = feature.isEnabled,
+                    isSupported = feature.error == null,
+                    configurationOptions = feature.configurationOptions,
+                    onToggle = { enabled -> onToggle(feature.featureName, enabled) },
+                    onConfigChange = { key, value ->
+                        onConfigChange(feature.featureName, key, value)
+                    }
+                )
+            }
         }
     }
 }

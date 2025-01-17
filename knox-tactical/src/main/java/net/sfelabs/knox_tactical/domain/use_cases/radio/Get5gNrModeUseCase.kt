@@ -4,22 +4,22 @@ import com.samsung.android.knox.custom.CustomDeviceManager
 import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.knox_tactical.domain.model.LteNrModeState
+import net.sfelabs.knox_tactical.domain.model.LteNrMode
 
-class Get5gNrModeUseCase: SuspendingUseCase<Get5gNrModeUseCase.Params, LteNrModeState>() {
+class Get5gNrModeUseCase: SuspendingUseCase<Get5gNrModeUseCase.Params, LteNrMode>() {
     class Params(val simSlotId: Int? = null)
 
     private val systemManager = CustomDeviceManager.getInstance().systemManager
 
-    suspend operator fun invoke(): ApiResult<LteNrModeState> {
+    suspend operator fun invoke(): ApiResult<LteNrMode> {
         return invoke(Params(null))
     }
 
-    suspend operator fun invoke(simSlotId: Int? = null): ApiResult<LteNrModeState> {
+    suspend operator fun invoke(simSlotId: Int? = null): ApiResult<LteNrMode> {
         return invoke(Params(simSlotId))
     }
 
-    override suspend fun execute(params: Params): ApiResult<LteNrModeState> {
+    override suspend fun execute(params: Params): ApiResult<LteNrMode> {
         params.simSlotId?.let { slotId ->
             if (slotId !in 0..1) {
                 return ApiResult.Error(DefaultApiError.UnexpectedError("Invalid sim slot id: $slotId"))
@@ -39,7 +39,7 @@ class Get5gNrModeUseCase: SuspendingUseCase<Get5gNrModeUseCase.Params, LteNrMode
                 )
             )
         } else {
-            ApiResult.Success(LteNrModeState.invoke(result))
+            ApiResult.Success(LteNrMode.invoke(result))
         }
     }
 }

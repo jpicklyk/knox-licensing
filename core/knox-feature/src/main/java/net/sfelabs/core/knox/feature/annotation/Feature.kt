@@ -1,7 +1,7 @@
 package net.sfelabs.core.knox.feature.annotation
 
 import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.internal.component.StateMapping
+import net.sfelabs.core.knox.feature.api.StateMapping
 
 @Target(AnnotationTarget.FILE)
 annotation class Feature(

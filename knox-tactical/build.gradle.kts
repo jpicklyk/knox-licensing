@@ -43,7 +43,6 @@ dependencies {
     implementation(project(":core:usecase-executor"))
     implementation(project(":core:knox-android"))
     implementation(project(":core:knox-feature"))
-    implementation(project(":core:knox-feature-ui"))
     implementation(project(":core:knox-feature-hilt"))
     implementation(project(":core:knox-feature-processor"))
     "ksp"(project(":core:knox-feature-processor"))

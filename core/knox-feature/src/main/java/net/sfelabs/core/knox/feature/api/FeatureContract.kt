@@ -3,7 +3,7 @@ package net.sfelabs.core.knox.feature.api
 import net.sfelabs.core.domain.usecase.model.ApiResult
 
 interface FeatureContract<T : Any> {
-    suspend fun getState(parameters: FeatureParameters = FeatureParameters.None): ApiResult<T>
+    suspend fun getState(parameters: FeatureParameters = FeatureParameters.None): T
     suspend fun setState(state: T): ApiResult<Unit>
     val defaultValue: T
         get() = throw IllegalStateException(

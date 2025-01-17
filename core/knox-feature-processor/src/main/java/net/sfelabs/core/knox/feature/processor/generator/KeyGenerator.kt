@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import net.sfelabs.core.knox.feature.processor.model.PackageName
+import net.sfelabs.core.knox.feature.api.FeatureKey
 import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
 import net.sfelabs.core.knox.feature.processor.utils.GeneratedPackages
 import net.sfelabs.core.knox.feature.processor.utils.NameUtils.classNameToFeatureName
@@ -26,7 +26,7 @@ class KeyGenerator(
     private fun generateKey(feature: ProcessedFeature) {
         val keySpec = TypeSpec.objectBuilder("${feature.className}Key")
             .addSuperinterface(
-                ClassName(PackageName.FEATURE_PUBLIC.value, "FeatureKey")
+                ClassName.bestGuess(FeatureKey::class.qualifiedName!!)
                     .parameterizedBy(feature.valueType.toClassName())
             )
             .addProperty(
@@ -52,7 +52,6 @@ class KeyGenerator(
                 output.writer().use { writer ->
                     FileSpec.builder(packageName, "${feature.className}Key")
                         .addType(keySpec)
-                        .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureKey")
                         .build()
                         .writeTo(writer)
                 }

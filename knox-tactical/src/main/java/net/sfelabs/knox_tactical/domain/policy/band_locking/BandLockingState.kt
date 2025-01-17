@@ -1,0 +1,13 @@
+package net.sfelabs.knox_tactical.domain.policy.band_locking
+
+import net.sfelabs.core.domain.usecase.model.ApiError
+import net.sfelabs.core.knox.feature.api.PolicyState
+
+data class BandLockingState(
+    override val isEnabled: Boolean,
+    override val isSupported: Boolean = true,
+    override val error: ApiError? = null,
+    override val exception: Throwable? = null,
+    val band: Int,
+    val simSlotId: Int? = null
+): PolicyState

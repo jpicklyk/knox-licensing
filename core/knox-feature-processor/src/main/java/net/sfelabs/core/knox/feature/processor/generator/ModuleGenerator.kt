@@ -10,7 +10,12 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.WildcardTypeName
+import com.squareup.kotlinpoet.asClassName
+import net.sfelabs.core.knox.feature.api.FeatureComponent
+import net.sfelabs.core.knox.feature.api.PolicyState
+import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
 import net.sfelabs.core.knox.feature.processor.model.PackageName
 import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
 import net.sfelabs.core.knox.feature.processor.utils.GeneratedPackages
@@ -50,8 +55,10 @@ class ModuleGenerator(
                         ClassName(getGeneratedPackage(), "${feature.className}Component")
                     )
                     .returns(
-                        ClassName(PackageName.FEATURE_COMPONENT.value, "FeatureComponent")
-                            .parameterizedBy(WildcardTypeName.producerOf(ANY))
+                        ClassName(PackageName.FEATURE_PUBLIC.value, "FeatureComponent")
+                            .parameterizedBy(
+                                WildcardTypeName.producerOf(PolicyState::class.asClassName())
+                            )
                     )
                     .build()
             )
@@ -134,7 +141,8 @@ class ModuleGenerator(
                 output.writer().use { writer ->
                     FileSpec.builder(packageName, moduleName)
                         .addType(moduleSpec)
-                        .addImport(PackageName.FEATURE_COMPONENT.value, "FeatureComponent")
+                        .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureComponent")
+                        .addImport(PackageName.FEATURE_PUBLIC.value, "PolicyState")
                         .addImport(
                             getFeaturePackage(),
                             fileName + "Component"
@@ -163,7 +171,7 @@ class ModuleGenerator(
                 output.writer().use { writer ->
                     FileSpec.builder(packageName, fileName)
                         .addType(moduleSpec)
-                        .addImport(PackageName.FEATURE_COMPONENT.value, "FeatureComponent")
+                        .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureComponent")
                         .build()
                         .writeTo(writer)
                 }
@@ -189,7 +197,7 @@ class ModuleGenerator(
                         .writeTo(writer)
                 }
             }
-        } catch (e: FileAlreadyExistsException) {
+        } catch (_: FileAlreadyExistsException) {
             environment.logger.warn("Module index file already exists. Skipping generation.")
         }
     }

@@ -35,7 +35,7 @@ class BandLocking5gTests {
     fun recordCurrentBandLocking() = runTest {
         val result = Get5gBandLockingUseCase().invoke(null)
         if (result is ApiResult.Success) {
-            currentBand = result.data.value
+            currentBand = result.data
         }
     }
 
@@ -107,10 +107,10 @@ class BandLocking5gTests {
         val result = Get5gBandLockingUseCase().invoke(1)
         assert(result is ApiResult.Success)
         val state = result.getOrNull()
-        assertTrue("Band locking on SIM id 1 should not be enabled when configuring SIM 0.", state?.enabled == false)
+        assertTrue("Band locking on SIM id 1 should not be enabled when configuring SIM 0.", state == -1)
 
         //confirm SIM id 1 does not have the band applied
-        assertTrue("SIM id 1 should be returning -1 not ${state?.value}.", state?.value == -1)
+        assertTrue("SIM id 1 should be returning -1 not ${state}.", state == -1)
     }
 
     private suspend fun testEnableBandLocking(simSlotId: Int?) {
@@ -119,7 +119,7 @@ class BandLocking5gTests {
         assertTrue("enable5gBandLocking API should return success.  Error: $result",result is ApiResult.Success)
 
         val result2 = Get5gBandLockingUseCase().invoke(simSlotId)
-        assert(result2 is ApiResult.Success && result2.data.enabled && result2.data.value == band)
+        assert(result2 is ApiResult.Success && result2.data == band)
     }
 
     @Test
@@ -142,8 +142,8 @@ class BandLocking5gTests {
 
         val result2 = Get5gBandLockingUseCase().invoke(simSlotId)
         assert(result2 is ApiResult.Success)
-        assertTrue("Band locking should be disabled", !(result2 as ApiResult.Success).data.enabled)
-        assertTrue("Band locking state should report BAND_LOCKING_NONE", result2.data.value == band)
+        assertTrue("Band locking should be disabled", (result2 as ApiResult.Success).data == -1)
+        assertTrue("Band locking state should report BAND_LOCKING_NONE", result2.data == band)
     }
 
     @Test
@@ -181,7 +181,7 @@ class BandLocking5gTests {
         assertTrue("disable5GBandLocking API should return success.  Error: $result",result is ApiResult.Success)
 
         val result2 = Get5gBandLockingUseCase().invoke(simSlotId)
-        assert(result2 is ApiResult.Success && !result2.data.enabled)
+        assert(result2 is ApiResult.Success && result2.data == -1)
     }
 
     @After

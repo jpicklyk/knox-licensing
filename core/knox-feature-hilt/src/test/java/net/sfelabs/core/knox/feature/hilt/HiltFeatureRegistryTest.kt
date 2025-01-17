@@ -5,21 +5,28 @@ import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.knox.feature.internal.component.FeatureComponent
-import net.sfelabs.core.knox.feature.internal.handler.FeatureHandler
+import net.sfelabs.core.domain.usecase.model.ApiError
+import net.sfelabs.core.knox.feature.api.FeatureComponent
+import net.sfelabs.core.knox.feature.domain.usecase.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureKey
-import net.sfelabs.core.knox.feature.internal.model.FeatureState
+import net.sfelabs.core.knox.feature.api.PolicyState
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class HiltFeatureRegistryTest {
+    data class TestState(
+        override val isEnabled: Boolean,
+        override val isSupported: Boolean = true,
+        override val error: ApiError? = null,
+        override val exception: Throwable? = null
+    ) : PolicyState
+
     private lateinit var hiltRegistry: HiltFeatureRegistry
-    private val mockComponent = mockk<FeatureComponent<Boolean>>()
-    private val mockKey = mockk<FeatureKey<Boolean>>()
-    private val mockHandler = mockk<FeatureHandler<Boolean>>()
+    private val mockComponent = mockk<FeatureComponent<PolicyState>>()
+    private val mockKey = mockk<FeatureKey<PolicyState>>()
+    private val mockHandler = mockk<FeatureHandler<PolicyState>>()
 
     @Before
     fun setup() {
@@ -31,7 +38,7 @@ class HiltFeatureRegistryTest {
         every { mockComponent.handler } returns mockHandler
         every { mockComponent.category } returns FeatureCategory.Toggle
         every { mockKey.featureName } returns "test_feature"
-        coEvery { mockHandler.getState() } returns ApiResult.Success(FeatureState(true, true))
+        coEvery { mockHandler.getState() } returns TestState(isEnabled = true)
     }
 
     @Test
@@ -55,6 +62,7 @@ class HiltFeatureRegistryTest {
 
         // Then
         assertEquals(1, features.size)
+        assertTrue(features[0].state.isEnabled)
     }
 
     @Test
@@ -72,13 +80,13 @@ class HiltFeatureRegistryTest {
     @Test
     fun `setComponents updates existing components`() = runTest {
         // Given
-        val component1 = mockk<FeatureComponent<Boolean>>()
-        val component2 = mockk<FeatureComponent<Boolean>>()
+        val component1 = mockk<FeatureComponent<PolicyState>>()
+        val component2 = mockk<FeatureComponent<PolicyState>>()
 
-        val handler1 = mockk<FeatureHandler<Boolean>>()
-        val handler2 = mockk<FeatureHandler<Boolean>>()
-        val key1 = mockk<FeatureKey<Boolean>>()
-        val key2 = mockk<FeatureKey<Boolean>>()
+        val handler1 = mockk<FeatureHandler<PolicyState>>()
+        val handler2 = mockk<FeatureHandler<PolicyState>>()
+        val key1 = mockk<FeatureKey<PolicyState>>()
+        val key2 = mockk<FeatureKey<PolicyState>>()
 
         // Configure component1
         every { component1.featureName } returns "feature1"
@@ -86,7 +94,7 @@ class HiltFeatureRegistryTest {
         every { component1.key } returns key1
         every { component1.handler } returns handler1
         every { key1.featureName } returns "feature1"
-        coEvery { handler1.getState() } returns ApiResult.Success(FeatureState(true, true))
+        coEvery { handler1.getState() } returns TestState(isEnabled = true)
 
         // Configure component2
         every { component2.featureName } returns "feature2"
@@ -94,7 +102,7 @@ class HiltFeatureRegistryTest {
         every { component2.key } returns key2
         every { component2.handler } returns handler2
         every { key2.featureName } returns "feature2"
-        coEvery { handler2.getState() } returns ApiResult.Success(FeatureState(true, true))
+        coEvery { handler2.getState() } returns TestState(isEnabled = true)
 
         // When
         hiltRegistry.setComponents(setOf(component1))

@@ -8,8 +8,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.domain.repository.PreferencesRepository
 import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.knox.feature.api.isSuccessful
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.domain.api.EnableNightVisionModeFeature
+import net.sfelabs.knox_tactical.domain.policy.EnableNightVisionModePolicy
 import net.sfelabs.knox_tactical.domain.model.NightVisionState
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -22,9 +23,7 @@ import org.junit.runner.RunWith
 @TacticalSdkSuppress(minReleaseVersion = 132)
 @RunWith(AndroidJUnit4::class)
 class NightVisionModeTest {
-    private lateinit var feature: EnableNightVisionModeFeature
-    //private lateinit var getNightVisionModeStateUseCase: GetNightVisionModeStateUseCase
-    //private lateinit var setNightVisionModeStateUseCase: SetNightVisionModeStateUseCase
+    private lateinit var feature: EnableNightVisionModePolicy
 
     private object TestDataStoreSource {
         private val dataStore = mutableMapOf<String, Any>()
@@ -55,7 +54,7 @@ class NightVisionModeTest {
             }
         }
 
-        feature = EnableNightVisionModeFeature(preferencesRepository)
+        feature = EnableNightVisionModePolicy(preferencesRepository)
     }
 
     @After
@@ -77,13 +76,12 @@ class NightVisionModeTest {
 
         val stateResult = feature.getState()
         assertTrue(
-            "Failed getting night vision mode state. Error: ${stateResult.getErrorOrNull()}",
-            stateResult is ApiResult.Success
+            "Failed getting night vision mode state. Error: ${stateResult.error}",
+            stateResult.isSuccessful()
         )
 
-        val state = (stateResult as ApiResult.Success).data
-        assertTrue("Night vision should be enabled", state.isEnabled)
-        assertTrue("Red overlay should be disabled", !state.useRedOverlay)
+        assertTrue("Night vision should be enabled", stateResult.isEnabled)
+        assertTrue("Red overlay should be disabled", !stateResult.useRedOverlay)
     }
 
     @Test
@@ -96,13 +94,13 @@ class NightVisionModeTest {
 
         val stateResult = feature.getState()
         assertTrue(
-            "Failed getting night vision mode state. Error: ${stateResult.getErrorOrNull()}",
-            stateResult is ApiResult.Success
+            "Failed getting night vision mode state. Error: ${stateResult.error}",
+            stateResult.isSuccessful()
         )
 
-        val state = (stateResult as ApiResult.Success).data
-        assertTrue("Night vision should be enabled", state.isEnabled)
-        assertTrue("Red overlay should be enabled", state.useRedOverlay)
+
+        assertTrue("Night vision should be enabled", stateResult.isEnabled)
+        assertTrue("Red overlay should be enabled", stateResult.useRedOverlay)
     }
 
     @Test
@@ -115,12 +113,11 @@ class NightVisionModeTest {
 
         val stateResult = feature.getState()
         assertTrue(
-            "Failed getting night vision mode state. Error: ${stateResult.getErrorOrNull()}",
-            stateResult is ApiResult.Success
+            "Failed getting night vision mode state. Error: ${stateResult.error}",
+            stateResult.isSuccessful()
         )
 
-        val state = (stateResult as ApiResult.Success).data
-        assertTrue("Night vision should be disabled", !state.isEnabled)
+        assertTrue("Night vision should be disabled", !stateResult.isEnabled)
     }
 
     @Test

@@ -12,6 +12,7 @@ fun PolicyScreen() {
     val features by viewModel.features.collectAsState()
     FeatureLazyList(
         features = features,
-        onToggle = viewModel::toggleFeature
+        onToggle = viewModel::toggleFeature,
+        onConfigChange = viewModel::updateFeatureConfig
     )
 }

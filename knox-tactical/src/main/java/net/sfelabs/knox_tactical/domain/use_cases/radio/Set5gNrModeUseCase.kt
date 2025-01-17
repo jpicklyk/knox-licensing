@@ -5,14 +5,14 @@ import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.knox_tactical.domain.model.LteNrModeState
+import net.sfelabs.knox_tactical.domain.model.LteNrMode
 
 class Set5gNrModeUseCase: SuspendingUseCase<Set5gNrModeUseCase.Params, Unit>() {
-    class Params(val state: LteNrModeState, val simSlotId: Int? = null)
+    class Params(val state: LteNrMode, val simSlotId: Int? = null)
 
     private val systemManager = CustomDeviceManager.getInstance().systemManager
 
-    suspend operator fun invoke(state: LteNrModeState, simSlotId: Int? = null): UnitApiCall {
+    suspend operator fun invoke(state: LteNrMode, simSlotId: Int? = null): UnitApiCall {
         return invoke(Params(state, simSlotId))
     }
 

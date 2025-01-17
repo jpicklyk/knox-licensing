@@ -6,12 +6,11 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import net.sfelabs.core.knox.feature.internal.component.StateMapping
+import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.processor.generator.ComponentGenerator
 import net.sfelabs.core.knox.feature.processor.generator.KeyGenerator
 import net.sfelabs.core.knox.feature.processor.generator.ModuleGenerator
-import net.sfelabs.core.knox.feature.processor.model.PackageName
 import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
 
 class FeatureDefinitionProcessor(
@@ -34,19 +33,45 @@ class FeatureDefinitionProcessor(
         return emptyList()
     }
 
+    private fun findFeatureContractType(classDeclaration: KSClassDeclaration): KSType? {
+        for (superType in classDeclaration.superTypes) {
+            val qualifiedName = superType.resolve().declaration.qualifiedName?.asString()
+
+            if (qualifiedName == "net.sfelabs.core.knox.feature.api.FeatureContract") {
+                return superType.resolve()
+            }
+
+            // Check superTypes of this type recursively
+            val superDecl = superType.resolve().declaration as? KSClassDeclaration
+            if (superDecl != null) {
+                findFeatureContractType(superDecl)?.let { return it }
+            }
+        }
+        return null
+    }
+
     private fun processFeatureDefinition(classDeclaration: KSClassDeclaration): ProcessedFeature? {
         val annotation = classDeclaration.annotations.find {
             it.shortName.asString() == "FeatureDefinition"
         } ?: return null
 
         // Get the type parameter T from FeatureContract<T>
-        val valueType = classDeclaration.superTypes
-            .first { it.resolve().declaration.qualifiedName?.asString() == "net.sfelabs.core.knox.feature.api.FeatureContract" }
-            .resolve()
-            .arguments
-            .first()
-            .type
-            ?.resolve() ?: return null
+        val contractType = findFeatureContractType(classDeclaration) ?: return null
+        val valueType = contractType.arguments.firstOrNull()?.type?.resolve() ?: return null
+
+        // Verify the type implements PolicyState
+        val hasPolicyStateInterface =
+            (valueType.declaration as? KSClassDeclaration)?.superTypes?.any { superType ->
+                superType.resolve().declaration.qualifiedName?.asString() == "net.sfelabs.core.knox.feature.api.PolicyState"
+            } == true
+
+        if (!hasPolicyStateInterface) {
+            environment.logger.error(
+                "Feature state type ${valueType.declaration.qualifiedName?.asString()} must implement PolicyState",
+                valueType.declaration
+            )
+            return null
+        }
 
         return ProcessedFeature(
             className = classDeclaration.simpleName.asString(),

@@ -1,10 +1,11 @@
 package net.sfelabs.core.knox.feature.hilt
 
 import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.internal.component.FeatureComponent
+import net.sfelabs.core.knox.feature.api.FeatureComponent
 import net.sfelabs.core.knox.feature.api.FeatureKey
-import net.sfelabs.core.knox.feature.internal.registry.DefaultFeatureRegistry
-import net.sfelabs.core.knox.feature.internal.registry.FeatureRegistry
+import net.sfelabs.core.knox.feature.api.PolicyState
+import net.sfelabs.core.knox.feature.data.repository.DefaultFeatureRegistry
+import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,7 +18,7 @@ class HiltFeatureRegistry @Inject constructor() : FeatureRegistry {
     private val delegate = DefaultFeatureRegistry()
 
     @Inject
-    fun setComponents(components: Set<@JvmSuppressWildcards FeatureComponent<*>>) {
+    fun setComponents(components: Set<@JvmSuppressWildcards FeatureComponent<out PolicyState>>) {
         println("Injecting components: ${components.size}")
         components.forEach {
             println("Component: ${it.featureName}")
@@ -25,11 +26,15 @@ class HiltFeatureRegistry @Inject constructor() : FeatureRegistry {
         delegate.components = components
     }
 
-    override fun <T : Any> getHandler(key: FeatureKey<T>) = delegate.getHandler(key)
+    override fun <T : PolicyState> getHandler(key: FeatureKey<T>) = delegate.getHandler(key)
+
+    override suspend fun getAllFeatures() = delegate.getAllFeatures()
 
     override suspend fun getFeatures(category: FeatureCategory) = delegate.getFeatures(category)
 
     override fun isRegistered(key: FeatureKey<*>) = delegate.isRegistered(key)
 
     override fun getComponent(key: FeatureKey<*>) = delegate.getComponent(key)
+
+    override suspend fun getFeature(featureName: String) = delegate.getFeature(featureName)
 }

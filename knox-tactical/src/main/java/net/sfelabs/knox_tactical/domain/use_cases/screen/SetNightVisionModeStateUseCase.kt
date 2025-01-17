@@ -13,7 +13,7 @@ class SetNightVisionModeStateUseCase(
 ): SuspendingUseCase<NightVisionState, Unit>() {
     // Quality of life invoke function
     suspend operator fun invoke(enable: Boolean, useRedOverlay: Boolean = false): UnitApiCall {
-        return invoke(NightVisionState(enable, useRedOverlay))
+        return invoke(NightVisionState(isEnabled = enable, useRedOverlay = useRedOverlay))
     }
 
     //This function contains unique business logic for the specific API we are wrapping in a use case.
