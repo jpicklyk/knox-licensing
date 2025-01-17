@@ -6,7 +6,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.api.BooleanPolicyState
+import net.sfelabs.core.knox.feature.api.PolicyState
+import net.sfelabs.core.knox.feature.api.PolicyStateWrapper
 import net.sfelabs.core.knox.feature.domain.model.Feature
 import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
 import net.sfelabs.core.knox.feature.ui.model.FeatureUiState
@@ -38,7 +41,6 @@ class PoliciesViewModel @Inject constructor(
     private fun createFeatureUiState(feature: Feature<*>): FeatureUiState? {
         val component = featureRegistry.getComponent(feature.key) ?: return null
         return when (val state = feature.state.value) {
-            // Simple boolean toggle state
             is BooleanPolicyState -> FeatureUiState.Toggle(
                 title = component.title,
                 featureName = component.featureName,
@@ -47,8 +49,6 @@ class PoliciesViewModel @Inject constructor(
                 isSupported = state.isSupported,
                 error = state.error?.message
             )
-
-            // Complex states
             is BandLockingState -> FeatureUiState.ConfigurableToggle(
                 title = component.title,
                 featureName = component.featureName,
@@ -105,15 +105,87 @@ class PoliciesViewModel @Inject constructor(
                 val feature = featureRegistry.getFeature(featureName) ?: return@launch
                 val handler = featureRegistry.getHandler(feature.key) ?: return@launch
 
-                when (val currentState = feature.state.value) {
-                    is BooleanPolicyState -> handler.setState(currentState.copy(isEnabled = enabled))
-                    is BandLockingState -> handler.setState(currentState.copy(isEnabled = enabled))
-                    is AutoCallPickupState -> handler.setState(currentState.copy(isEnabled = enabled))
-                    is NightVisionState -> handler.setState(currentState.copy(isEnabled = enabled))
-                    is ImsState -> handler.setState(currentState.copy(isEnabled = enabled))
+                // Create updated state
+                val currentState = feature.state.value
+                val updatedState = when (currentState) {
+                    is BooleanPolicyState -> currentState.copy(isEnabled = enabled)
+                    is BandLockingState -> currentState.copy(isEnabled = enabled)
+                    is AutoCallPickupState -> currentState.copy(isEnabled = enabled)
+                    is NightVisionState -> currentState.copy(isEnabled = enabled)
+                    is ImsState -> currentState.copy(isEnabled = enabled)
+                    else -> return@launch
                 }
 
-                // Update just this feature in the UI
+                // Attempt to set the state
+                when (val result = handler.setState(updatedState)) {
+                    is ApiResult.Success -> {
+                        // Update UI with successful state
+                        createFeatureUiState(Feature(
+                            key = feature.key,
+                            state = feature.state.copy(value = updatedState)
+                        ))?.let { uiState ->
+                            _features.value = _features.value.map {
+                                if (it.featureName == featureName) uiState else it
+                            }
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        // Update UI with error state
+                        val errorState = when (currentState) {
+                            is BooleanPolicyState -> currentState.copy(
+                                error = result.apiError,
+                                exception = result.exception
+                            )
+                            is BandLockingState -> currentState.copy(
+                                error = result.apiError,
+                                exception = result.exception
+                            )
+                            is AutoCallPickupState -> currentState.copy(
+                                error = result.apiError,
+                                exception = result.exception
+                            )
+                            is NightVisionState -> currentState.copy(
+                                error = result.apiError,
+                                exception = result.exception
+                            )
+                            is ImsState -> currentState.copy(
+                                error = result.apiError,
+                                exception = result.exception
+                            )
+                            else -> currentState
+                        }
+                        createFeatureUiState(Feature(
+                            key = feature.key,
+                            state = feature.state.copy(value = errorState)
+                        ))?.let { uiState ->
+                            _features.value = _features.value.map {
+                                if (it.featureName == featureName) uiState else it
+                            }
+                        }
+                    }
+                    ApiResult.NotSupported -> {
+                        // Update UI with not supported state
+                        val notSupportedState = when (currentState) {
+                            is BooleanPolicyState -> currentState.copy(isSupported = false)
+                            is BandLockingState -> currentState.copy(isSupported = false)
+                            is AutoCallPickupState -> currentState.copy(isSupported = false)
+                            is NightVisionState -> currentState.copy(isSupported = false)
+                            is ImsState -> currentState.copy(isSupported = false)
+                            else -> currentState
+                        }
+                        createFeatureUiState(Feature(
+                            key = feature.key,
+                            state = feature.state.copy(value = notSupportedState)
+                        ))?.let { uiState ->
+                            _features.value = _features.value.map {
+                                if (it.featureName == featureName) uiState else it
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                println("Error toggling feature: ${e.message}")
+                // Refresh the actual state on exception
                 featureRegistry.getFeature(featureName)?.let { updatedFeature ->
                     createFeatureUiState(updatedFeature)?.let { uiState ->
                         _features.value = _features.value.map {
@@ -121,8 +193,6 @@ class PoliciesViewModel @Inject constructor(
                         }
                     }
                 }
-            } catch (e: Exception) {
-                println("Error toggling feature: ${e.message}")
             }
         }
     }
@@ -133,36 +203,58 @@ class PoliciesViewModel @Inject constructor(
                 val feature = featureRegistry.getFeature(featureName) ?: return@launch
                 val handler = featureRegistry.getHandler(feature.key) ?: return@launch
 
-                when (val currentState = feature.state.value) {
-                    is BandLockingState -> {
-                        val newState = when (key) {
-                            "band" -> currentState.copy(band = value as Int)
-                            "simSlotId" -> currentState.copy(simSlotId = value as Int)
-                            else -> currentState
-                        }
-                        handler.setState(newState)
+                // Create updated state
+                val currentState = feature.state.value
+                val updatedState = when (currentState) {
+                    is BandLockingState -> when (key) {
+                        "band" -> currentState.copy(band = value as Int)
+                        "simSlotId" -> currentState.copy(simSlotId = value as Int)
+                        else -> currentState
                     }
-                    is AutoCallPickupState -> {
-                        if (key == "mode") {
-                            handler.setState(currentState.copy(mode = value as AutoCallPickupMode))
-                        }
+                    is AutoCallPickupState -> when (key) {
+                        "mode" -> currentState.copy(mode = value as AutoCallPickupMode)
+                        else -> currentState
                     }
-                    is NightVisionState -> {
-                        if (key == "useRedOverlay") {
-                            handler.setState(currentState.copy(useRedOverlay = value as Boolean))
-                        }
+                    is NightVisionState -> when (key) {
+                        "useRedOverlay" -> currentState.copy(useRedOverlay = value as Boolean)
+                        else -> currentState
                     }
-                    is ImsState -> {
-                        val newState = when (key) {
-                            "feature" -> currentState.copy(feature = value as Int)
-                            "simSlotId" -> currentState.copy(simSlotId = value as Int)
-                            else -> currentState
-                        }
-                        handler.setState(newState)
+                    is ImsState -> when (key) {
+                        "feature" -> currentState.copy(feature = value as Int)
+                        "simSlotId" -> currentState.copy(simSlotId = value as Int)
+                        else -> currentState
                     }
+                    else -> return@launch
                 }
 
-                // Update just this feature in the UI
+                // Attempt to set the state
+                when (val result = handler.setState(updatedState)) {
+                    is ApiResult.Success -> {
+                        createFeatureUiState(Feature(
+                            key = feature.key,
+                            state = PolicyStateWrapper(updatedState)
+                        ))?.let { uiState ->
+                            _features.value = _features.value.map {
+                                if (it.featureName == featureName) uiState else it
+                            }
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        val errorState = updatedState.withError(result.apiError, result.exception)
+                        createFeatureUiState(Feature(
+                            key = feature.key,
+                            state = PolicyStateWrapper(errorState)
+                        ))?.let { uiState ->
+                            _features.value = _features.value.map {
+                                if (it.featureName == featureName) uiState else it
+                            }
+                        }
+                    }
+                    ApiResult.NotSupported -> { /* No need to handle this case */ }
+                }
+            } catch (e: Exception) {
+                println("Error updating feature config: ${e.message}")
+                // Refresh the actual state on exception
                 featureRegistry.getFeature(featureName)?.let { updatedFeature ->
                     createFeatureUiState(updatedFeature)?.let { uiState ->
                         _features.value = _features.value.map {
@@ -170,8 +262,6 @@ class PoliciesViewModel @Inject constructor(
                         }
                     }
                 }
-            } catch (e: Exception) {
-                println("Error updating feature config: ${e.message}")
             }
         }
     }

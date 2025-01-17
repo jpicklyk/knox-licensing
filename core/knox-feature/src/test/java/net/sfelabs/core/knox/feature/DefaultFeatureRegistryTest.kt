@@ -6,6 +6,7 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
+import net.sfelabs.core.domain.usecase.model.ApiError
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureComponent
@@ -21,9 +22,13 @@ class DefaultFeatureRegistryTest {
     data class TestState(
         override val isEnabled: Boolean,
         override val isSupported: Boolean = true,
-        override val error: DefaultApiError? = null,
+        override val error: ApiError? = null,
         override val exception: Throwable? = null
-    ) : PolicyState
+    ) : PolicyState {
+        override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
+            return copy(error = error, exception = exception)
+        }
+    }
 
     private lateinit var registry: DefaultFeatureRegistry
     private lateinit var mockComponent: FeatureComponent<PolicyState>
@@ -124,9 +129,13 @@ class DefaultFeatureRegistryTest {
         data class OtherState(
             override val isEnabled: Boolean,
             override val isSupported: Boolean = true,
-            override val error: DefaultApiError? = null,
+            override val error: ApiError? = null,
             override val exception: Throwable? = null
-        ) : PolicyState
+        ) : PolicyState {
+            override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
+                return copy(error = error, exception = exception)
+            }
+        }
 
         val otherKey = object : FeatureKey<OtherState> { override val featureName = "test_feature" }
         registry.components = setOf(mockComponent)

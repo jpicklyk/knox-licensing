@@ -10,4 +10,8 @@ data class BandLockingState(
     override val exception: Throwable? = null,
     val band: Int,
     val simSlotId: Int? = null
-): PolicyState
+): PolicyState {
+    override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
+        return copy(error = error, exception = exception)
+    }
+}

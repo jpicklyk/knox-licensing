@@ -21,7 +21,14 @@ class HiltFeatureRegistryTest {
         override val isSupported: Boolean = true,
         override val error: ApiError? = null,
         override val exception: Throwable? = null
-    ) : PolicyState
+    ) : PolicyState {
+        override fun withError(
+            error: ApiError?,
+            exception: Throwable?
+        ): PolicyState {
+            return copy(error = error, exception = exception)
+        }
+    }
 
     private lateinit var hiltRegistry: HiltFeatureRegistry
     private val mockComponent = mockk<FeatureComponent<PolicyState>>()

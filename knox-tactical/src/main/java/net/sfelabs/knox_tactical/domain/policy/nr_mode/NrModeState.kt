@@ -11,4 +11,8 @@ data class NrModeState(
     override val exception: Throwable? = null,
     val mode: LteNrMode,
     val simSlotId: Int? = null
-) : PolicyState
+) : PolicyState {
+    override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
+        return copy(error = error, exception = exception)
+    }
+}

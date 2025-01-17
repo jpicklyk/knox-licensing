@@ -9,7 +9,11 @@ data class HdmState(
     override val error: ApiError? = null,
     override val exception: Throwable? = null,
     val policyMask: Int = 0
-) : PolicyState {
+) : PolicyState  {
+    override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
+        return copy(error = error, exception = exception)
+    }
+
     companion object {
         const val CAMERA_MASK = 1      // 2^0
         const val EXTERNAL_MEMORY_MASK = 2 // 2^1
