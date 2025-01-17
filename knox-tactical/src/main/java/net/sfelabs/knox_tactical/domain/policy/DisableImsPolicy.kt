@@ -11,7 +11,6 @@ import net.sfelabs.knox_tactical.domain.use_cases.ims.IsImsEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ims.SetImsEnabled
 
 data class ImsParameters(
-    val feature: Int = 1,
     val simSlotId: Int = 0
 ) : FeatureParameters
 
@@ -25,7 +24,6 @@ data class ImsParameters(
 class DisableImsPolicy: FeatureContract<ImsState> {
     override val defaultValue = ImsState(
         isEnabled = false,
-        feature = 1,
         simSlotId = 0
     )
 
@@ -33,15 +31,14 @@ class DisableImsPolicy: FeatureContract<ImsState> {
     private val setUseCase = SetImsEnabled()
 
     override suspend fun getState(parameters: FeatureParameters): ImsState {
-        val (feature, simSlotId) = when (parameters) {
-            is ImsParameters -> parameters.feature to parameters.simSlotId
-            FeatureParameters.None -> defaultValue.feature to defaultValue.simSlotId
+        val simSlotId = when (parameters) {
+            is ImsParameters -> parameters.simSlotId
+            FeatureParameters.None -> defaultValue.simSlotId
             else -> throw IllegalArgumentException("Unsupported parameters type: ${parameters.javaClass.simpleName}")
         }
-        return when (val result = getUseCase(feature, simSlotId)) {
+        return when (val result = getUseCase(simSlotId)) {
             is ApiResult.Success -> ImsState(
                 isEnabled = result.data,
-                feature = feature,
                 simSlotId = simSlotId
             )
             is ApiResult.NotSupported -> defaultValue.copy(
@@ -54,5 +51,5 @@ class DisableImsPolicy: FeatureContract<ImsState> {
         }
     }
 
-    override suspend fun setState(state: ImsState): ApiResult<Unit> = setUseCase(state)
+    override suspend fun setState(state: ImsState): ApiResult<Unit> = setUseCase(state.simSlotId, state.isEnabled)
 }

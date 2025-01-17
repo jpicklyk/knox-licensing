@@ -5,27 +5,28 @@ import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_INVALID
 import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_NONE
 import com.samsung.android.knox.restriction.PhoneRestrictionPolicy.ERROR_NOT_SUPPORTED
 import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.knox.android.WithAndroidApplicationContext
-import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.knox_tactical.domain.model.ImsState
+import net.sfelabs.core.knox.android.WithAndroidApplicationContext
 
-class SetImsEnabled: WithAndroidApplicationContext, SuspendingUseCase<ImsState, Unit>() {
+class SetImsEnabled: WithAndroidApplicationContext, SuspendingUseCase<SetImsEnabled.Params, Unit>() {
+    class Params(val enable: Boolean, val feature: Int = 1, val simSlotId: Int = 0)
+
     private val phoneRestrictionPolicy =
         EnterpriseDeviceManager.getInstance(applicationContext).phoneRestrictionPolicy
 
-    suspend operator fun invoke(feature: Int = 1, simSlotId: Int = 0, enable: Boolean): UnitApiCall {
-        return invoke(ImsState(
-            isEnabled = enable,
-            simSlotId = simSlotId,
-            feature = feature
-        ))
+    suspend operator fun invoke(simSlotId: Int = 0, enable: Boolean): UnitApiCall {
+        return invoke(Params(enable, simSlotId = simSlotId))
     }
 
-    override suspend fun execute(params: ImsState): ApiResult<Unit> {
+    suspend operator fun invoke(feature: Int, simSlotId: Int = 0, enable: Boolean): UnitApiCall {
+        return invoke(Params(enable, simSlotId = simSlotId, feature = feature))
+    }
+
+    override suspend fun execute(params: Params): ApiResult<Unit> {
         return when(phoneRestrictionPolicy.setIMSEnabled(
-            params.feature, params.isEnabled, params.simSlotId
+            params.feature, params.enable, params.simSlotId
         )) {
             ERROR_NONE -> ApiResult.Success(Unit)
             ERROR_NOT_SUPPORTED -> ApiResult.NotSupported

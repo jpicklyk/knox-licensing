@@ -9,7 +9,6 @@ data class ImsState(
     override val error: ApiError? = null,
     override val exception: Throwable? = null,
     val simSlotId: Int = 0,
-    val feature: Int = 1
 ): PolicyState {
     override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
         return copy(error = error, exception = exception)

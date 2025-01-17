@@ -30,7 +30,7 @@ class ImsTests {
         }
         AndroidApplicationContextProvider.init(testProvider)
 
-        val result = IsImsEnabledUseCase().invoke(1, 0)
+        val result = IsImsEnabledUseCase().invoke(0)
         if(result is ApiResult.Success) {
             imsEnabled = result.data
         }
@@ -40,7 +40,7 @@ class ImsTests {
     fun setImsEnabled() = runTest {
         val result = SetImsEnabled().invoke(enable = true)
         assert(result is ApiResult.Success)
-        val result2 = IsImsEnabledUseCase().invoke(1, 0)
+        val result2 = IsImsEnabledUseCase().invoke(0)
         assert(result2 is ApiResult.Success && result2.data)
     }
 
@@ -48,7 +48,7 @@ class ImsTests {
     fun setImsDisabled() = runTest {
         val result = SetImsEnabled().invoke(enable = false)
         assert(result is ApiResult.Success)
-        val result2 = IsImsEnabledUseCase().invoke(1, 0)
+        val result2 = IsImsEnabledUseCase().invoke(0)
         assert(result2 is ApiResult.Success && !result2.data)
     }
 
@@ -60,7 +60,7 @@ class ImsTests {
 
     @Test
     fun setInvalidSimSlotId() = runTest {
-        val result = SetImsEnabled().invoke(1, 2, false)
+        val result = SetImsEnabled().invoke(8, false)
         assert(result is ApiResult.Error)
     }
 
