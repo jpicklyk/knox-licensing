@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.bundles.androidx.compose.materialIcons)
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.compose.material3.adaptive.navigationSuite)
@@ -87,6 +88,8 @@ dependencies {
     implementation(libs.google.ar)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.jackson.module)
+
+    debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter.api)
