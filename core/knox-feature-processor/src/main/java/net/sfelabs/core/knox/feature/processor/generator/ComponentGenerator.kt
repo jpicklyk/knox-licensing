@@ -142,7 +142,26 @@ class ComponentGenerator(
                 feature.valueType.toClassName(),
                 ClassName.bestGuess(ApiResult::class.qualifiedName!!)
             )
-            .addStatement("return featureImpl.setState(newState)")
+            .addStatement(
+                """
+            // Apply inverse state mapping for setState
+            val mappedState = when(${StateMapping::class.qualifiedName}.${feature.stateMapping.name}) {
+                ${StateMapping::class.qualifiedName}.DIRECT -> newState
+                ${StateMapping::class.qualifiedName}.INVERTED -> newState.copy(isEnabled = !newState.isEnabled)
+                ${StateMapping::class.qualifiedName}.CUSTOM -> {
+                    try {
+                        val companionClass = Class.forName("${feature.packageName}.${feature.className}.Companion")
+                        val mapStateMethod = companionClass.getDeclaredMethod("mapState", Boolean::class.java)
+                        val mappedEnabled = mapStateMethod.invoke(null, newState.isEnabled) as Boolean
+                        newState.copy(isEnabled = mappedEnabled)
+                    } catch (_: Exception) {
+                        newState
+                    }
+                }
+            }
+            return featureImpl.setState(mappedState)
+            """.trimIndent()
+            )
             .endControlFlow()
             .endControlFlow()
             .build()
