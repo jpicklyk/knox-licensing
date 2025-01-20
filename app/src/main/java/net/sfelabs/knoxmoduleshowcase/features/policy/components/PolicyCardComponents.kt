@@ -1,107 +1,15 @@
 package net.sfelabs.knoxmoduleshowcase.features.policy.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
 import net.sfelabs.knox_tactical.domain.model.LteNrMode
-
-@Composable
-internal fun PolicyCardHeader(
-    title: String,
-    expanded: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-        Icon(
-            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-            contentDescription = if (expanded) "Collapse" else "Expand",
-            tint = MaterialTheme.colorScheme.onPrimary
-        )
-    }
-}
-
-@Composable
-internal fun PolicySupportStatus(
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = "(This feature is not supported on this device)",
-        color = MaterialTheme.colorScheme.error,
-        style = MaterialTheme.typography.labelSmall,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    )
-}
-
-@Composable
-internal fun PolicyErrorMessage(
-    error: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = error,
-        color = MaterialTheme.colorScheme.error,
-        style = MaterialTheme.typography.labelSmall,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    )
-}
-
-@Composable
-internal fun PolicyCardContent(
-    description: String,
-    isEnabled: Boolean,
-    isSupported: Boolean,
-    onToggle: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = description,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
-        Switch(
-            checked = isEnabled,
-            onCheckedChange = onToggle,
-            enabled = isSupported,
-            modifier = Modifier.padding(start = 8.dp)
-        )
-    }
-}
 
 @Composable
 internal fun PolicyConfiguration(
@@ -141,13 +49,13 @@ internal fun PolicyConfiguration(
                         LteNrMode.DisableNsa -> "Disable NSA"
                     },
                     options = listOf(
-                        "Enable Both SA and NSA",
+                        //"Enable Both SA and NSA",
                         "Disable SA",
                         "Disable NSA"
                     ),
                     onSelectionChange = { selected ->
                         val mode = when (selected) {
-                            "Enable Both SA and NSA" -> LteNrMode.EnableBothSaAndNsa
+                            //"Enable Both SA and NSA" -> LteNrMode.EnableBothSaAndNsa
                             "Disable SA" -> LteNrMode.DisableSa
                             "Disable NSA" -> LteNrMode.DisableNsa
                             else -> return@ConfigurationDropdown
@@ -169,13 +77,11 @@ internal fun PolicyConfiguration(
                             "Enable Always Accept"
                         ),
                         onSelectionChange = { selected ->
-                            val mode = when (selected) {
+                            when (selected) {
                                 "Enable" -> AutoCallPickupMode.Enable
                                 "Enable Always Accept" -> AutoCallPickupMode.EnableAlwaysAccept
                                 else -> return@ConfigurationDropdown
                             }
-                            println("AutoCallPickupMode mapped to: $mode")
-                            onConfigChange?.invoke(key, mode)
                         }
                     )
                 }
@@ -277,71 +183,6 @@ private fun ConfigurationDropdown(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun ConfigurationSwitch(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange
-        )
-    }
-}
-
-@Composable
-private fun ConfigurationRadioGroup(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            RadioButton(
-                selected = checked,
-                onClick = { onCheckedChange(true) },
-                modifier = Modifier.padding(end = 4.dp)
-            )
-            Text(
-                text = "Yes",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f)
-            )
-            RadioButton(
-                selected = !checked,
-                onClick = { onCheckedChange(false) },
-                modifier = Modifier.padding(end = 4.dp)
-            )
-            Text(
-                text = "No",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f)
-            )
         }
     }
 }
