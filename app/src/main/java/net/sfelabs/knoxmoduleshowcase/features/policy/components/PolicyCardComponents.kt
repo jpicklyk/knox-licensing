@@ -85,22 +85,28 @@ internal fun PolicyConfiguration(
                         }
                     )
                 }
-                is Int -> when {
-                    key.equals("band", ignoreCase = true) -> ConfigurationNumber(
-                        label = "Band",
-                        value = value,
-                        onValueChange = { onConfigChange?.invoke(key, it) }
-                    )
-                    key.equals("simSlotId", ignoreCase = true) -> ConfigurationNumber(
-                        label = "SIM Slot",
-                        value = value,
-                        onValueChange = { onConfigChange?.invoke(key, it) }
-                    )
-                    key.equals("feature", ignoreCase = true) -> ConfigurationNumber(
-                        label = "Feature",
-                        value = value,
-                        onValueChange = { onConfigChange?.invoke(key, it) }
-                    )
+                is Int?, Int -> {
+                    val intValue = (value as? Int) ?: 0
+                    when {
+
+                        key.equals("band", ignoreCase = true) -> ConfigurationNumber(
+                            label = key,
+                            value = intValue,
+                            onValueChange = { onConfigChange?.invoke(key, it) }
+                        )
+
+                        key.equals("simSlotId", ignoreCase = true) -> ConfigurationNumber(
+                            label = key,
+                            value = intValue,
+                            onValueChange = { onConfigChange?.invoke(key, it) }
+                        )
+
+                        key.equals("feature", ignoreCase = true) -> ConfigurationNumber(
+                            label = key,
+                            value = intValue,
+                            onValueChange = { onConfigChange?.invoke(key, it) }
+                        )
+                    }
                 }
             }
         }
