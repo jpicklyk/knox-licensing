@@ -16,8 +16,7 @@ class IsImsEnabledUseCase: WithAndroidApplicationContext, SuspendingUseCase<IsIm
     }
 
     override suspend fun execute(params: Params): ApiResult<Boolean> {
-        return ApiResult.Success(
-            phoneRestrictionPolicy.isIMSEnabled(params.feature, params.simSlotId)
-        )
+        val result = phoneRestrictionPolicy.isIMSEnabled(params.feature, params.simSlotId)
+        return ApiResult.Success(result)
     }
 }
