@@ -16,7 +16,8 @@ data class NrModeParameters(
 
 @FeatureDefinition(
     title = "5G NR Mode",
-    description = "Configure 5G NR (New Radio) mode settings to control SA and NSA capabilities.",
+    description = "Configure 5G NR (New Radio) mode settings to control SA and NSA capabilities.  " +
+            "Turning off the policy will automatically enable both SA and NSA modes.",
     category = FeatureCategory.ConfigurableToggle,
     stateMapping = StateMapping.DIRECT
 )
@@ -25,7 +26,7 @@ class NrModePolicy : FeatureContract<NrModeState> {
     private val setUseCase = Set5gNrModeUseCase()
 
     override val defaultValue = NrModeState(
-        isEnabled = true,
+        isEnabled = false,
         mode = LteNrMode.EnableBothSaAndNsa
     )
 
@@ -38,7 +39,8 @@ class NrModePolicy : FeatureContract<NrModeState> {
         return when (val result = getUseCase(simSlotId)) {
             is ApiResult.Success -> NrModeState(
                 isEnabled = result.data != LteNrMode.EnableBothSaAndNsa,
-                mode = result.data,
+                mode = result.data.takeUnless { it == LteNrMode.EnableBothSaAndNsa }
+                    ?: LteNrMode.DisableNsa,
                 simSlotId = simSlotId
             )
             is ApiResult.NotSupported -> defaultValue.copy(
@@ -51,6 +53,12 @@ class NrModePolicy : FeatureContract<NrModeState> {
         }
     }
 
-    override suspend fun setState(state: NrModeState): ApiResult<Unit> =
-        setUseCase(state.mode, state.simSlotId)
+    override suspend fun setState(state: NrModeState): ApiResult<Unit> {
+        return if (!state.isEnabled)
+            setUseCase(LteNrMode.EnableBothSaAndNsa, state.simSlotId)
+        else
+            setUseCase(state.mode, state.simSlotId)
+
+
+    }
 }

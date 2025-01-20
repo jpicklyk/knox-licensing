@@ -22,14 +22,16 @@ class AutoCallPickupPolicy : FeatureContract<AutoCallPickupState> {
 
     override val defaultValue = AutoCallPickupState(
         isEnabled = false,
-        mode = AutoCallPickupMode.Disable
+        mode = AutoCallPickupMode.EnableAlwaysAccept
     )
 
     override suspend fun getState(parameters: FeatureParameters): AutoCallPickupState {
         return when (val result = getUseCase()) {
+            // We do not want the mode to list as Disable but to default to EnableAlwaysAccept
             is ApiResult.Success -> AutoCallPickupState(
                 isEnabled = result.data != AutoCallPickupMode.Disable,
-                mode = result.data
+                mode = result.data.takeUnless { it == AutoCallPickupMode.Disable }
+                    ?: AutoCallPickupMode.EnableAlwaysAccept
             )
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
