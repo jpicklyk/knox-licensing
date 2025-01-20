@@ -29,6 +29,8 @@ import net.sfelabs.knox_tactical.domain.model.LteNrMode
 import net.sfelabs.knox_tactical.domain.model.NightVisionState
 import net.sfelabs.knox_tactical.domain.policy.auto_call_pickup.AutoCallPickupState
 import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingState
+import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponentConfig
+import net.sfelabs.knox_tactical.domain.policy.hdm.HdmState
 import net.sfelabs.knox_tactical.domain.policy.nr_mode.NrModeState
 import net.sfelabs.knoxmoduleshowcase.features.policy.event.PolicyEvent
 
@@ -230,6 +232,18 @@ private fun createPolicyState(
             NightVisionState(
                 isEnabled = isEnabled,
                 useRedOverlay = useRedOverlay
+            )
+        }
+        "enable_hdm_policy" -> {
+            val policyMask = config.values
+                .filterIsInstance<HdmComponentConfig>()
+                .filter { it.isEnabled }
+                .fold(0) { acc, config ->
+                    acc or config.component.mask
+                }
+            HdmState(
+                isEnabled = isEnabled,
+                policyMask = policyMask
             )
         }
         else -> null

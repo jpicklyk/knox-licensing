@@ -16,6 +16,9 @@ import net.sfelabs.knox_tactical.domain.model.ImsState
 import net.sfelabs.knox_tactical.domain.model.NightVisionState
 import net.sfelabs.knox_tactical.domain.policy.auto_call_pickup.AutoCallPickupState
 import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingState
+import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponent
+import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponentConfig
+import net.sfelabs.knox_tactical.domain.policy.hdm.HdmState
 import net.sfelabs.knox_tactical.domain.policy.nr_mode.NrModeState
 import net.sfelabs.knoxmoduleshowcase.features.policy.event.PolicyEvent
 import javax.inject.Inject
@@ -124,6 +127,12 @@ class PoliciesViewModel @Inject constructor(
         is ImsState -> mapOf(
             "simSlotId" to state.simSlotId
         )
+        is HdmState -> HdmComponent.entries.associate { component ->
+            component.name.lowercase() to HdmComponentConfig(
+                component = component,
+                isEnabled = (state.policyMask and component.mask) != 0
+            )
+        }
         else -> emptyMap()
-    }//.filterValues { it != null }
+    }
 }

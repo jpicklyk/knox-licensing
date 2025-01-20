@@ -10,6 +10,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
 import net.sfelabs.knox_tactical.domain.model.LteNrMode
+import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponent
+import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponentConfig
+import net.sfelabs.knox_tactical.domain.policy.hdm.HdmState
 
 @Composable
 internal fun PolicyConfiguration(
@@ -108,6 +111,13 @@ internal fun PolicyConfiguration(
                         )
                     }
                 }
+                is HdmComponentConfig -> ConfigurationCheckbox(
+                    label = value.component.displayName,
+                    checked = value.isEnabled,
+                    onCheckedChange = { checked ->
+                        onConfigChange?.invoke(key, value.copy(isEnabled = checked))
+                    }
+                )
             }
         }
     }
