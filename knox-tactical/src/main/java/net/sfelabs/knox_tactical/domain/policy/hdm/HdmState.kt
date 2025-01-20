@@ -9,7 +9,7 @@ data class HdmState(
     override val error: ApiError? = null,
     override val exception: Throwable? = null,
     val policyMask: Int = 0
-) : PolicyState  {
+) : PolicyState {
     override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
         return copy(error = error, exception = exception)
     }
@@ -25,5 +25,6 @@ data class HdmState(
         const val MICROPHONE_MASK = 128 // 2^7
         const val MODEM_MASK = 256     // 2^8
         const val SPEAKER_MASK = 512   // 2^9
+
     }
 }
