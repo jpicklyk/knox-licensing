@@ -5,7 +5,7 @@ import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.executor.UseCaseBuilder
 import net.sfelabs.core.domain.usecase.executor.combine
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox_tactical.domain.model.NightVisionState
+import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState
 
 class GetNightVisionModeStateUseCase(
     private val preferenceRepository: PreferencesRepository = PreferencesRepository.getInstance()

@@ -1,14 +1,12 @@
-package net.sfelabs.knox_tactical.domain.policy
+package net.sfelabs.knox_tactical.domain.policy.band_locking
 
 import com.samsung.android.knox.custom.CustomDeviceManager.BANDLOCK_NONE
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureContract
 import net.sfelabs.core.knox.feature.api.FeatureParameters
 import net.sfelabs.core.knox.feature.api.StateMapping
-import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLocking5gParameters
-import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingState
 import net.sfelabs.knox_tactical.domain.use_cases.radio.DisableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.EnableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.GetBandLockingStateUseCase
@@ -20,30 +18,30 @@ data class BandLockingParameters(
 @FeatureDefinition(
     title = "LTE Band Locking",
     description = "Configure LTE band locking settings per SIM slot or globally.",
-    category = FeatureCategory.ConfigurableToggle,
-    stateMapping = StateMapping.DIRECT
+    category = FeatureCategory.ConfigurableToggle
 )
-class LteBandLockingPolicy : FeatureContract<BandLockingState> {
+class LteBandLockingPolicy :
+    ConfigurableStatePolicy<BandLockingState, BandLockingConfiguration>(
+        stateMapping = StateMapping.DIRECT
+    ) {
+
     private val getUseCase = GetBandLockingStateUseCase()
     private val enableUseCase = EnableBandLockingUseCase()
     private val disableUseCase = DisableBandLockingUseCase()
 
     override val defaultValue = BandLockingState(
         isEnabled = false,
-        band = 0
+        band = BANDLOCK_NONE
     )
 
     override suspend fun getState(parameters: FeatureParameters): BandLockingState {
-        val simSlotId = when (parameters) {
-            is BandLockingParameters -> parameters.simSlotId
-            else -> null
-        }
+        val simSlotId = (parameters as? BandLockingParameters)?.simSlotId
+
         return when (val result = getUseCase(simSlotId)) {
-            is ApiResult.Success -> BandLockingState(
-                isEnabled = result.data != BANDLOCK_NONE,
+            is ApiResult.Success -> BandLockingConfiguration(
                 band = result.data,
                 simSlotId = simSlotId
-            )
+            ).toState(defaultValue)
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
             )
@@ -55,10 +53,21 @@ class LteBandLockingPolicy : FeatureContract<BandLockingState> {
     }
 
     override suspend fun setState(state: BandLockingState): ApiResult<Unit> {
-        return if (!state.isEnabled) {
-            disableUseCase(state.simSlotId)
+        val config = toConfiguration(state)
+        return if (config.band == BANDLOCK_NONE) {
+            disableUseCase(config.simSlotId)
         } else {
-            enableUseCase(state.band, state.simSlotId)
+            enableUseCase(config.band, config.simSlotId)
         }
     }
+
+    override fun toConfiguration(state: BandLockingState): BandLockingConfiguration =
+        if (!state.isEnabled) {
+            BandLockingConfiguration.disabled(state.simSlotId)
+        } else {
+            BandLockingConfiguration(
+                band = state.band,
+                simSlotId = state.simSlotId
+            )
+        }
 }

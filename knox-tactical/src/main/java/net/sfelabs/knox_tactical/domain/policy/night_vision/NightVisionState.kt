@@ -1,4 +1,4 @@
-package net.sfelabs.knox_tactical.domain.model
+package net.sfelabs.knox_tactical.domain.policy.night_vision
 
 import net.sfelabs.core.domain.usecase.model.ApiError
 import net.sfelabs.core.knox.feature.api.PolicyState

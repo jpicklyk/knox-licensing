@@ -1,9 +1,9 @@
-package net.sfelabs.knox_tactical.domain.policy
+package net.sfelabs.knox_tactical.domain.policy.modem_ims
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureContract
 import net.sfelabs.core.knox.feature.api.FeatureParameters
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.model.ImsState
@@ -14,33 +14,35 @@ data class ImsParameters(
     val simSlotId: Int = 0
 ) : FeatureParameters
 
+
 @FeatureDefinition(
     title = "Disable Modem IMS",
     description = "Disables the cellular modem IMS capability",
-    category = FeatureCategory.ConfigurableToggle,
-    stateMapping = StateMapping.INVERTED,
+    category = FeatureCategory.ConfigurableToggle
 )
+class DisableImsPolicy : ConfigurableStatePolicy<ImsState, ImsConfiguration>(
+    stateMapping = StateMapping.INVERTED
+) {
+    private val getUseCase = IsImsEnabledUseCase()
+    private val setUseCase = SetImsEnabled()
 
-class DisableImsPolicy: FeatureContract<ImsState> {
     override val defaultValue = ImsState(
         isEnabled = false,
         simSlotId = 0
     )
 
-    private val getUseCase = IsImsEnabledUseCase()
-    private val setUseCase = SetImsEnabled()
-
     override suspend fun getState(parameters: FeatureParameters): ImsState {
         val simSlotId = when (parameters) {
             is ImsParameters -> parameters.simSlotId
-            FeatureParameters.None -> defaultValue.simSlotId
-            else -> throw IllegalArgumentException("Unsupported parameters type: ${parameters.javaClass.simpleName}")
+            else -> defaultValue.simSlotId
         }
+
         return when (val result = getUseCase(simSlotId)) {
-            is ApiResult.Success -> ImsState(
-                isEnabled = result.data,
-                simSlotId = simSlotId
-            )
+            is ApiResult.Success -> ImsConfiguration(
+                enabled = result.data,
+                simSlotId = simSlotId,
+                stateMapping = stateMapping
+            ).toState(defaultValue)
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
             )
@@ -51,5 +53,15 @@ class DisableImsPolicy: FeatureContract<ImsState> {
         }
     }
 
-    override suspend fun setState(state: ImsState): ApiResult<Unit> = setUseCase(state.simSlotId, state.isEnabled)
+    override suspend fun setState(state: ImsState): ApiResult<Unit> {
+        val config = toConfiguration(state)
+        return setUseCase(config.simSlotId, config.enabled)
+    }
+
+    override fun toConfiguration(state: ImsState): ImsConfiguration =
+        ImsConfiguration(
+            enabled = state.isEnabled,
+            simSlotId = state.simSlotId,
+            stateMapping = stateMapping
+        )
 }

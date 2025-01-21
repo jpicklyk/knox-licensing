@@ -10,8 +10,8 @@ import net.sfelabs.core.domain.repository.PreferencesRepository
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.api.isSuccessful
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.domain.policy.EnableNightVisionModePolicy
-import net.sfelabs.knox_tactical.domain.model.NightVisionState
+import net.sfelabs.knox_tactical.domain.policy.night_vision.EnableNightVisionModePolicy
+import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before

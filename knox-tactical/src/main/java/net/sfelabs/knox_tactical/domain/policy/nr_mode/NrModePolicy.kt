@@ -2,6 +2,8 @@ package net.sfelabs.knox_tactical.domain.policy.nr_mode
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.api.ConfigurablePolicy
+import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureContract
 import net.sfelabs.core.knox.feature.api.FeatureParameters
@@ -18,10 +20,11 @@ data class NrModeParameters(
     title = "5G NR Mode",
     description = "Configure 5G NR (New Radio) mode settings to control SA and NSA capabilities.  " +
             "Turning off the policy will automatically enable both SA and NSA modes.",
-    category = FeatureCategory.ConfigurableToggle,
-    stateMapping = StateMapping.DIRECT
+    category = FeatureCategory.ConfigurableToggle
 )
-class NrModePolicy : FeatureContract<NrModeState> {
+class NrModePolicy : ConfigurableStatePolicy<NrModeState, NrModeConfiguration>(
+    stateMapping = StateMapping.DIRECT
+) {
     private val getUseCase = Get5gNrModeUseCase()
     private val setUseCase = Set5gNrModeUseCase()
 
@@ -31,18 +34,14 @@ class NrModePolicy : FeatureContract<NrModeState> {
     )
 
     override suspend fun getState(parameters: FeatureParameters): NrModeState {
-        val simSlotId = when (parameters) {
-            is NrModeParameters -> parameters.simSlotId
-            else -> null
-        }
+        val simSlotId = (parameters as? NrModeParameters)?.simSlotId
 
         return when (val result = getUseCase(simSlotId)) {
-            is ApiResult.Success -> NrModeState(
-                isEnabled = result.data != LteNrMode.EnableBothSaAndNsa,
-                mode = result.data.takeUnless { it == LteNrMode.EnableBothSaAndNsa }
-                    ?: LteNrMode.DisableNsa,
-                simSlotId = simSlotId
-            )
+            is ApiResult.Success -> NrModeConfiguration(
+                mode = result.data,
+                simSlotId = simSlotId,
+                stateMapping = stateMapping
+            ).toState(defaultValue)
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
             )
@@ -54,11 +53,14 @@ class NrModePolicy : FeatureContract<NrModeState> {
     }
 
     override suspend fun setState(state: NrModeState): ApiResult<Unit> {
-        return if (!state.isEnabled)
-            setUseCase(LteNrMode.EnableBothSaAndNsa, state.simSlotId)
-        else
-            setUseCase(state.mode, state.simSlotId)
-
-
+        val config = toConfiguration(state)
+        return setUseCase(config.mode, config.simSlotId)
     }
+
+    override fun toConfiguration(state: NrModeState): NrModeConfiguration =
+        NrModeConfiguration(
+            mode = if (!state.isEnabled) LteNrMode.EnableBothSaAndNsa else state.mode,
+            simSlotId = state.simSlotId,
+            stateMapping = stateMapping
+        )
 }

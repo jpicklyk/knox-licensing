@@ -2,6 +2,7 @@ package net.sfelabs.knox_tactical.domain.policy.auto_call_pickup
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.api.ConfigurablePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureContract
 import net.sfelabs.core.knox.feature.api.FeatureParameters
@@ -16,7 +17,9 @@ import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupState
     category = FeatureCategory.ConfigurableToggle,
     stateMapping = StateMapping.DIRECT
 )
-class AutoCallPickupPolicy : FeatureContract<AutoCallPickupState> {
+class AutoCallPickupPolicy :
+    FeatureContract<AutoCallPickupState>,
+    ConfigurablePolicy<AutoCallPickupState, AutoCallPickupConfiguration> {
     private val getUseCase = GetAutoCallPickupStateUseCase()
     private val setUseCase = SetAutoCallPickupStateUseCase()
 
@@ -28,11 +31,8 @@ class AutoCallPickupPolicy : FeatureContract<AutoCallPickupState> {
     override suspend fun getState(parameters: FeatureParameters): AutoCallPickupState {
         return when (val result = getUseCase()) {
             // We do not want the mode to list as Disable but to default to EnableAlwaysAccept
-            is ApiResult.Success -> AutoCallPickupState(
-                isEnabled = result.data != AutoCallPickupMode.Disable,
-                mode = result.data.takeUnless { it == AutoCallPickupMode.Disable }
-                    ?: AutoCallPickupMode.EnableAlwaysAccept
-            )
+            is ApiResult.Success -> AutoCallPickupConfiguration(result.data)
+                .toState(defaultValue)
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
             )
@@ -44,9 +44,11 @@ class AutoCallPickupPolicy : FeatureContract<AutoCallPickupState> {
     }
 
     override suspend fun setState(state: AutoCallPickupState): ApiResult<Unit> {
-        return if(!state.isEnabled)
-            setUseCase(AutoCallPickupMode.Disable)
-        else
-            setUseCase(state.mode)
+        return setUseCase(toConfiguration(state).mode)
     }
+
+    override fun toConfiguration(state: AutoCallPickupState): AutoCallPickupConfiguration =
+        AutoCallPickupConfiguration(
+            mode = if (!state.isEnabled) AutoCallPickupMode.Disable else state.mode
+        )
 }

@@ -1,8 +1,8 @@
-package net.sfelabs.knox_tactical.domain.policy
+package net.sfelabs.knox_tactical.domain.policy.auto_record_policy
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
-import net.sfelabs.core.knox.feature.api.BooleanPolicy
+import net.sfelabs.core.knox.feature.api.ConfigurableBooleanPolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoRecordCallEnabledUseCase
@@ -11,10 +11,9 @@ import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoRecordCallEnabl
 @FeatureDefinition(
     title = "Auto Record Calls",
     description = "Automatically record all phone calls when enabled.",
-    category = FeatureCategory.Toggle,
-    stateMapping = StateMapping.DIRECT
+    category = FeatureCategory.Toggle
 )
-class AutoRecordCallPolicy : BooleanPolicy() {
+class AutoRecordCallPolicy : ConfigurableBooleanPolicy() {
     private val getUseCase = GetAutoRecordCallEnabledUseCase()
     private val setUseCase = SetAutoRecordCallEnabledUseCase()
 

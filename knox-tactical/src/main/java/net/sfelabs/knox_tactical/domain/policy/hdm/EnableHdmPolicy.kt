@@ -2,6 +2,7 @@ package net.sfelabs.knox_tactical.domain.policy.hdm
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.api.ConfigurablePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureContract
 import net.sfelabs.core.knox.feature.api.FeatureParameters
@@ -10,12 +11,13 @@ import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetHdmPolicyUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmPolicyUseCase
 
 @FeatureDefinition(
-    title = "Hardware Disable Mode",
-    description = "Control hardware components through a unified policy. Individual components can be disabled for enhanced security.",
+    title = "Enable HDM Policy",
+    description = "Control hardware components through a unified policy. Individual components can " +
+            "be disabled for enhanced security.",
     category = FeatureCategory.ConfigurableToggle,
     stateMapping = StateMapping.DIRECT
 )
-class EnableHdmPolicy : FeatureContract<HdmState> {
+class EnableHdmPolicy : FeatureContract<HdmState>, ConfigurablePolicy<HdmState, HdmConfiguration> {
     private val getUseCase = GetHdmPolicyUseCase()
     private val setUseCase = SetHdmPolicyUseCase()
 
@@ -42,4 +44,11 @@ class EnableHdmPolicy : FeatureContract<HdmState> {
 
     override suspend fun setState(state: HdmState): ApiResult<Unit> =
         setUseCase(state.policyMask, false)
+
+    override fun toConfiguration(state: HdmState): HdmConfiguration =
+        HdmConfiguration(
+            components = HdmComponent.entries.filter { component ->
+                state.policyMask and component.mask != 0
+            }.toSet()
+        )
 }

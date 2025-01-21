@@ -6,7 +6,7 @@ import net.sfelabs.core.domain.repository.PreferencesRepository
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.knox_tactical.domain.model.NightVisionState
+import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState
 
 class SetNightVisionModeStateUseCase(
     private val preferenceRepository: PreferencesRepository = PreferencesRepository.getInstance()

@@ -2,7 +2,7 @@ package net.sfelabs.knox_tactical.domain.policy
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
-import net.sfelabs.core.knox.feature.api.BooleanPolicy
+import net.sfelabs.core.knox.feature.api.ConfigurableBooleanPolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.use_cases.backlight.GetLcdBacklightEnabledUseCase
@@ -12,10 +12,9 @@ import net.sfelabs.knox_tactical.domain.use_cases.backlight.SetLcdBacklightEnabl
     title = "Disable LCD Backlight",
     description = "This feature switches ON or OFF the screen's backlight.  " +
     "On OLED screens, this results in the screen being completely on or off.",
-    category = FeatureCategory.Toggle,
-    stateMapping = StateMapping.INVERTED,
+    category = FeatureCategory.Toggle
 )
-class LcdBacklightPolicy() : BooleanPolicy() {
+class LcdBacklightPolicy() : ConfigurableBooleanPolicy(stateMapping = StateMapping.INVERTED) {
     private val getUseCase = GetLcdBacklightEnabledUseCase()
     private val setUseCase = SetLcdBacklightEnabledUseCase()
 
