@@ -54,6 +54,8 @@ class ComponentGenerator(
     }
 
     private fun generateComponentProperties(feature: ProcessedFeature): List<PropertySpec> {
+        val stateType = feature.valueType.toClassName()
+
         return listOf(
             PropertySpec.builder("featureName", String::class)
                 .addModifiers(KModifier.OVERRIDE)
@@ -77,20 +79,20 @@ class ComponentGenerator(
 
             PropertySpec.builder("handler",
                 ClassName.bestGuess(FeatureHandler::class.qualifiedName!!)
-                    .parameterizedBy(feature.valueType.toClassName())
+                    .parameterizedBy(stateType)  // Use consistent type
             )
                 .addModifiers(KModifier.OVERRIDE)
                 .initializer(buildHandlerInitializer(feature))
                 .build(),
 
-            PropertySpec.builder("defaultValue", feature.valueType.toClassName())
+            PropertySpec.builder("defaultValue", stateType)  // Use consistent type
                 .addModifiers(KModifier.OVERRIDE)
                 .initializer("featureImpl.defaultValue")
                 .build(),
 
             PropertySpec.builder("key",
                 ClassName.bestGuess(FeatureKey::class.qualifiedName!!)
-                    .parameterizedBy(feature.valueType.toClassName())
+                    .parameterizedBy(stateType)  // Use consistent type
             )
                 .addModifiers(KModifier.OVERRIDE)
                 .initializer(
@@ -102,31 +104,24 @@ class ComponentGenerator(
     }
 
     private fun buildHandlerInitializer(feature: ProcessedFeature): CodeBlock {
+        val stateType = feature.valueType.toClassName()
+
         return CodeBlock.builder()
             .beginControlFlow(
                 "object : %T<%T>",
                 ClassName.bestGuess(FeatureHandler::class.qualifiedName!!),
-                feature.valueType.toClassName()
+                stateType  // Use specific type
             )
             .beginControlFlow(
                 "override suspend fun getState(parameters: %T): %T",
                 ClassName.bestGuess(FeatureParameters::class.qualifiedName!!),
-                feature.valueType.toClassName()
+                stateType  // Use specific type
             )
-            .addStatement(
-                if (feature.isConfigurable) {
-                    "return featureImpl.getState(parameters)"
-                } else {
-                    """
-                    val state = featureImpl.getState(parameters)
-                    return state
-                    """.trimIndent()
-                }
-            )
+            .addStatement("return featureImpl.getState(parameters)")
             .endControlFlow()
             .beginControlFlow(
                 "override suspend fun setState(newState: %T): %T<Unit>",
-                feature.valueType.toClassName(),
+                stateType,  // Use specific type
                 ClassName.bestGuess(ApiResult::class.qualifiedName!!)
             )
             .addStatement("return featureImpl.setState(newState)")

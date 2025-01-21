@@ -6,7 +6,6 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.Modifier
 import net.sfelabs.core.knox.feature.api.ConfigurablePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.PolicyState
@@ -23,7 +22,7 @@ class FeatureDefinitionProcessor(
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val featureClasses = resolver.getSymbolsWithAnnotation("net.sfelabs.core.knox.feature.annotation.FeatureDefinition")
             .filterIsInstance<KSClassDeclaration>()
-            .mapNotNull { processFeatureDefinition(it, resolver) }
+            .mapNotNull { processFeatureDefinition(it) }
             .toList()
 
         if (featureClasses.isNotEmpty()) {
@@ -69,15 +68,33 @@ class FeatureDefinitionProcessor(
     }
 
     private fun processFeatureDefinition(
-        classDeclaration: KSClassDeclaration,
-        resolver: Resolver
+        classDeclaration: KSClassDeclaration
     ): ProcessedFeature? {
         val annotation = classDeclaration.annotations.find {
             it.shortName.asString() == "FeatureDefinition"
         } ?: return null
 
         val contractType = findFeatureContractType(classDeclaration) ?: return null
-        val valueType = contractType.arguments.firstOrNull()?.type?.resolve() ?: return null
+        val valueType = when {
+            // If it's ConfigurableStatePolicy, we need to resolve the actual type
+            classDeclaration.superTypes.any { superType ->
+                superType.resolve().declaration.qualifiedName?.asString()?.startsWith(
+                    "net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy"
+                ) == true
+            } -> {
+                // Get the type argument from ConfigurableStatePolicy
+                classDeclaration.superTypes
+                    .firstOrNull { superType ->
+                        superType.resolve().declaration.qualifiedName?.asString()?.startsWith(
+                            "net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy"
+                        ) == true
+                    }?.resolve()?.arguments?.firstOrNull()?.type?.resolve()
+                    ?: contractType.arguments.firstOrNull()?.type?.resolve()
+                    ?: return null
+            }
+            else -> contractType.arguments.firstOrNull()?.type?.resolve() ?: return null
+        }
+
         val configurableType = findConfigurableType(classDeclaration)
 
         // Get configuration type from ConfigurablePolicy if it exists
@@ -85,6 +102,13 @@ class FeatureDefinitionProcessor(
 
         // Verify PolicyState implementation
         val hasPolicyStateInterface = when {
+            // If it's ConfigurableStatePolicy, skip validation
+            classDeclaration.superTypes.any { superType ->
+                superType.resolve().declaration.qualifiedName?.asString()?.startsWith(
+                    "net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy"
+                ) == true
+            } -> true
+
             // Check if it's directly a PolicyState implementation
             (valueType.declaration as? KSClassDeclaration)?.superTypes?.any { superType ->
                 superType.resolve().declaration.qualifiedName?.asString() ==
