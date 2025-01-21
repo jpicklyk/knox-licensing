@@ -7,6 +7,5 @@ import net.sfelabs.core.knox.feature.api.FeatureCategory
 annotation class FeatureDefinition(
     val title: String,
     val description: String,
-    val category: FeatureCategory,
-    val stateMapping: StateMapping = StateMapping.DIRECT
+    val category: FeatureCategory
 )
