@@ -2,7 +2,6 @@ package net.sfelabs.core.knox.feature.processor.generator
 
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
-import com.squareup.kotlinpoet.ANY
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -10,12 +9,9 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.WildcardTypeName
 import com.squareup.kotlinpoet.asClassName
-import net.sfelabs.core.knox.feature.api.FeatureComponent
 import net.sfelabs.core.knox.feature.api.PolicyState
-import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
 import net.sfelabs.core.knox.feature.processor.model.PackageName
 import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
 import net.sfelabs.core.knox.feature.processor.utils.GeneratedPackages
@@ -26,13 +22,10 @@ class ModuleGenerator(
     fun generate(features: List<ProcessedFeature>) {
         if (features.isEmpty()) return
 
-        // Generate individual feature modules first
         features.forEach { feature ->
             generateFeatureModule(feature)
         }
-        // Generate the FeatureRegistry binding
         generateFeatureRegistryModule()
-        // Finally generate the index
         generateModuleIndex(features)
     }
 
@@ -64,7 +57,7 @@ class ModuleGenerator(
             )
             .build()
 
-        writeModuleToFile(moduleSpec, feature.className)
+        writeModuleToFile(moduleSpec, feature)
     }
 
     private fun generateModuleIndex(features: List<ProcessedFeature>) {
@@ -127,9 +120,9 @@ class ModuleGenerator(
 
     private fun writeModuleToFile(
         moduleSpec: TypeSpec,
-        fileName: String
+        feature: ProcessedFeature
     ) {
-        val moduleName = fileName + "Module"
+        val moduleName = feature.className + "Module"
         try {
             val packageName = getGeneratedPackage()
 
@@ -145,7 +138,7 @@ class ModuleGenerator(
                         .addImport(PackageName.FEATURE_PUBLIC.value, "PolicyState")
                         .addImport(
                             getFeaturePackage(),
-                            fileName + "Component"
+                            feature.className + "Component"
                         )
                         .build()
                         .writeTo(writer)

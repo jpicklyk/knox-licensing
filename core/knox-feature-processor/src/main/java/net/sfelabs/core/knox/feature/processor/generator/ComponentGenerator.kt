@@ -15,7 +15,6 @@ import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureComponent
 import net.sfelabs.core.knox.feature.api.FeatureKey
 import net.sfelabs.core.knox.feature.api.FeatureParameters
-import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.core.knox.feature.domain.usecase.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
 import net.sfelabs.core.knox.feature.processor.utils.GeneratedPackages
@@ -81,9 +80,7 @@ class ComponentGenerator(
                     .parameterizedBy(feature.valueType.toClassName())
             )
                 .addModifiers(KModifier.OVERRIDE)
-                .initializer(
-                    buildHandlerInitializer(feature)
-                )
+                .initializer(buildHandlerInitializer(feature))
                 .build(),
 
             PropertySpec.builder("defaultValue", feature.valueType.toClassName())
@@ -117,24 +114,14 @@ class ComponentGenerator(
                 feature.valueType.toClassName()
             )
             .addStatement(
-                """
-            val result = featureImpl.getState(parameters)
-            // Apply state mapping to the enabled state
-            val mappedEnabled = when(${StateMapping::class.qualifiedName}.${feature.stateMapping.name}) {
-                ${StateMapping::class.qualifiedName}.DIRECT -> result.isEnabled
-                ${StateMapping::class.qualifiedName}.INVERTED -> !result.isEnabled
-                ${StateMapping::class.qualifiedName}.CUSTOM -> {
-                    try {
-                        val companionClass = Class.forName("${feature.packageName}.${feature.className}.Companion")
-                        val mapStateMethod = companionClass.getDeclaredMethod("mapState", Boolean::class.java)
-                        mapStateMethod.invoke(null, result.isEnabled) as Boolean
-                    } catch (_: Exception) {
-                        result.isEnabled
-                    }
+                if (feature.isConfigurable) {
+                    "return featureImpl.getState(parameters)"
+                } else {
+                    """
+                    val state = featureImpl.getState(parameters)
+                    return state
+                    """.trimIndent()
                 }
-            }
-            return result.copy(isEnabled = mappedEnabled)
-            """.trimIndent()
             )
             .endControlFlow()
             .beginControlFlow(
@@ -142,26 +129,7 @@ class ComponentGenerator(
                 feature.valueType.toClassName(),
                 ClassName.bestGuess(ApiResult::class.qualifiedName!!)
             )
-            .addStatement(
-                """
-            // Apply inverse state mapping for setState
-            val mappedState = when(${StateMapping::class.qualifiedName}.${feature.stateMapping.name}) {
-                ${StateMapping::class.qualifiedName}.DIRECT -> newState
-                ${StateMapping::class.qualifiedName}.INVERTED -> newState.copy(isEnabled = !newState.isEnabled)
-                ${StateMapping::class.qualifiedName}.CUSTOM -> {
-                    try {
-                        val companionClass = Class.forName("${feature.packageName}.${feature.className}.Companion")
-                        val mapStateMethod = companionClass.getDeclaredMethod("mapState", Boolean::class.java)
-                        val mappedEnabled = mapStateMethod.invoke(null, newState.isEnabled) as Boolean
-                        newState.copy(isEnabled = mappedEnabled)
-                    } catch (_: Exception) {
-                        newState
-                    }
-                }
-            }
-            return featureImpl.setState(mappedState)
-            """.trimIndent()
-            )
+            .addStatement("return featureImpl.setState(newState)")
             .endControlFlow()
             .endControlFlow()
             .build()
@@ -179,7 +147,6 @@ class ComponentGenerator(
                 output.writer().use { writer ->
                     FileSpec.builder(packageName, "${feature.className}Component")
                         .addType(componentSpec)
-                        // No need for imports as we're using fully qualified names
                         .build()
                         .writeTo(writer)
                 }

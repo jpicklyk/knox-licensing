@@ -6,28 +6,31 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import net.sfelabs.core.knox.feature.api.StateMapping
+import com.google.devtools.ksp.symbol.Modifier
+import net.sfelabs.core.knox.feature.api.ConfigurablePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
+import net.sfelabs.core.knox.feature.api.PolicyState
 import net.sfelabs.core.knox.feature.processor.generator.ComponentGenerator
 import net.sfelabs.core.knox.feature.processor.generator.KeyGenerator
 import net.sfelabs.core.knox.feature.processor.generator.ModuleGenerator
+import net.sfelabs.core.knox.feature.processor.generator.PolicyTypeGenerator
 import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
+
 
 class FeatureDefinitionProcessor(
     val environment: SymbolProcessorEnvironment
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        // Collect all classes with @FeatureDefinition
         val featureClasses = resolver.getSymbolsWithAnnotation("net.sfelabs.core.knox.feature.annotation.FeatureDefinition")
             .filterIsInstance<KSClassDeclaration>()
-            .mapNotNull { processFeatureDefinition(it) }
+            .mapNotNull { processFeatureDefinition(it, resolver) }
             .toList()
 
         if (featureClasses.isNotEmpty()) {
-            // Generate code for each feature
             ComponentGenerator(environment).generate(featureClasses)
             KeyGenerator(environment).generate(featureClasses)
             ModuleGenerator(environment).generate(featureClasses)
+            PolicyTypeGenerator(environment).generate(featureClasses)
         }
 
         return emptyList()
@@ -41,7 +44,6 @@ class FeatureDefinitionProcessor(
                 return superType.resolve()
             }
 
-            // Check superTypes of this type recursively
             val superDecl = superType.resolve().declaration as? KSClassDeclaration
             if (superDecl != null) {
                 findFeatureContractType(superDecl)?.let { return it }
@@ -50,20 +52,57 @@ class FeatureDefinitionProcessor(
         return null
     }
 
-    private fun processFeatureDefinition(classDeclaration: KSClassDeclaration): ProcessedFeature? {
+    private fun findConfigurableType(classDeclaration: KSClassDeclaration): KSType? {
+        for (superType in classDeclaration.superTypes) {
+            val qualifiedName = superType.resolve().declaration.qualifiedName?.asString()
+
+            if (qualifiedName == ConfigurablePolicy::class.qualifiedName) {
+                return superType.resolve()
+            }
+
+            val superDecl = superType.resolve().declaration as? KSClassDeclaration
+            if (superDecl != null) {
+                findConfigurableType(superDecl)?.let { return it }
+            }
+        }
+        return null
+    }
+
+    private fun processFeatureDefinition(
+        classDeclaration: KSClassDeclaration,
+        resolver: Resolver
+    ): ProcessedFeature? {
         val annotation = classDeclaration.annotations.find {
             it.shortName.asString() == "FeatureDefinition"
         } ?: return null
 
-        // Get the type parameter T from FeatureContract<T>
         val contractType = findFeatureContractType(classDeclaration) ?: return null
         val valueType = contractType.arguments.firstOrNull()?.type?.resolve() ?: return null
+        val configurableType = findConfigurableType(classDeclaration)
 
-        // Verify the type implements PolicyState
-        val hasPolicyStateInterface =
+        // Get configuration type from ConfigurablePolicy if it exists
+        val configType = configurableType?.arguments?.get(1)?.type?.resolve()
+
+        // Verify PolicyState implementation
+        val hasPolicyStateInterface = when {
+            // Check if it's directly a PolicyState implementation
             (valueType.declaration as? KSClassDeclaration)?.superTypes?.any { superType ->
-                superType.resolve().declaration.qualifiedName?.asString() == "net.sfelabs.core.knox.feature.api.PolicyState"
-            } == true
+                superType.resolve().declaration.qualifiedName?.asString() ==
+                        PolicyState::class.qualifiedName
+            } == true -> true
+
+            // Check type parameters for PolicyState bound
+            valueType.declaration.typeParameters.any { typeParam ->
+                typeParam.bounds.any { bound ->
+                    bound.resolve().declaration.qualifiedName?.asString() ==
+                            PolicyState::class.qualifiedName
+                }
+            } -> true
+
+            else -> false
+        }
+
+
 
         if (!hasPolicyStateInterface) {
             environment.logger.error(
@@ -87,12 +126,8 @@ class FeatureDefinitionProcessor(
                 ?.value as? KSType)?.let {
                 FeatureCategory.valueOf(it.declaration.simpleName.asString())
             } ?: return null,
-            stateMapping = (annotation.arguments
-                .find { it.name?.asString() == "stateMapping" }
-                ?.value as? KSType)?.let {
-                StateMapping.valueOf(it.declaration.simpleName.asString())
-            } ?: StateMapping.DIRECT,
             valueType = valueType,
+            configType = configType,
             declaration = classDeclaration
         )
     }
