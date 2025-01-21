@@ -26,7 +26,7 @@ import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
 import net.sfelabs.core.ui.theme.AppTheme
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
 import net.sfelabs.knox_tactical.domain.model.LteNrMode
-import net.sfelabs.knox_tactical.domain.model.NightVisionState
+import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState
 import net.sfelabs.knox_tactical.domain.policy.auto_call_pickup.AutoCallPickupState
 import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingState
 import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponentConfig

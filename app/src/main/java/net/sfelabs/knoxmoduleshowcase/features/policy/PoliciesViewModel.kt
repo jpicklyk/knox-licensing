@@ -13,7 +13,7 @@ import net.sfelabs.core.knox.feature.domain.model.Feature
 import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
 import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
 import net.sfelabs.knox_tactical.domain.model.ImsState
-import net.sfelabs.knox_tactical.domain.model.NightVisionState
+import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState
 import net.sfelabs.knox_tactical.domain.policy.auto_call_pickup.AutoCallPickupState
 import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingState
 import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponent
