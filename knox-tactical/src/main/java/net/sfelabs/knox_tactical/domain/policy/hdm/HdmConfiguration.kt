@@ -1,9 +1,11 @@
 package net.sfelabs.knox_tactical.domain.policy.hdm
 
 import net.sfelabs.core.knox.feature.api.PolicyConfiguration
+import net.sfelabs.core.knox.feature.api.StateMapping
 
 data class HdmConfiguration(
-    val components: Set<HdmComponent>
+    val components: Set<HdmComponent>,
+    override val stateMapping: StateMapping = StateMapping.DIRECT
 ) : PolicyConfiguration<HdmState> {
     override fun toState(currentState: HdmState): HdmState {
         val newMask = components.fold(0) { acc, component ->

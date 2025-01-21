@@ -2,11 +2,9 @@ package net.sfelabs.knox_tactical.domain.policy.auto_call_pickup
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
-import net.sfelabs.core.knox.feature.api.ConfigurablePolicy
+import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureContract
 import net.sfelabs.core.knox.feature.api.FeatureParameters
-import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
 import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoCallPickupStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupStateUseCase
@@ -14,12 +12,10 @@ import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupState
 @FeatureDefinition(
     title = "Auto Call Pickup",
     description = "Configure how calls are automatically answered. Options: Disabled, Enabled (with confirmation), or Always Accept (auto-answer without confirmation).",
-    category = FeatureCategory.ConfigurableToggle,
-    stateMapping = StateMapping.DIRECT
+    category = FeatureCategory.ConfigurableToggle
 )
 class AutoCallPickupPolicy :
-    FeatureContract<AutoCallPickupState>,
-    ConfigurablePolicy<AutoCallPickupState, AutoCallPickupConfiguration> {
+    ConfigurableStatePolicy<AutoCallPickupState, AutoCallPickupConfiguration>() {
     private val getUseCase = GetAutoCallPickupStateUseCase()
     private val setUseCase = SetAutoCallPickupStateUseCase()
 
