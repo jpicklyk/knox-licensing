@@ -7,157 +7,35 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
-import net.sfelabs.knox_tactical.domain.model.LteNrMode
-import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponent
-import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponentConfig
-import net.sfelabs.knox_tactical.domain.policy.hdm.HdmState
+
 
 @Composable
-internal fun PolicyConfiguration(
-    options: Map<String, Any?>,
-    onConfigChange: ((String, Any) -> Unit)?,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-        options.forEach { (key, value) ->
-            when (value) {
-                is Boolean -> ConfigurationCheckbox(
-                    label = key,
-                    checked = value,
-                    onCheckedChange = { onConfigChange?.invoke(key, it) }
-                )
-                is String -> ConfigurationDropdown(
-                    label = key,
-                    selected = value,
-                    options = when {
-                        key.equals("mode", ignoreCase = true) ->
-                            listOf("Both SA and NSA", "NSA Only", "SA Only")
-                        else -> emptyList()
-                    },
-                    onSelectionChange = { onConfigChange?.invoke(key, it) }
-                )
-                is LteNrMode -> ConfigurationDropdown(
-                    label = key,
-                    selected = when (value) {
-                        LteNrMode.EnableBothSaAndNsa -> "Enable Both SA and NSA"
-                        LteNrMode.DisableSa -> "Disable SA"
-                        LteNrMode.DisableNsa -> "Disable NSA"
-                    },
-                    options = listOf(
-                        //"Enable Both SA and NSA",
-                        "Disable SA",
-                        "Disable NSA"
-                    ),
-                    onSelectionChange = { selected ->
-                        val mode = when (selected) {
-                            //"Enable Both SA and NSA" -> LteNrMode.EnableBothSaAndNsa
-                            "Disable SA" -> LteNrMode.DisableSa
-                            "Disable NSA" -> LteNrMode.DisableNsa
-                            else -> return@ConfigurationDropdown
-                        }
-                        onConfigChange?.invoke(key, mode)
-                    }
-                )
-                is AutoCallPickupMode -> {
-                    println("Handling AutoCallPickupMode: $value")
-                    ConfigurationDropdown(
-                        label = key,
-                        selected = when (value) {
-                            AutoCallPickupMode.Enable -> "Enable"
-                            AutoCallPickupMode.EnableAlwaysAccept -> "Enable Always Accept"
-                            else -> "Enable Always Accept"  // Default case
-                        },
-                        options = listOf(
-                            "Enable",
-                            "Enable Always Accept"
-                        ),
-                        onSelectionChange = { selected ->
-                            when (selected) {
-                                "Enable" -> AutoCallPickupMode.Enable
-                                "Enable Always Accept" -> AutoCallPickupMode.EnableAlwaysAccept
-                                else -> return@ConfigurationDropdown
-                            }
-                        }
-                    )
-                }
-                is Int?, Int -> {
-                    val intValue = (value as? Int) ?: 0
-                    when {
-
-                        key.equals("band", ignoreCase = true) -> ConfigurationNumber(
-                            label = key,
-                            value = intValue,
-                            onValueChange = { onConfigChange?.invoke(key, it) }
-                        )
-
-                        key.equals("simSlotId", ignoreCase = true) -> ConfigurationNumber(
-                            label = key,
-                            value = intValue,
-                            onValueChange = { onConfigChange?.invoke(key, it) }
-                        )
-
-                        key.equals("feature", ignoreCase = true) -> ConfigurationNumber(
-                            label = key,
-                            value = intValue,
-                            onValueChange = { onConfigChange?.invoke(key, it) }
-                        )
-                    }
-                }
-                is HdmComponentConfig -> ConfigurationCheckbox(
-                    label = value.component.displayName,
-                    checked = value.isEnabled,
-                    onCheckedChange = { checked ->
-                        onConfigChange?.invoke(key, value.copy(isEnabled = checked))
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ConfigurationNumber(
+fun ConfigurationCheckbox(
     label: String,
-    value: Int,
-    onValueChange: (Int) -> Unit,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var textValue by remember { mutableStateOf(value.toString()) }
-    Column(modifier = modifier.fillMaxWidth()) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f)
         )
-        OutlinedTextField(
-            value = textValue,
-            onValueChange = { newValue ->
-                // Allow empty or numeric input
-                if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                    textValue = newValue
-
-                    // Only call onValueChange if there's a valid non-empty integer
-                    newValue.toIntOrNull()?.let {
-                        onValueChange(it)
-                    }
-                }
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ConfigurationDropdown(
+fun ConfigurationDropdown(
     label: String,
     selected: String,
     options: List<String>,
@@ -180,10 +58,7 @@ private fun ConfigurationDropdown(
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor(
-                    type = MenuAnchorType.PrimaryNotEditable,
-                    enabled = true
-                )
+                modifier = Modifier.menuAnchor()
             )
             ExposedDropdownMenu(
                 expanded = expanded,
@@ -204,25 +79,39 @@ private fun ConfigurationDropdown(
 }
 
 @Composable
-private fun ConfigurationCheckbox(
+fun ConfigurationNumber(
     label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    value: Int,
+    range: IntRange?,
+    onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    var textValue by remember { mutableStateOf(value.toString()) }
+
+    Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f)
+            style = MaterialTheme.typography.bodyMedium
         )
-        Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange
+        OutlinedTextField(
+            value = textValue,
+            onValueChange = { newValue ->
+                // Allow empty or numeric input
+                if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                    textValue = newValue
+
+                    // Only call onValueChange if there's a valid non-empty integer
+                    newValue.toIntOrNull()?.let { intValue ->
+                        // Apply range constraints if provided
+                        val coercedValue = range?.let { range ->
+                            intValue.coerceIn(range)
+                        } ?: intValue
+                        onValueChange(coercedValue)
+                    }
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

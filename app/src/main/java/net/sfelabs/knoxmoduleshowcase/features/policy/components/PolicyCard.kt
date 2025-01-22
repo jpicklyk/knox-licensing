@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.sfelabs.core.knox.feature.api.BooleanPolicyState
 import net.sfelabs.core.knox.feature.api.PolicyState
+import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
 import net.sfelabs.core.ui.theme.AppTheme
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
@@ -41,18 +42,14 @@ fun PolicyCard(
     modifier: Modifier = Modifier
 ) {
     // Local UI state for tracking edits
-    val currentEdits = remember(policy) {
-        mutableStateOf(
-            when (policy) {
-                is PolicyUiState.ConfigurableToggle -> policy.configurationOptions
-                else -> emptyMap()
-            }
-        )
+    val currentOptions = remember(policy) {
+        when (policy) {
+            is PolicyUiState.ConfigurableToggle -> policy.configurationOptions
+            else -> emptyList()
+        }
     }
-    var hasUnsavedChanges = remember { mutableStateOf(false) }
-
-    val showSaveButton = policy is PolicyUiState.ConfigurableToggle &&
-            policy.configurationOptions.isNotEmpty()
+    var pendingOptions by remember { mutableStateOf(currentOptions) }
+    var hasUnsavedChanges by remember { mutableStateOf(false) }
 
     OutlinedCard(
         modifier = modifier
@@ -78,26 +75,16 @@ fun PolicyCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (showSaveButton) {
+                    if (policy is PolicyUiState.ConfigurableToggle && hasUnsavedChanges) {
                         Button(
                             onClick = {
-                                if (policy is PolicyUiState.ConfigurableToggle) {
-                                    createPolicyState(
-                                        policy = policy,
-                                        config = currentEdits.value,
-                                        isEnabled = policy.isEnabled
-                                    )?.let { newState ->
-                                        onEvent(PolicyEvent.UpdatePolicy(
-                                            policyState = newState,
-                                            featureName = policy.featureName
-                                        ))
-                                        hasUnsavedChanges.value = false
-                                    }
-                                }
+                                onEvent(PolicyEvent.SaveConfiguration(
+                                    policy.featureName,
+                                    pendingOptions
+                                ))
+                                hasUnsavedChanges = false
                             },
-                            enabled = hasUnsavedChanges.value &&
-                                    policy.isEnabled &&
-                                    policy.isSupported
+                            enabled = policy.isEnabled && policy.isSupported
                         ) {
                             Text("Save")
                         }
@@ -105,27 +92,10 @@ fun PolicyCard(
                     Switch(
                         checked = policy.isEnabled,
                         onCheckedChange = { isEnabled ->
-                            when (policy) {
-                                is PolicyUiState.Toggle -> {
-                                    onEvent(PolicyEvent.UpdatePolicy(
-                                        BooleanPolicyState(isEnabled = isEnabled),
-                                        policy.featureName
-                                    ))
-                                }
-                                is PolicyUiState.ConfigurableToggle -> {
-                                    createPolicyState(
-                                        policy = policy,
-                                        config = currentEdits.value,
-                                        isEnabled = isEnabled
-                                    )?.let { newState ->
-                                        onEvent(
-                                            PolicyEvent.UpdatePolicy(newState, policy.featureName)
-                                        )
-                                    }
-                                }
-                            }
-                            // Ensuring that the save button is disabled on change of switch
-                            hasUnsavedChanges.value = false
+                            onEvent(PolicyEvent.UpdateEnabled(policy.featureName, isEnabled))
+                            // Reset pending changes when toggling enabled state
+                            pendingOptions = currentOptions
+                            hasUnsavedChanges = false
                         },
                         enabled = policy.isSupported
                     )
@@ -163,11 +133,10 @@ fun PolicyCard(
                 )
             }
 
-            // Configuration Options
+            // Configuration Options for ConfigurableToggle
             if (policy is PolicyUiState.ConfigurableToggle &&
-                policy.isSupported
-                //policy.isEnabled &&
-                //policy.configurationOptions.isNotEmpty()
+                policy.isSupported &&
+                policy.configurationOptions.isNotEmpty()
             ) {
                 HorizontalDivider()
                 Column(
@@ -179,15 +148,46 @@ fun PolicyCard(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    PolicyConfiguration(
-                        options = currentEdits.value,
-                        onConfigChange = { key, value ->
-                            currentEdits.value = currentEdits.value.toMutableMap().apply {
-                                put(key, value)
-                            }
-                            hasUnsavedChanges.value = true
+                    policy.configurationOptions.forEach { option ->
+                        when (option) {
+                            is ConfigurationOption.Toggle -> ConfigurationCheckbox(
+                                label = option.label,
+                                checked = option.isEnabled,
+                                onCheckedChange = { checked ->
+                                    pendingOptions = pendingOptions.map {
+                                        if (it.key == option.key) {
+                                            option.copy(isEnabled = checked)
+                                        } else it
+                                    }
+                                    hasUnsavedChanges = true
+                                }
+                            )
+                            is ConfigurationOption.Choice -> ConfigurationDropdown(
+                                label = option.label,
+                                selected = option.selected,
+                                options = option.options,
+                                onSelectionChange = { selected ->
+                                    onEvent(PolicyEvent.UpdateConfiguration(
+                                        policy.featureName,
+                                        option.key,
+                                        selected
+                                    ))
+                                }
+                            )
+                            is ConfigurationOption.NumberInput -> ConfigurationNumber(
+                                label = option.label,
+                                value = option.value,
+                                range = option.range,
+                                onValueChange = { value ->
+                                    onEvent(PolicyEvent.UpdateConfiguration(
+                                        policy.featureName,
+                                        option.key,
+                                        value
+                                    ))
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
         }
@@ -249,7 +249,6 @@ private fun createPolicyState(
         else -> null
     }
 }
-
 @Preview(
     name = "Light Mode",
     showBackground = true
@@ -271,9 +270,19 @@ private fun PolicyCardPreview() {
                 isSupported = true,
                 isLoading = false,
                 error = null,
-                configurationOptions = mapOf(
-                    "simSlotId" to 0,
-                    "mode" to "Enable Both SA and NSA"
+                configurationOptions = listOf(
+                    ConfigurationOption.Choice(
+                        key = "mode",
+                        label = "Mode",
+                        selected = "Disable SA",
+                        options = listOf("Disable SA", "Disable NSA")
+                    ),
+                    ConfigurationOption.NumberInput(
+                        key = "simSlotId",
+                        label = "SIM Slot",
+                        value = 0,
+                        range = 0..1
+                    )
                 )
             ),
             onEvent = {},
@@ -303,9 +312,19 @@ private fun PolicyCardErrorPreview() {
                 isSupported = true,
                 isLoading = false,
                 error = "Failed to update policy",
-                configurationOptions = mapOf(
-                    "simSlotId" to 0,
-                    "mode" to "Enable Both SA and NSA"
+                configurationOptions = listOf(
+                    ConfigurationOption.Choice(
+                        key = "mode",
+                        label = "Mode",
+                        selected = "Disable SA",
+                        options = listOf("Disable SA", "Disable NSA")
+                    ),
+                    ConfigurationOption.NumberInput(
+                        key = "simSlotId",
+                        label = "SIM Slot",
+                        value = 0,
+                        range = 0..1
+                    )
                 )
             ),
             onEvent = {},
@@ -335,9 +354,19 @@ private fun PolicyCardUnsupportedPreview() {
                 isSupported = false,
                 isLoading = false,
                 error = null,
-                configurationOptions = mapOf(
-                    "simSlotId" to 0,
-                    "mode" to "Enable Both SA and NSA"
+                configurationOptions = listOf(
+                    ConfigurationOption.Choice(
+                        key = "mode",
+                        label = "Mode",
+                        selected = "Disable SA",
+                        options = listOf("Disable SA", "Disable NSA")
+                    ),
+                    ConfigurationOption.NumberInput(
+                        key = "simSlotId",
+                        label = "SIM Slot",
+                        value = 0,
+                        range = 0..1
+                    )
                 )
             ),
             onEvent = {},
@@ -367,9 +396,19 @@ private fun PolicyCardLoadingPreview() {
                 isSupported = true,
                 isLoading = true,
                 error = null,
-                configurationOptions = mapOf(
-                    "simSlotId" to 0,
-                    "mode" to "Enable Both SA and NSA"
+                configurationOptions = listOf(
+                    ConfigurationOption.Choice(
+                        key = "mode",
+                        label = "Mode",
+                        selected = "Disable SA",
+                        options = listOf("Disable SA", "Disable NSA")
+                    ),
+                    ConfigurationOption.NumberInput(
+                        key = "simSlotId",
+                        label = "SIM Slot",
+                        value = 0,
+                        range = 0..1
+                    )
                 )
             ),
             onEvent = {},
