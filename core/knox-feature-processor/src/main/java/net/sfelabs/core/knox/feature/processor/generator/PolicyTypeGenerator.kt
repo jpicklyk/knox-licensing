@@ -25,6 +25,7 @@ class PolicyTypeGenerator(
 
     private fun generatePolicyType(features: List<ProcessedFeature>) {
         val policyTypeSpec = TypeSpec.interfaceBuilder("PolicyType")
+            .addModifiers(KModifier.SEALED)
             .addTypeVariable(
                 TypeVariableName(
                     name = "T",
