@@ -11,6 +11,10 @@ data class AutoCallPickupState(
     override val exception: Throwable? = null,
     val mode: AutoCallPickupMode
 ): PolicyState {
+    override fun withEnabled(enabled: Boolean): PolicyState {
+        return copy(isEnabled = enabled)
+    }
+
     override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
         return copy(error = error, exception = exception)
     }

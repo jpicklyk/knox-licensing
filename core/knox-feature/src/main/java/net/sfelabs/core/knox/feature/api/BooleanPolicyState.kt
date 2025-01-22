@@ -8,6 +8,10 @@ data class BooleanPolicyState(
     override val error: ApiError? = null,
     override val exception: Throwable? = null
 ): PolicyState {
+    override fun withEnabled(enabled: Boolean): PolicyState {
+        return copy(isEnabled = enabled)
+    }
+
     override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
         return copy(error = error, exception = exception)
     }

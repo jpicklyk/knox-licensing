@@ -6,7 +6,6 @@ import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureParameters
 import net.sfelabs.core.knox.feature.api.StateMapping
-import net.sfelabs.knox_tactical.domain.model.ImsState
 import net.sfelabs.knox_tactical.domain.use_cases.ims.IsImsEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ims.SetImsEnabled
 

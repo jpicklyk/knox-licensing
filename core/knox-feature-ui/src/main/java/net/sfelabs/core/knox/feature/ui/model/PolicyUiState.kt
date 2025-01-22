@@ -25,8 +25,8 @@ sealed class PolicyUiState {
         override val featureName: String,
         override val description: String,
         override val isEnabled: Boolean,
-        val configurationOptions: Map<String, Any?>,
         override val isLoading: Boolean = false,
         override val error: String? = null,
+        val configurationOptions: List<ConfigurationOption>
     ) : PolicyUiState()
 }

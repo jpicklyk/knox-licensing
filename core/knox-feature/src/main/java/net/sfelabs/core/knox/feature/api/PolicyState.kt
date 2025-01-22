@@ -16,15 +16,20 @@ import net.sfelabs.core.domain.usecase.model.ApiError
  * - exception: Detailed exception information if available
  *
  * Core Functions:
- * - withError: Creates a new state instance with updated error information.  This allows for the
- *              reduction of boilerplate code in policy implementations by the direct use of the
- *              data class copy function.
+ * - withEnabled:   Creates a new state instance with updated enable state.  This allows for the
+ *                  reduction of boilerplate code in policy implementations by the direct use of the
+ *                  data class copy function.
+ *
+ * - withError:     Creates a new state instance with updated error information.  This allows for the
+ *                  reduction of boilerplate code in policy implementations by the direct use of the
+ *                  data class copy function.
  *
  * Specific policy implementations should:
  * 1. Implement this interface in their state data classes
  * 2. Add any additional properties needed for their specific configuration
  * 3. Provide appropriate default values for the core properties
- * 4. Implement withError to return a new instance with updated error information
+ * 4. Implement withEnabled to return a new instance with updated enable state
+ * 5. Implement withError to return a new instance with updated error information
  *
  * Example implementation:
  * ```
@@ -36,6 +41,10 @@ import net.sfelabs.core.domain.usecase.model.ApiError
  *     val band: Int,                    // Policy-specific configuration
  *     val simSlotId: Int? = null        // Policy-specific configuration
  * ) : PolicyState {
+ *     override fun withEnabled(enabled: Boolean): PolicyState {
+ *         return copy(isEnabled = enabled)
+ *     }
+ *
  *     override fun withError(error: ApiError?, exception: Throwable?): PolicyState {
  *         return copy(error = error, exception = exception)
  *     }
@@ -51,5 +60,6 @@ interface PolicyState {
     val error: ApiError?
     val exception: Throwable?
 
+    fun withEnabled(enabled: Boolean): PolicyState
     fun withError(error: ApiError?, exception: Throwable?): PolicyState
 }
