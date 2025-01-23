@@ -1,5 +1,7 @@
 package net.sfelabs.core.knox.feature.api
 
+import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
+
 interface PolicyConfiguration<T : PolicyState> {
     val stateMapping: StateMapping
 
@@ -15,4 +17,9 @@ interface PolicyConfiguration<T : PolicyState> {
         StateMapping.DIRECT -> enabled
         StateMapping.INVERTED -> !enabled
     }
+
+    /**
+     * Convert the configuration components to a list of ConfigurationOptions for the UI layer
+     */
+    fun toConfigurationOptions(): List<ConfigurationOption>
 }

@@ -10,7 +10,6 @@ android {
 dependencies {
 
     implementation(libs.androidx.compose.material.iconsExt)
-    implementation(project(":core:knox-feature-ui"))
     implementation(project(":core:knox-feature"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.junit)
