@@ -1,5 +1,7 @@
 package net.sfelabs.core.knox.feature.data.repository
 
+import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.core.knox.feature.domain.usecase.handler.FeatureHandler
 import net.sfelabs.core.knox.feature.domain.model.Feature
 import net.sfelabs.core.knox.feature.api.FeatureCategory
@@ -61,7 +63,7 @@ class DefaultFeatureRegistry : FeatureRegistry {
         return componentsByName.containsKey(key.featureName)
     }
 
-    override suspend fun getFeature(featureName: String): Feature<PolicyState>? {
+    override suspend fun getPolicyState(featureName: String): Feature<PolicyState>? {
         val component = componentsByName[featureName] ?: return null
         @Suppress("UNCHECKED_CAST")
         val handler = component.handler
@@ -69,5 +71,13 @@ class DefaultFeatureRegistry : FeatureRegistry {
             key = component.key,
             state = PolicyStateWrapper(handler.getState())
         )
+    }
+
+    override suspend fun <T : PolicyState> setPolicyState(
+        featureKey: FeatureKey<T>,
+        state: T
+    ): ApiResult<Unit> {
+        return getHandler(featureKey)?.setState(state)
+            ?: ApiResult.Error(DefaultApiError.UnexpectedError("Policy handler not found"))
     }
 }

@@ -1,5 +1,6 @@
 package net.sfelabs.core.knox.feature.domain.registry
 
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.domain.model.Feature
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.domain.usecase.handler.FeatureHandler
@@ -13,5 +14,6 @@ interface FeatureRegistry {
     suspend fun getFeatures(category: FeatureCategory): List<Feature<PolicyState>>
     fun isRegistered(key: FeatureKey<*>): Boolean
     fun getComponent(key: FeatureKey<*>): FeatureComponent<out PolicyState>?
-    suspend fun getFeature(featureName: String): Feature<PolicyState>?
+    suspend fun getPolicyState(featureName: String): Feature<PolicyState>?
+    suspend fun <T : PolicyState> setPolicyState(featureKey: FeatureKey<T>, state: T): ApiResult<Unit>
 }

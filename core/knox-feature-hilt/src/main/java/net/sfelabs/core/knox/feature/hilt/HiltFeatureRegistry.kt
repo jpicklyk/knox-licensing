@@ -1,9 +1,11 @@
 package net.sfelabs.core.knox.feature.hilt
 
+import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureComponent
 import net.sfelabs.core.knox.feature.api.FeatureKey
 import net.sfelabs.core.knox.feature.api.PolicyState
+import net.sfelabs.core.knox.feature.data.repository.CachedPolicyRegistry
 import net.sfelabs.core.knox.feature.data.repository.DefaultFeatureRegistry
 import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
 import javax.inject.Inject
@@ -15,14 +17,10 @@ class HiltFeatureRegistry @Inject constructor() : FeatureRegistry {
         println("HiltFeatureRegistry being constructed")
     }
 
-    private val delegate = DefaultFeatureRegistry()
+    private val delegate = CachedPolicyRegistry(DefaultFeatureRegistry())
 
     @Inject
     fun setComponents(components: Set<@JvmSuppressWildcards FeatureComponent<out PolicyState>>) {
-        println("Injecting components: ${components.size}")
-        components.forEach {
-            println("Component: ${it.featureName}")
-        }
         delegate.components = components
     }
 
@@ -36,5 +34,10 @@ class HiltFeatureRegistry @Inject constructor() : FeatureRegistry {
 
     override fun getComponent(key: FeatureKey<*>) = delegate.getComponent(key)
 
-    override suspend fun getFeature(featureName: String) = delegate.getFeature(featureName)
+    override suspend fun getPolicyState(featureName: String) = delegate.getPolicyState(featureName)
+
+    override suspend fun <T : PolicyState> setPolicyState(
+        featureKey: FeatureKey<T>,
+        state: T
+    ): ApiResult<Unit> = delegate.setPolicyState(featureKey, state)
 }
