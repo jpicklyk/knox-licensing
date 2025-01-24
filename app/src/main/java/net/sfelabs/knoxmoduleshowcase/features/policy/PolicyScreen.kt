@@ -14,7 +14,10 @@ fun PolicyScreen(
 ) {
     val policies by viewModel.policies.collectAsState()
     LazyColumn {
-        items(policies) { policy ->
+        items(
+            items = policies,
+            key = { policy -> policy.featureName }
+        ) { policy ->
             PolicyCard(
                 policy = policy,
                 onEvent = viewModel::onEvent,

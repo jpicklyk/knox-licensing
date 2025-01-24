@@ -46,6 +46,7 @@ class EnableHdmPolicy : ConfigurableStatePolicy<HdmState, HdmConfiguration>() {
         HdmConfiguration(
             components = HdmComponent.entries.filter { component ->
                 state.policyMask and component.mask != 0
-            }.toSet()
+            }.toSet(),
+            policyMask = state.policyMask
         )
 }

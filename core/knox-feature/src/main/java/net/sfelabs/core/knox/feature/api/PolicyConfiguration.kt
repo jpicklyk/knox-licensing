@@ -22,4 +22,9 @@ interface PolicyConfiguration<T : PolicyState> {
      * Convert the configuration components to a list of ConfigurationOptions for the UI layer
      */
     fun toConfigurationOptions(): List<ConfigurationOption>
+
+    /**
+     * Convert a list of ConfigurationOptions to a PolicyState, applying any state mapping
+     */
+    fun fromConfigurationOptions(options: List<ConfigurationOption>, enabled: Boolean): T
 }

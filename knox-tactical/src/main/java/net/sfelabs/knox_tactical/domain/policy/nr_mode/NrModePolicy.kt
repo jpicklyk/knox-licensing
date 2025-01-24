@@ -63,4 +63,5 @@ class NrModePolicy : ConfigurableStatePolicy<NrModeState, NrModeConfiguration>(
             simSlotId = state.simSlotId,
             stateMapping = stateMapping
         )
+
 }

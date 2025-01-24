@@ -20,19 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.sfelabs.core.knox.feature.api.BooleanPolicyState
-import net.sfelabs.core.knox.feature.api.PolicyState
 import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
 import net.sfelabs.core.ui.theme.AppTheme
-import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
-import net.sfelabs.knox_tactical.domain.model.LteNrMode
-import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState
-import net.sfelabs.knox_tactical.domain.policy.auto_call_pickup.AutoCallPickupState
-import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingState
-import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponentConfig
-import net.sfelabs.knox_tactical.domain.policy.hdm.HdmState
-import net.sfelabs.knox_tactical.domain.policy.nr_mode.NrModeState
 import net.sfelabs.knoxmoduleshowcase.features.policy.event.PolicyEvent
 
 @Composable
@@ -48,8 +38,8 @@ fun PolicyCard(
             else -> emptyList()
         }
     }
-    var pendingOptions by remember { mutableStateOf(currentOptions) }
-    var hasUnsavedChanges by remember { mutableStateOf(false) }
+    var pendingOptions = remember(policy) { mutableStateOf(currentOptions) }
+    var hasUnsavedChanges = remember(policy) { mutableStateOf(false) }
 
     OutlinedCard(
         modifier = modifier
@@ -75,14 +65,16 @@ fun PolicyCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (policy is PolicyUiState.ConfigurableToggle && hasUnsavedChanges) {
+                    if (policy is PolicyUiState.ConfigurableToggle && hasUnsavedChanges.value) {
                         Button(
                             onClick = {
-                                onEvent(PolicyEvent.SaveConfiguration(
-                                    policy.featureName,
-                                    pendingOptions
+                                onEvent(PolicyEvent.UpdateConfiguration(
+                                    featureName = policy.featureName,
+                                    newUiState = policy.copy(
+                                        configurationOptions = pendingOptions.value
+                                    )
                                 ))
-                                hasUnsavedChanges = false
+                                hasUnsavedChanges.value = false
                             },
                             enabled = policy.isEnabled && policy.isSupported
                         ) {
@@ -92,10 +84,25 @@ fun PolicyCard(
                     Switch(
                         checked = policy.isEnabled,
                         onCheckedChange = { isEnabled ->
-                            onEvent(PolicyEvent.UpdateEnabled(policy.featureName, isEnabled))
-                            // Reset pending changes when toggling enabled state
-                            pendingOptions = currentOptions
-                            hasUnsavedChanges = false
+                            when (policy) {
+                                is PolicyUiState.Toggle -> onEvent(
+                                    PolicyEvent.UpdateConfiguration(
+                                        featureName = policy.featureName,
+                                        newUiState = policy.copy(isEnabled = isEnabled)
+                                    )
+                                )
+                                is PolicyUiState.ConfigurableToggle -> onEvent(
+                                    PolicyEvent.UpdateConfiguration(
+                                        featureName = policy.featureName,
+                                        newUiState = policy.copy(
+                                            isEnabled = isEnabled,
+                                            configurationOptions = pendingOptions.value
+                                        )
+                                    )
+                                )
+                            }
+                            pendingOptions.value = currentOptions
+                            hasUnsavedChanges.value = false
                         },
                         enabled = policy.isSupported
                     )
@@ -148,18 +155,18 @@ fun PolicyCard(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    policy.configurationOptions.forEach { option ->
+                    pendingOptions.value.forEach { option ->
                         when (option) {
                             is ConfigurationOption.Toggle -> ConfigurationCheckbox(
                                 label = option.label,
                                 checked = option.isEnabled,
                                 onCheckedChange = { checked ->
-                                    pendingOptions = pendingOptions.map {
+                                    pendingOptions.value = pendingOptions.value.map {
                                         if (it.key == option.key) {
                                             option.copy(isEnabled = checked)
                                         } else it
                                     }
-                                    hasUnsavedChanges = true
+                                    hasUnsavedChanges.value = true
                                 }
                             )
                             is ConfigurationOption.Choice -> ConfigurationDropdown(
@@ -167,11 +174,12 @@ fun PolicyCard(
                                 selected = option.selected,
                                 options = option.options,
                                 onSelectionChange = { selected ->
-                                    onEvent(PolicyEvent.UpdateConfiguration(
-                                        policy.featureName,
-                                        option.key,
-                                        selected
-                                    ))
+                                    pendingOptions.value = pendingOptions.value.map {
+                                        if (it.key == option.key) {
+                                            (it as ConfigurationOption.Choice).copy(selected = selected)
+                                        } else it
+                                    }
+                                    hasUnsavedChanges.value = true
                                 }
                             )
                             is ConfigurationOption.NumberInput -> ConfigurationNumber(
@@ -179,11 +187,12 @@ fun PolicyCard(
                                 value = option.value,
                                 range = option.range,
                                 onValueChange = { value ->
-                                    onEvent(PolicyEvent.UpdateConfiguration(
-                                        policy.featureName,
-                                        option.key,
-                                        value
-                                    ))
+                                    pendingOptions.value = pendingOptions.value.map {
+                                        if (it.key == option.key) {
+                                            (it as ConfigurationOption.NumberInput).copy(value = value)
+                                        } else it
+                                    }
+                                    hasUnsavedChanges.value = true
                                 }
                             )
                         }
@@ -194,61 +203,6 @@ fun PolicyCard(
     }
 }
 
-// Helper function to create appropriate PolicyState
-private fun createPolicyState(
-    policy: PolicyUiState.ConfigurableToggle,
-    config: Map<String, Any?>,
-    isEnabled: Boolean
-): PolicyState? {
-    return when (policy.featureName) {
-        "auto_call_pickup_policy" -> {
-            val mode = config["mode"] as? AutoCallPickupMode ?: AutoCallPickupMode.Enable
-            AutoCallPickupState(
-                isEnabled = isEnabled,
-                mode = mode,
-            )
-        }
-        "band_locking" -> {
-            val band = config["band"] as? Int ?: return null
-            val simSlotId = config["simSlotId"] as? Int
-            BandLockingState(
-                isEnabled = isEnabled,
-                band = band,
-                simSlotId = simSlotId
-            )
-        }
-        "nr_mode_policy" -> {
-            val mode = config["mode"] as? LteNrMode ?: LteNrMode.EnableBothSaAndNsa
-            val simSlotId = config["simSlotId"] as? Int
-            NrModeState(
-                isEnabled = isEnabled,
-                mode = mode,
-                simSlotId = simSlotId
-            )
-
-        }
-        "night_vision" -> {
-            val useRedOverlay = config["useRedOverlay"] as? Boolean == true
-            NightVisionState(
-                isEnabled = isEnabled,
-                useRedOverlay = useRedOverlay
-            )
-        }
-        "enable_hdm_policy" -> {
-            val policyMask = config.values
-                .filterIsInstance<HdmComponentConfig>()
-                .filter { it.isEnabled }
-                .fold(0) { acc, config ->
-                    acc or config.component.mask
-                }
-            HdmState(
-                isEnabled = isEnabled,
-                policyMask = policyMask
-            )
-        }
-        else -> null
-    }
-}
 @Preview(
     name = "Light Mode",
     showBackground = true

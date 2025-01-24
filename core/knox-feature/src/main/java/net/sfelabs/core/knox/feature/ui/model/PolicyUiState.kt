@@ -29,4 +29,12 @@ sealed class PolicyUiState {
         override val error: String? = null,
         val configurationOptions: List<ConfigurationOption>
     ) : PolicyUiState()
+
+    fun currentOptions(): List<ConfigurationOption> {
+        return if (this is Toggle) {
+            emptyList()
+        } else {
+            (this as ConfigurableToggle).configurationOptions
+        }
+    }
 }

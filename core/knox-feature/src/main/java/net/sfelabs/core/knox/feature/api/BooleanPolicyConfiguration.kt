@@ -1,5 +1,7 @@
 package net.sfelabs.core.knox.feature.api
 
+import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
+
 data class BooleanPolicyConfiguration(
     val enabled: Boolean,
     override val stateMapping: StateMapping = StateMapping.DIRECT
@@ -12,12 +14,13 @@ data class BooleanPolicyConfiguration(
         return currentState.copy(isEnabled = mappedEnabled)
     }
 
-    companion object {
-        fun fromState(state: BooleanPolicyState, stateMapping: StateMapping): BooleanPolicyConfiguration {
-            return BooleanPolicyConfiguration(
-                enabled = state.isEnabled, // The mapping will be applied in toState
-                stateMapping = stateMapping
-            )
-        }
+    override fun toConfigurationOptions(): List<ConfigurationOption> = emptyList()
+    override fun fromConfigurationOptions(
+        options: List<ConfigurationOption>,
+        enabled: Boolean
+    ): BooleanPolicyState {
+        return BooleanPolicyState(
+            isEnabled = mapEnabled(enabled)
+        )
     }
 }
