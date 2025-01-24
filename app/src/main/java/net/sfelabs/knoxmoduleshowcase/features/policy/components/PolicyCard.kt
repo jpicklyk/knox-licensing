@@ -14,6 +14,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,14 +33,32 @@ fun PolicyCard(
     modifier: Modifier = Modifier
 ) {
     // Local UI state for tracking edits
-    val currentOptions = remember(policy) {
-        when (policy) {
-            is PolicyUiState.ConfigurableToggle -> policy.configurationOptions
-            else -> emptyList()
+    var pendingOptions = remember(policy) { mutableStateOf(policy.currentOptions()) }
+    val hasUnsavedChanges = remember(policy, pendingOptions.value) {
+        derivedStateOf {
+            policy is PolicyUiState.ConfigurableToggle &&
+                    policy.configurationOptions != pendingOptions.value
         }
     }
-    var pendingOptions = remember(policy) { mutableStateOf(currentOptions) }
-    var hasUnsavedChanges = remember(policy) { mutableStateOf(false) }
+
+    // Type-safe update callbacks
+    val updateToggleOption = remember(policy) { { option: ConfigurationOption.Toggle, checked: Boolean ->
+        pendingOptions.value = pendingOptions.value.map {
+            if (it.key == option.key) option.copy(isEnabled = checked) else it
+        }
+    }}
+
+    val updateChoiceOption = remember(policy) { { option: ConfigurationOption.Choice, selected: String ->
+        pendingOptions.value = pendingOptions.value.map {
+            if (it.key == option.key) option.copy(selected = selected) else it
+        }
+    }}
+
+    val updateNumberOption = remember(policy) { { option: ConfigurationOption.NumberInput, value: Int ->
+        pendingOptions.value = pendingOptions.value.map {
+            if (it.key == option.key) option.copy(value = value) else it
+        }
+    }}
 
     OutlinedCard(
         modifier = modifier
@@ -74,7 +93,6 @@ fun PolicyCard(
                                         configurationOptions = pendingOptions.value
                                     )
                                 ))
-                                hasUnsavedChanges.value = false
                             },
                             enabled = policy.isEnabled && policy.isSupported
                         ) {
@@ -101,8 +119,6 @@ fun PolicyCard(
                                     )
                                 )
                             }
-                            pendingOptions.value = currentOptions
-                            hasUnsavedChanges.value = false
                         },
                         enabled = policy.isSupported
                     )
@@ -161,12 +177,7 @@ fun PolicyCard(
                                 label = option.label,
                                 checked = option.isEnabled,
                                 onCheckedChange = { checked ->
-                                    pendingOptions.value = pendingOptions.value.map {
-                                        if (it.key == option.key) {
-                                            option.copy(isEnabled = checked)
-                                        } else it
-                                    }
-                                    hasUnsavedChanges.value = true
+                                    updateToggleOption(option, checked)
                                 }
                             )
                             is ConfigurationOption.Choice -> ConfigurationDropdown(
@@ -174,12 +185,7 @@ fun PolicyCard(
                                 selected = option.selected,
                                 options = option.options,
                                 onSelectionChange = { selected ->
-                                    pendingOptions.value = pendingOptions.value.map {
-                                        if (it.key == option.key) {
-                                            (it as ConfigurationOption.Choice).copy(selected = selected)
-                                        } else it
-                                    }
-                                    hasUnsavedChanges.value = true
+                                    updateChoiceOption(option, selected)
                                 }
                             )
                             is ConfigurationOption.NumberInput -> ConfigurationNumber(
@@ -187,12 +193,7 @@ fun PolicyCard(
                                 value = option.value,
                                 range = option.range,
                                 onValueChange = { value ->
-                                    pendingOptions.value = pendingOptions.value.map {
-                                        if (it.key == option.key) {
-                                            (it as ConfigurationOption.NumberInput).copy(value = value)
-                                        } else it
-                                    }
-                                    hasUnsavedChanges.value = true
+                                    updateNumberOption(option, value)
                                 }
                             )
                         }
