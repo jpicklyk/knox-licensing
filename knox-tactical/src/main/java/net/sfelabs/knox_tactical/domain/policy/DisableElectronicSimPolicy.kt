@@ -2,7 +2,7 @@ package net.sfelabs.knox_tactical.domain.policy
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
-import net.sfelabs.core.knox.feature.api.ConfigurableBooleanPolicy
+import net.sfelabs.core.knox.feature.api.BooleanStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.use_cases.sim.GetElectronicSimEnabledUseCase
@@ -13,7 +13,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.sim.SetElectronicSimEnabledUse
     description = "Disables the use of electron SIM in the device settings.",
     category = FeatureCategory.ConfigurableToggle
 )
-class DisableElectronicSimPolicy: ConfigurableBooleanPolicy(stateMapping = StateMapping.INVERTED) {
+class DisableElectronicSimPolicy: BooleanStatePolicy(stateMapping = StateMapping.INVERTED) {
     private val getUseCase = GetElectronicSimEnabledUseCase()
     private val setUseCase = SetElectronicSimEnabledUseCase()
 

@@ -6,37 +6,29 @@ import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 import net.sfelabs.knox_tactical.domain.model.LteNrMode
 
 data class NrModeConfiguration(
-    val mode: LteNrMode,
-    val simSlotId: Int? = null,
     override val stateMapping: StateMapping = StateMapping.DIRECT
-) : PolicyConfiguration<NrModeState> {
-    override fun toState(currentState: NrModeState): NrModeState {
-        return currentState.copy(
-            isEnabled = mode != LteNrMode.EnableBothSaAndNsa,
-            mode = mode.takeUnless { it == LteNrMode.EnableBothSaAndNsa }
+) : PolicyConfiguration<NrModeState, LteNrMode> {
+
+    override fun fromApiData(apiData: LteNrMode): NrModeState {
+        //TODO: Need a new data class to wrap both SIM slot id and LteNrMode
+        return NrModeState (
+            isEnabled = ( apiData != LteNrMode.EnableBothSaAndNsa ),
+            mode = apiData.takeUnless { it == LteNrMode.EnableBothSaAndNsa }
                 ?: LteNrMode.DisableNsa,
-            simSlotId = simSlotId
+            simSlotId = 0 // We need this fixed
         )
     }
 
-    override fun toConfigurationOptions(): List<ConfigurationOption> = listOf(
-        ConfigurationOption.NumberInput(
-            key = "simSlotId",
-            label = "SIM Slot Id",
-            value = simSlotId ?: 0,
-            range = 0..2
-        ),
-        ConfigurationOption.Choice(
-            key = "mode",
-            label = "Mode",
-            options = LteNrMode.values.map { it.displayName },
-            selected = mode.displayName
-        )
-    )
+    override fun toApiData(state: NrModeState): LteNrMode {
+        return when(state.isEnabled) {
+            true -> state.mode
+            false -> LteNrMode.EnableBothSaAndNsa
+        }
+    }
 
-    override fun fromConfigurationOptions(
-        options: List<ConfigurationOption>,
-        enabled: Boolean
+    override fun fromUiState(
+        uiEnabled: Boolean,
+        options: List<ConfigurationOption>
     ): NrModeState {
         val simSlotId = options.filterIsInstance<ConfigurationOption.NumberInput>()
             .find { it.key == "simSlotId" }
@@ -46,16 +38,25 @@ data class NrModeConfiguration(
             ?.selected ?: LteNrMode.EnableBothSaAndNsa.displayName
 
         return NrModeState(
-            isEnabled = mapEnabled(enabled),
+            isEnabled = uiEnabled,
             mode = LteNrMode.fromDisplayName(modeDisplayName),
             simSlotId = simSlotId
         )
     }
 
-    companion object {
-        fun disabled(simSlotId: Int? = null) = NrModeConfiguration(
-            mode = LteNrMode.EnableBothSaAndNsa,
-            simSlotId = simSlotId
+    override fun getConfigurationOptions(state: NrModeState): List<ConfigurationOption> = listOf(
+        ConfigurationOption.NumberInput(
+            key = "simSlotId",
+            label = "SIM Slot Id",
+            value = state.simSlotId ?: 0,
+            range = 0..2
+        ),
+        ConfigurationOption.Choice(
+            key = "mode",
+            label = "Mode",
+            options = listOf(LteNrMode.DisableNsa.displayName, LteNrMode.DisableSa.displayName),
+            selected = state.mode.displayName
         )
-    }
+    )
+
 }

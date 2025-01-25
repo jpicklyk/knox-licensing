@@ -5,44 +5,59 @@ import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 
 data class HdmConfiguration(
-    val components: Set<HdmComponent>,
-    val policyMask: Int,
+    //Not implementing the mapEnabled capability in this policy configuration.
     override val stateMapping: StateMapping = StateMapping.DIRECT
-) : PolicyConfiguration<HdmState> {
-    override fun toState(currentState: HdmState): HdmState {
-        val newMask = components.fold(0) { acc, component ->
-            acc or component.mask
-        }
-        return currentState.copy(policyMask = newMask)
+) : PolicyConfiguration<HdmState, Int> {
+
+    // mapEnabled would need to be handled here if implemented
+    override fun fromApiData(apiData: Int): HdmState {
+        return HdmState(
+            isEnabled = apiData != 0,
+            policyMask = apiData
+        )
     }
 
-    override fun toConfigurationOptions(): List<ConfigurationOption> =
+    // mapEnabled would need to be handled here if implemented
+    override fun toApiData(state: HdmState): Int {
+        return state.policyMask
+    }
+
+    override fun fromUiState(
+        uiEnabled: Boolean,
+        options: List<ConfigurationOption>
+    ): HdmState {
+        val mask = if(uiEnabled) {
+            val selectedComponents = options.filterIsInstance<ConfigurationOption.Toggle>()
+                .filter { it.isEnabled }
+                .mapNotNull { option ->
+                    HdmComponent.entries.find { it.name == option.key }
+                }
+                .toSet()
+
+            selectedComponents.fold(0) { acc, component ->
+                acc or component.mask
+            }
+        } else {
+            0 // If policy is disabled, the mask should be 0
+        }
+
+        return HdmState(
+            isEnabled = uiEnabled,
+            policyMask = mask
+        )
+    }
+
+    override fun getConfigurationOptions(state: HdmState): List<ConfigurationOption> =
         HdmComponent.entries.map { component ->
             ConfigurationOption.Toggle(
                 key = component.name,
                 label = component.displayName,
-                 isEnabled = policyMask and component.mask != 0
+                isEnabled = component.mask and state.policyMask != 0
             )
-        }
-
-    override fun fromConfigurationOptions(
-        options: List<ConfigurationOption>,
-        enabled: Boolean
-    ): HdmState {
-        val selectedComponents = options.filterIsInstance<ConfigurationOption.Toggle>()
-                .filter { it.isEnabled }
-            .mapNotNull { option ->
-                HdmComponent.entries.find { it.name == option.key }
-            }
-            .toSet()
-
-        val mask = selectedComponents.fold(0) { acc, component ->
-            acc or component.mask
-        }
-
-        return HdmState(
-            isEnabled = mapEnabled(enabled && mask != 0) ,
-            policyMask = mask
-        )
     }
+
+
+//    private fun invertBitmask(mask: Int, width: Int): Int {
+//        return mask.inv() and ((1 shl width) - 1)
+//    }
 }

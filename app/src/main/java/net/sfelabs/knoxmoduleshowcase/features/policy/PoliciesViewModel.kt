@@ -14,8 +14,17 @@ import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
 import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
 import net.sfelabs.core.knox.feature.ui.model.PolicyUiState.ConfigurableToggle
+import net.sfelabs.knox_tactical.domain.policy.AutoTouchSensitivityPolicy
+import net.sfelabs.knox_tactical.domain.policy.Disable2GConnectivityPolicy
+import net.sfelabs.knox_tactical.domain.policy.DisableElectronicSimPolicy
+import net.sfelabs.knox_tactical.domain.policy.DisableHotspot20Policy
+import net.sfelabs.knox_tactical.domain.policy.DisableRamPlusPolicy
+import net.sfelabs.knox_tactical.domain.policy.EnableExtraBrightnessPolicy
+import net.sfelabs.knox_tactical.domain.policy.LcdBacklightPolicy
+import net.sfelabs.knox_tactical.domain.policy.TacticalDeviceModePolicy
 import net.sfelabs.knox_tactical.domain.policy.auto_call_pickup.AutoCallPickupPolicy
 import net.sfelabs.knox_tactical.domain.policy.auto_call_pickup.AutoCallPickupState
+import net.sfelabs.knox_tactical.domain.policy.auto_record_policy.AutoRecordCallPolicy
 import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLocking5gPolicy
 import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingState
 import net.sfelabs.knox_tactical.domain.policy.band_locking.LteBandLockingPolicy
@@ -78,66 +87,23 @@ class PoliciesViewModel @Inject constructor(
 
     private fun updatePolicyState(feature: Feature<*>, uiState: PolicyUiState): PolicyState {
         return when (PolicyType.fromFeature(feature)) {
-            PolicyType.EnableHdmPolicy -> {
-                val policy = EnableHdmPolicy()
-                val state = feature.state.value as HdmState
-                policy.toConfiguration(state).fromConfigurationOptions(
-                    uiState.currentOptions(),
-                    uiState.isEnabled
-                )
-            }
-            PolicyType.AutoCallPickupPolicy -> {
-                val policy = AutoCallPickupPolicy()
-                val state = feature.state.value as AutoCallPickupState
-                policy.toConfiguration(state).fromConfigurationOptions(
-                    uiState.currentOptions(),
-                    uiState.isEnabled
-                )
-            }
-            PolicyType.BandLocking5gPolicy -> {
-                val policy = BandLocking5gPolicy()
-                val state = feature.state.value as BandLockingState
-                policy.toConfiguration(state).fromConfigurationOptions(
-                    uiState.currentOptions(),
-                    uiState.isEnabled
-                )
-            }
-            PolicyType.DisableImsPolicy -> {
-                val policy = DisableImsPolicy()
-                val state = feature.state.value as ImsState
-                policy.toConfiguration(state).fromConfigurationOptions(
-                    uiState.currentOptions(),
-                    uiState.isEnabled
-                )
-            }
-            PolicyType.EnableNightVisionModePolicy -> {
-                val policy = EnableNightVisionModePolicy()
-                val state = feature.state.value as NightVisionState
-                policy.toConfiguration(state).fromConfigurationOptions(
-                    uiState.currentOptions(),
-                    uiState.isEnabled
-                )
-            }
-            PolicyType.LteBandLockingPolicy -> {
-                val policy = LteBandLockingPolicy()
-                val state = feature.state.value as BandLockingState
-                policy.toConfiguration(state).fromConfigurationOptions(
-                    uiState.currentOptions(),
-                    uiState.isEnabled
-                )
-            }
-            PolicyType.NrModePolicy -> {
-                val policy = NrModePolicy()
-                val state = feature.state.value as NrModeState
-                policy.toConfiguration(state).fromConfigurationOptions(
-                    uiState.currentOptions(),
-                    uiState.isEnabled
-                )
-            }
-            else -> {
-                feature.state.value.withEnabled(enabled = uiState.isEnabled)
-            }
-        }
+            PolicyType.EnableHdmPolicy -> EnableHdmPolicy()
+            PolicyType.AutoCallPickupPolicy -> AutoCallPickupPolicy()
+            PolicyType.BandLocking5gPolicy -> BandLocking5gPolicy()
+            PolicyType.AutoRecordCallPolicy -> AutoRecordCallPolicy()
+            PolicyType.AutoTouchSensitivityPolicy -> AutoTouchSensitivityPolicy()
+            PolicyType.Disable2GConnectivityPolicy -> Disable2GConnectivityPolicy()
+            PolicyType.DisableElectronicSimPolicy -> DisableElectronicSimPolicy()
+            PolicyType.DisableHotspot20Policy -> DisableHotspot20Policy()
+            PolicyType.DisableImsPolicy -> DisableImsPolicy()
+            PolicyType.DisableRamPlusPolicy -> DisableRamPlusPolicy()
+            PolicyType.EnableExtraBrightnessPolicy -> EnableExtraBrightnessPolicy()
+            PolicyType.EnableNightVisionModePolicy -> EnableNightVisionModePolicy()
+            PolicyType.LcdBacklightPolicy -> LcdBacklightPolicy()
+            PolicyType.LteBandLockingPolicy -> LteBandLockingPolicy()
+            PolicyType.NrModePolicy -> NrModePolicy()
+            PolicyType.TacticalDeviceModePolicy -> TacticalDeviceModePolicy()
+        }.fromUiState(uiState.isEnabled, uiState.currentOptions())
     }
 
 
@@ -172,52 +138,52 @@ class PoliciesViewModel @Inject constructor(
     /**
      * Create a list of configuration options for the given policy.
      */
-    private fun createConfigurationOptions(feature: Feature<PolicyState>): List<ConfigurationOption>  {
+    private fun createConfigurationOptions(feature: Feature<PolicyState>): List<ConfigurationOption> {
         val type = PolicyType.fromFeature(feature)
         return when (type) {
             PolicyType.AutoCallPickupPolicy -> {
                 val state = feature.state.value as AutoCallPickupState
                 val policy = AutoCallPickupPolicy()
-                policy.toConfiguration(state).toConfigurationOptions()
+                policy.getConfigurationOptions(state)
             }
-            PolicyType.AutoRecordCallPolicy -> return emptyList()
-            PolicyType.AutoTouchSensitivityPolicy -> return emptyList()
             PolicyType.BandLocking5gPolicy -> {
                 val state = feature.state.value as BandLockingState
                 val policy = BandLocking5gPolicy()
-                policy.toConfiguration(state).toConfigurationOptions()
+                policy.getConfigurationOptions(state)
             }
-            PolicyType.Disable2GConnectivityPolicy -> emptyList()
-            PolicyType.DisableElectronicSimPolicy -> emptyList()
-            PolicyType.DisableHotspot20Policy -> emptyList()
             PolicyType.DisableImsPolicy -> {
                 val state = feature.state.value as ImsState
                 val policy = DisableImsPolicy()
-                policy.toConfiguration(state).toConfigurationOptions()
+                policy.getConfigurationOptions(state)
             }
-            PolicyType.DisableRamPlusPolicy -> emptyList()
-            PolicyType.EnableExtraBrightnessPolicy -> emptyList()
             PolicyType.EnableHdmPolicy -> {
                 val state = feature.state.value as HdmState
                 val policy = EnableHdmPolicy()
-                policy.toConfiguration(state).toConfigurationOptions()
+                policy.getConfigurationOptions(state)
             }
             PolicyType.EnableNightVisionModePolicy -> {
                 val state = feature.state.value as NightVisionState
                 val policy = EnableNightVisionModePolicy()
-                policy.toConfiguration(state).toConfigurationOptions()
+                policy.getConfigurationOptions(state)
             }
-            PolicyType.LcdBacklightPolicy -> emptyList()
             PolicyType.LteBandLockingPolicy -> {
                 val state = feature.state.value as BandLockingState
                 val policy = LteBandLockingPolicy()
-                policy.toConfiguration(state).toConfigurationOptions()
+                policy.getConfigurationOptions(state)
             }
             PolicyType.NrModePolicy -> {
                 val state = feature.state.value as NrModeState
                 val policy = NrModePolicy()
-                policy.toConfiguration(state).toConfigurationOptions()
+                policy.getConfigurationOptions(state)
             }
+            PolicyType.AutoRecordCallPolicy,
+            PolicyType.AutoTouchSensitivityPolicy,
+            PolicyType.Disable2GConnectivityPolicy,
+            PolicyType.DisableElectronicSimPolicy,
+            PolicyType.DisableHotspot20Policy,
+            PolicyType.DisableRamPlusPolicy,
+            PolicyType.EnableExtraBrightnessPolicy,
+            PolicyType.LcdBacklightPolicy,
             PolicyType.TacticalDeviceModePolicy -> emptyList()
         }
     }

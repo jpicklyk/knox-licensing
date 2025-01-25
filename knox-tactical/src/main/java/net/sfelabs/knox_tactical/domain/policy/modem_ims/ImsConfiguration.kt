@@ -5,38 +5,41 @@ import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 
 data class ImsConfiguration(
-    val simSlotId: Int,
-    val enabled: Boolean,
     override val stateMapping: StateMapping
-) : PolicyConfiguration<ImsState> {
-    override fun toState(currentState: ImsState): ImsState {
-        return currentState.copy(
-            isEnabled = mapEnabled(enabled),
-            simSlotId = simSlotId
+) : PolicyConfiguration<ImsState, Boolean> {
+    override fun fromApiData(apiEnabled: Boolean): ImsState {
+        return ImsState(
+            isEnabled = mapEnabled(apiEnabled),
+            simSlotId = 0  // Default value
         )
     }
 
-    override fun toConfigurationOptions(): List<ConfigurationOption> = listOf(
-        ConfigurationOption.NumberInput(
-            key = "simSlotId",
-            label = "SIM Slot Id",
-            value = simSlotId,
-            range = 0..2
-        )
-    )
+    override fun toApiData(state: ImsState): Boolean {
+        return mapEnabled(state.isEnabled)
+    }
 
-    override fun fromConfigurationOptions(
-        options: List<ConfigurationOption>,
-        enabled: Boolean
+    override fun fromUiState(
+        uiEnabled: Boolean,
+        options: List<ConfigurationOption>
     ): ImsState {
-        val simSlotId = options.filterIsInstance<ConfigurationOption.NumberInput>()
+        val simSlotId = options
+            .filterIsInstance<ConfigurationOption.NumberInput>()
             .find { it.key == "simSlotId" }
             ?.value
             ?: 0
+
         return ImsState(
-            isEnabled = mapEnabled(enabled),
+            isEnabled = uiEnabled,  // UI state is already in correct domain form
             simSlotId = simSlotId
         )
-
     }
+
+    override fun getConfigurationOptions(state: ImsState): List<ConfigurationOption> = listOf(
+        ConfigurationOption.NumberInput(
+            key = "simSlotId",
+            label = "SIM Slot Id",
+            value = state.simSlotId,
+            range = 0..2
+        )
+    )
 }

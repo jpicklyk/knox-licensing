@@ -14,9 +14,10 @@ import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmPolicyUseCase
             "be disabled for enhanced security.",
     category = FeatureCategory.ConfigurableToggle
 )
-class EnableHdmPolicy : ConfigurableStatePolicy<HdmState, HdmConfiguration>() {
+class EnableHdmPolicy : ConfigurableStatePolicy<HdmState, Int, HdmConfiguration>() {
     private val getUseCase = GetHdmPolicyUseCase()
     private val setUseCase = SetHdmPolicyUseCase()
+    override val configuration = HdmConfiguration()
 
     override val defaultValue = HdmState(
         isEnabled = false,
@@ -42,11 +43,4 @@ class EnableHdmPolicy : ConfigurableStatePolicy<HdmState, HdmConfiguration>() {
     override suspend fun setState(state: HdmState): ApiResult<Unit> =
         setUseCase(state.policyMask, false)
 
-    override fun toConfiguration(state: HdmState): HdmConfiguration =
-        HdmConfiguration(
-            components = HdmComponent.entries.filter { component ->
-                state.policyMask and component.mask != 0
-            }.toSet(),
-            policyMask = state.policyMask
-        )
 }

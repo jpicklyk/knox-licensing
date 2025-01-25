@@ -21,13 +21,14 @@ data class BandLockingParameters(
     category = FeatureCategory.ConfigurableToggle
 )
 class LteBandLockingPolicy :
-    ConfigurableStatePolicy<BandLockingState, BandLockingConfiguration>(
+    ConfigurableStatePolicy<BandLockingState, BandLockingState, BandLockingConfiguration>(
         stateMapping = StateMapping.DIRECT
     ) {
 
     private val getUseCase = GetBandLockingStateUseCase()
     private val enableUseCase = EnableBandLockingUseCase()
     private val disableUseCase = DisableBandLockingUseCase()
+    override val configuration = BandLockingConfiguration()
 
     override val defaultValue = BandLockingState(
         isEnabled = false,
@@ -38,10 +39,12 @@ class LteBandLockingPolicy :
         val simSlotId = (parameters as? BandLockingParameters)?.simSlotId
 
         return when (val result = getUseCase(simSlotId)) {
-            is ApiResult.Success -> BandLockingConfiguration(
-                band = result.data,
-                simSlotId = simSlotId
-            ).toState(defaultValue)
+            is ApiResult.Success -> configuration.fromApiData(
+                defaultValue.copy(
+                    band = result.data,
+                    simSlotId = simSlotId
+                )
+            )
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
             )
@@ -53,21 +56,12 @@ class LteBandLockingPolicy :
     }
 
     override suspend fun setState(state: BandLockingState): ApiResult<Unit> {
-        val config = toConfiguration(state)
-        return if (config.band == BANDLOCK_NONE) {
+        val config = configuration.toApiData(state)
+        return if (!config.isEnabled) {
             disableUseCase(config.simSlotId)
         } else {
             enableUseCase(config.band, config.simSlotId)
         }
     }
 
-    override fun toConfiguration(state: BandLockingState): BandLockingConfiguration =
-        if (!state.isEnabled) {
-            BandLockingConfiguration.disabled(state.simSlotId)
-        } else {
-            BandLockingConfiguration(
-                band = state.band,
-                simSlotId = state.simSlotId
-            )
-        }
 }

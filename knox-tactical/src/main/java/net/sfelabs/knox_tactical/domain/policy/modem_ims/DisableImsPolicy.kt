@@ -19,11 +19,12 @@ data class ImsParameters(
     description = "Disables the cellular modem IMS capability",
     category = FeatureCategory.ConfigurableToggle
 )
-class DisableImsPolicy : ConfigurableStatePolicy<ImsState, ImsConfiguration>(
+class DisableImsPolicy : ConfigurableStatePolicy<ImsState, Boolean, ImsConfiguration>(
     stateMapping = StateMapping.INVERTED
 ) {
     private val getUseCase = IsImsEnabledUseCase()
     private val setUseCase = SetImsEnabled()
+    override val configuration = ImsConfiguration(stateMapping = stateMapping)
 
     override val defaultValue = ImsState(
         isEnabled = false,
@@ -37,14 +38,8 @@ class DisableImsPolicy : ConfigurableStatePolicy<ImsState, ImsConfiguration>(
         }
 
         return when (val result = getUseCase(simSlotId)) {
-            is ApiResult.Success -> ImsConfiguration(
-                enabled = result.data,
-                simSlotId = simSlotId,
-                stateMapping = stateMapping
-            ).toState(defaultValue)
-            is ApiResult.NotSupported -> defaultValue.copy(
-                isSupported = false
-            )
+            is ApiResult.Success -> configuration.fromApiData(result.data)
+            is ApiResult.NotSupported -> defaultValue.copy(isSupported = false)
             is ApiResult.Error -> defaultValue.copy(
                 error = result.apiError,
                 exception = result.exception
@@ -53,14 +48,7 @@ class DisableImsPolicy : ConfigurableStatePolicy<ImsState, ImsConfiguration>(
     }
 
     override suspend fun setState(state: ImsState): ApiResult<Unit> {
-        val config = toConfiguration(state)
-        return setUseCase(config.simSlotId, config.enabled)
+        return setUseCase(state.simSlotId, configuration.toApiData(state))
     }
 
-    override fun toConfiguration(state: ImsState): ImsConfiguration =
-        ImsConfiguration(
-            enabled = state.isEnabled,
-            simSlotId = state.simSlotId,
-            stateMapping = stateMapping
-        )
 }

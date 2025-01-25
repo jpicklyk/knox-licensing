@@ -77,7 +77,7 @@ fun PolicyCard(
             ) {
                 Text(
                     text = policy.title,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
                 Row(
@@ -168,7 +168,7 @@ fun PolicyCard(
                 ) {
                     Text(
                         text = "Configuration",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
                     pendingOptions.value.forEach { option ->

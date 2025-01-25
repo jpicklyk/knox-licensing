@@ -2,7 +2,7 @@ package net.sfelabs.knox_tactical.domain.policy
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
-import net.sfelabs.core.knox.feature.api.ConfigurableBooleanPolicy
+import net.sfelabs.core.knox.feature.api.BooleanStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Is2gConnectivityEnabledUseCase
@@ -13,7 +13,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.radio.Set2gConnectivityEnabled
     description = "Enable or disable 2G cellular network connectivity.",
     category = FeatureCategory.Toggle
 )
-class Disable2GConnectivityPolicy : ConfigurableBooleanPolicy(stateMapping = StateMapping.INVERTED) {
+class Disable2GConnectivityPolicy : BooleanStatePolicy(stateMapping = StateMapping.INVERTED) {
     private val getUseCase = Is2gConnectivityEnabledUseCase()
     private val setUseCase = Set2gConnectivityEnabled()
 

@@ -2,7 +2,7 @@ package net.sfelabs.knox_tactical.domain.policy
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
-import net.sfelabs.core.knox.feature.api.ConfigurableBooleanPolicy
+import net.sfelabs.core.knox.feature.api.BooleanStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.knox_tactical.domain.use_cases.screen.GetExtraBrightnessUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.screen.SetExtraBrightnessUseCase
@@ -12,7 +12,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.screen.SetExtraBrightnessUseCa
     description = "Enables the screen extra brightness device settings",
     category = FeatureCategory.Toggle
 )
-class EnableExtraBrightnessPolicy: ConfigurableBooleanPolicy() {
+class EnableExtraBrightnessPolicy: BooleanStatePolicy() {
     private val getUseCase = GetExtraBrightnessUseCase()
     private val setUseCase = SetExtraBrightnessUseCase()
 

@@ -2,7 +2,7 @@ package net.sfelabs.knox_tactical.domain.policy
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
-import net.sfelabs.core.knox.feature.api.ConfigurableBooleanPolicy
+import net.sfelabs.core.knox.feature.api.BooleanStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeEnabledUseCase
@@ -12,7 +12,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeEnabl
     description = "Activates tactical device mode for enhanced mission capabilities",
     category = FeatureCategory.Toggle
 )
-class TacticalDeviceModePolicy: ConfigurableBooleanPolicy() {
+class TacticalDeviceModePolicy: BooleanStatePolicy() {
     private val getUseCase = GetTacticalDeviceModeEnabledUseCase()
     private val setUseCase = SetTacticalDeviceModeEnabledUseCase()
 

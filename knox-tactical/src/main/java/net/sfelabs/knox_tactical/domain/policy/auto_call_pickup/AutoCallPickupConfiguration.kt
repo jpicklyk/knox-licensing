@@ -6,30 +6,27 @@ import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
 
 data class AutoCallPickupConfiguration(
-    val mode: AutoCallPickupMode,
     override val stateMapping: StateMapping = StateMapping.DIRECT
-): PolicyConfiguration<AutoCallPickupState> {
-    override fun toState(currentState: AutoCallPickupState): AutoCallPickupState {
-        // If the mode is Disable, ensure isEnabled is false
-        return currentState.copy(
-            isEnabled = mode != AutoCallPickupMode.Disable,
-            mode = mode.takeUnless { it == AutoCallPickupMode.Disable }
-                ?: AutoCallPickupMode.EnableAlwaysAccept
+): PolicyConfiguration<AutoCallPickupState, AutoCallPickupMode> {
+    override fun fromApiData(apiData: AutoCallPickupMode): AutoCallPickupState {
+        val modeOrDefault = when (apiData) {
+            AutoCallPickupMode.Disable -> AutoCallPickupMode.EnableAlwaysAccept
+            else -> apiData
+        }
+        return AutoCallPickupState(
+            isEnabled = apiData != AutoCallPickupMode.Disable,
+            mode = modeOrDefault
         )
     }
 
-    override fun toConfigurationOptions(): List<ConfigurationOption> = listOf(
-        ConfigurationOption.Choice(
-            key = "mode",
-            label = "Mode",
-            options = AutoCallPickupMode.values.map { it.displayName },
-            selected = mode.displayName
-        )
-    )
+    override fun toApiData(state: AutoCallPickupState): AutoCallPickupMode {
+        //There is no need to perform mapEnabled here, just act as a passthrough
+        return state.mode
+    }
 
-    override fun fromConfigurationOptions(
-        options: List<ConfigurationOption>,
-        enabled: Boolean
+    override fun fromUiState(
+        uiEnabled: Boolean,
+        options: List<ConfigurationOption>
     ): AutoCallPickupState {
         val mode = options.filterIsInstance<ConfigurationOption.Choice>()
             .find { it.key == "mode" }
@@ -38,8 +35,21 @@ data class AutoCallPickupConfiguration(
             ?: AutoCallPickupMode.Disable
 
         return AutoCallPickupState(
-            isEnabled = mapEnabled(enabled),
+            isEnabled = mapEnabled(uiEnabled),
             mode = mode
         )
     }
+
+    override fun getConfigurationOptions(state: AutoCallPickupState): List<ConfigurationOption> = listOf(
+        ConfigurationOption.Choice(
+            key = "mode",
+            label = "Mode",
+            options = listOf(
+                AutoCallPickupMode.Enable.displayName,
+                AutoCallPickupMode.EnableAlwaysAccept.displayName
+            ),
+            selected = state.mode.displayName
+        )
+    )
+
 }

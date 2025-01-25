@@ -6,7 +6,6 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import net.sfelabs.core.knox.feature.api.ConfigurablePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.PolicyState
 import net.sfelabs.core.knox.feature.processor.generator.ComponentGenerator
@@ -53,11 +52,11 @@ class FeatureDefinitionProcessor(
 
     private fun findConfigurableType(classDeclaration: KSClassDeclaration): KSType? {
         for (superType in classDeclaration.superTypes) {
-            val qualifiedName = superType.resolve().declaration.qualifiedName?.asString()
-
-            if (qualifiedName == ConfigurablePolicy::class.qualifiedName) {
-                return superType.resolve()
-            }
+//            val qualifiedName = superType.resolve().declaration.qualifiedName?.asString()
+//
+//            if (qualifiedName == ConfigurablePolicy::class.qualifiedName) {
+//                return superType.resolve()
+//            }
 
             val superDecl = superType.resolve().declaration as? KSClassDeclaration
             if (superDecl != null) {

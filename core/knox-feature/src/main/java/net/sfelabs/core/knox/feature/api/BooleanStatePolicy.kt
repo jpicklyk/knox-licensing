@@ -1,13 +1,14 @@
 package net.sfelabs.core.knox.feature.api
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 
 /**
  * Base class for simple boolean policies that only need to handle enabled/disabled state.
  */
-abstract class ConfigurableBooleanPolicy(
+abstract class BooleanStatePolicy(
     private val stateMapping: StateMapping = StateMapping.DIRECT
-) : FeatureContract<BooleanPolicyState> {
+) : FeatureContract<BooleanPolicyState>, PolicyUiConverter<BooleanPolicyState> {
 
     override val defaultValue = BooleanPolicyState(isEnabled = false)
 
@@ -36,4 +37,21 @@ abstract class ConfigurableBooleanPolicy(
 
     override suspend fun setState(state: BooleanPolicyState): ApiResult<Unit> =
         setEnabled(mapEnabled(state.isEnabled))
+
+    /**
+     * Convert UI state to domain state.
+     * For boolean policies, this is a direct conversion as the domain state
+     * is already in the correct form for the UI.
+     */
+    override fun fromUiState(uiEnabled: Boolean, options: List<ConfigurationOption>): BooleanPolicyState {
+        return BooleanPolicyState(
+            isEnabled = uiEnabled  // UI state is already in correct form, do not use mapEnabled
+        )
+    }
+
+    /**
+     * Boolean policies have no configuration options.
+     */
+    override fun getConfigurationOptions(state: BooleanPolicyState): List<ConfigurationOption> =
+        emptyList()
 }

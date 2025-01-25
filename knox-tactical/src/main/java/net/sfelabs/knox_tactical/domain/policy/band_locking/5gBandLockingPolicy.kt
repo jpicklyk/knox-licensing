@@ -2,7 +2,7 @@ package net.sfelabs.knox_tactical.domain.policy.band_locking
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
-import net.sfelabs.core.knox.feature.api.ConfigurablePolicy
+import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureContract
 import net.sfelabs.core.knox.feature.api.FeatureParameters
@@ -20,26 +20,29 @@ data class BandLocking5gParameters(
     description = "Configure 5G band locking settings per SIM slot or globally.",
     category = FeatureCategory.ConfigurableToggle,
 )
-class BandLocking5gPolicy :
-    FeatureContract<BandLockingState>,
-    ConfigurablePolicy<BandLockingState, BandLockingConfiguration> {
+class BandLocking5gPolicy:
+    ConfigurableStatePolicy<BandLockingState, BandLockingState, BandLockingConfiguration>() {
     private val getUseCase = Get5gBandLockingUseCase()
     private val enableUseCase = Enable5gBandLockingUseCase()
     private val disableUseCase = Disable5gBandLockingUseCase()
+    override val configuration = BandLockingConfiguration()
 
     override val defaultValue = BandLockingState(
         isEnabled = false,
         band = NO_BAND_LOCK,
+        simSlotId = null
     )
 
     override suspend fun getState(parameters: FeatureParameters): BandLockingState {
         val simSlotId = (parameters as? BandLocking5gParameters)?.simSlotId
 
         return when (val result = getUseCase(simSlotId)) {
-            is ApiResult.Success -> BandLockingConfiguration(
-                band = result.data,
-                simSlotId = simSlotId
-            ).toState(defaultValue)
+            is ApiResult.Success -> configuration.fromApiData(
+                defaultValue.copy(
+                    band = result.data,
+                    simSlotId = simSlotId
+                )
+            )
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
             )
@@ -51,18 +54,11 @@ class BandLocking5gPolicy :
     }
 
     override suspend fun setState(state: BandLockingState): ApiResult<Unit> {
-        val config = toConfiguration(state)
-        return if (config.band == NO_BAND_LOCK) {
+        val config = configuration.toApiData(state)
+        return if (!config.isEnabled) {
             disableUseCase(config.simSlotId)
         } else {
             enableUseCase(config.band, config.simSlotId)
         }
     }
-
-    override fun toConfiguration(state: BandLockingState): BandLockingConfiguration =
-        BandLockingConfiguration(
-            band = state.band,
-            simSlotId = state.simSlotId
-        )
-
 }

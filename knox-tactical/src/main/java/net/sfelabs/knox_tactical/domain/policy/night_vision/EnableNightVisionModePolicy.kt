@@ -6,7 +6,6 @@ import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
 import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.FeatureCategory
 import net.sfelabs.core.knox.feature.api.FeatureParameters
-import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.use_cases.screen.GetNightVisionModeStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.screen.SetNightVisionModeStateUseCase
 
@@ -17,11 +16,10 @@ import net.sfelabs.knox_tactical.domain.use_cases.screen.SetNightVisionModeState
 )
 class EnableNightVisionModePolicy(
     preferenceRepository: PreferencesRepository = PreferencesRepository.getInstance()
-) : ConfigurableStatePolicy<NightVisionState, NightVisionConfiguration>(
-    stateMapping = StateMapping.DIRECT
-) {
+) : ConfigurableStatePolicy<NightVisionState, NightVisionState, NightVisionConfiguration>() {
     private val getUseCase = GetNightVisionModeStateUseCase(preferenceRepository)
     private val setUseCase = SetNightVisionModeStateUseCase(preferenceRepository)
+    override val configuration = NightVisionConfiguration()
 
     override val defaultValue = NightVisionState(
         isEnabled = false,
@@ -30,11 +28,7 @@ class EnableNightVisionModePolicy(
 
     override suspend fun getState(parameters: FeatureParameters): NightVisionState {
         return when (val result = getUseCase()) {
-            is ApiResult.Success -> NightVisionConfiguration(
-                enabled = result.data.isEnabled,
-                useRedOverlay = result.data.useRedOverlay,
-                stateMapping = stateMapping
-            ).toState(defaultValue)
+            is ApiResult.Success -> configuration.fromApiData(result.data)
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
             )
@@ -46,17 +40,7 @@ class EnableNightVisionModePolicy(
     }
 
     override suspend fun setState(state: NightVisionState): ApiResult<Unit> {
-        val config = toConfiguration(state)
-        return setUseCase(NightVisionState(
-            isEnabled = config.enabled,
-            useRedOverlay = config.useRedOverlay
-        ))
+        return setUseCase(configuration.toApiData(state))
     }
 
-    override fun toConfiguration(state: NightVisionState): NightVisionConfiguration =
-        NightVisionConfiguration(
-            enabled = state.isEnabled,
-            useRedOverlay = state.useRedOverlay,
-            stateMapping = stateMapping
-        )
 }

@@ -15,9 +15,10 @@ import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupState
     category = FeatureCategory.ConfigurableToggle
 )
 class AutoCallPickupPolicy :
-    ConfigurableStatePolicy<AutoCallPickupState, AutoCallPickupConfiguration>() {
+    ConfigurableStatePolicy<AutoCallPickupState, AutoCallPickupMode, AutoCallPickupConfiguration>() {
     private val getUseCase = GetAutoCallPickupStateUseCase()
     private val setUseCase = SetAutoCallPickupStateUseCase()
+    override val configuration = AutoCallPickupConfiguration()
 
     override val defaultValue = AutoCallPickupState(
         isEnabled = false,
@@ -26,9 +27,7 @@ class AutoCallPickupPolicy :
 
     override suspend fun getState(parameters: FeatureParameters): AutoCallPickupState {
         return when (val result = getUseCase()) {
-            // We do not want the mode to list as Disable but to default to EnableAlwaysAccept
-            is ApiResult.Success -> AutoCallPickupConfiguration(result.data)
-                .toState(defaultValue)
+            is ApiResult.Success -> configuration.fromApiData(result.data)
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
             )
@@ -40,11 +39,7 @@ class AutoCallPickupPolicy :
     }
 
     override suspend fun setState(state: AutoCallPickupState): ApiResult<Unit> {
-        return setUseCase(toConfiguration(state).mode)
+        return setUseCase(configuration.toApiData(state))
     }
 
-    override fun toConfiguration(state: AutoCallPickupState): AutoCallPickupConfiguration =
-        AutoCallPickupConfiguration(
-            mode = if (!state.isEnabled) AutoCallPickupMode.Disable else state.mode
-        )
 }
