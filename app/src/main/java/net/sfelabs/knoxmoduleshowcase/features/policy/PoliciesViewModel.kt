@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.core.knox.feature.api.*
 import net.sfelabs.core.knox.feature.domain.model.Feature
 import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
@@ -63,22 +62,32 @@ class PoliciesViewModel @Inject constructor(
             is PolicyEvent.UpdateConfiguration -> {
                 viewModelScope.launch {
                     val feature = featureRegistry.getPolicyState(event.featureName) ?: return@launch
+
+                    // Immediately update UI with new state and loading indicator
+                    updateUiState(event.featureName, event.newUiState.copyWithLoading(isLoading = true))
+
                     val newState = updatePolicyState(feature, event.newUiState)
+
                     try {
                         when (val result = featureRegistry.setPolicyState(feature.key, newState)) {
-                            is ApiResult.Success -> updateUiState(feature.key, newState)
-                            is ApiResult.Error -> {
-                                val errorState = newState.withError(result.apiError, result.exception)
-                                updateUiState(feature.key, errorState)
+                            is ApiResult.Success -> {
+                                updateUiState(event.featureName, event.newUiState.copyWithLoading(isLoading = false))
                             }
-                            ApiResult.NotSupported -> { /* No need to handle this case */ }
+                            is ApiResult.Error -> {
+                                val errorState = event.newUiState.copyWithError(
+                                    error = result.apiError.message
+                                )
+                                updateUiState(event.featureName, errorState)
+                            }
+                            ApiResult.NotSupported -> {
+                                updateUiState(event.featureName, event.newUiState.copyWithLoading(isLoading = false))
+                            }
                         }
                     } catch (e: Exception) {
-                        val errorState = newState.withError(
-                            DefaultApiError.UnexpectedError(e.message ?: "Unknown error"),
-                            e
+                        val errorState = event.newUiState.copyWithError(
+                            error = e.message ?: "Unknown error"
                         )
-                        updateUiState(feature.key, errorState)
+                        updateUiState(event.featureName, errorState)
                     }
                 }
             }
@@ -105,8 +114,6 @@ class PoliciesViewModel @Inject constructor(
             PolicyType.TacticalDeviceModePolicy -> TacticalDeviceModePolicy()
         }.fromUiState(uiState.isEnabled, uiState.currentOptions())
     }
-
-
 
     private fun createPolicyUiState(feature: Feature<*>): PolicyUiState? {
         val component = featureRegistry.getComponent(feature.key) ?: return null
@@ -135,9 +142,6 @@ class PoliciesViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Create a list of configuration options for the given policy.
-     */
     private fun createConfigurationOptions(feature: Feature<PolicyState>): List<ConfigurationOption> {
         val type = PolicyType.fromFeature(feature)
         return when (type) {
@@ -188,13 +192,9 @@ class PoliciesViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateUiState(key: FeatureKey<*>, state: PolicyState) {
-        featureRegistry.getPolicyState(key.featureName)?.let { feature ->
-            createPolicyUiState(Feature(feature.key, PolicyStateWrapper(state)))?.let { uiState ->
-                _policies.value = _policies.value.map {
-                    if (it.featureName == key.featureName) uiState else it
-                }
-            }
+    private fun updateUiState(featureName: String, uiState: PolicyUiState) {
+        _policies.value = _policies.value.map {
+            if (it.featureName == featureName) uiState else it
         }
     }
 }
