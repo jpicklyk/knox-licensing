@@ -132,18 +132,12 @@ object TacticalEditionReleases {
             .generation(3)
             .modelName("SM-G736U1")
             .buildNumber("G736U1UEU8CXL3_B2BF"),
-        "S911U1UEU5AYA1_B2BF" to VersionInfo.Builder()
-            .description("TE3 Android 13 MR3 Beta")
+        "S911U1UEU5AYA3_B2BF" to VersionInfo.Builder()
+            .description("TE3 Android 13 MR3")
             .releaseVersion(133) 
             .generation(3)
             .modelName("SM-S911U1")
-            .buildNumber("S911U1UEU5AYA1_B2BF"),
-        "S911U1UEU5AXL2_B2BF" to VersionInfo.Builder()
-            .description("TE3 Android 13 MR3")
-            .releaseVersion(133)
-            .generation(3)
-            .modelName("SM-S911U1")
-            .buildNumber("S911U1UEU5AXL2_B2BF"),
+            .buildNumber("S911U1UEU5AYA3_B2BF")
     )
 
     fun getVersionInfo(buildNumber: String): VersionInfo {
