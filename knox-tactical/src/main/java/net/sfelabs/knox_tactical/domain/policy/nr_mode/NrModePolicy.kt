@@ -1,10 +1,10 @@
 package net.sfelabs.knox_tactical.domain.policy.nr_mode
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.annotation.PolicyDefinition
 import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
-import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureParameters
+import net.sfelabs.core.knox.feature.api.PolicyCategory
+import net.sfelabs.core.knox.feature.api.PolicyParameters
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.model.LteNrMode
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Get5gNrModeUseCase
@@ -12,13 +12,13 @@ import net.sfelabs.knox_tactical.domain.use_cases.radio.Set5gNrModeUseCase
 
 data class NrModeParameters(
     val simSlotId: Int? = null
-) : FeatureParameters
+) : PolicyParameters
 
-@FeatureDefinition(
+@PolicyDefinition(
     title = "5G NR Mode",
     description = "Configure 5G NR (New Radio) mode settings to control SA and NSA capabilities.  " +
             "Turning off the policy will automatically enable both SA and NSA modes.",
-    category = FeatureCategory.ConfigurableToggle
+    category = PolicyCategory.ConfigurableToggle
 )
 class NrModePolicy : ConfigurableStatePolicy<NrModeState, LteNrMode, NrModeConfiguration>(
     stateMapping = StateMapping.DIRECT
@@ -32,7 +32,7 @@ class NrModePolicy : ConfigurableStatePolicy<NrModeState, LteNrMode, NrModeConfi
         mode = LteNrMode.EnableBothSaAndNsa
     )
 
-    override suspend fun getState(parameters: FeatureParameters): NrModeState {
+    override suspend fun getState(parameters: PolicyParameters): NrModeState {
         val simSlotId = (parameters as? NrModeParameters)?.simSlotId
 
         return when (val result = getUseCase(simSlotId)) {

@@ -7,8 +7,8 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import net.sfelabs.core.domain.usecase.model.ApiError
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.api.*
-import net.sfelabs.core.knox.feature.domain.model.Feature
-import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
+import net.sfelabs.core.knox.feature.domain.model.Policy
+import net.sfelabs.core.knox.feature.processor.model.ProcessedPolicy
 import net.sfelabs.core.knox.feature.processor.utils.GeneratedPackages
 import net.sfelabs.core.knox.feature.processor.utils.toClassName
 
@@ -16,14 +16,14 @@ import net.sfelabs.core.knox.feature.processor.utils.toClassName
 class PolicyTypeGenerator(
     private val environment: SymbolProcessorEnvironment
 ) {
-    fun generate(features: List<ProcessedFeature>) {
-        if (features.isEmpty()) return
+    fun generate(policies: List<ProcessedPolicy>) {
+        if (policies.isEmpty()) return
 
-        generatePolicyType(features)
-        generatePolicyExtensions(features)
+        generatePolicyType(policies)
+        generatePolicyExtensions(policies)
     }
 
-    private fun generatePolicyType(features: List<ProcessedFeature>) {
+    private fun generatePolicyType(policies: List<ProcessedPolicy>) {
         val policyTypeSpec = TypeSpec.interfaceBuilder("PolicyType")
             .addModifiers(KModifier.SEALED)
             .addTypeVariable(
@@ -38,32 +38,32 @@ class PolicyTypeGenerator(
             )
 
         // Add nested objects for each policy
-        features.forEach { feature ->
-            val policyObject = TypeSpec.objectBuilder(feature.className)
+        policies.forEach { policy ->
+            val policyObject = TypeSpec.objectBuilder(policy.className)
                 .addSuperinterface(
                     ClassName("", "PolicyType")
-                        .parameterizedBy(feature.valueType.toClassName())
+                        .parameterizedBy(policy.valueType.toClassName())
                 )
                 .addProperty(
                     PropertySpec.builder("key",
-                        FeatureKey::class.asClassName()
-                            .parameterizedBy(feature.valueType.toClassName())
+                        PolicyKey::class.asClassName()
+                            .parameterizedBy(policy.valueType.toClassName())
                     )
                         .addModifiers(KModifier.OVERRIDE)
                         .initializer("%T",
-                            ClassName(getGeneratedPackage(), "${feature.className}Key")
+                            ClassName(getGeneratedPackage(), "${policy.className}Key")
                         )
                         .build()
                 )
                 .addProperty(
                     PropertySpec.builder("component",
-                        FeatureComponent::class.asClassName()
-                            .parameterizedBy(feature.valueType.toClassName())
+                        PolicyComponent::class.asClassName()
+                            .parameterizedBy(policy.valueType.toClassName())
                     )
                         .addModifiers(KModifier.OVERRIDE)
                         .initializer(
                             "lazy { %T() }.value",
-                            ClassName(getGeneratedPackage(), "${feature.className}Component")
+                            ClassName(getGeneratedPackage(), "${policy.className}Component")
                         )
                         .build()
                 )
@@ -75,10 +75,10 @@ class PolicyTypeGenerator(
         // Add companion object with helper methods
         val companionObject = TypeSpec.companionObjectBuilder()
             .addFunction(
-                FunSpec.builder("fromFeature")
+                FunSpec.builder("fromPolicy")
                     .addParameter(
-                        "feature",
-                        Feature::class.asClassName().parameterizedBy(PolicyState::class.asClassName())
+                        "policy",
+                        Policy::class.asClassName().parameterizedBy(PolicyState::class.asClassName())
                     )
                     .returns(
                         ClassName("", "PolicyType")
@@ -87,13 +87,13 @@ class PolicyTypeGenerator(
                             )
 
                     )
-                    .beginControlFlow("return when (feature.key)")
+                    .beginControlFlow("return when (policy.key)")
                     .apply {
-                        features.forEach { feature ->
+                        policies.forEach { policy ->
                             addStatement(
                                 "is %T -> %L",
-                                ClassName(getGeneratedPackage(), "${feature.className}Key"),
-                                feature.className
+                                ClassName(getGeneratedPackage(), "${policy.className}Key"),
+                                policy.className
                             )
                         }
                         addStatement("else -> throw IllegalArgumentException(\"Unknown policy type\")")
@@ -109,7 +109,7 @@ class PolicyTypeGenerator(
         writeTypeToFile(policyTypeSpec.build(), "PolicyType")
     }
 
-    private fun generatePolicyExtensions(features: List<ProcessedFeature>) {
+    private fun generatePolicyExtensions(policies: List<ProcessedPolicy>) {
         val extensionsSpec = FileSpec.builder(getGeneratedPackage(), "PolicyExtensions")
             .addImport("net.sfelabs.core.domain.usecase.model", "ApiResult", "ApiError", "DefaultApiError")
             .addFunction(generateAsPolicyFunction())
@@ -119,8 +119,8 @@ class PolicyTypeGenerator(
             .addFunction(generateGetErrorFunction())
             .addFunction(generateHasErrorFunction())
             .apply {
-                features.forEach { feature ->
-                    addFunction(generatePolicySpecificExtension(feature))
+                policies.forEach { policy ->
+                    addFunction(generatePolicySpecificExtension(policy))
                 }
             }
             .build()
@@ -131,17 +131,17 @@ class PolicyTypeGenerator(
     private fun generateAsPolicyFunction(): FunSpec {
         return FunSpec.builder("asPolicy")
             .receiver(
-                Feature::class.asClassName()
+                Policy::class.asClassName()
                     .parameterizedBy(PolicyState::class.asClassName())
             )
             .addTypeVariable(TypeVariableName("T", PolicyState::class.asClassName()))
             .addParameter("descriptor", PolicyDescriptor::class.asClassName().parameterizedBy(TypeVariableName("T")))
-            .returns(Feature::class.asClassName().parameterizedBy(TypeVariableName("T")).copy(nullable = true))
-            .addKdoc("Safely cast a Feature to a specific policy type\n")
+            .returns(Policy::class.asClassName().parameterizedBy(TypeVariableName("T")).copy(nullable = true))
+            .addKdoc("Safely cast a Policy to a specific policy type\n")
             .addCode("""
             return if (this.key == descriptor.key) {
                 @Suppress("UNCHECKED_CAST")
-                this as Feature<T>
+                this as Policy<T>
             } else null
         """.trimIndent())
             .build()
@@ -150,7 +150,7 @@ class PolicyTypeGenerator(
     private fun generateGetTypedStateFunction(): FunSpec {
         return FunSpec.builder("getTypedState")
             .receiver(
-                Feature::class.asClassName()
+                Policy::class.asClassName()
                     .parameterizedBy(PolicyState::class.asClassName())
             )
             .addTypeVariable(TypeVariableName("T", PolicyState::class.asClassName()))
@@ -165,7 +165,7 @@ class PolicyTypeGenerator(
         return FunSpec.builder("updateState")
             .addModifiers(KModifier.SUSPEND)
             .receiver(
-                Feature::class.asClassName()
+                Policy::class.asClassName()
                     .parameterizedBy(PolicyState::class.asClassName())
             )
             .addTypeVariable(TypeVariableName("T", PolicyState::class.asClassName()))
@@ -191,7 +191,7 @@ class PolicyTypeGenerator(
     private fun generateIsSupportedFunction(): FunSpec {
         return FunSpec.builder("isSupported")
             .receiver(
-                Feature::class.asClassName()
+                Policy::class.asClassName()
                     .parameterizedBy(PolicyState::class.asClassName())
             )
             .addTypeVariable(TypeVariableName("T", PolicyState::class.asClassName()))
@@ -205,7 +205,7 @@ class PolicyTypeGenerator(
     private fun generateGetErrorFunction(): FunSpec {
         return FunSpec.builder("getError")
             .receiver(
-                Feature::class.asClassName()
+                Policy::class.asClassName()
                     .parameterizedBy(PolicyState::class.asClassName())
             )
             .addTypeVariable(TypeVariableName("T", PolicyState::class.asClassName()))
@@ -227,7 +227,7 @@ class PolicyTypeGenerator(
     private fun generateHasErrorFunction(): FunSpec {
         return FunSpec.builder("hasError")
             .receiver(
-                Feature::class.asClassName()
+                Policy::class.asClassName()
                     .parameterizedBy(PolicyState::class.asClassName())
             )
             .returns(Boolean::class)
@@ -236,19 +236,19 @@ class PolicyTypeGenerator(
             .build()
     }
 
-    private fun generatePolicySpecificExtension(feature: ProcessedFeature): FunSpec {
-        return FunSpec.builder("as${feature.className}")
+    private fun generatePolicySpecificExtension(policy: ProcessedPolicy): FunSpec {
+        return FunSpec.builder("as${policy.className}")
             .receiver(
-                Feature::class.asClassName()
+                Policy::class.asClassName()
                     .parameterizedBy(PolicyState::class.asClassName())
             )
             .returns(
-                Feature::class.asClassName()
-                    .parameterizedBy(feature.valueType.toClassName())
+                Policy::class.asClassName()
+                    .parameterizedBy(policy.valueType.toClassName())
                     .copy(nullable = true)
             )
-            .addKdoc("Cast to ${feature.className} policy type\n")
-            .addCode("return asPolicy(PolicyType.${feature.className})")
+            .addKdoc("Cast to ${policy.className} policy type\n")
+            .addCode("return asPolicy(PolicyType.${policy.className})")
             .build()
     }
 
@@ -290,5 +290,5 @@ class PolicyTypeGenerator(
     }
 
     private fun getGeneratedPackage(): String =
-        GeneratedPackages.getFeaturePackage(environment)
+        GeneratedPackages.getPolicyPackage(environment)
 }

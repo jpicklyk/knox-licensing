@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.knox.feature.api.*
-import net.sfelabs.core.knox.feature.domain.model.Feature
-import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
+import net.sfelabs.core.knox.feature.domain.model.Policy
+import net.sfelabs.core.knox.feature.domain.registry.PolicyRegistry
 import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
 import net.sfelabs.core.knox.feature.ui.model.PolicyUiState.ConfigurableToggle
@@ -35,13 +35,13 @@ import net.sfelabs.knox_tactical.domain.policy.night_vision.EnableNightVisionMod
 import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState
 import net.sfelabs.knox_tactical.domain.policy.nr_mode.NrModePolicy
 import net.sfelabs.knox_tactical.domain.policy.nr_mode.NrModeState
-import net.sfelabs.knox_tactical.generated.feature.PolicyType
+import net.sfelabs.knox_tactical.generated.policy.PolicyType
 import net.sfelabs.knoxmoduleshowcase.features.policy.event.PolicyEvent
 import javax.inject.Inject
 
 @HiltViewModel
 class PoliciesViewModel @Inject constructor(
-    private val featureRegistry: FeatureRegistry
+    private val featureRegistry: PolicyRegistry
 ) : ViewModel() {
     private val _policies = MutableStateFlow<List<PolicyUiState>>(emptyList())
     val policies = _policies.asStateFlow()
@@ -52,7 +52,7 @@ class PoliciesViewModel @Inject constructor(
 
     private fun loadPolicies() {
         viewModelScope.launch {
-            _policies.value = featureRegistry.getAllFeatures()
+            _policies.value = featureRegistry.getAllPolicies()
                 .mapNotNull { createPolicyUiState(it) }
         }
     }
@@ -75,7 +75,7 @@ class PoliciesViewModel @Inject constructor(
                         when (val result = featureRegistry.setPolicyState(policy.key, newState)) {
                             is ApiResult.Success -> {
                                 createPolicyUiState(
-                                    Feature(policy.key, PolicyStateWrapper(newState))
+                                    Policy(policy.key, PolicyStateWrapper(newState))
                                 )?.let { updatedUiState ->
                                     updateUiState(
                                         event.featureName,
@@ -107,8 +107,8 @@ class PoliciesViewModel @Inject constructor(
         }
     }
 
-    private fun updatePolicyState(policy: Feature<*>, uiState: PolicyUiState): PolicyState {
-        return when (PolicyType.fromFeature(policy)) {
+    private fun updatePolicyState(policy: Policy<*>, uiState: PolicyUiState): PolicyState {
+        return when (PolicyType.fromPolicy(policy)) {
             PolicyType.EnableHdmPolicy -> EnableHdmPolicy()
             PolicyType.AutoCallPickupPolicy -> AutoCallPickupPolicy()
             PolicyType.BandLocking5gPolicy -> BandLocking5gPolicy()
@@ -128,14 +128,14 @@ class PoliciesViewModel @Inject constructor(
         }.fromUiState(uiState.isEnabled, uiState.currentOptions())
     }
 
-    private fun createPolicyUiState(feature: Feature<*>): PolicyUiState? {
-        val component = featureRegistry.getComponent(feature.key) ?: return null
-        val state = feature.state.value
+    private fun createPolicyUiState(policy: Policy<*>): PolicyUiState? {
+        val component = featureRegistry.getComponent(policy.key) ?: return null
+        val state = policy.state.value
 
         return when (state) {
             is BooleanPolicyState -> PolicyUiState.Toggle(
                 title = component.title,
-                featureName = component.featureName,
+                policyName = component.policyName,
                 description = component.description,
                 isEnabled = state.isEnabled,
                 isSupported = state.isSupported,
@@ -144,19 +144,19 @@ class PoliciesViewModel @Inject constructor(
             )
             else -> ConfigurableToggle(
                 title = component.title,
-                featureName = component.featureName,
+                policyName = component.policyName,
                 description = component.description,
                 isEnabled = state.isEnabled,
                 isSupported = state.isSupported,
                 isLoading = false,
                 error = state.error?.message,
-                configurationOptions = createConfigurationOptions(feature)
+                configurationOptions = createConfigurationOptions(policy)
             )
         }
     }
 
-    private fun createConfigurationOptions(feature: Feature<PolicyState>): List<ConfigurationOption> {
-        val type = PolicyType.fromFeature(feature)
+    private fun createConfigurationOptions(feature: Policy<PolicyState>): List<ConfigurationOption> {
+        val type = PolicyType.fromPolicy(feature)
         return when (type) {
             PolicyType.AutoCallPickupPolicy -> {
                 val state = feature.state.value as AutoCallPickupState
@@ -207,7 +207,7 @@ class PoliciesViewModel @Inject constructor(
 
     private fun updateUiState(featureName: String, uiState: PolicyUiState) {
         _policies.value = _policies.value.map {
-            if (it.featureName == featureName) uiState else it
+            if (it.policyName == featureName) uiState else it
         }
     }
 }

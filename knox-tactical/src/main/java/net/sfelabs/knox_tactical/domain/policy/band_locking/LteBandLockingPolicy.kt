@@ -2,10 +2,10 @@ package net.sfelabs.knox_tactical.domain.policy.band_locking
 
 import com.samsung.android.knox.custom.CustomDeviceManager.BANDLOCK_NONE
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.annotation.PolicyDefinition
 import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
-import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureParameters
+import net.sfelabs.core.knox.feature.api.PolicyCategory
+import net.sfelabs.core.knox.feature.api.PolicyParameters
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.use_cases.radio.DisableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.EnableBandLockingUseCase
@@ -13,12 +13,12 @@ import net.sfelabs.knox_tactical.domain.use_cases.radio.GetBandLockingStateUseCa
 
 data class BandLockingParameters(
     val simSlotId: Int? = null
-) : FeatureParameters
+) : PolicyParameters
 
-@FeatureDefinition(
+@PolicyDefinition(
     title = "LTE Band Locking",
     description = "Configure LTE band locking settings per SIM slot or globally.",
-    category = FeatureCategory.ConfigurableToggle
+    category = PolicyCategory.ConfigurableToggle
 )
 class LteBandLockingPolicy :
     ConfigurableStatePolicy<BandLockingState, BandLockingState, BandLockingConfiguration>(
@@ -35,7 +35,7 @@ class LteBandLockingPolicy :
         band = BANDLOCK_NONE
     )
 
-    override suspend fun getState(parameters: FeatureParameters): BandLockingState {
+    override suspend fun getState(parameters: PolicyParameters): BandLockingState {
         val simSlotId = (parameters as? BandLockingParameters)?.simSlotId
 
         return when (val result = getUseCase(simSlotId)) {

@@ -1,17 +1,17 @@
 package net.sfelabs.knox_tactical.domain.policy
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.annotation.PolicyDefinition
 import net.sfelabs.core.knox.feature.api.BooleanStatePolicy
-import net.sfelabs.core.knox.feature.api.FeatureCategory
+import net.sfelabs.core.knox.feature.api.PolicyCategory
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.GetAutoTouchSensitivityEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.auto_touch.SetAutoTouchSensitivityEnabledUseCase
 
-@FeatureDefinition(
+@PolicyDefinition(
     title = "Enable Auto Sensitivity",
     description = "This feature switches ON or OFF the touch sensitivity functionality in the " +
         "device settings.",
-    category = FeatureCategory.Toggle
+    category = PolicyCategory.Toggle
 )
 class AutoTouchSensitivityPolicy() : BooleanStatePolicy() {
     private val getUseCase = GetAutoTouchSensitivityEnabledUseCase()

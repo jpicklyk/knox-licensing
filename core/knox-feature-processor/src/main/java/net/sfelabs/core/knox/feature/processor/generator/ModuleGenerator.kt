@@ -13,24 +13,24 @@ import com.squareup.kotlinpoet.WildcardTypeName
 import com.squareup.kotlinpoet.asClassName
 import net.sfelabs.core.knox.feature.api.PolicyState
 import net.sfelabs.core.knox.feature.processor.model.PackageName
-import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
+import net.sfelabs.core.knox.feature.processor.model.ProcessedPolicy
 import net.sfelabs.core.knox.feature.processor.utils.GeneratedPackages
 
 class ModuleGenerator(
     private val environment: SymbolProcessorEnvironment
 ) {
-    fun generate(features: List<ProcessedFeature>) {
-        if (features.isEmpty()) return
+    fun generate(policies: List<ProcessedPolicy>) {
+        if (policies.isEmpty()) return
 
-        features.forEach { feature ->
-            generateFeatureModule(feature)
+        policies.forEach { policy ->
+            generateFeatureModule(policy)
         }
-        generateFeatureRegistryModule()
-        generateModuleIndex(features)
+        generatePolicyRegistryModule()
+        generateModuleIndex(policies)
     }
 
-    private fun generateFeatureModule(feature: ProcessedFeature) {
-        val moduleSpec = TypeSpec.classBuilder("${feature.className}Module")
+    private fun generateFeatureModule(policy: ProcessedPolicy) {
+        val moduleSpec = TypeSpec.classBuilder("${policy.className}Module")
             .addModifiers(KModifier.ABSTRACT)
             .addAnnotation(ClassName("dagger", "Module"))
             .addAnnotation(
@@ -45,10 +45,10 @@ class ModuleGenerator(
                     .addAnnotation(ClassName("dagger.multibindings", "IntoSet"))
                     .addParameter(
                         "impl",
-                        ClassName(getGeneratedPackage(), "${feature.className}Component")
+                        ClassName(getGeneratedPackage(), "${policy.className}Component")
                     )
                     .returns(
-                        ClassName(PackageName.FEATURE_PUBLIC.value, "FeatureComponent")
+                        ClassName(PackageName.FEATURE_PUBLIC.value, "PolicyComponent")
                             .parameterizedBy(
                                 WildcardTypeName.producerOf(PolicyState::class.asClassName())
                             )
@@ -57,14 +57,14 @@ class ModuleGenerator(
             )
             .build()
 
-        writeModuleToFile(moduleSpec, feature)
+        writeModuleToFile(moduleSpec, policy)
     }
 
-    private fun generateModuleIndex(features: List<ProcessedFeature>) {
-        if (features.isEmpty()) return
+    private fun generateModuleIndex(policies: List<ProcessedPolicy>) {
+        if (policies.isEmpty()) return
 
         val packageName = getGeneratedPackage()
-        val moduleNames = features.map { "${it.className}Module" } + "FeatureRegistryModule"
+        val moduleNames = policies.map { "${it.className}Module" } + "PolicyRegistryModule"
 
         val indexSpec = TypeSpec.objectBuilder("GeneratedModuleIndex")
             .addAnnotation(
@@ -90,8 +90,8 @@ class ModuleGenerator(
         writeModuleIndexToFile(indexSpec)
     }
 
-    private fun generateFeatureRegistryModule() {
-        val moduleSpec = TypeSpec.classBuilder("FeatureRegistryModule")
+    private fun generatePolicyRegistryModule() {
+        val moduleSpec = TypeSpec.classBuilder("PolicyRegistryModule")
             .addModifiers(KModifier.ABSTRACT)
             .addAnnotation(ClassName("dagger", "Module"))
             .addAnnotation(
@@ -100,16 +100,16 @@ class ModuleGenerator(
                     .build()
             )
             .addFunction(
-                FunSpec.builder("bindFeatureRegistry")
+                FunSpec.builder("bindPolicyRegistry")
                     .addModifiers(KModifier.ABSTRACT)
                     .addAnnotation(ClassName("dagger", "Binds"))
                     .addAnnotation(ClassName("javax.inject", "Singleton"))
                     .addParameter(
                         "impl",
-                        ClassName(PackageName.FEATURE_HILT.value, "HiltFeatureRegistry")
+                        ClassName(PackageName.FEATURE_HILT.value, "HiltPolicyRegistry")
                     )
                     .returns(
-                        ClassName(PackageName.FEATURE_REGISTRY.value, "FeatureRegistry")
+                        ClassName(PackageName.FEATURE_REGISTRY.value, "PolicyRegistry")
                     )
                     .build()
             )
@@ -120,9 +120,9 @@ class ModuleGenerator(
 
     private fun writeModuleToFile(
         moduleSpec: TypeSpec,
-        feature: ProcessedFeature
+        policy: ProcessedPolicy
     ) {
-        val moduleName = feature.className + "Module"
+        val moduleName = policy.className + "Module"
         try {
             val packageName = getGeneratedPackage()
 
@@ -134,11 +134,11 @@ class ModuleGenerator(
                 output.writer().use { writer ->
                     FileSpec.builder(packageName, moduleName)
                         .addType(moduleSpec)
-                        .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureComponent")
+                        .addImport(PackageName.FEATURE_PUBLIC.value, "PolicyComponent")
                         .addImport(PackageName.FEATURE_PUBLIC.value, "PolicyState")
                         .addImport(
                             getFeaturePackage(),
-                            feature.className + "Component"
+                            policy.className + "Component"
                         )
                         .build()
                         .writeTo(writer)
@@ -151,7 +151,7 @@ class ModuleGenerator(
 
     private fun writeRegistryModuleToFile(
         moduleSpec: TypeSpec,
-        fileName: String = "FeatureRegistryModule"
+        fileName: String = "PolicyRegistryModule"
     ) {
         try {
             val packageName = getGeneratedPackage()
@@ -164,7 +164,7 @@ class ModuleGenerator(
                 output.writer().use { writer ->
                     FileSpec.builder(packageName, fileName)
                         .addType(moduleSpec)
-                        .addImport(PackageName.FEATURE_PUBLIC.value, "FeatureComponent")
+                        .addImport(PackageName.FEATURE_PUBLIC.value, "PolicyComponent")
                         .build()
                         .writeTo(writer)
                 }
@@ -195,6 +195,6 @@ class ModuleGenerator(
         }
     }
 
-    private fun getFeaturePackage() = GeneratedPackages.getFeaturePackage(environment)
+    private fun getFeaturePackage() = GeneratedPackages.getPolicyPackage(environment)
     private fun getGeneratedPackage() = GeneratedPackages.getDiPackage(environment)
 }

@@ -4,26 +4,26 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureComponent
-import net.sfelabs.core.knox.feature.api.FeatureKey
+import net.sfelabs.core.knox.feature.api.PolicyCategory
+import net.sfelabs.core.knox.feature.api.PolicyComponent
+import net.sfelabs.core.knox.feature.api.PolicyKey
 import net.sfelabs.core.knox.feature.api.PolicyState
 import net.sfelabs.core.knox.feature.api.PolicyStateWrapper
-import net.sfelabs.core.knox.feature.domain.model.Feature
-import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
+import net.sfelabs.core.knox.feature.domain.model.Policy
+import net.sfelabs.core.knox.feature.domain.registry.PolicyRegistry
 
-class CachedPolicyRegistry(private val delegate: DefaultFeatureRegistry) : FeatureRegistry {
-    private val cache = mutableMapOf<String, Feature<PolicyState>>()
+class CachedPolicyRegistry(private val delegate: DefaultPolicyRegistry) : PolicyRegistry {
+    private val cache = mutableMapOf<String, Policy<PolicyState>>()
     private val mutex = Mutex()
 
-    var components: Set<FeatureComponent<out PolicyState>>
+    var components: Set<PolicyComponent<out PolicyState>>
         get() = delegate.components
         set(value) {
             delegate.components = value
             cache.clear()
         }
 
-    suspend fun getFeature(featureName: String, forceRefresh: Boolean = false): Feature<PolicyState>? {
+    suspend fun getFeature(featureName: String, forceRefresh: Boolean = false): Policy<PolicyState>? {
         return mutex.withLock {
             when {
                 forceRefresh -> delegate.getPolicyState(featureName)?.also { cache[featureName] = it }
@@ -33,11 +33,11 @@ class CachedPolicyRegistry(private val delegate: DefaultFeatureRegistry) : Featu
         }
     }
 
-    override suspend fun getAllFeatures(): List<Feature<*>> = mutex.withLock {
-        delegate.getAllFeatures().also { features ->
+    override suspend fun getAllPolicies(): List<Policy<*>> = mutex.withLock {
+        delegate.getAllPolicies().also { features ->
             cache.clear()
             features.forEach {
-                cache[it.key.featureName] = it
+                cache[it.key.policyName] = it
             }
         }
     }
@@ -46,15 +46,15 @@ class CachedPolicyRegistry(private val delegate: DefaultFeatureRegistry) : Featu
 
     override suspend fun getPolicyState(featureName: String) = getFeature(featureName, false)
     override suspend fun <T : PolicyState> setPolicyState(
-        featureKey: FeatureKey<T>,
+        policyKey: PolicyKey<T>,
         state: T
     ): ApiResult<Unit> {
         return mutex.withLock {
-            getHandler(featureKey)?.setState(state)?.also { result ->
+            getHandler(policyKey)?.setState(state)?.also { result ->
                 if (result is ApiResult.Success) {
-                    val cachedFeature = cache[featureKey.featureName]
+                    val cachedFeature = cache[policyKey.policyName]
                     if (cachedFeature != null) {
-                        cache[featureKey.featureName] = Feature(
+                        cache[policyKey.policyName] = Policy(
                             key = cachedFeature.key,
                             state = PolicyStateWrapper(state)
                         )
@@ -64,8 +64,8 @@ class CachedPolicyRegistry(private val delegate: DefaultFeatureRegistry) : Featu
         }
     }
 
-    override fun getComponent(key: FeatureKey<*>) = delegate.getComponent(key)
-    override fun <T : PolicyState> getHandler(key: FeatureKey<T>) = delegate.getHandler(key)
-    override suspend fun getFeatures(category: FeatureCategory) = delegate.getFeatures(category)
-    override fun isRegistered(key: FeatureKey<*>) = delegate.isRegistered(key)
+    override fun getComponent(key: PolicyKey<*>) = delegate.getComponent(key)
+    override fun <T : PolicyState> getHandler(key: PolicyKey<T>) = delegate.getHandler(key)
+    override suspend fun getPolicies(category: PolicyCategory) = delegate.getPolicies(category)
+    override fun isRegistered(key: PolicyKey<*>) = delegate.isRegistered(key)
 }

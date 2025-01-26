@@ -20,7 +20,7 @@ abstract class BooleanStatePolicy(
         StateMapping.INVERTED -> !enabled
     }
 
-    override suspend fun getState(parameters: FeatureParameters): BooleanPolicyState {
+    override suspend fun getState(parameters: PolicyParameters): BooleanPolicyState {
         return when (val result = getEnabled()) {
             is ApiResult.Success -> defaultValue.copy(
                 isEnabled = mapEnabled(result.data)

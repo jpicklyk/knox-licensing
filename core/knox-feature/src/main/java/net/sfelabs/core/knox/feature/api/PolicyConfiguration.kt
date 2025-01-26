@@ -23,7 +23,7 @@ interface PolicyConfiguration<T : PolicyState, D: Any> {
 //    /**
 //     * Convert PolicyState to UI configuration options
 //     */
-//    fun toUiState(state: T, component: FeatureComponent<T>): PolicyUiState {
+//    fun toUiState(state: T, component: PolicyComponent<T>): PolicyUiState {
 //        return PolicyUiState.ConfigurableToggle(
 //            title = component.title,
 //            featureName = component.featureName,

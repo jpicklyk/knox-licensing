@@ -2,82 +2,82 @@ package net.sfelabs.core.knox.feature.data.repository
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
-import net.sfelabs.core.knox.feature.domain.usecase.handler.FeatureHandler
-import net.sfelabs.core.knox.feature.domain.model.Feature
-import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureComponent
-import net.sfelabs.core.knox.feature.api.FeatureKey
+import net.sfelabs.core.knox.feature.domain.usecase.handler.PolicyHandler
+import net.sfelabs.core.knox.feature.domain.model.Policy
+import net.sfelabs.core.knox.feature.api.PolicyCategory
+import net.sfelabs.core.knox.feature.api.PolicyComponent
+import net.sfelabs.core.knox.feature.api.PolicyKey
 import net.sfelabs.core.knox.feature.api.PolicyState
 import net.sfelabs.core.knox.feature.api.PolicyStateWrapper
-import net.sfelabs.core.knox.feature.domain.registry.FeatureRegistry
+import net.sfelabs.core.knox.feature.domain.registry.PolicyRegistry
 
-class DefaultFeatureRegistry : FeatureRegistry {
-    var components: Set<FeatureComponent<out PolicyState>> = emptySet()
+class DefaultPolicyRegistry : PolicyRegistry {
+    var components: Set<PolicyComponent<out PolicyState>> = emptySet()
 
-    private val componentsByName: Map<String, FeatureComponent<out PolicyState>> by lazy {
-        components.associateBy { it.featureName }
+    private val componentsByName: Map<String, PolicyComponent<out PolicyState>> by lazy {
+        components.associateBy { it.policyName }
     }
 
-    override fun getComponent(key: FeatureKey<*>): FeatureComponent<out PolicyState>? {
-        return componentsByName[key.featureName]
+    override fun getComponent(key: PolicyKey<*>): PolicyComponent<out PolicyState>? {
+        return componentsByName[key.policyName]
     }
 
-    override fun <T : PolicyState> getHandler(key: FeatureKey<T>): FeatureHandler<T>? {
-        val component = componentsByName[key.featureName] ?: return null
+    override fun <T : PolicyState> getHandler(key: PolicyKey<T>): PolicyHandler<T>? {
+        val component = componentsByName[key.policyName] ?: return null
 
         return if (component.key::class == key::class) {
             @Suppress("UNCHECKED_CAST")
-            component.handler as? FeatureHandler<T>
+            component.handler as? PolicyHandler<T>
         } else {
             null
         }
     }
 
-    override suspend fun getAllFeatures(): List<Feature<*>> {
+    override suspend fun getAllPolicies(): List<Policy<*>> {
         return components.map { component ->
             @Suppress("UNCHECKED_CAST")
             val typedComponent = component
             val handler = typedComponent.handler
-            Feature(
+            Policy(
                 key = typedComponent.key,
                 state = PolicyStateWrapper(handler.getState())
             )
         }
     }
 
-    override suspend fun getFeatures(category: FeatureCategory): List<Feature<*>> {
+    override suspend fun getPolicies(category: PolicyCategory): List<Policy<*>> {
         return components
             .filter { it.category == category }
             .map { component ->
                 @Suppress("UNCHECKED_CAST")
                 val typedComponent = component
                 val handler = typedComponent.handler
-                Feature(
+                Policy(
                     key = typedComponent.key,
                     state = PolicyStateWrapper(handler.getState())
                 )
             }
     }
 
-    override fun isRegistered(key: FeatureKey<*>): Boolean {
-        return componentsByName.containsKey(key.featureName)
+    override fun isRegistered(key: PolicyKey<*>): Boolean {
+        return componentsByName.containsKey(key.policyName)
     }
 
-    override suspend fun getPolicyState(featureName: String): Feature<PolicyState>? {
+    override suspend fun getPolicyState(featureName: String): Policy<PolicyState>? {
         val component = componentsByName[featureName] ?: return null
         @Suppress("UNCHECKED_CAST")
         val handler = component.handler
-        return Feature(
+        return Policy(
             key = component.key,
             state = PolicyStateWrapper(handler.getState())
         )
     }
 
     override suspend fun <T : PolicyState> setPolicyState(
-        featureKey: FeatureKey<T>,
+        policyKey: PolicyKey<T>,
         state: T
     ): ApiResult<Unit> {
-        return getHandler(featureKey)?.setState(state)
+        return getHandler(policyKey)?.setState(state)
             ?: ApiResult.Error(DefaultApiError.UnexpectedError("Policy handler not found"))
     }
 }

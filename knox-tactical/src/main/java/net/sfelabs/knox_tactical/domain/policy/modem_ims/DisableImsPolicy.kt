@@ -1,23 +1,23 @@
 package net.sfelabs.knox_tactical.domain.policy.modem_ims
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.annotation.PolicyDefinition
 import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
-import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureParameters
+import net.sfelabs.core.knox.feature.api.PolicyCategory
+import net.sfelabs.core.knox.feature.api.PolicyParameters
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.knox_tactical.domain.use_cases.ims.IsImsEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ims.SetImsEnabled
 
 data class ImsParameters(
     val simSlotId: Int = 0
-) : FeatureParameters
+) : PolicyParameters
 
 
-@FeatureDefinition(
+@PolicyDefinition(
     title = "Disable Modem IMS",
     description = "Disables the cellular modem IMS capability",
-    category = FeatureCategory.ConfigurableToggle
+    category = PolicyCategory.ConfigurableToggle
 )
 class DisableImsPolicy : ConfigurableStatePolicy<ImsState, Boolean, ImsConfiguration>(
     stateMapping = StateMapping.INVERTED
@@ -31,7 +31,7 @@ class DisableImsPolicy : ConfigurableStatePolicy<ImsState, Boolean, ImsConfigura
         simSlotId = 0
     )
 
-    override suspend fun getState(parameters: FeatureParameters): ImsState {
+    override suspend fun getState(parameters: PolicyParameters): ImsState {
         val simSlotId = when (parameters) {
             is ImsParameters -> parameters.simSlotId
             else -> defaultValue.simSlotId

@@ -3,7 +3,7 @@ package net.sfelabs.core.knox.feature.ui.model
 sealed class PolicyUiState {
     abstract val isSupported: Boolean
     abstract val title: String
-    abstract val featureName: String
+    abstract val policyName: String
     abstract val description: String
     abstract val isLoading: Boolean
     abstract val error: String?
@@ -15,7 +15,7 @@ sealed class PolicyUiState {
     data class Toggle(
         override val isSupported: Boolean,
         override val title: String,
-        override val featureName: String,
+        override val policyName: String,
         override val description: String,
         override val isEnabled: Boolean,
         override val isLoading: Boolean = false,
@@ -28,7 +28,7 @@ sealed class PolicyUiState {
     data class ConfigurableToggle(
         override val isSupported: Boolean,
         override val title: String,
-        override val featureName: String,
+        override val policyName: String,
         override val description: String,
         override val isEnabled: Boolean,
         override val isLoading: Boolean = false,

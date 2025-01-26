@@ -9,13 +9,10 @@ data class AutoCallPickupConfiguration(
     override val stateMapping: StateMapping = StateMapping.DIRECT
 ): PolicyConfiguration<AutoCallPickupState, AutoCallPickupMode> {
     override fun fromApiData(apiData: AutoCallPickupMode): AutoCallPickupState {
-        val modeOrDefault = when (apiData) {
-            AutoCallPickupMode.Disable -> AutoCallPickupMode.EnableAlwaysAccept
-            else -> apiData
-        }
+
         return AutoCallPickupState(
             isEnabled = apiData != AutoCallPickupMode.Disable,
-            mode = modeOrDefault
+            mode = apiData
         )
     }
 
@@ -28,11 +25,15 @@ data class AutoCallPickupConfiguration(
         uiEnabled: Boolean,
         options: List<ConfigurationOption>
     ): AutoCallPickupState {
-        val mode = options.filterIsInstance<ConfigurationOption.Choice>()
-            .find { it.key == "mode" }
-            ?.selected
-            ?.let { AutoCallPickupMode.fromDisplayName(it) }
-            ?: AutoCallPickupMode.Disable
+        val mode = if (uiEnabled) {
+            options.filterIsInstance<ConfigurationOption.Choice>()
+                .find { it.key == "mode" }
+                ?.selected
+                ?.let { AutoCallPickupMode.fromDisplayName(it) }
+                ?: AutoCallPickupMode.Disable
+        } else {
+            AutoCallPickupMode.Disable
+        }
 
         return AutoCallPickupState(
             isEnabled = mapEnabled(uiEnabled),
@@ -44,10 +45,7 @@ data class AutoCallPickupConfiguration(
         ConfigurationOption.Choice(
             key = "mode",
             label = "Mode",
-            options = listOf(
-                AutoCallPickupMode.Enable.displayName,
-                AutoCallPickupMode.EnableAlwaysAccept.displayName
-            ),
+            options = AutoCallPickupMode.values.map { it.displayName },
             selected = state.mode.displayName
         )
     )

@@ -105,7 +105,7 @@ fun PolicyCard(
                         Button(
                             onClick = {
                                 onEvent(PolicyEvent.UpdateConfiguration(
-                                    featureName = policy.featureName,
+                                    featureName = policy.policyName,
                                     newUiState = policy.copy(
                                         configurationOptions = pendingOptions.value
                                     )
@@ -122,13 +122,13 @@ fun PolicyCard(
                             when (policy) {
                                 is PolicyUiState.Toggle -> onEvent(
                                     PolicyEvent.UpdateConfiguration(
-                                        featureName = policy.featureName,
+                                        featureName = policy.policyName,
                                         newUiState = policy.copy(isEnabled = isEnabled)
                                     )
                                 )
                                 is PolicyUiState.ConfigurableToggle -> onEvent(
                                     PolicyEvent.UpdateConfiguration(
-                                        featureName = policy.featureName,
+                                        featureName = policy.policyName,
                                         newUiState = policy.copy(
                                             isEnabled = isEnabled,
                                             configurationOptions = pendingOptions.value
@@ -237,7 +237,7 @@ private fun PolicyCardPreview() {
             policy = PolicyUiState.ConfigurableToggle(
                 title = "5G NR Mode",
                 description = "Configure 5G NR mode settings for the device",
-                featureName = "nr_mode",
+                policyName = "nr_mode",
                 isEnabled = true,
                 isSupported = true,
                 isLoading = false,
@@ -279,7 +279,7 @@ private fun PolicyCardErrorPreview() {
             policy = PolicyUiState.ConfigurableToggle(
                 title = "5G NR Mode",
                 description = "Configure 5G NR mode settings for the device",
-                featureName = "nr_mode",
+                policyName = "nr_mode",
                 isEnabled = false,
                 isSupported = true,
                 isLoading = false,
@@ -321,7 +321,7 @@ private fun PolicyCardUnsupportedPreview() {
             policy = PolicyUiState.ConfigurableToggle(
                 title = "5G NR Mode",
                 description = "Configure 5G NR mode settings for the device",
-                featureName = "nr_mode",
+                policyName = "nr_mode",
                 isEnabled = false,
                 isSupported = false,
                 isLoading = false,
@@ -363,7 +363,7 @@ private fun PolicyCardLoadingPreview() {
             policy = PolicyUiState.ConfigurableToggle(
                 title = "5G NR Mode",
                 description = "Configure 5G NR mode settings for the device",
-                featureName = "nr_mode",
+                policyName = "nr_mode",
                 isEnabled = true,
                 isSupported = true,
                 isLoading = true,

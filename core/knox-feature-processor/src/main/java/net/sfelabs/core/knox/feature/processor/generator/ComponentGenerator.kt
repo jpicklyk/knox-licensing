@@ -11,146 +11,146 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureComponent
-import net.sfelabs.core.knox.feature.api.FeatureKey
-import net.sfelabs.core.knox.feature.api.FeatureParameters
-import net.sfelabs.core.knox.feature.domain.usecase.handler.FeatureHandler
-import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
+import net.sfelabs.core.knox.feature.api.PolicyCategory
+import net.sfelabs.core.knox.feature.api.PolicyComponent
+import net.sfelabs.core.knox.feature.api.PolicyKey
+import net.sfelabs.core.knox.feature.api.PolicyParameters
+import net.sfelabs.core.knox.feature.domain.usecase.handler.PolicyHandler
+import net.sfelabs.core.knox.feature.processor.model.ProcessedPolicy
 import net.sfelabs.core.knox.feature.processor.utils.GeneratedPackages
-import net.sfelabs.core.knox.feature.processor.utils.NameUtils.classNameToFeatureName
+import net.sfelabs.core.knox.feature.processor.utils.NameUtils.classNameToPolicyName
 import net.sfelabs.core.knox.feature.processor.utils.toClassName
 
 class ComponentGenerator(
     private val environment: SymbolProcessorEnvironment
 ) {
-    fun generate(features: List<ProcessedFeature>) {
-        features.forEach { feature ->
-            generateComponent(feature)
+    fun generate(policies: List<ProcessedPolicy>) {
+        policies.forEach { policy ->
+            generateComponent(policy)
         }
     }
 
-    private fun generateComponent(feature: ProcessedFeature) {
-        val componentSpec = TypeSpec.classBuilder("${feature.className}Component")
+    private fun generateComponent(policy: ProcessedPolicy) {
+        val componentSpec = TypeSpec.classBuilder("${policy.className}Component")
             .primaryConstructor(
                 FunSpec.constructorBuilder()
                     .addAnnotation(ClassName.bestGuess("javax.inject.Inject"))
                     .build()
             )
             .addSuperinterface(
-                ClassName.bestGuess(FeatureComponent::class.qualifiedName!!)
-                    .parameterizedBy(feature.valueType.toClassName())
+                ClassName.bestGuess(PolicyComponent::class.qualifiedName!!)
+                    .parameterizedBy(policy.valueType.toClassName())
             )
             .addProperty(
-                PropertySpec.builder("featureImpl", ClassName(feature.packageName, feature.className))
+                PropertySpec.builder("policyImpl", ClassName(policy.packageName, policy.className))
                     .addModifiers(KModifier.PRIVATE)
-                    .initializer("%T()", ClassName(feature.packageName, feature.className))
+                    .initializer("%T()", ClassName(policy.packageName, policy.className))
                     .build()
             )
-            .addProperties(generateComponentProperties(feature))
+            .addProperties(generateComponentProperties(policy))
             .build()
 
-        writeToFile(componentSpec, feature)
+        writeToFile(componentSpec, policy)
     }
 
-    private fun generateComponentProperties(feature: ProcessedFeature): List<PropertySpec> {
-        val stateType = feature.valueType.toClassName()
+    private fun generateComponentProperties(policy: ProcessedPolicy): List<PropertySpec> {
+        val stateType = policy.valueType.toClassName()
 
         return listOf(
-            PropertySpec.builder("featureName", String::class)
+            PropertySpec.builder("policyName", String::class)
                 .addModifiers(KModifier.OVERRIDE)
-                .initializer("%S", classNameToFeatureName(feature.className))
+                .initializer("%S", classNameToPolicyName(policy.className))
                 .build(),
 
             PropertySpec.builder("title", String::class)
                 .addModifiers(KModifier.OVERRIDE)
-                .initializer("%S", feature.title)
+                .initializer("%S", policy.title)
                 .build(),
 
             PropertySpec.builder("description", String::class)
                 .addModifiers(KModifier.OVERRIDE)
-                .initializer("%S", feature.description)
+                .initializer("%S", policy.description)
                 .build(),
 
-            PropertySpec.builder("category", FeatureCategory::class)
+            PropertySpec.builder("category", PolicyCategory::class)
                 .addModifiers(KModifier.OVERRIDE)
-                .initializer("%T.%L", FeatureCategory::class, feature.category.name)
+                .initializer("%T.%L", PolicyCategory::class, policy.category.name)
                 .build(),
 
             PropertySpec.builder("handler",
-                ClassName.bestGuess(FeatureHandler::class.qualifiedName!!)
+                ClassName.bestGuess(PolicyHandler::class.qualifiedName!!)
                     .parameterizedBy(stateType)  // Use consistent type
             )
                 .addModifiers(KModifier.OVERRIDE)
-                .initializer(buildHandlerInitializer(feature))
+                .initializer(buildHandlerInitializer(policy))
                 .build(),
 
             PropertySpec.builder("defaultValue", stateType)  // Use consistent type
                 .addModifiers(KModifier.OVERRIDE)
-                .initializer("featureImpl.defaultValue")
+                .initializer("policyImpl.defaultValue")
                 .build(),
 
             PropertySpec.builder("key",
-                ClassName.bestGuess(FeatureKey::class.qualifiedName!!)
+                ClassName.bestGuess(PolicyKey::class.qualifiedName!!)
                     .parameterizedBy(stateType)  // Use consistent type
             )
                 .addModifiers(KModifier.OVERRIDE)
                 .initializer(
                     "%T",
-                    ClassName(getGeneratedPackage(), "${feature.className}Key")
+                    ClassName(getGeneratedPackage(), "${policy.className}Key")
                 )
                 .build()
         )
     }
 
-    private fun buildHandlerInitializer(feature: ProcessedFeature): CodeBlock {
-        val stateType = feature.valueType.toClassName()
+    private fun buildHandlerInitializer(policy: ProcessedPolicy): CodeBlock {
+        val stateType = policy.valueType.toClassName()
 
         return CodeBlock.builder()
             .beginControlFlow(
                 "object : %T<%T>",
-                ClassName.bestGuess(FeatureHandler::class.qualifiedName!!),
+                ClassName.bestGuess(PolicyHandler::class.qualifiedName!!),
                 stateType  // Use specific type
             )
             .beginControlFlow(
                 "override suspend fun getState(parameters: %T): %T",
-                ClassName.bestGuess(FeatureParameters::class.qualifiedName!!),
+                ClassName.bestGuess(PolicyParameters::class.qualifiedName!!),
                 stateType  // Use specific type
             )
-            .addStatement("return featureImpl.getState(parameters)")
+            .addStatement("return policyImpl.getState(parameters)")
             .endControlFlow()
             .beginControlFlow(
                 "override suspend fun setState(newState: %T): %T<Unit>",
                 stateType,  // Use specific type
                 ClassName.bestGuess(ApiResult::class.qualifiedName!!)
             )
-            .addStatement("return featureImpl.setState(newState)")
+            .addStatement("return policyImpl.setState(newState)")
             .endControlFlow()
             .endControlFlow()
             .build()
     }
 
-    private fun writeToFile(componentSpec: TypeSpec, feature: ProcessedFeature) {
+    private fun writeToFile(componentSpec: TypeSpec, policy: ProcessedPolicy) {
         try {
             val packageName = getGeneratedPackage()
 
             environment.codeGenerator.createNewFile(
                 Dependencies(false),
                 packageName,
-                "${feature.className}Component"
+                "${policy.className}Component"
             ).use { output ->
                 output.writer().use { writer ->
-                    FileSpec.builder(packageName, "${feature.className}Component")
+                    FileSpec.builder(packageName, "${policy.className}Component")
                         .addType(componentSpec)
                         .build()
                         .writeTo(writer)
                 }
             }
         } catch (_: FileAlreadyExistsException) {
-            environment.logger.warn("Component file already exists for ${feature.className}. Skipping generation.")
+            environment.logger.warn("Component file already exists for ${policy.className}. Skipping generation.")
         }
     }
 
     private fun getGeneratedPackage(): String =
-        GeneratedPackages.getFeaturePackage(environment)
+        GeneratedPackages.getPolicyPackage(environment)
 }

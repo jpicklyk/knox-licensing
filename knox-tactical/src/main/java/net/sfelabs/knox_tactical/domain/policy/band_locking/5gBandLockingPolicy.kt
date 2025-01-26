@@ -1,11 +1,10 @@
 package net.sfelabs.knox_tactical.domain.policy.band_locking
 
 import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.knox.feature.annotation.FeatureDefinition
+import net.sfelabs.core.knox.feature.annotation.PolicyDefinition
 import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
-import net.sfelabs.core.knox.feature.api.FeatureCategory
-import net.sfelabs.core.knox.feature.api.FeatureContract
-import net.sfelabs.core.knox.feature.api.FeatureParameters
+import net.sfelabs.core.knox.feature.api.PolicyCategory
+import net.sfelabs.core.knox.feature.api.PolicyParameters
 import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingConfiguration.Companion.NO_BAND_LOCK
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Disable5gBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Enable5gBandLockingUseCase
@@ -13,12 +12,12 @@ import net.sfelabs.knox_tactical.domain.use_cases.radio.Get5gBandLockingUseCase
 
 data class BandLocking5gParameters(
     val simSlotId: Int? = null
-) : FeatureParameters
+) : PolicyParameters
 
-@FeatureDefinition(
+@PolicyDefinition(
     title = "5G Band Locking",
     description = "Configure 5G band locking settings per SIM slot or globally.",
-    category = FeatureCategory.ConfigurableToggle,
+    category = PolicyCategory.ConfigurableToggle,
 )
 class BandLocking5gPolicy:
     ConfigurableStatePolicy<BandLockingState, BandLockingState, BandLockingConfiguration>() {
@@ -33,7 +32,7 @@ class BandLocking5gPolicy:
         simSlotId = null
     )
 
-    override suspend fun getState(parameters: FeatureParameters): BandLockingState {
+    override suspend fun getState(parameters: PolicyParameters): BandLockingState {
         val simSlotId = (parameters as? BandLocking5gParameters)?.simSlotId
 
         return when (val result = getUseCase(simSlotId)) {

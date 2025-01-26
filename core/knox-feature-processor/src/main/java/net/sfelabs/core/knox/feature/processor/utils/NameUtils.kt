@@ -5,9 +5,9 @@ object NameUtils {
      * Converts a class name to a feature name format.
      * Example: "AutoTouchSensitivityFeature" -> "auto_touch_sensitivity"
      */
-    fun classNameToFeatureName(className: String): String {
+    fun classNameToPolicyName(className: String): String {
         return className
-            .removeSuffix("Feature")
+            .removeSuffix("Policy")
             .replace(Regex("([a-z])([A-Z])"), "$1_$2")
             .lowercase()
     }

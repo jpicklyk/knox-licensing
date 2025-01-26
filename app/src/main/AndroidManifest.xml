@@ -2,13 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Feature requirement for camera -->
+    <!-- Policy requirement for camera -->
     <uses-feature android:name="android.hardware.camera" />
-    <!-- Feature requirement for camera -->
+    <!-- Policy requirement for camera -->
     <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
-    <!-- Feature requirement for camera autofocus -->
+    <!-- Policy requirement for camera autofocus -->
     <uses-feature android:name="android.hardware.camera.autofocus" />
-    <!-- Feature requirement for depth camera -->
+    <!-- Policy requirement for depth camera -->
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-feature android:name="android.hardware.camera.depth" android:required="true" />
 

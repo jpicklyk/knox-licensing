@@ -1,6 +1,6 @@
 package net.sfelabs.core.knox.feature.api
 
 interface PolicyDescriptor<T: PolicyState> {
-    val key: FeatureKey<T>
-    val component: FeatureComponent<T>
+    val key: PolicyKey<T>
+    val component: PolicyComponent<T>
 }

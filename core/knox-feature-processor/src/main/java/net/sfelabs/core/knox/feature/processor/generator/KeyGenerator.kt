@@ -8,58 +8,58 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import net.sfelabs.core.knox.feature.api.FeatureKey
-import net.sfelabs.core.knox.feature.processor.model.ProcessedFeature
+import net.sfelabs.core.knox.feature.api.PolicyKey
+import net.sfelabs.core.knox.feature.processor.model.ProcessedPolicy
 import net.sfelabs.core.knox.feature.processor.utils.GeneratedPackages
-import net.sfelabs.core.knox.feature.processor.utils.NameUtils.classNameToFeatureName
+import net.sfelabs.core.knox.feature.processor.utils.NameUtils.classNameToPolicyName
 import net.sfelabs.core.knox.feature.processor.utils.toClassName
 
 class KeyGenerator(
     private val environment: SymbolProcessorEnvironment
 ) {
-    fun generate(features: List<ProcessedFeature>) {
-        features.forEach { feature ->
-            generateKey(feature)
+    fun generate(policies: List<ProcessedPolicy>) {
+        policies.forEach { policy ->
+            generateKey(policy)
         }
     }
 
-    private fun generateKey(feature: ProcessedFeature) {
-        val keySpec = TypeSpec.objectBuilder("${feature.className}Key")
+    private fun generateKey(policy: ProcessedPolicy) {
+        val keySpec = TypeSpec.objectBuilder("${policy.className}Key")
             .addSuperinterface(
-                ClassName.bestGuess(FeatureKey::class.qualifiedName!!)
-                    .parameterizedBy(feature.valueType.toClassName())
+                ClassName.bestGuess(PolicyKey::class.qualifiedName!!)
+                    .parameterizedBy(policy.valueType.toClassName())
             )
             .addProperty(
-                PropertySpec.builder("featureName", String::class)
+                PropertySpec.builder("policyName", String::class)
                     .addModifiers(KModifier.OVERRIDE)
-                    .initializer("%S", classNameToFeatureName(feature.className))
+                    .initializer("%S", classNameToPolicyName(policy.className))
                     .build()
             )
             .build()
 
-        writeToFile(keySpec, feature)
+        writeToFile(keySpec, policy)
     }
 
-    private fun writeToFile(keySpec: TypeSpec, feature: ProcessedFeature) {
+    private fun writeToFile(keySpec: TypeSpec, policy: ProcessedPolicy) {
         try {
             val packageName = getGeneratedPackage()
 
             environment.codeGenerator.createNewFile(
                 Dependencies(false),
                 packageName,
-                "${feature.className}Key"
+                "${policy.className}Key"
             ).use { output ->
                 output.writer().use { writer ->
-                    FileSpec.builder(packageName, "${feature.className}Key")
+                    FileSpec.builder(packageName, "${policy.className}Key")
                         .addType(keySpec)
                         .build()
                         .writeTo(writer)
                 }
             }
         } catch (_: FileAlreadyExistsException) {
-            environment.logger.warn("Key file already exists for ${feature.className}. Skipping generation.")
+            environment.logger.warn("Key file already exists for ${policy.className}. Skipping generation.")
         }
     }
 
-    private fun getGeneratedPackage() = GeneratedPackages.getFeaturePackage(environment)
+    private fun getGeneratedPackage() = GeneratedPackages.getPolicyPackage(environment)
 }

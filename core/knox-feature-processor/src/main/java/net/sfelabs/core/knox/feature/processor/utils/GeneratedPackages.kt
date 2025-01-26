@@ -8,8 +8,8 @@ object GeneratedPackages {
             ?: throw IllegalStateException("Android namespace not provided in KSP arguments")
     }
 
-    fun getFeaturePackage(environment: SymbolProcessorEnvironment): String =
-        "${getNamespace(environment)}.generated.feature"
+    fun getPolicyPackage(environment: SymbolProcessorEnvironment): String =
+        "${getNamespace(environment)}.generated.policy"
 
     fun getDiPackage(environment: SymbolProcessorEnvironment): String =
         "${getNamespace(environment)}.generated.di"

@@ -16,7 +16,7 @@ fun PolicyScreen(
     LazyColumn {
         items(
             items = policies,
-            key = { policy -> policy.featureName }
+            key = { policy -> policy.policyName }
         ) { policy ->
             PolicyCard(
                 policy = policy,

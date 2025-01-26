@@ -1,10 +1,10 @@
 package net.sfelabs.core.knox.feature.domain.model
 
-import net.sfelabs.core.knox.feature.api.FeatureKey
+import net.sfelabs.core.knox.feature.api.PolicyKey
 import net.sfelabs.core.knox.feature.api.PolicyState
 import net.sfelabs.core.knox.feature.api.PolicyStateWrapper
 
-data class Feature<out T : PolicyState> (
-    val key: FeatureKey<T>,
+data class Policy<out T : PolicyState> (
+    val key: PolicyKey<T>,
     val state: PolicyStateWrapper<T>
 )
