@@ -61,17 +61,27 @@ class PoliciesViewModel @Inject constructor(
         when (event) {
             is PolicyEvent.UpdateConfiguration -> {
                 viewModelScope.launch {
-                    val feature = featureRegistry.getPolicyState(event.featureName) ?: return@launch
+                    val policy = featureRegistry.getPolicyState(event.featureName) ?: return@launch
 
                     // Immediately update UI with new state and loading indicator
-                    updateUiState(event.featureName, event.newUiState.copyWithLoading(isLoading = true))
+                    updateUiState(
+                        event.featureName,
+                        event.newUiState.copyWithLoading(isLoading = true)
+                    )
 
-                    val newState = updatePolicyState(feature, event.newUiState)
+                    val newState = updatePolicyState(policy, event.newUiState)
 
                     try {
-                        when (val result = featureRegistry.setPolicyState(feature.key, newState)) {
+                        when (val result = featureRegistry.setPolicyState(policy.key, newState)) {
                             is ApiResult.Success -> {
-                                updateUiState(event.featureName, event.newUiState.copyWithLoading(isLoading = false))
+                                createPolicyUiState(
+                                    Feature(policy.key, PolicyStateWrapper(newState))
+                                )?.let { updatedUiState ->
+                                    updateUiState(
+                                        event.featureName,
+                                        updatedUiState
+                                    )
+                                }
                             }
                             is ApiResult.Error -> {
                                 val errorState = event.newUiState.copyWithError(
@@ -80,7 +90,10 @@ class PoliciesViewModel @Inject constructor(
                                 updateUiState(event.featureName, errorState)
                             }
                             ApiResult.NotSupported -> {
-                                updateUiState(event.featureName, event.newUiState.copyWithLoading(isLoading = false))
+                                updateUiState(
+                                    event.featureName,
+                                    event.newUiState.copyWithLoading(isLoading = false)
+                                )
                             }
                         }
                     } catch (e: Exception) {
@@ -94,8 +107,8 @@ class PoliciesViewModel @Inject constructor(
         }
     }
 
-    private fun updatePolicyState(feature: Feature<*>, uiState: PolicyUiState): PolicyState {
-        return when (PolicyType.fromFeature(feature)) {
+    private fun updatePolicyState(policy: Feature<*>, uiState: PolicyUiState): PolicyState {
+        return when (PolicyType.fromFeature(policy)) {
             PolicyType.EnableHdmPolicy -> EnableHdmPolicy()
             PolicyType.AutoCallPickupPolicy -> AutoCallPickupPolicy()
             PolicyType.BandLocking5gPolicy -> BandLocking5gPolicy()
