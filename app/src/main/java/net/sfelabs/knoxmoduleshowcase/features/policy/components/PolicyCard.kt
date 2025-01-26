@@ -14,6 +14,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,10 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
 import net.sfelabs.core.ui.theme.AppTheme
 import net.sfelabs.knoxmoduleshowcase.features.policy.event.PolicyEvent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun PolicyCard(
@@ -59,6 +63,19 @@ fun PolicyCard(
             if (it.key == option.key) option.copy(value = value) else it
         }
     }}
+
+    // Debounced loading state
+    var showLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(policy.isLoading) {
+        if (policy.isLoading) {
+            // Only show loading indicator if the operation takes longer than 150ms
+            delay(150)
+            showLoading = true
+        } else {
+            showLoading = false
+        }
+    }
 
     OutlinedCard(
         modifier = modifier
@@ -150,7 +167,7 @@ fun PolicyCard(
             }
 
             // Loading indicator
-            if (policy.isLoading) {
+            if (showLoading) {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth()
                 )
