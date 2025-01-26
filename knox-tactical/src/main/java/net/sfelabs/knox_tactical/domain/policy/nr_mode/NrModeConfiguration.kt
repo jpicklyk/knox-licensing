@@ -13,8 +13,7 @@ data class NrModeConfiguration(
         //TODO: Need a new data class to wrap both SIM slot id and LteNrMode
         return NrModeState (
             isEnabled = ( apiData != LteNrMode.EnableBothSaAndNsa ),
-            mode = apiData.takeUnless { it == LteNrMode.EnableBothSaAndNsa }
-                ?: LteNrMode.DisableNsa,
+            mode = apiData,
             simSlotId = 0 // We need this fixed
         )
     }
@@ -33,9 +32,14 @@ data class NrModeConfiguration(
         val simSlotId = options.filterIsInstance<ConfigurationOption.NumberInput>()
             .find { it.key == "simSlotId" }
             ?.value ?: 0
-        val modeDisplayName = options.filterIsInstance<ConfigurationOption.Choice>()
-            .find { it.key == "mode" }
-            ?.selected ?: LteNrMode.EnableBothSaAndNsa.displayName
+        val modeDisplayName =
+            if(uiEnabled) {
+                options.filterIsInstance<ConfigurationOption.Choice>()
+                    .find { it.key == "mode" }
+                    ?.selected ?: LteNrMode.EnableBothSaAndNsa.displayName
+            } else {
+                LteNrMode.EnableBothSaAndNsa.displayName
+            }
 
         return NrModeState(
             isEnabled = uiEnabled,
@@ -54,7 +58,7 @@ data class NrModeConfiguration(
         ConfigurationOption.Choice(
             key = "mode",
             label = "Mode",
-            options = listOf(LteNrMode.DisableNsa.displayName, LteNrMode.DisableSa.displayName),
+            options = LteNrMode.values.map { it.displayName },
             selected = state.mode.displayName
         )
     )
