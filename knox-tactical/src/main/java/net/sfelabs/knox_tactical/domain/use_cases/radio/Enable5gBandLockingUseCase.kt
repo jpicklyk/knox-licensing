@@ -5,21 +5,18 @@ import net.sfelabs.core.domain.UnitApiCall
 import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
+import net.sfelabs.knox_tactical.data.dto.BandLockingDto
 
-class Enable5gBandLockingUseCase: SuspendingUseCase<Enable5gBandLockingUseCase.Params, Unit>() {
+class Enable5gBandLockingUseCase: SuspendingUseCase<BandLockingDto, Unit>() {
 
-    class Params(
-        val band: Int,
-        val simSlotId: Int?
-    )
 
     private val systemManager = CustomDeviceManager.getInstance().systemManager
 
     suspend operator fun invoke(band: Int, simSlotId: Int? = null): UnitApiCall {
-        return invoke(Params(band, simSlotId))
+        return invoke(BandLockingDto(band = band, simSlotId = simSlotId))
     }
 
-    override suspend fun execute(params: Params): ApiResult<Unit> {
+    override suspend fun execute(params: BandLockingDto): ApiResult<Unit> {
         params.simSlotId?.let { slotId ->
             if (slotId !in 0..1) {
                 return ApiResult.Error(DefaultApiError.UnexpectedError("Invalid sim slot id: $slotId"))

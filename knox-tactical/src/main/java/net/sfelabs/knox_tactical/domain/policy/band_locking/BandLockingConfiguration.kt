@@ -3,23 +3,27 @@ package net.sfelabs.knox_tactical.domain.policy.band_locking
 import net.sfelabs.core.knox.feature.api.PolicyConfiguration
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
+import net.sfelabs.knox_tactical.data.dto.BandLockingDto
 
 data class BandLockingConfiguration(
     override val stateMapping: StateMapping = StateMapping.DIRECT
-) : PolicyConfiguration<BandLockingState, BandLockingState> {
+) : PolicyConfiguration<BandLockingState, BandLockingDto> {
 
-    override fun fromApiData(apiData: BandLockingState): BandLockingState {
-        return apiData.copy(
+    override fun fromApiData(apiData: BandLockingDto): BandLockingState {
+        return BandLockingState(
             isEnabled = mapEnabled(apiData.band != NO_BAND_LOCK),
             band = apiData.band,
             simSlotId = apiData.simSlotId
         )
     }
 
-    override fun toApiData(state: BandLockingState): BandLockingState {
-        return state.copy(
-            isEnabled = mapEnabled(state.isEnabled),
-            band = state.band,
+    override fun toApiData(state: BandLockingState): BandLockingDto {
+        val band = if(mapEnabled(state.isEnabled))
+            state.band
+        else
+            NO_BAND_LOCK
+        return BandLockingDto(
+            band = band,
             simSlotId = state.simSlotId
         )
     }

@@ -7,6 +7,8 @@ import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.PolicyCategory
 import net.sfelabs.core.knox.feature.api.PolicyParameters
 import net.sfelabs.core.knox.feature.api.StateMapping
+import net.sfelabs.knox_tactical.data.dto.BandLockingDto
+import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingConfiguration.Companion.NO_BAND_LOCK
 import net.sfelabs.knox_tactical.domain.use_cases.radio.DisableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.EnableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.GetBandLockingStateUseCase
@@ -21,7 +23,7 @@ data class BandLockingParameters(
     category = PolicyCategory.ConfigurableToggle
 )
 class LteBandLockingPolicy :
-    ConfigurableStatePolicy<BandLockingState, BandLockingState, BandLockingConfiguration>(
+    ConfigurableStatePolicy<BandLockingState, BandLockingDto, BandLockingConfiguration>(
         stateMapping = StateMapping.DIRECT
     ) {
 
@@ -39,12 +41,7 @@ class LteBandLockingPolicy :
         val simSlotId = (parameters as? BandLockingParameters)?.simSlotId
 
         return when (val result = getUseCase(simSlotId)) {
-            is ApiResult.Success -> configuration.fromApiData(
-                defaultValue.copy(
-                    band = result.data,
-                    simSlotId = simSlotId
-                )
-            )
+            is ApiResult.Success -> configuration.fromApiData(result.data)
             is ApiResult.NotSupported -> defaultValue.copy(
                 isSupported = false
             )
@@ -56,11 +53,11 @@ class LteBandLockingPolicy :
     }
 
     override suspend fun setState(state: BandLockingState): ApiResult<Unit> {
-        val config = configuration.toApiData(state)
-        return if (!config.isEnabled) {
-            disableUseCase(config.simSlotId)
+        val dto = configuration.toApiData(state)
+        return if (dto.band == NO_BAND_LOCK) {
+            disableUseCase(dto.simSlotId)
         } else {
-            enableUseCase(config.band, config.simSlotId)
+            enableUseCase(dto)
         }
     }
 
