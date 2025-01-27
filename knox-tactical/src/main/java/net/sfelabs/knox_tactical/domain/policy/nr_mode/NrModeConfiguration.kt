@@ -3,25 +3,26 @@ package net.sfelabs.knox_tactical.domain.policy.nr_mode
 import net.sfelabs.core.knox.feature.api.PolicyConfiguration
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
+import net.sfelabs.knox_tactical.data.dto.LteNrModeDto
 import net.sfelabs.knox_tactical.domain.model.LteNrMode
 
 data class NrModeConfiguration(
     override val stateMapping: StateMapping = StateMapping.DIRECT
-) : PolicyConfiguration<NrModeState, LteNrMode> {
+) : PolicyConfiguration<NrModeState, LteNrModeDto> {
 
-    override fun fromApiData(apiData: LteNrMode): NrModeState {
-        //TODO: Need a new data class to wrap both SIM slot id and LteNrMode
+    override fun fromApiData(apiData: LteNrModeDto): NrModeState {
         return NrModeState (
-            isEnabled = ( apiData != LteNrMode.EnableBothSaAndNsa ),
-            mode = apiData,
-            simSlotId = 0 // We need this fixed
+            isEnabled = ( apiData.mode != LteNrMode.EnableBothSaAndNsa ),
+            mode = apiData.mode,
+            simSlotId = apiData.simSlotId
         )
     }
 
-    override fun toApiData(state: NrModeState): LteNrMode {
+    override fun toApiData(state: NrModeState): LteNrModeDto {
+        val dto = LteNrModeDto(state.simSlotId)
         return when(state.isEnabled) {
-            true -> state.mode
-            false -> LteNrMode.EnableBothSaAndNsa
+            true -> dto.copy(mode = state.mode)
+            false -> dto.copy(mode =LteNrMode.EnableBothSaAndNsa)
         }
     }
 

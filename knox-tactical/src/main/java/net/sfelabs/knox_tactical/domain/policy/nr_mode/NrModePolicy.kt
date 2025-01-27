@@ -6,6 +6,7 @@ import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.PolicyCategory
 import net.sfelabs.core.knox.feature.api.PolicyParameters
 import net.sfelabs.core.knox.feature.api.StateMapping
+import net.sfelabs.knox_tactical.data.dto.LteNrModeDto
 import net.sfelabs.knox_tactical.domain.model.LteNrMode
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Get5gNrModeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Set5gNrModeUseCase
@@ -20,7 +21,7 @@ data class NrModeParameters(
             "Turning off the policy will automatically enable both SA and NSA modes.",
     category = PolicyCategory.ConfigurableToggle
 )
-class NrModePolicy : ConfigurableStatePolicy<NrModeState, LteNrMode, NrModeConfiguration>(
+class NrModePolicy : ConfigurableStatePolicy<NrModeState, LteNrModeDto, NrModeConfiguration>(
     stateMapping = StateMapping.DIRECT
 ) {
     private val getUseCase = Get5gNrModeUseCase()
@@ -48,7 +49,7 @@ class NrModePolicy : ConfigurableStatePolicy<NrModeState, LteNrMode, NrModeConfi
     }
 
     override suspend fun setState(state: NrModeState): ApiResult<Unit> {
-        return setUseCase(configuration.toApiData(state), 0)
+        return setUseCase(configuration.toApiData(state))
     }
 
 }
