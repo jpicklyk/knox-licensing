@@ -5,6 +5,7 @@ import net.sfelabs.core.knox.feature.annotation.PolicyDefinition
 import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.PolicyCategory
 import net.sfelabs.core.knox.feature.api.PolicyParameters
+import net.sfelabs.knox_tactical.data.dto.AutoCallPickupDto
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
 import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoCallPickupStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupStateUseCase
@@ -15,7 +16,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupState
     category = PolicyCategory.ConfigurableToggle
 )
 class AutoCallPickupPolicy :
-    ConfigurableStatePolicy<AutoCallPickupState, AutoCallPickupMode, AutoCallPickupConfiguration>() {
+    ConfigurableStatePolicy<AutoCallPickupState, AutoCallPickupDto, AutoCallPickupConfiguration>() {
     private val getUseCase = GetAutoCallPickupStateUseCase()
     private val setUseCase = SetAutoCallPickupStateUseCase()
     override val configuration = AutoCallPickupConfiguration()
