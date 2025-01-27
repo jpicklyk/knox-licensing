@@ -13,6 +13,4 @@ data class ProcessedPolicy(
     val valueType: KSType,
     val configType: KSType?,
     val declaration: KSClassDeclaration
-) {
-    val isConfigurable: Boolean get() = configType != null
-}
+)
