@@ -6,6 +6,7 @@ import net.sfelabs.core.knox.feature.api.ConfigurableStatePolicy
 import net.sfelabs.core.knox.feature.api.PolicyCategory
 import net.sfelabs.core.knox.feature.api.PolicyParameters
 import net.sfelabs.core.knox.feature.api.StateMapping
+import net.sfelabs.knox_tactical.data.dto.ImsDto
 import net.sfelabs.knox_tactical.domain.use_cases.ims.IsImsEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ims.SetImsEnabled
 
@@ -19,7 +20,7 @@ data class ImsParameters(
     description = "Disables the cellular modem IMS capability",
     category = PolicyCategory.ConfigurableToggle
 )
-class DisableImsPolicy : ConfigurableStatePolicy<ImsState, Boolean, ImsConfiguration>(
+class DisableImsPolicy : ConfigurableStatePolicy<ImsState, ImsDto, ImsConfiguration>(
     stateMapping = StateMapping.INVERTED
 ) {
     private val getUseCase = IsImsEnabledUseCase()
@@ -48,7 +49,7 @@ class DisableImsPolicy : ConfigurableStatePolicy<ImsState, Boolean, ImsConfigura
     }
 
     override suspend fun setState(state: ImsState): ApiResult<Unit> {
-        return setUseCase(state.simSlotId, configuration.toApiData(state))
+        return setUseCase(configuration.toApiData(state))
     }
 
 }

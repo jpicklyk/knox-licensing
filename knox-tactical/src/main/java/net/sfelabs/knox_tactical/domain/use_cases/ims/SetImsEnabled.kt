@@ -9,24 +9,23 @@ import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.ApiResult
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
 import net.sfelabs.core.knox.android.WithAndroidApplicationContext
+import net.sfelabs.knox_tactical.data.dto.ImsDto
 
-class SetImsEnabled: WithAndroidApplicationContext, SuspendingUseCase<SetImsEnabled.Params, Unit>() {
-    class Params(val enable: Boolean, val feature: Int = 1, val simSlotId: Int = 0)
-
+class SetImsEnabled: WithAndroidApplicationContext, SuspendingUseCase<ImsDto, Unit>() {
     private val phoneRestrictionPolicy =
         EnterpriseDeviceManager.getInstance(applicationContext).phoneRestrictionPolicy
 
     suspend operator fun invoke(simSlotId: Int = 0, enable: Boolean): UnitApiCall {
-        return invoke(Params(enable, simSlotId = simSlotId))
+        return invoke(ImsDto(enable, simSlotId = simSlotId))
     }
 
     suspend operator fun invoke(feature: Int, simSlotId: Int = 0, enable: Boolean): UnitApiCall {
-        return invoke(Params(enable, simSlotId = simSlotId, feature = feature))
+        return invoke(ImsDto(enable, simSlotId = simSlotId, feature = feature))
     }
 
-    override suspend fun execute(params: Params): ApiResult<Unit> {
+    override suspend fun execute(params: ImsDto): ApiResult<Unit> {
         return when(phoneRestrictionPolicy.setIMSEnabled(
-            params.feature, params.enable, params.simSlotId
+            params.feature, params.enabled, params.simSlotId
         )) {
             ERROR_NONE -> ApiResult.Success(Unit)
             ERROR_NOT_SUPPORTED -> ApiResult.NotSupported

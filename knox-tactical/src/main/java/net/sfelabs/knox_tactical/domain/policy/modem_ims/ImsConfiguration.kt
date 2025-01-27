@@ -3,19 +3,24 @@ package net.sfelabs.knox_tactical.domain.policy.modem_ims
 import net.sfelabs.core.knox.feature.api.PolicyConfiguration
 import net.sfelabs.core.knox.feature.api.StateMapping
 import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
+import net.sfelabs.knox_tactical.data.dto.ImsDto
 
 data class ImsConfiguration(
     override val stateMapping: StateMapping
-) : PolicyConfiguration<ImsState, Boolean> {
-    override fun fromApiData(apiEnabled: Boolean): ImsState {
+) : PolicyConfiguration<ImsState, ImsDto> {
+    override fun fromApiData(apiData: ImsDto): ImsState {
         return ImsState(
-            isEnabled = mapEnabled(apiEnabled),
-            simSlotId = 0  // Default value
+            isEnabled = mapEnabled(apiData.enabled),
+            simSlotId = apiData.simSlotId
         )
     }
 
-    override fun toApiData(state: ImsState): Boolean {
-        return mapEnabled(state.isEnabled)
+    override fun toApiData(state: ImsState): ImsDto {
+        return ImsDto(
+            enabled = mapEnabled(state.isEnabled),
+            simSlotId = state.simSlotId
+        )
+
     }
 
     override fun fromUiState(
