@@ -12,7 +12,7 @@ data class AutoCallPickupConfiguration(
     override fun fromApiData(apiData: AutoCallPickupDto): AutoCallPickupState {
 
         return AutoCallPickupState(
-            isEnabled = apiData != AutoCallPickupMode.Disable,
+            isEnabled = apiData.mode != AutoCallPickupMode.Disable,
             mode = apiData.mode
         )
     }
