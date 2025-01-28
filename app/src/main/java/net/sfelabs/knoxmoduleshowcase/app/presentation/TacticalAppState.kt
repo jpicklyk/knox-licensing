@@ -23,6 +23,7 @@ import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.navigation.navigat
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.presentation.navigation.navigateToNetworkManager
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.presentation.navigation.networkManagerNavigationRoute
 import net.sfelabs.knoxmoduleshowcase.features.policy.navigateToPolicy
+import net.sfelabs.knoxmoduleshowcase.features.policy.policyNavigationRoute
 
 /**
  * Application level state container that can be passed down the composition tree to various
@@ -56,6 +57,7 @@ class TacticalAppState(
     val currentTopLevelDestination: TopLevelDestination?
         @Composable get() = when (currentDestination?.route) {
             homeNavigationRoute -> TopLevelDestination.HOME
+            policyNavigationRoute -> TopLevelDestination.CONTROLS
             ethernetNavigationRoute -> TopLevelDestination.ETHERNET
             networkManagerNavigationRoute -> TopLevelDestination.NetworkManager
             //loggerNavigationRoute -> TopLevelDestination.LOGGING

@@ -21,7 +21,7 @@ enum class TopLevelDestination(
     CONTROLS(
         titleTextId = R.string.controls_title,
         image = Icons.Filled.Policy,
-        label = "Controls"
+        label = "Policies"
     ),
 
     ETHERNET(
@@ -35,18 +35,9 @@ enum class TopLevelDestination(
         image = Icons.Filled.Lan,
         label = "Monitor"
     ),
-    /*
-    LOGGING(
-        titleTextId = R.string.logging_title,
-        image = Icons.AutoMirrored.Filled.EventNote,
-        label = "Logger"
-    ),
-
-     */
     ABOUT(
         titleTextId = R.string.about_title,
         image = Icons.Filled.Info,
         label = "Info"
     )
-
 }
