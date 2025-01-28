@@ -38,7 +38,7 @@ class PolicyDefinitionProcessor(
         for (superType in classDeclaration.superTypes) {
             val qualifiedName = superType.resolve().declaration.qualifiedName?.asString()
 
-            if (qualifiedName == "net.sfelabs.core.knox.feature.api.FeatureContract") {
+            if (qualifiedName == "net.sfelabs.core.knox.feature.api.PolicyContract") {
                 return superType.resolve()
             }
 

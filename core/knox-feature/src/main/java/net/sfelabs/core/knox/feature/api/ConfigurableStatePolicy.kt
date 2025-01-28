@@ -5,7 +5,7 @@ import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
 // Base class for complex policies
 abstract class ConfigurableStatePolicy<T : PolicyState, D : Any, C : PolicyConfiguration<T, D>>(
     protected val stateMapping: StateMapping = StateMapping.DIRECT
-) : FeatureContract<T>, PolicyUiConverter<T> {
+) : PolicyContract<T>, PolicyUiConverter<T> {
     // Each configurable policy must provide its configuration
     protected abstract val configuration: C
 

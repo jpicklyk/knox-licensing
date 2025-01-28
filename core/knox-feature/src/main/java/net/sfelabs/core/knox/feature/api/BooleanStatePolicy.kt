@@ -8,7 +8,7 @@ import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
  */
 abstract class BooleanStatePolicy(
     private val stateMapping: StateMapping = StateMapping.DIRECT
-) : FeatureContract<BooleanPolicyState>, PolicyUiConverter<BooleanPolicyState> {
+) : PolicyContract<BooleanPolicyState>, PolicyUiConverter<BooleanPolicyState> {
 
     override val defaultValue = BooleanPolicyState(isEnabled = false)
 

@@ -51,7 +51,7 @@ import net.sfelabs.core.domain.usecase.model.ApiError
  * }
  * ```
  *
- * @see FeatureContract
+ * @see PolicyContract
  * @see PolicyStateWrapper
  */
 interface PolicyState {
