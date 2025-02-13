@@ -1,6 +1,5 @@
 package net.sfelabs.knoxmoduleshowcase.tests.tunneling
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.core.domain.usecase.model.ApiResult
@@ -8,9 +7,8 @@ import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
+
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 132)
 class LinuxTunnelingTests {
@@ -44,4 +42,26 @@ class LinuxTunnelingTests {
         }
         assert(result)
     }
+
+
+    @Test
+    fun configureTapInterface() = runTest {
+        //val command = "tuntap add dev tap0 mode tap"
+        val commands = listOf(
+            "tuntap add dev tap0 mode tap",
+            "addr add 10.0.0.2/24 dev tap0",
+        )
+        var result = true
+        for(command in commands) {
+            val apiResult = ExecuteAdbCommandUseCase().invoke(AdbHeader.IP, command)
+            result = if(apiResult is ApiResult.Success)
+                result and true
+            else
+                false
+            Thread.sleep(500)
+        }
+        assert(result)
+
+    }
+
 }

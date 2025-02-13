@@ -35,7 +35,7 @@ class BandLockingLteTests {
     fun recordCurrentBandLocking() = runTest {
         val result = GetBandLockingStateUseCase().invoke(null)
         currentBand = if (result is ApiResult.Success) {
-            result.data
+            result.data.band
         } else {
             -1
         }
@@ -112,10 +112,10 @@ class BandLockingLteTests {
         val result = GetBandLockingStateUseCase().invoke(1)
         assert(result is ApiResult.Success)
         val state = result.getOrNull()
-        assertTrue("Band locking on SIM id 1 should not be enabled when configuring SIM 0.", state == -1)
+        assertTrue("Band locking on SIM id 1 should not be enabled when configuring SIM 0.", state?.band == -1)
 
         //confirm SIM id 1 does not have the band applied
-        assertTrue("SIM id 1 should be returning -1 not ${state}.", state == -1)
+        assertTrue("SIM id 1 should be returning -1 not ${state}.", state?.band == -1)
     }
 
     private suspend fun testEnableLteBandLocking(simSlotId: Int?) {
@@ -124,7 +124,7 @@ class BandLockingLteTests {
         assert(result is ApiResult.Success)
 
         val result2 = GetBandLockingStateUseCase().invoke(simSlotId)
-        assert(result2 is ApiResult.Success && result2.data == band)
+        assert(result2 is ApiResult.Success && result2.data.band == band)
     }
 
     @Test
@@ -147,8 +147,8 @@ class BandLockingLteTests {
 
         val result2 = GetBandLockingStateUseCase().invoke(simSlotId)
         assert(result2 is ApiResult.Success)
-        assertTrue("Band locking should be disabled", (result2 as ApiResult.Success).data == -1)
-        assertTrue("Band locking state should report BAND_LOCKING_NONE", result2.data == band)
+        assertTrue("Band locking should be disabled", (result2 as ApiResult.Success).data.band == -1)
+        assertTrue("Band locking state should report BAND_LOCKING_NONE", result2.data.band == band)
     }
 
     @Test
@@ -186,7 +186,7 @@ class BandLockingLteTests {
         assert(result is ApiResult.Success)
 
         val result2 = GetBandLockingStateUseCase().invoke(simSlotId)
-        assert(result2 is ApiResult.Success && result2.data == -1)
+        assert(result2 is ApiResult.Success && result2.data.band == -1)
     }
 
     @After

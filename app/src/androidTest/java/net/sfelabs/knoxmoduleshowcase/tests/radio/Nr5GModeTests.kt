@@ -24,7 +24,7 @@ class Nr5GModeTests {
     fun recordCurrentConfiguration() = runTest {
         val result = Get5gNrModeUseCase().invoke()
         if (result is ApiResult.Success) {
-            currentState = result.data.value
+            currentState = result.data.mode.value
         }
     }
 
@@ -53,8 +53,8 @@ class Nr5GModeTests {
         val getCaseSa = Get5gNrModeUseCase().invoke(1)
         println("Set mode: DisableSa, got mode: ${getCaseNsa.getOrNull()}, simSlotId: 0")
         println("Set mode: DisableNsa, got mode: ${getCaseSa.getOrNull()}, simSlotId: 1")
-        assert(getCaseNsa is ApiResult.Success && getCaseNsa.data == LteNrMode.DisableSa)
-        assert(getCaseSa is ApiResult.Success && getCaseSa.data == LteNrMode.DisableNsa)
+        assert(getCaseNsa is ApiResult.Success && getCaseNsa.data.mode == LteNrMode.DisableSa)
+        assert(getCaseSa is ApiResult.Success && getCaseSa.data.mode == LteNrMode.DisableNsa)
     }
 
     @Test
@@ -82,7 +82,7 @@ class Nr5GModeTests {
         assert(setCase is ApiResult.Success)
         val getCase = Get5gNrModeUseCase().invoke(simSlotId)
         println("Set mode: $mode, got mode: ${getCase.getOrNull()}, simSlotId: $simSlotId")
-        assert(getCase is ApiResult.Success && getCase.data == mode)
+        assert(getCase is ApiResult.Success && getCase.data.mode == mode)
     }
 
     @After

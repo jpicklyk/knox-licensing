@@ -32,7 +32,7 @@ class ImsTests {
 
         val result = IsImsEnabledUseCase().invoke(0)
         if(result is ApiResult.Success) {
-            imsEnabled = result.data
+            imsEnabled = result.data.enabled
         }
     }
 
@@ -41,7 +41,7 @@ class ImsTests {
         val result = SetImsEnabled().invoke(enable = true)
         assert(result is ApiResult.Success)
         val result2 = IsImsEnabledUseCase().invoke(0)
-        assert(result2 is ApiResult.Success && result2.data)
+        assert(result2 is ApiResult.Success && result2.data.enabled)
     }
 
     @Test
@@ -49,7 +49,7 @@ class ImsTests {
         val result = SetImsEnabled().invoke(enable = false)
         assert(result is ApiResult.Success)
         val result2 = IsImsEnabledUseCase().invoke(0)
-        assert(result2 is ApiResult.Success && !result2.data)
+        assert(result2 is ApiResult.Success && !result2.data.enabled)
     }
 
     @Test
