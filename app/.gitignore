@@ -34,3 +34,4 @@ google-services.json
 
 # BuildSrc build directory
 /buildSrc/build
+/debug/app-debug.aab
