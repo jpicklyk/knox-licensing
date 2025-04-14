@@ -60,7 +60,7 @@ object TacticalEditionReleases {
             .generation(2)
             .buildNumber("G981U1UES4AWC1_B2BF"),
 
-        // TE3 Program
+        // Android 13 Releases
         "S911U1UEU1AWH5_B2BF" to VersionInfo.Builder()
             .description("TE3 Android 13 GA")
             .releaseVersion(130)
@@ -137,7 +137,15 @@ object TacticalEditionReleases {
             .releaseVersion(133) 
             .generation(3)
             .modelName("SM-S911U1")
-            .buildNumber("S911U1UEU5AYA3_B2BF")
+            .buildNumber("S911U1UEU5AYA3_B2BF"),
+
+        // Android 14 releases
+        "X308UUEU5AYD1_B2BF" to VersionInfo.Builder()
+            .description("TA5 Android 14 Alpha")
+            .releaseVersion(140)
+            .generation(3)
+            .modelName("SM-X308U")
+            .buildNumber("X308UUEU5AYD1_B2BF"),
     )
 
     fun getVersionInfo(buildNumber: String): VersionInfo {

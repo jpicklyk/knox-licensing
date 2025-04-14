@@ -138,6 +138,7 @@ class TacticalEditionReleasesTest {
             te3Versions.all { version ->
                 version.modelName == "SM-S911U1" ||
                         version.modelName == "SM-G736U1" ||
+                        version.modelName == "SM-X308U"
                         version.modelName.isEmpty()
             }
         )
