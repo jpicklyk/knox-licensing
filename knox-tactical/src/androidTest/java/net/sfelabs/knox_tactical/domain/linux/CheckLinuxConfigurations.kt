@@ -5,7 +5,6 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import org.junit.Assert
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +18,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_PPP_BSDCOMP() {
         val config = "CONFIG_PPP_BSDCOMP=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -28,7 +27,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_PPP_DEFLATE() {
         val config = "CONFIG_PPP_DEFLATE=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -37,7 +36,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_PPP_FILTER() {
         val config = "CONFIG_PPP_FILTER=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -46,7 +45,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_PPP_MPPE() {
         val config = "CONFIG_PPP_MPPE=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -55,7 +54,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_PPP_MULTILINK() {
         val config = "CONFIG_PPP_MULTILINK=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -64,7 +63,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_PPPOE() {
         val config = "CONFIG_PPPOE=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -72,7 +71,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_PPPOL2TP() {
         val config = "CONFIG_PPPOL2TP=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -82,7 +81,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_PPP_ASYNC() {
         val config = "CONFIG_PPP_ASYNC=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -91,7 +90,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_USB_SERIAL_FTDI_SIO() {
         val config = "CONFIG_USB_SERIAL_FTDI_SIO=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -100,7 +99,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkConfiguration_CONFIG_PPP_SYNC_TTY() {
         val config = "CONFIG_PPP_SYNC_TTY=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -109,7 +108,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkCDCECM_isConfigured() {
         val config = "CONFIG_USB_CONFIGFS_ECM_SUBSET=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -118,7 +117,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkCDCNCM_isConfigured() {
         val config = "CONFIG_USB_NET_CDC_NCM=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -127,7 +126,7 @@ class CheckLinuxConfigurations {
     @Test
     fun checkCDCEEM_isConfigured() {
         val config = "CONFIG_USB_NET_CDC_EEM=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -136,19 +135,19 @@ class CheckLinuxConfigurations {
     @Test
     fun checkASIX_A_isConfigured() {
         var config = "CONFIG_USB_NET_AX8817X=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
 
         config = "CONFIG_USB_NET_AX88179_178A=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
 
         config = "CONFIG_USB_NET_AX88178=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -159,7 +158,7 @@ class CheckLinuxConfigurations {
     fun checkASIX_B_isConfigured() {
         //prerequisite for the USB driver
         val config = "CONFIG_AX88796B_PHY=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -169,11 +168,21 @@ class CheckLinuxConfigurations {
      * The XC6P already has this device supported however it is not on the S23TE Linux build.
      */
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 132)
+    @TacticalSdkSuppress(minReleaseVersion = 132, maxReleaseVersion = 139)
     fun check_lan78xx_isConfigured() {
         //prerequisite for the USB driver
         val config = "CONFIG_USB_LAN78XX=y"
-        Assert.assertTrue(
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 140)
+    fun check_lan78xx_isConfigured_A14() {
+        //prerequisite for the USB driver
+        val config = "CONFIG_USB_LAN78XX=m"
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
@@ -184,28 +193,49 @@ class CheckLinuxConfigurations {
     fun check_rtl8153_ecm_isConfigured() {
         //prerequisite for the USB driver
         val config = "CONFIG_USB_RTL8153_ECM=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config' is not set!",
             checkLinuxConfiguration(config)
         )
     }
 
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 132)
+    @TacticalSdkSuppress(minReleaseVersion = 132, maxReleaseVersion = 139)
     fun check_usb_net_drivers_areConfigured() {
         //prerequisite for the USB driver
         val config1 = "CONFIG_USB_NET_SMSC75XX=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config1' is not set!",
             checkLinuxConfiguration(config1)
         )
         val config2 = "CONFIG_USB_NET_SMSC95XX=y"
-        Assert.assertTrue(
+        assertTrue(
             "Linux configuration '$config2' is not set!",
             checkLinuxConfiguration(config2)
         )
         val config3 = "CONFIG_USB_NET_AQC111=y"
-        Assert.assertTrue(
+        assertTrue(
+            "Linux configuration '$config3' is not set!",
+            checkLinuxConfiguration(config3)
+        )
+    }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 140)
+    fun check_usb_net_drivers_areConfigured_A14() {
+        //prerequisite for the USB driver
+        val config1 = "CONFIG_USB_NET_SMSC75XX=m"
+        assertTrue(
+            "Linux configuration '$config1' is not set!",
+            checkLinuxConfiguration(config1)
+        )
+        val config2 = "CONFIG_USB_NET_SMSC95XX=m"
+        assertTrue(
+            "Linux configuration '$config2' is not set!",
+            checkLinuxConfiguration(config2)
+        )
+        val config3 = "CONFIG_USB_NET_AQC111=y"
+        assertTrue(
             "Linux configuration '$config3' is not set!",
             checkLinuxConfiguration(config3)
         )
