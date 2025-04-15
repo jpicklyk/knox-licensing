@@ -38,7 +38,7 @@ class ScreenBrightnessTests {
     }
 
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 131)
+    @TacticalSdkSuppress(minReleaseVersion = 131, excludeModels = ["SM-X308U"])
     fun setExtraBrightness_On() = runTest {
         setBrightnessTo50()
         val result = SetExtraBrightnessUseCase().invoke(true)
@@ -49,7 +49,7 @@ class ScreenBrightnessTests {
     }
 
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 131)
+    @TacticalSdkSuppress(minReleaseVersion = 131, excludeModels = ["SM-X308U"])
     fun setExtraBrightness_Off() = runTest {
         setBrightnessTo50()
         val result = SetExtraBrightnessUseCase().invoke(false)

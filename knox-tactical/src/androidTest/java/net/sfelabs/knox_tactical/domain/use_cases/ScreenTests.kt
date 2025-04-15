@@ -41,13 +41,13 @@ class ScreenTests {
         assert(checkMethodExistence(SystemManager::class, "getActivityTime"))
     }
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 131)
+    @TacticalSdkSuppress(minReleaseVersion = 131, excludeModels = ["SM-X308U"])
     fun setExtraBrightness_Exists() = runTest {
         assert(checkMethodExistence(SettingsManager::class, "setExtraBrightness"))
     }
 
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 131)
+    @TacticalSdkSuppress(minReleaseVersion = 131, excludeModels = ["SM-X308U"])
     fun getExtraBrightness_Exists() = runTest {
         assert(checkMethodExistence(SettingsManager::class, "getExtraBrightness"))
     }

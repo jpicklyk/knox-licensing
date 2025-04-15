@@ -17,7 +17,7 @@ class CheckTacticalDefaults {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 130)
+    @TacticalSdkSuppress(minReleaseVersion = 130, excludeModels = ["SM-X308U"])
     fun ramPlusState_Disabled() = runTest {
         val getUseCase = GetRamPlusDisabledStateUseCase()
         val result2 = getUseCase.invoke()

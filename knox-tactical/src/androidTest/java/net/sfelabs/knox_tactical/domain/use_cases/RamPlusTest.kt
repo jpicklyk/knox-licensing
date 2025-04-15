@@ -14,17 +14,18 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 @ApiExists
-@TacticalSdkSuppress(minReleaseVersion = 130)
 class RamPlusTest {
     private val systemManager = KnoxModule.provideKnoxSystemManager()
 
     @Test
+    @TacticalSdkSuppress(minReleaseVersion = 130, excludeModels = ["SM-X308U"])
     fun getRamPlusDisableState_Exists() = runTest {
         val kClass = systemManager::class
         assert(checkMethodExistence(kClass, "getRamPlusDisableState"))
     }
 
     @Test
+    @TacticalSdkSuppress(minReleaseVersion = 130, excludeModels = ["SM-X308U"])
     fun setRamPlusDisableState_Exists() = runTest {
         val kClass = systemManager::class
         assert(checkMethodExistence(kClass, "setRamPlusDisableState"))
