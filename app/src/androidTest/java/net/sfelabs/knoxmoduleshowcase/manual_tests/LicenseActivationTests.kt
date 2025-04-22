@@ -1,7 +1,6 @@
-package net.sfelabs.knoxmoduleshowcase.tests.knox_core
+package net.sfelabs.knoxmoduleshowcase.manual_tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SmallTest
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
@@ -9,7 +8,7 @@ import net.sfelabs.knox_enterprise.license.domain.usecase.GetLicenseInfoUseCase
 import net.sfelabs.knox_enterprise.license.domain.usecase.KnoxLicenseUseCase
 import net.sfelabs.knox_enterprise.license.presentation.LicenseState
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import org.junit.Assert.assertTrue
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -17,13 +16,12 @@ import org.junit.runner.RunWith
 import javax.inject.Inject
 
 @HiltAndroidTest
-@SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 130)
 @RunWith(AndroidJUnit4::class)
 class LicenseActivationTests {
     private val te3Key1 = "KLM05-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX#offline.com"
     private val te3Key2 = "KLM09-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-    private val expiredKey = "KLM06-0S63S-5B040-PSSXS-2JHYD-21IRP"
+    //private val expiredKey = "KLM06-0S63S-5B040-PSSXS-2JHYD-21IRP"
     private val productionCloudKey = "KLM06-DZMJX-2ZOPV-NINE6-PUBIH-TWVP9"
 
     @get:Rule
@@ -43,20 +41,32 @@ class LicenseActivationTests {
     @TacticalSdkSuppress(minReleaseVersion = 130)
     fun activateOfflineTe3Key_returnSuccess() = runTest {
         val activateResult = activateLicense(licenseKey = te3Key1)
-        assertTrue("License activation failed. ${activateResult.getErrorOrNull()}", activateResult.isActivated())
+        Assert.assertTrue(
+            "License activation failed. ${activateResult.getErrorOrNull()}",
+            activateResult.isActivated()
+        )
 
         val deactivateResult = deactivateLicense(licenseKey = te3Key1)
-        assertTrue("License not deactivated. ${deactivateResult.getErrorOrNull()}",deactivateResult.isNotActivated())
+        Assert.assertTrue(
+            "License not deactivated. ${deactivateResult.getErrorOrNull()}",
+            deactivateResult.isNotActivated()
+        )
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 130)
     fun activateTe3Key_returnSuccess() = runTest {
         val activateResult = activateLicense(licenseKey = te3Key2)
-        assertTrue("License activation failed. ${activateResult.getErrorOrNull()}", activateResult.isActivated())
+        Assert.assertTrue(
+            "License activation failed. ${activateResult.getErrorOrNull()}",
+            activateResult.isActivated()
+        )
 
         val deactivateResult = deactivateLicense(licenseKey = te3Key2)
-        assertTrue("License not deactivated. ${deactivateResult.getErrorOrNull()}",deactivateResult.isNotActivated())
+        Assert.assertTrue(
+            "License not deactivated. ${deactivateResult.getErrorOrNull()}",
+            deactivateResult.isNotActivated()
+        )
     }
 
 //    @Test
@@ -68,10 +78,16 @@ class LicenseActivationTests {
     @Test
     fun activateCloudProductionKey_returnSuccess() = runTest {
         val activateResult = activateLicense(licenseKey = productionCloudKey)
-        assertTrue("License activation failed. ${activateResult.getErrorOrNull()}", activateResult.isActivated())
+        Assert.assertTrue(
+            "License activation failed. ${activateResult.getErrorOrNull()}",
+            activateResult.isActivated()
+        )
 
         val deactivateResult = deactivateLicense(licenseKey = productionCloudKey)
-        assertTrue("License not deactivated. ${deactivateResult.getErrorOrNull()}",deactivateResult.isNotActivated())
+        Assert.assertTrue(
+            "License not deactivated. ${deactivateResult.getErrorOrNull()}",
+            deactivateResult.isNotActivated()
+        )
     }
 
     private suspend fun activateLicense(licenseKey: String) : LicenseState {
@@ -82,9 +98,9 @@ class LicenseActivationTests {
         return knoxLicenseUseCase(activate = false, licenseKey = licenseKey)
     }
 
-    private suspend fun getLicenseInfo() {
-        val activateInfo = licenseInfoUseCase()
-        assert(activateInfo.isActivated())
-    }
+//    private suspend fun getLicenseInfo() {
+//        val activateInfo = licenseInfoUseCase()
+//        assert(activateInfo.isActivated())
+//    }
 
 }

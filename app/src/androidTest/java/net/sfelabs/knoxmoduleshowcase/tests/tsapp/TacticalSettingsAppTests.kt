@@ -14,6 +14,7 @@ import org.junit.runner.RunWith
 class TacticalSettingsAppTests {
     private val te3Xc6pRegex = """^TP1A\.220624\.014\.G736U1UE.+_B2BF*""".toRegex()
     private val te3S23Regex = """^TP1A\.220624\.014\.S911U1UE.+_B2BF*""".toRegex()
+    private val te3TA5Regex = """^UP1A\.231005\.007\.X308UUE.+_B2BF*""".toRegex()
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 130)
@@ -29,7 +30,9 @@ class TacticalSettingsAppTests {
 
         assertTrue(
             "Build number should match expected format",
-            buildNumber.matches(te3S23Regex) or buildNumber.matches(te3Xc6pRegex)
+            buildNumber.matches(te3S23Regex)
+                    or buildNumber.matches(te3Xc6pRegex)
+                    or buildNumber.matches(te3TA5Regex)
         )
     }
 }
