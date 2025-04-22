@@ -7,5 +7,6 @@
     <uses-permission android:name="com.samsung.android.knox.permission.KNOX_CUSTOM_SYSTEM" />
     <uses-permission android:name="com.samsung.android.knox.permission.KNOX_ADVANCED_RESTRICTION" />
     <uses-permission android:name="com.samsung.android.knox.permission.KNOX_PHONE_RESTRICTION" />
+    <uses-permission android:name="com.samsung.android.knox.permission.KNOX_SIM_RESTRICTION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 </manifest>
