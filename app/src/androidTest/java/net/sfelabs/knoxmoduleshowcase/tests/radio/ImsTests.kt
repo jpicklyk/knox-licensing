@@ -10,6 +10,7 @@ import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.ims.IsImsEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ims.SetImsEnabled
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,7 +40,7 @@ class ImsTests {
     @Test
     fun setImsEnabled() = runTest {
         val result = SetImsEnabled().invoke(enable = true)
-        assert(result is ApiResult.Success)
+        assertTrue("Set IMS enabled failed: ${result.getErrorOrNull()}", result is ApiResult.Success)
         val result2 = IsImsEnabledUseCase().invoke(0)
         assert(result2 is ApiResult.Success && result2.data.enabled)
     }
@@ -47,7 +48,7 @@ class ImsTests {
     @Test
     fun setImsDisabled() = runTest {
         val result = SetImsEnabled().invoke(enable = false)
-        assert(result is ApiResult.Success)
+        assertTrue("Set IMS disabled failed: ${result.getErrorOrNull()}", result is ApiResult.Success)
         val result2 = IsImsEnabledUseCase().invoke(0)
         assert(result2 is ApiResult.Success && !result2.data.enabled)
     }

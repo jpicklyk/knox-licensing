@@ -12,6 +12,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoCallPickupState
 import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupStateUseCase
 import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -48,7 +49,7 @@ class AutoCallPickupTests {
     fun setAutoCallPickupState_EnableAlwaysAccept() = runTest {
         val useCase = SetAutoCallPickupStateUseCase()
         val result = useCase.invoke(AutoCallPickupDto(mode = AutoCallPickupMode.EnableAlwaysAccept))
-        assert(result is ApiResult.Success)
+        assertTrue("API call was not successful: ${result.getErrorOrNull()}", result is ApiResult.Success)
 
         val getCase = GetAutoCallPickupStateUseCase()
         val res = getCase.invoke()

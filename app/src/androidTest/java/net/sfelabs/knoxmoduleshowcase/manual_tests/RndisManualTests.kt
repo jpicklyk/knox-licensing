@@ -15,6 +15,7 @@ import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.model.UsbConnectionType
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.SetUsbConnectionTypeUseCase
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,7 +42,10 @@ class RndisManualTests {
         val result = SetUsbConnectionTypeUseCase(systemManager).invoke(
             UsbConnectionType.Tethering
         )
-        assert(result is ApiResult.Success)
+        assertTrue(
+            "Setting USB Tethering (RNDIS) failed: ${result.getErrorOrNull()}",
+            result is ApiResult.Success
+        )
     }
 
     @Test
@@ -49,7 +53,10 @@ class RndisManualTests {
         val result = SetUsbConnectionTypeUseCase(systemManager).invoke(
             UsbConnectionType.Default
         )
-        assert(result is ApiResult.Success)
+        assertTrue(
+            "Setting USB connection type default failed: ${result.getErrorOrNull()}",
+            result is ApiResult.Success
+        )
     }
 
     @Test

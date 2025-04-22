@@ -14,32 +14,19 @@ import net.sfelabs.knox_tactical.domain.use_cases.radio.EnableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.GetBandLockingStateUseCase
 import org.junit.After
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.properties.Delegates
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class BandLockingLteTests {
-    private var currentBand by Delegates.notNull<Int>()
-
     @get:Rule
     val simRequiredRule = SimRequiredRule()
     @get:Rule
     val simMustBeRemovedRule = SimMustBeRemovedRule()
 
-    @Before
-    fun recordCurrentBandLocking() = runTest {
-        val result = GetBandLockingStateUseCase().invoke(null)
-        currentBand = if (result is ApiResult.Success) {
-            result.data.band
-        } else {
-            -1
-        }
-    }
 
     @Test
     @SimRemoved
@@ -121,7 +108,7 @@ class BandLockingLteTests {
     private suspend fun testEnableLteBandLocking(simSlotId: Int?) {
         val band = 8
         val result = EnableBandLockingUseCase().invoke(band, simSlotId)
-        assert(result is ApiResult.Success)
+        assertTrue("LTE band lock was unsuccessful: ${result.getErrorOrNull()}", result is ApiResult.Success)
 
         val result2 = GetBandLockingStateUseCase().invoke(simSlotId)
         assert(result2 is ApiResult.Success && result2.data.band == band)
@@ -190,11 +177,9 @@ class BandLockingLteTests {
     }
 
     @After
-    fun cleanup() = runTest {
-        if (currentBand == -1) {
-            DisableBandLockingUseCase().invoke(null)
-        } else {
-            EnableBandLockingUseCase().invoke(currentBand)
+    fun disableAllBandLocking() = runTest {
+        for(i in 0..2) {
+            DisableBandLockingUseCase().invoke(i)
         }
     }
 }

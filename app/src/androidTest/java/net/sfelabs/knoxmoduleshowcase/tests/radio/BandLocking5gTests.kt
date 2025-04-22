@@ -14,32 +14,19 @@ import net.sfelabs.knox_tactical.domain.use_cases.radio.Enable5gBandLockingUseCa
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Get5gBandLockingUseCase
 import org.junit.After
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.properties.Delegates
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class BandLocking5gTests {
-    private var currentBand by Delegates.notNull<Int>()
-
     @get:Rule
     val simRequiredRule = SimRequiredRule()
     @get:Rule
     val simMustBeRemovedRule = SimMustBeRemovedRule()
 
-    @Before
-    fun recordCurrentBandLocking() = runTest {
-        val result = Get5gBandLockingUseCase().invoke(null)
-        currentBand = if (result is ApiResult.Success) {
-            result.data.band
-        } else {
-            -1
-        }
-    }
 
     @Test
     @SimRemoved
@@ -187,7 +174,9 @@ class BandLocking5gTests {
     }
 
     @After
-    fun cleanup() = runTest {
-        Disable5gBandLockingUseCase().invoke(null)
+    fun disableAllBandLocking() = runTest {
+        for(i in 0..2) {
+            Disable5gBandLockingUseCase().invoke(i)
+        }
     }
 }

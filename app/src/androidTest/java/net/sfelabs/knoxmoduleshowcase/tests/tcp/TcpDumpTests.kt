@@ -72,7 +72,10 @@ class TcpDumpTests {
             delay(2000)
             val checkUseCase = IsTcpDumpEnabled()
             val checkResult = checkUseCase.invoke()
-            assert(checkResult is ApiResult.Success && checkResult.data)
+            assertTrue(
+                "TCP Dump is not running and it should be! ${checkResult.getErrorOrNull()}",
+                checkResult is ApiResult.Success && checkResult.data
+            )
         }
     }
 
@@ -98,7 +101,10 @@ class TcpDumpTests {
         val tcpCommand = "any" + " -B10 -s2000 -C10 -w/sdcard/Download/${filename}" //+ getAbsolutePath(captureUri)
         val enableUseCase = EnableTcpDumpUseCase()
         val result = enableUseCase.invoke(tcpCommand)
-        assertTrue("Enabling TCP Dump failed.  Cmd used: $tcpCommand", result is ApiResult.Success)
+        assertTrue(
+            "Enabling TCP Dump failed: ${result.getErrorOrNull()}.  Cmd used: $tcpCommand",
+            result is ApiResult.Success
+        )
     }
 
     @Test
@@ -107,7 +113,9 @@ class TcpDumpTests {
             delay(2000)
             val checkUseCase = IsTcpDumpEnabled()
             val checkResult = checkUseCase.invoke()
-            assert(checkResult is ApiResult.Success && checkResult.data)
+            assertTrue(
+                "TCP Dump is not running and it should be! ${checkResult.getErrorOrNull()}",
+                checkResult is ApiResult.Success && checkResult.data)
         }
     }
 
