@@ -6,7 +6,7 @@ import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
 import net.sfelabs.core.domain.usecase.model.DefaultApiError
 
 class SetHotspot20EnabledUseCase: SuspendingUseCase<Boolean, Unit>() {
-    val settingsManager = CustomDeviceManager.getInstance().settingsManager
+    private val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
     override suspend fun execute(params: Boolean): ApiResult<Unit> {
         val result = if(params) {

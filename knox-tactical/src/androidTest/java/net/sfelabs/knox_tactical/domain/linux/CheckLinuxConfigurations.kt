@@ -168,8 +168,8 @@ class CheckLinuxConfigurations {
      * The XC6P already has this device supported however it is not on the S23TE Linux build.
      */
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 132, maxReleaseVersion = 139)
-    fun check_lan78xx_isConfigured() {
+    @TacticalSdkSuppress(minReleaseVersion = 132)
+    fun check_lan78xx_isConfigured_yes() {
         //prerequisite for the USB driver
         val config = "CONFIG_USB_LAN78XX=y"
         assertTrue(
@@ -177,16 +177,7 @@ class CheckLinuxConfigurations {
             checkLinuxConfiguration(config)
         )
     }
-    @Test
-    @TacticalSdkSuppress(minReleaseVersion = 140)
-    fun check_lan78xx_isConfigured_A14() {
-        //prerequisite for the USB driver
-        val config = "CONFIG_USB_LAN78XX=m"
-        assertTrue(
-            "Linux configuration '$config' is not set!",
-            checkLinuxConfiguration(config)
-        )
-    }
+
     // XC6P cannot support this apparently but it isn't clear why.
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 132, excludeModels = ["SM-G736U1"])
@@ -224,7 +215,7 @@ class CheckLinuxConfigurations {
     @TacticalSdkSuppress(minReleaseVersion = 140)
     fun check_usb_net_drivers_areConfigured_A14() {
         //prerequisite for the USB driver
-        val config1 = "CONFIG_USB_NET_SMSC75XX=m"
+        val config1 = "CONFIG_USB_NET_SMSC75XX=y"
         assertTrue(
             "Linux configuration '$config1' is not set!",
             checkLinuxConfiguration(config1)
