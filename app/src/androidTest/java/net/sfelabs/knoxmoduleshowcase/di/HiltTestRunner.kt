@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnitRunner
 import dagger.hilt.android.testing.HiltTestApplication
-import net.sfelabs.core.knox.android.AndroidApplicationContextProvider
+import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 
 @Suppress("unused")

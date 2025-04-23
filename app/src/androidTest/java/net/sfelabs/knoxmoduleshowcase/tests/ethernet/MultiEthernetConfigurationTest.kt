@@ -8,13 +8,13 @@ import androidx.test.platform.app.InstrumentationRegistry
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.common.di.AndroidServiceModule
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox_enterprise.di.KnoxModule
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurations
 import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurationsMultiDns
 import net.sfelabs.knox_tactical.TestingVisibilityOnly
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration
 import net.sfelabs.knox_tactical.domain.model.StaticConfiguration

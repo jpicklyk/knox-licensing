@@ -1,11 +1,10 @@
 package net.sfelabs.knox_enterprise.domain.use_cases
 
 import com.samsung.android.knox.EnterpriseDeviceManager
-import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.knox.android.WithAndroidApplicationContext
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
-import net.sfelabs.core.domain.usecase.model.DefaultApiError
+import net.sfelabs.knox.core.android.WithAndroidApplicationContext
+import net.sfelabs.knox.core.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.DefaultApiError
 
 class SetUsbExceptionListUseCase: WithAndroidApplicationContext, SuspendingUseCase<SetUsbExceptionListUseCase.Params, Unit>() {
     class Params(val usbClassList: Int)
@@ -13,7 +12,7 @@ class SetUsbExceptionListUseCase: WithAndroidApplicationContext, SuspendingUseCa
     private val restrictionPolicy =
         EnterpriseDeviceManager.getInstance(applicationContext).restrictionPolicy
 
-    suspend operator fun invoke(usbClassList: Int): UnitApiCall {
+    suspend operator fun invoke(usbClassList: Int): ApiResult<Unit> {
         return invoke(Params(usbClassList))
     }
 

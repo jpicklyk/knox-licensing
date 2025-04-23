@@ -2,10 +2,10 @@ package net.sfelabs.knoxmoduleshowcase.tests.usb
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbAccessBySerialUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbDeviceAccessAllowedListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.SetUsbAccessBySerialUseCase
@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 130)
 class UsbDeviceAccessTests {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
     @Test
     fun setUsbAccessBySerial_SingleSerialNumber() = runTest {

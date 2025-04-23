@@ -3,11 +3,11 @@ package net.sfelabs.knoxmoduleshowcase.tests.ethernet
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.testing.rules.EthernetNotConnected
-import net.sfelabs.core.testing.rules.EthernetNotConnectedRule
-import net.sfelabs.core.testing.rules.EthernetRequired
-import net.sfelabs.core.testing.rules.EthernetRequiredRule
+import net.sfelabs.knox.core.testing.rules.EthernetNotConnected
+import net.sfelabs.knox.core.testing.rules.EthernetRequired
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.testing.rules.EthernetNotConnectedRule
+import net.sfelabs.knox.core.testing.rules.EthernetRequiredRule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.AddIpAddressToEthernetInterfaceUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.ListIpAddressesUseCase

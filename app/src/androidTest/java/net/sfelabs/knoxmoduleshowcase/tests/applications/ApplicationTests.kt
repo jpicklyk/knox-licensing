@@ -2,7 +2,7 @@ package net.sfelabs.knoxmoduleshowcase.tests.applications
 
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
-import net.sfelabs.core.domain.isPackageInstalled
+import net.sfelabs.knox.core.common.domain.isPackageInstalled
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test

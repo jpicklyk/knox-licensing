@@ -21,7 +21,7 @@ class AutoCallTests {
     @Before
     fun setup() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
-        systemManager = net.sfelabs.knox_tactical.di.KnoxModule.provideKnoxSystemManager()
+        systemManager = CustomDeviceManager.getInstance().systemManager
     }
 
 

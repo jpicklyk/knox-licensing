@@ -2,9 +2,9 @@ package net.sfelabs.knoxmoduleshowcase.manual_tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.FlakyTest
+import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox_tactical.di.KnoxModule
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.domain.model.UsbConnectionType
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbConnectionTypeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.SetUsbConnectionTypeUseCase
@@ -15,7 +15,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UsbConnectionTypeTests {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
     private lateinit var currentType: UsbConnectionType
     @Before
     fun setup() = runTest {

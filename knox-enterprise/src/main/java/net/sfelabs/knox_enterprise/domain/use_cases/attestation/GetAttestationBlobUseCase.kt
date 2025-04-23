@@ -4,10 +4,10 @@ import com.samsung.android.knox.EnterpriseKnoxManager
 import com.samsung.android.knox.integrity.EnhancedAttestationPolicyCallback
 import com.samsung.android.knox.integrity.EnhancedAttestationResult
 import com.samsung.android.knox.integrity.EnhancedAttestationResult.ERROR_NONE
-import net.sfelabs.core.knox.android.WithAndroidApplicationContext
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
-import net.sfelabs.core.domain.usecase.model.DefaultApiError
+import net.sfelabs.knox.core.android.WithAndroidApplicationContext
+import net.sfelabs.knox.core.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.DefaultApiError
 import java.util.UUID
 import kotlin.coroutines.suspendCoroutine
 

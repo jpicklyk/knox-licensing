@@ -14,7 +14,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_enterprise.license.domain.usecase.GetLicenseActivationInfoUseCase
 import net.sfelabs.knox_enterprise.license.domain.usecase.GetLicenseInfoUseCase
 import net.sfelabs.knox_enterprise.license.domain.usecase.KnoxLicenseUseCase

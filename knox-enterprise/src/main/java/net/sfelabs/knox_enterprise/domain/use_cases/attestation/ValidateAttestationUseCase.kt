@@ -2,8 +2,8 @@ package net.sfelabs.knox_enterprise.domain.use_cases.attestation
 
 import com.samsung.knox.attesation.blobvalidator.library.AttestationResult
 import com.samsung.knox.attesation.blobvalidator.library.EABlobVerifier
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.domain.usecase.model.DefaultApiError
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.DefaultApiError
 
 /**
  * Attestation verifier from HQ integrated into a simple API use case call.

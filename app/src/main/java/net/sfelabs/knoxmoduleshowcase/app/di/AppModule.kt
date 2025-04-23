@@ -7,6 +7,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import net.sfelabs.knox_enterprise.api.ResourceProvider
+import net.sfelabs.knox_enterprise.license.domain.usecase.KnoxLicenseUseCase
 import javax.inject.Singleton
 import net.sfelabs.knox_tactical.generated.di.GeneratedModuleIndex
 
@@ -18,5 +20,13 @@ object AppModule {
     @Singleton
     fun provideResources(@ApplicationContext context: Context): Resources {
         return context.resources
+    }
+
+    @Provides
+    @Singleton
+    fun provideResourceProvider(
+        @ApplicationContext context: Context
+    ): ResourceProvider {
+        return AppResourceProvider(context)
     }
 }

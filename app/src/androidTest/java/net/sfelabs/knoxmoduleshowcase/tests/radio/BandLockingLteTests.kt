@@ -3,11 +3,11 @@ package net.sfelabs.knoxmoduleshowcase.tests.radio
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.testing.rules.SimMustBeRemovedRule
-import net.sfelabs.core.testing.rules.SimRemoved
-import net.sfelabs.core.testing.rules.SimRequired
-import net.sfelabs.core.testing.rules.SimRequiredRule
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.testing.rules.SimMustBeRemovedRule
+import net.sfelabs.knox.core.testing.rules.SimRemoved
+import net.sfelabs.knox.core.testing.rules.SimRequired
+import net.sfelabs.knox.core.testing.rules.SimRequiredRule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.radio.DisableBandLockingUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.EnableBandLockingUseCase

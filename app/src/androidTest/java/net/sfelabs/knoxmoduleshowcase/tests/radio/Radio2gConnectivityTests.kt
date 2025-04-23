@@ -1,11 +1,11 @@
 package net.sfelabs.knoxmoduleshowcase.tests.radio
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.testing.rules.SimRequired
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Is2gConnectivityEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Set2gConnectivityEnabled
 import net.sfelabs.knoxmoduleshowcase.app.decodeAllowedNetworkTypes
@@ -21,6 +21,7 @@ import kotlin.properties.Delegates
  * Click SIM and then GSM band preference
  */
 @RunWith(AndroidJUnit4::class)
+@SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class Radio2gConnectivityTests {
     private var radio2gAllowed by Delegates.notNull<Boolean>()
@@ -34,6 +35,7 @@ class Radio2gConnectivityTests {
     }
 
     @Test
+    @SimRequired
     fun set2G_disabled() = runTest {
         val result = Set2gConnectivityEnabled().invoke(false)
         assert(result is ApiResult.Success)
@@ -45,6 +47,7 @@ class Radio2gConnectivityTests {
     }
 
     @Test
+    @SimRequired
     fun set2G_enabled() = runTest {
         val result = Set2gConnectivityEnabled().invoke(true)
         assert(result is ApiResult.Success)

@@ -1,17 +1,16 @@
 package net.sfelabs.knox_enterprise.domain.use_cases.settings
 
 import com.samsung.android.knox.custom.CustomDeviceManager
-import net.sfelabs.core.domain.UnitApiCall
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.domain.usecase.base.SuspendingUseCase
-import net.sfelabs.core.domain.usecase.model.DefaultApiError
+import net.sfelabs.knox.core.domain.usecase.base.SuspendingUseCase
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.DefaultApiError
 
 class SetBrightnessUseCase: SuspendingUseCase<SetBrightnessUseCase.Params, Unit>() {
     data class Params(val enable: Boolean, val level: Int = 255)
 
     private val settingsManager = CustomDeviceManager.getInstance().settingsManager
 
-    suspend operator fun invoke(enable: Boolean, level: Int = 255): UnitApiCall {
+    suspend operator fun invoke(enable: Boolean, level: Int = 255): ApiResult<Unit> {
         return invoke(Params(enable, level))
     }
 

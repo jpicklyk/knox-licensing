@@ -9,7 +9,6 @@ import net.sfelabs.knoxmoduleshowcase.app.presentation.TacticalAppState
 import net.sfelabs.knoxmoduleshowcase.features.about.navigation.aboutScreen
 import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeNavigationRoute
 import net.sfelabs.knoxmoduleshowcase.features.home.navigation.homeScreen
-import net.sfelabs.knoxmoduleshowcase.features.logviewer.navigation.loggerScreen
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.navigation.ethernetScreen
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.presentation.navigation.networkManagerScreen
 import net.sfelabs.knoxmoduleshowcase.features.policy.policyScreen
@@ -28,7 +27,6 @@ fun SetupNavGraph(
         policyScreen()
         ethernetScreen()
         networkManagerScreen()
-        loggerScreen()
         aboutScreen()
     }
 }

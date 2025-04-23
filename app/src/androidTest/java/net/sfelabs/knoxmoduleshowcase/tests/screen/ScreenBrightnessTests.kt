@@ -5,7 +5,7 @@ import android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_enterprise.domain.use_cases.settings.GetBrightnessModeUseCase
 import net.sfelabs.knox_enterprise.domain.use_cases.settings.GetBrightnessValueUseCase
 import net.sfelabs.knox_enterprise.domain.use_cases.settings.SetBrightnessUseCase

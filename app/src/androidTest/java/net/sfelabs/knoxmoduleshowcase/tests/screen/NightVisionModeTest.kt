@@ -6,9 +6,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.repository.PreferencesRepository
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.knox.feature.api.isSuccessful
+import net.sfelabs.knox.core.common.domain.repository.PreferencesRepository
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.feature.api.isSuccessful
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.policy.night_vision.EnableNightVisionModePolicy
 import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState

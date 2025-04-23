@@ -1,7 +1,7 @@
 package net.sfelabs.knox_enterprise.license.data
 
 import android.util.Log
-import com.example.starterapplication.knox_standard.license.domain.repository.LicenseRepository
+import net.sfelabs.knox_enterprise.license.domain.repository.LicenseRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

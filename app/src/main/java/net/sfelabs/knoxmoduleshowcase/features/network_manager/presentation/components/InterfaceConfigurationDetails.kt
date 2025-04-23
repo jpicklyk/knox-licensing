@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.sfelabs.core.ui.theme.AppTheme
+import com.samsung.sea.jpicklyk.tacticalqa.core.designsystem.theme.ApplicationTheme
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.InterfaceType
 
 @Composable
@@ -96,7 +96,7 @@ fun InterfaceConfigurationDetails(
 )
 @Composable
 fun InterfaceDetailsPreview() {
-    AppTheme {
+    ApplicationTheme {
         Surface {
             val name = "eth0"
             val mac = "00:11:22:33:44:55"

@@ -2,11 +2,11 @@ package net.sfelabs.knoxmoduleshowcase.tests.phone
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.data.dto.AutoCallPickupDto
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
 import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoCallPickupStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupStateUseCase
@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 110)
 class AutoCallPickupTests {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
     @Test
     fun getAutoCallPickupState_Exists() = runTest {

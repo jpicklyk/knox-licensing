@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
 import net.sfelabs.knox_tactical.domain.model.DhcpConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
@@ -42,7 +42,6 @@ class EthernetConfigurationViewModel @Inject constructor(
     private val context: Context,
     connectivityManager: ConnectivityManager,
 
-    private val log: net.sfelabs.android_log_wrapper.Log,
     private val networkService: NetworkConnectivityService
 ): ViewModel() {
     private val tag = "EthernetConfigurationVM"
@@ -166,19 +165,19 @@ class EthernetConfigurationViewModel @Inject constructor(
                 when(result) {
                     is ApiResult.Success -> {
                         if(autoConnectionState == AutoConnectionState.ON) {
-                            log.d("Successfully set Auto Connection State ON")
+                            //og.d("Successfully set Auto Connection State ON")
                             _state.update{_state.value.copy(autoConnectionState = AutoConnectionState.ON)}
                         } else {
-                            log.d("Successfully set Auto Connection State OFF")
+                            //log.d("Successfully set Auto Connection State OFF")
                             _state.update{_state.value.copy(autoConnectionState = AutoConnectionState.OFF)}
                         }
                     }
                     is ApiResult.Error -> {
-                        log.e("An error occurred while setting the Auto Connection State")
+                        //log.e("An error occurred while setting the Auto Connection State")
                     }
 
                     is ApiResult.NotSupported -> {
-                        log.e("setEthernetAutoConnection method is not supported")
+                        //log.e("setEthernetAutoConnection method is not supported")
                     }
                 }
 
@@ -195,11 +194,11 @@ class EthernetConfigurationViewModel @Inject constructor(
                 }
 
                 is ApiResult.Error -> {
-                    log.e(result.apiError.message)
+                    //log.e(result.apiError.message)
                 }
 
                 is ApiResult.NotSupported -> {
-                    log.e("getEthernetAutoConnection method is not supported")
+                    //log.e("getEthernetAutoConnection method is not supported")
                 }
             }
         }
@@ -251,7 +250,7 @@ class EthernetConfigurationViewModel @Inject constructor(
             ).collect { result ->
                 when(result) {
                     is ApiResult.Success -> {
-                        log.d("Successfully configured ${ethInterface.name}")
+                        //log.d("Successfully configured ${ethInterface.name}")
                         //ethernetInterfaceRepository.saveInterface(ethInterface)
                         _ethernetState.update {
                             _ethernetState.value.toMutableMap().also {
@@ -261,11 +260,11 @@ class EthernetConfigurationViewModel @Inject constructor(
 
                     }
                     is ApiResult.Error -> {
-                        log.e("Error occurred while creating ${ethInterface.name} configuration")
+                        //log.e("Error occurred while creating ${ethInterface.name} configuration")
                     }
 
                     is ApiResult.NotSupported -> {
-                        log.e("configureEthernet method is not supported")
+                        //log.e("configureEthernet method is not supported")
                     }
                 }
             }

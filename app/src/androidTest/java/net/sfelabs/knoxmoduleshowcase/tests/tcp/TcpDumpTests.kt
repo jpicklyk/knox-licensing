@@ -9,15 +9,15 @@ import android.provider.MediaStore
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.samsung.android.knox.custom.CustomDeviceManager
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.tcp.DisableTcpDumpUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tcp.EnableTcpDumpUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tcp.IsTcpDumpEnabled
@@ -32,7 +32,7 @@ import org.junit.runner.manipulation.Alphanumeric
 @TacticalSdkSuppress(minReleaseVersion = 100)
 @OrderWith(Alphanumeric::class)
 class TcpDumpTests {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
+    private val systemManager = CustomDeviceManager.getInstance().systemManager
     private val filename = "capture_test.pcap"
     lateinit var context: Context
     lateinit var captureUri: Uri

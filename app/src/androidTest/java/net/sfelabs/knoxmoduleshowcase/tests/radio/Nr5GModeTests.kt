@@ -3,7 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.tests.radio
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.LteNrMode
 import net.sfelabs.knox_tactical.domain.use_cases.radio.Get5gNrModeUseCase

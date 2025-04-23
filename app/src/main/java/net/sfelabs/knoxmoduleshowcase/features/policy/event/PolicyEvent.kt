@@ -1,6 +1,6 @@
 package net.sfelabs.knoxmoduleshowcase.features.policy.event
 
-import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
+import net.sfelabs.knox.core.feature.ui.model.PolicyUiState
 
 sealed interface PolicyEvent {
     data class UpdateConfiguration(

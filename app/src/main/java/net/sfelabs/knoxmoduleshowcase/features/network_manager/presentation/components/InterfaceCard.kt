@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.sfelabs.core.ui.theme.AppTheme
+import com.samsung.sea.jpicklyk.tacticalqa.core.designsystem.theme.ApplicationTheme
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.NetworkInterfaceState
 
 
@@ -144,7 +144,7 @@ fun InterfaceCard(
 )
 @Composable
 fun InterfaceCardConnectedPreview() {
-    AppTheme {
+    ApplicationTheme {
         InterfaceCard(
             name = "wlan0",
             addresses = listOf("192.168.2.100", "192.168.2.200"),
@@ -164,7 +164,7 @@ fun InterfaceCardConnectedPreview() {
 )
 @Composable
 fun InterfaceCardDisconnectedPreview() {
-    AppTheme {
+    ApplicationTheme {
         InterfaceCard(
             name = "eth0",
             addresses = listOf("192.168.2.100"),
@@ -185,7 +185,7 @@ fun InterfaceCardDisconnectedPreview() {
 )
 @Composable
 fun InterfaceCardUnknownPreview() {
-    AppTheme {
+    ApplicationTheme {
         InterfaceCard(
             name = "wlan0",
             addresses = listOf(),

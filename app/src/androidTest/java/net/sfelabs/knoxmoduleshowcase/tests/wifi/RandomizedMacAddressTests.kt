@@ -7,11 +7,10 @@ import androidx.test.filters.SmallTest
 import com.samsung.android.knox.EnterpriseDeviceManager
 import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.annotations.ApiExists
-import net.sfelabs.core.checkMethodExistence
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.testing.annotations.ApiExists
+import net.sfelabs.knox.core.testing.checkMethodExistence
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knox_tactical.di.KnoxModule
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.EnableRandomizedMacAddressUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.GetRandomizedMacAddressEnabledUseCase
 import org.junit.After
@@ -29,8 +28,8 @@ class RandomizedMacAddressTests {
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
-        edm = KnoxModule.provideKnoxEnterpriseDeviceManager(context)
-        restrictionPolicy = KnoxModule.provideKnoxRestrictionPolicy(edm)
+        edm = EnterpriseDeviceManager.getInstance(context)
+        restrictionPolicy = edm.restrictionPolicy
     }
 
     @Test

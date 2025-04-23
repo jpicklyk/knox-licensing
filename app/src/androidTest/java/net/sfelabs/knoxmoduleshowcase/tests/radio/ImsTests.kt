@@ -2,10 +2,12 @@ package net.sfelabs.knoxmoduleshowcase.tests.radio
 
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.android.AndroidApplicationContextProvider
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.testing.rules.SimRequired
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.ims.IsImsEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ims.SetImsEnabled
@@ -17,6 +19,7 @@ import org.junit.runner.RunWith
 import kotlin.properties.Delegates
 
 @RunWith(AndroidJUnit4::class)
+@SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class ImsTests {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -38,7 +41,8 @@ class ImsTests {
     }
 
     @Test
-    fun setImsEnabled() = runTest {
+    @SimRequired
+    fun setImsEnabledSlotId0() = runTest {
         val result = SetImsEnabled().invoke(enable = true)
         assertTrue("Set IMS enabled failed: ${result.getErrorOrNull()}", result is ApiResult.Success)
         val result2 = IsImsEnabledUseCase().invoke(0)
@@ -46,7 +50,8 @@ class ImsTests {
     }
 
     @Test
-    fun setImsDisabled() = runTest {
+    @SimRequired
+    fun setImsDisabledSlotId0() = runTest {
         val result = SetImsEnabled().invoke(enable = false)
         assertTrue("Set IMS disabled failed: ${result.getErrorOrNull()}", result is ApiResult.Success)
         val result2 = IsImsEnabledUseCase().invoke(0)
@@ -54,12 +59,14 @@ class ImsTests {
     }
 
     @Test
+    @SimRequired
     fun setInvalidImsFeature() = runTest {
         val result = SetImsEnabled().invoke(0, 0, false)
         assert(result is ApiResult.Error)
     }
 
     @Test
+    @SimRequired
     fun setInvalidSimSlotId() = runTest {
         val result = SetImsEnabled().invoke(8, false)
         assert(result is ApiResult.Error)

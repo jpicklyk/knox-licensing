@@ -19,15 +19,21 @@ dependencyResolutionManagement {
 rootProject.name = "KnoxModuleShowcase"
 
 include( ":app")
-include(":android-log-wrapper")
 include(":core:common")
-include(":core:knox-feature")
-include(":core:knox-feature-processor")
-include(":core:ui")
+include(":core:designsystem")
 include(":core:testing")
+//include(":android-log-wrapper")
+include(":knox-core:android")
+include(":knox-core:common")
+include(":knox-core:feature")
+include(":knox-core:feature-hilt")
+include(":knox-core:feature-processor")
+include(":knox-core:testing")
+include(":knox-core:ui")
+include(":knox-core:usecase-executor")
 include(":knox-enterprise")
 include(":knox-tactical")
 include(":feature:ethernet")
-include(":core:usecase-executor")
-include(":core:knox-feature-hilt")
-include(":core:knox-android")
+
+
+

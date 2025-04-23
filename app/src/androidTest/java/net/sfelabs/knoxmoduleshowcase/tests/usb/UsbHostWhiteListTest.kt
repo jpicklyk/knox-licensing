@@ -5,7 +5,7 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.samsung.android.knox.AppIdentity
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_enterprise.domain.use_cases.AllowUsbHostStorageUseCase
 import net.sfelabs.knox_enterprise.domain.use_cases.IsUsbHostStorageAllowedUseCase
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress

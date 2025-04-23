@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import net.sfelabs.core.component.AppNavigationBar
-import net.sfelabs.core.component.AppNavigationBarItem
-import net.sfelabs.core.component.TacticalTopAppBar
-import net.sfelabs.core.ui.theme.AppTheme
+import com.samsung.sea.jpicklyk.tacticalqa.core.designsystem.theme.ApplicationTheme
+import net.sfelabs.knox.core.ui.component.AppNavigationBar
+import net.sfelabs.knox.core.ui.component.AppNavigationBarItem
+import net.sfelabs.knox.core.ui.component.TacticalTopAppBar
 import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.SetupNavGraph
 import net.sfelabs.knoxmoduleshowcase.app.presentation.navigation.TopLevelDestination
 import net.sfelabs.knoxmoduleshowcase.features.permissions.isDeviceAdminGranted
@@ -22,7 +22,7 @@ import net.sfelabs.knoxmoduleshowcase.features.permissions.requestDeviceAdmin
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KnoxShowcaseApp() {
-    AppTheme {
+    ApplicationTheme {
         val context = LocalContext.current
         LaunchedEffect(true) {
             if(!isDeviceAdminGranted(context))

@@ -5,8 +5,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.knox.android.AndroidApplicationContextProvider
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetHdmPolicyUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmBluetoothState

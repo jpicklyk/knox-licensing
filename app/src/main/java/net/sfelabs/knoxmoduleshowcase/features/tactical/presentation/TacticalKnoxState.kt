@@ -1,6 +1,6 @@
 package net.sfelabs.knoxmoduleshowcase.features.tactical.presentation
 
-import net.sfelabs.core.UiText
+import net.sfelabs.knox.core.common.UiText
 
 
 data class TacticalKnoxState(

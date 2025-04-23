@@ -6,8 +6,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.di.AndroidServiceModule
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.common.di.AndroidServiceModule
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.hotspot.IsHotspot20EnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hotspot.SetHotspot20EnabledUseCase

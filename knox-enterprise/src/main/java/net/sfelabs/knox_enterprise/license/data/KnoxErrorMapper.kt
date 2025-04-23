@@ -20,8 +20,8 @@ import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager.ERROR_NOT_C
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager.ERROR_NULL_PARAMS
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager.ERROR_UNKNOWN
 import com.samsung.android.knox.license.KnoxEnterpriseLicenseManager.ERROR_USER_DISAGREES_LICENSE_AGREEMENT
-import net.sfelabs.core.presentation.ResourceProvider
 import net.sfelabs.knox_enterprise.R
+import net.sfelabs.knox_enterprise.api.ResourceProvider
 import java.util.MissingFormatArgumentException
 import javax.inject.Inject
 

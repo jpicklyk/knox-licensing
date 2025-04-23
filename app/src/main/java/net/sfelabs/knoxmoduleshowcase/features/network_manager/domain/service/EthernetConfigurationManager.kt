@@ -1,6 +1,6 @@
 package net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.service
 
-import net.sfelabs.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.ConfigureEthernetInterfaceAltUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnectionAltUseCase
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.InterfaceAddressConfigurationType

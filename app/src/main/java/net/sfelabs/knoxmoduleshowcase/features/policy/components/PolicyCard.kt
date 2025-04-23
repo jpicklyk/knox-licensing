@@ -16,19 +16,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.samsung.sea.jpicklyk.tacticalqa.core.designsystem.theme.ApplicationTheme
 import kotlinx.coroutines.delay
-import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
-import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
-import net.sfelabs.core.ui.theme.AppTheme
+import net.sfelabs.knox.core.feature.ui.model.ConfigurationOption
+import net.sfelabs.knox.core.feature.ui.model.PolicyUiState
 import net.sfelabs.knoxmoduleshowcase.features.policy.event.PolicyEvent
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 @Composable
 fun PolicyCard(
@@ -232,7 +232,7 @@ fun PolicyCard(
 )
 @Composable
 private fun PolicyCardPreview() {
-    AppTheme {
+    ApplicationTheme {
         PolicyCard(
             policy = PolicyUiState.ConfigurableToggle(
                 title = "5G NR Mode",
@@ -274,7 +274,7 @@ private fun PolicyCardPreview() {
 )
 @Composable
 private fun PolicyCardErrorPreview() {
-    AppTheme {
+    ApplicationTheme {
         PolicyCard(
             policy = PolicyUiState.ConfigurableToggle(
                 title = "5G NR Mode",
@@ -316,7 +316,7 @@ private fun PolicyCardErrorPreview() {
 )
 @Composable
 private fun PolicyCardUnsupportedPreview() {
-    AppTheme {
+    ApplicationTheme {
         PolicyCard(
             policy = PolicyUiState.ConfigurableToggle(
                 title = "5G NR Mode",
@@ -358,7 +358,7 @@ private fun PolicyCardUnsupportedPreview() {
 )
 @Composable
 private fun PolicyCardLoadingPreview() {
-    AppTheme {
+    ApplicationTheme {
         PolicyCard(
             policy = PolicyUiState.ConfigurableToggle(
                 title = "5G NR Mode",

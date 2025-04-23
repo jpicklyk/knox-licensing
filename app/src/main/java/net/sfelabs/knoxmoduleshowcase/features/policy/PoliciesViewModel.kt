@@ -6,13 +6,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.core.knox.feature.api.*
-import net.sfelabs.core.knox.feature.domain.model.Policy
-import net.sfelabs.core.knox.feature.domain.registry.PolicyRegistry
-import net.sfelabs.core.knox.feature.ui.model.ConfigurationOption
-import net.sfelabs.core.knox.feature.ui.model.PolicyUiState
-import net.sfelabs.core.knox.feature.ui.model.PolicyUiState.ConfigurableToggle
+
+import net.sfelabs.knox.core.feature.ui.model.ConfigurationOption
+import net.sfelabs.knox.core.feature.ui.model.PolicyUiState.ConfigurableToggle
+import net.sfelabs.knox.core.feature.api.*
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.feature.api.PolicyStateWrapper
+import net.sfelabs.knox.core.feature.domain.model.Policy
+import net.sfelabs.knox.core.feature.domain.registry.PolicyRegistry
+import net.sfelabs.knox.core.feature.ui.model.PolicyUiState
 import net.sfelabs.knox_tactical.domain.policy.AutoTouchSensitivityPolicy
 import net.sfelabs.knox_tactical.domain.policy.Disable2GConnectivityPolicy
 import net.sfelabs.knox_tactical.domain.policy.DisableElectronicSimPolicy

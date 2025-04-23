@@ -1,4 +1,4 @@
-package com.example.starterapplication.knox_standard.license.domain.repository
+package net.sfelabs.knox_enterprise.license.domain.repository
 
 import kotlinx.coroutines.flow.StateFlow
 import net.sfelabs.knox_enterprise.license.presentation.LicenseState

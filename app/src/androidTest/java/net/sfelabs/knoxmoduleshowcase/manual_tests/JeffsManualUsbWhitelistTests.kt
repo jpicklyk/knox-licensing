@@ -2,9 +2,9 @@ package net.sfelabs.knoxmoduleshowcase.manual_tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox_tactical.di.KnoxModule
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbAccessBySerialUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbDeviceAccessAllowedListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.SetUsbAccessBySerialUseCase
@@ -30,7 +30,7 @@ class JeffsManualUsbWhitelistTests {
     val usbHubSerial = "001500A96"
 
 
-    val sm = KnoxModule.provideKnoxSystemManager()
+    private val sm = CustomDeviceManager.getInstance().systemManager
 
     @Test
     fun whitelistHubAndEthernetByVidPid() = runTest {

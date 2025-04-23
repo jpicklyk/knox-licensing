@@ -2,8 +2,8 @@ package net.sfelabs.knoxmoduleshowcase
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-import net.sfelabs.core.domain.repository.PreferencesRepository
-import net.sfelabs.core.knox.android.AndroidApplicationContextProvider
+import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
+import net.sfelabs.knox.core.common.domain.repository.PreferencesRepository
 import javax.inject.Inject
 
 @HiltAndroidApp
