@@ -1,0 +1,3 @@
+[submodule "knox-tactical"]
+	path = knox-tactical
+	url = https://github.com/jpicklyk/knox-tactical.git
