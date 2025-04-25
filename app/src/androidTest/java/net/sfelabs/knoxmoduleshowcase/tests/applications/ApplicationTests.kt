@@ -125,6 +125,15 @@ class ApplicationTests {
         )
     }
 
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 140)
+    fun checkThatSamsungGlobalGoalsHasBeenRemoved() {
+        assertFalse(
+            isPackageInstalled("com.samsung.sree", pm),
+            "com.samsung.sree is still installed but should be removed"
+        )
+    }
+
     // This cannot be removed as there are other components reliant on it that are required by Google
 //    @Test
 //    @TacticalSdkSuppress(minReleaseVersion = 132)

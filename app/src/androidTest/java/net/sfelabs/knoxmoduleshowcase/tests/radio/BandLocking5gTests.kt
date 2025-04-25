@@ -30,7 +30,7 @@ class BandLocking5gTests {
 
     @Test
     @SimRemoved
-    fun disable5gBandLocking_simRemoved_returnError() = runTest {
+    fun disable5gBandLocking_withNoSim_shouldReturnError() = runTest {
         val result = Disable5gBandLockingUseCase().invoke(null)
         assertTrue(
             "disableBandLocking API should return error when there is no sim card present",
@@ -41,7 +41,7 @@ class BandLocking5gTests {
     @Test
     @SimRemoved
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun disable5gBandLockingPerSimSlotId0_simRemoved_returnError() = runTest {
+    fun disable5gBandLocking_forSimSlot0_withNoSim_shouldReturnError() = runTest {
         val result = Disable5gBandLockingUseCase().invoke(0)
         assertTrue(
             "disableBandLocking API should return error when there is no sim card present for simSlotId 0",
@@ -51,7 +51,7 @@ class BandLocking5gTests {
 
     @Test
     @SimRemoved
-    fun enable5gBandLocking_simRemoved_returnError() = runTest {
+    fun enable5gBandLocking_withNoSim_shouldReturnError() = runTest {
         val result = Enable5gBandLockingUseCase().invoke(78)
         assertTrue("enable5gBandLocking API should return an error", result is ApiResult.Error)
     }
@@ -59,7 +59,7 @@ class BandLocking5gTests {
     @Test
     @SimRemoved
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enable5gBandLockingPerSimSlotId0_simRemoved_returnError() = runTest {
+    fun enable5gBandLocking_forSimSlot0_withNoSim_shouldReturnError() = runTest {
         val result = Enable5gBandLockingUseCase().invoke(78, 0)
         assertTrue("enable5gBandLocking API should return an error for simSlotId 0", result is ApiResult.Error)
     }
@@ -67,7 +67,7 @@ class BandLocking5gTests {
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enable5gBandLockingPerSimSlotId1_simRequiredSlot0_returnError() = runTest {
+    fun enable5gBandLocking_forInvalidSimSlot1_shouldReturnError() = runTest {
         val result = Enable5gBandLockingUseCase().invoke(78, 1)
         assertTrue("enable5gBandLocking API should return an error for simSlotId 1 when there is no eSIM installed.", result is ApiResult.Error)
     }
@@ -75,21 +75,21 @@ class BandLocking5gTests {
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun disable5gBandLockingPerSimSlotId1_simRequiredSlot0_returnError() = runTest {
+    fun disable5gBandLocking_forInvalidSimSlot1_shouldReturnError() = runTest {
         val result = Disable5gBandLockingUseCase().invoke(1)
         assertTrue("disable5gBandLocking API should return an error for simSlotId 1 when there is no eSIM installed.", result is ApiResult.Error)
     }
 
     @Test
     @SimRequired
-    fun enable5gBandLocking_confirmN78_returnSuccess() = runTest {
+    fun enable5gBandLocking_forBand78_shouldSucceed() = runTest {
         testEnableBandLocking(null)
     }
 
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enable5gBandLockingPerSimSlotId0_confirmN78_returnSuccess() = runTest {
+    fun enable5gBandLocking_forSimSlot0AndBand78_shouldSucceedAndNotAffectOtherSlots() = runTest {
         testEnableBandLocking(0)
 
         //confirm that SIM id 1 isn't also enabled
@@ -113,14 +113,14 @@ class BandLocking5gTests {
 
     @Test
     @SimRequired
-    fun enable5gBandLocking_BANDLOCK_NONE_notAllowed() = runTest {
+    fun enable5gBandLocking_withNegativeOneBand_shouldReturnError() = runTest {
         testBandLockNoneNotAllowed(null)
     }
 
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enable5gBandLockingPerSimSlotId0_BANDLOCK_NONE_notAllowed() = runTest {
+    fun enable5gBandLocking_forSimSlot0WithNegativeOneBand_shouldReturnError() = runTest {
         testBandLockNoneNotAllowed(0)
     }
 
@@ -136,13 +136,13 @@ class BandLocking5gTests {
     }
 
     @Test
-    fun enable5gBandLocking_invalidParameter_returnError() = runTest {
+    fun enable5gBandLocking_withInvalidBandValue_shouldReturnError() = runTest {
         testInvalidParameter(null)
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enable5gBandLockingPerSimSlotId0_invalidParameter_returnError() = runTest {
+    fun enable5gBandLocking_forSimSlot0WithInvalidBandValue_shouldReturnError() = runTest {
         testInvalidParameter(0)
     }
 
@@ -154,14 +154,14 @@ class BandLocking5gTests {
 
     @Test
     @SimRequired
-    fun disable5gBandLocking_returnSuccess() = runTest {
+    fun disable5gBandLocking_shouldSucceed() = runTest {
         testDisableBandLocking(null)
     }
 
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun disable5gBandLockingPerSimSlotId0_returnSuccess() = runTest {
+    fun disable5gBandLocking_forSimSlot0_shouldSucceed() = runTest {
         testDisableBandLocking(0)
     }
 

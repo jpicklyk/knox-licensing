@@ -30,14 +30,14 @@ class BandLockingLteTests {
 
     @Test
     @SimRemoved
-    fun disableBandLocking_simRemoved_returnError() = runTest {
+    fun disableBandLocking_withNoSim_shouldReturnError() = runTest {
         testDisableBandLockingSimRemoved(null)
     }
 
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enableBandLockingPerSimSlotId1_simRequiredSlot0_returnError() = runTest {
+    fun enableBandLocking_forInvalidSimSlot1_shouldReturnError() = runTest {
         val result = EnableBandLockingUseCase().invoke(78, 1)
         assertTrue("enableBandLocking API should return an error for simSlotId 1 when there is no eSIM installed.", result is ApiResult.Error)
     }
@@ -45,7 +45,7 @@ class BandLockingLteTests {
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun disableBandLockingPerSimSlotId1_simRequiredSlot0_returnError() = runTest {
+    fun disableBandLocking_forInvalidSimSlot1_shouldReturnError() = runTest {
         val result = DisableBandLockingUseCase().invoke(1)
         assertTrue("disableBandLocking API should return an error for simSlotId 1 when there is no eSIM installed.", result is ApiResult.Error)
     }
@@ -53,7 +53,7 @@ class BandLockingLteTests {
     @Test
     @SimRemoved
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun disableBandLockingPerSimSlotId0_simRemoved_returnError() = runTest {
+    fun disableBandLocking_forSimSlot0_withNoSim_shouldReturnError() = runTest {
         testDisableBandLockingSimRemoved(0)
     }
 
@@ -67,14 +67,14 @@ class BandLockingLteTests {
 
     @Test
     @SimRemoved
-    fun enableBandLocking_simRemoved_returnError() = runTest {
+    fun enableBandLocking_withNoSim_shouldReturnError() = runTest {
         testEnableBandLockingSimRemoved(null)
     }
 
     @Test
     @SimRemoved
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enableBandLockingPerSimSlotId0_simRemoved_returnError() = runTest {
+    fun enableBandLocking_forSimSlot0_withNoSim_shouldReturnError() = runTest {
         testEnableBandLockingSimRemoved(0)
     }
 
@@ -86,14 +86,14 @@ class BandLockingLteTests {
 
     @Test
     @SimRequired
-    fun enableLteBandLocking_confirmBand8_returnSuccess() = runTest {
+    fun enableBandLocking_forBand8_shouldSucceed() = runTest {
         testEnableLteBandLocking(null)
     }
 
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enableLteBandLockingPerSimSlotId0_confirmBand8_returnSuccess() = runTest {
+    fun enableBandLocking_forSimSlot0AndBand8_shouldSucceedAndNotAffectOtherSlots() = runTest {
         testEnableLteBandLocking(0)
         //confirm that SIM id 1 isn't also enabled
         val result = GetBandLockingStateUseCase().invoke(1)
@@ -116,14 +116,14 @@ class BandLockingLteTests {
 
     @Test
     @SimRequired
-    fun enableLteBandLocking_BANDLOCK_NONE_notAllowed() = runTest {
+    fun enableBandLocking_withNegativeOneBand_shouldReturnError() = runTest {
         testBandLockNoneNotAllowed(null)
     }
 
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enableLteBandLockingPerSimSlotId0_BANDLOCK_NONE_notAllowed() = runTest {
+    fun enableBandLocking_forSimSlot0WithNegativeOneBand_shouldReturnError() = runTest {
         testBandLockNoneNotAllowed(0)
     }
 
@@ -139,13 +139,13 @@ class BandLockingLteTests {
     }
 
     @Test
-    fun enableLteBandLocking_invalidParameter_returnError() = runTest {
+    fun enableBandLocking_withInvalidBandValue_shouldReturnError() = runTest {
         testInvalidParameter(null)
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun enableLteBandLockingPerSimSlotId0_invalidParameter_returnError() = runTest {
+    fun enableBandLocking_forSimSlot0WithInvalidBandValue_shouldReturnError() = runTest {
         testInvalidParameter(0)
     }
 
@@ -157,14 +157,14 @@ class BandLockingLteTests {
 
     @Test
     @SimRequired
-    fun disableLteBandLocking_returnSuccess() = runTest {
+    fun disableBandLocking_shouldSucceed() = runTest {
         testDisableLteBandLocking(null)
     }
 
     @Test
     @SimRequired
     @TacticalSdkSuppress(minReleaseVersion = 132)
-    fun disableLteBandLockingPerSimSlotId0_returnSuccess() = runTest {
+    fun disableBandLocking_forSimSlot0_shouldSucceed() = runTest {
         testDisableLteBandLocking(0)
     }
 
