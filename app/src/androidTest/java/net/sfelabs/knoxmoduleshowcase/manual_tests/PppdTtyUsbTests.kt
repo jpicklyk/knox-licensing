@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import junit.framework.TestCase
 import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
@@ -44,9 +45,9 @@ class PppdTtyUsbTests {
     private lateinit var context: Context
     private lateinit var optionsFileLocation: File
 
-    @Rule @JvmField
-    val mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule
-        .grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//    @Rule @JvmField
+//    val mRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule
+//        .grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     @Before
     fun setup() {
@@ -74,7 +75,8 @@ class PppdTtyUsbTests {
     @Test
     fun setupPpp() = runBlocking<Unit> {
         val useCase = ExecuteAdbCommandUseCase()
-        println("options file location: $optionsFileLocation")
+        val optionsFile = File("/sdcard/options")
+        assertTrue("Options file was not copied to /sdcard/options!",optionsFile.exists())
         //KnoxCustomManagerService: executeAdbCommand - java.lang.IllegalArgumentException: value of system property 'knoxsdk.tac.body' is longer than 91 bytes: /dev/ttyUSB0 file /storage/emulated/0/Android/data/net.sfelabs.knoxmoduleshowcase/files/options
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file $optionsFileLocation")
         val result = useCase.invoke(AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
