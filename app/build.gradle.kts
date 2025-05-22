@@ -53,7 +53,6 @@ android {
         }
     }
 
-    @Suppress("UnstableApiUsage")
     testOptions {
 
         unitTests {
@@ -100,6 +99,7 @@ dependencies {
     androidTestImplementation(project(":knox-core:testing"))
     androidTestImplementation(project(":knox-core:usecase-executor"))
     androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.junit.jupiter.api)
     androidTestRuntimeOnly(libs.junit.jupiter.engine)
     androidTestRuntimeOnly(libs.junit.extensions)
