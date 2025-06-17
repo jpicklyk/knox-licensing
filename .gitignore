@@ -34,3 +34,5 @@ google-services.json
 
 # BuildSrc build directory
 /buildSrc/build
+/CLAUDE.md
+/.claude/settings.local.json
