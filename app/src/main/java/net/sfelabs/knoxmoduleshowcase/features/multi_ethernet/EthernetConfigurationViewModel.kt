@@ -332,12 +332,12 @@ class EthernetConfigurationViewModel @Inject constructor(
     private suspend fun getEthernetMacAddress(name: String?): String? {
         if(name == null)
             return null
-            val result = getEthernetMacAddressUseCase.invoke(name)
-            return if(result is ApiResult.Success) {
-                result.data
-            } else {
-                "(Api Not Supported)"
-            }
+        val result = getEthernetMacAddressUseCase.invoke(name)
+        return if(result is ApiResult.Success) {
+            result.data
+        } else {
+            "(Api Not Supported)"
+        }
 
     }
 
