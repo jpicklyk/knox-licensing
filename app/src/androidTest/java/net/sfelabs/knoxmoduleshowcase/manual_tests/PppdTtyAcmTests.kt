@@ -1,24 +1,20 @@
 package net.sfelabs.knoxmoduleshowcase.manual_tests
 
-import android.Manifest
 import android.content.Context
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.adb.StopPppdUseCase
 import net.sfelabs.knoxmoduleshowcase.R
 import org.junit.Before
 import org.junit.FixMethodOrder
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
@@ -38,7 +34,7 @@ import java.net.NetworkInterface
 
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@TacticalSdkSuppress(minReleaseVersion = 110)
+//@TacticalSdkSuppress(minReleaseVersion = 110)
 class PppdTtyAcmTests {
     private val tag = "TTYACMTEST"
     private lateinit var context: Context
@@ -55,6 +51,36 @@ class PppdTtyAcmTests {
         optionsFileLocation = copyFileFromRawToSDCard(
             context, R.raw.options, targetDirectory, "options"
         )
+    }
+
+    @Test
+    fun testUsbDevicesDirectoryIsReadable() {
+        //val directoryPath = "/sys/hub/usb/devices"
+        val directoryPath = "/sys/bus/usb/devices"
+
+        val directory = File(directoryPath)
+
+        // Check if the directory exists and is readable
+        assertTrue(
+            "$directoryPath does not exist or is not readable",
+            directory.exists() && directory.canRead()
+        )
+        // List the directory contents
+        val fileList = directory.listFiles()
+        // Print the directory contents
+        fileList?.forEach { file ->
+            println(file.absolutePath)
+            try {
+                val ueventFile = File(file, "uevent")
+                println("Can read $ueventFile : ${ueventFile.canRead()}")
+                assertTrue(
+                    "Unable to read uevent file ${ueventFile.absolutePath}, SE Linux permission issue!",
+                    ueventFile.canRead()
+                )
+            } catch (_: NullPointerException) {
+                // Do nothing, the ueventFile doesn't exist
+            }
+        }
     }
 
 
@@ -107,6 +133,77 @@ class PppdTtyAcmTests {
             "stopPPPD Api did not stop service.  Interface PPP0 is still available!",
             isPpp0InterfaceUp()
         )
+    }
+
+    //@Test
+    fun testTtyACMDevicesComprehensive() = runBlocking<Unit> {
+        val tag = "TtyACMTest"
+
+        // Test each ACM device from 0 to 4
+        for (acmIndex in 0..4) {
+            val acmDevice = "/dev/ttyACM$acmIndex"
+            val usbDevice = "/dev/ttyUSB$acmIndex"
+
+            Log.i(tag, "Testing ACM device: $acmDevice")
+
+            try {
+                // 1. Check that ttyACM exists
+                val acmFile = File(acmDevice)
+                assertTrue("$acmDevice file does not exist!", acmFile.exists())
+                Log.i(tag, "$acmDevice exists")
+
+                // 2. Check that corresponding ttyUSB does NOT exist
+                val usbFile = File(usbDevice)
+                assertFalse("$usbDevice should not exist!", usbFile.exists())
+                Log.i(tag, "$usbDevice correctly does not exist")
+
+                // 3. Setup PPP connection
+                val setupUseCase = ExecuteAdbCommandUseCase()
+                val optionsFile = File("/sdcard/options")
+                assertTrue("Options file was not copied to /sdcard/options!", optionsFile.exists())
+
+                Log.i(tag, "Setting up PPP connection on $acmDevice")
+                val setupResult = setupUseCase.invoke(AdbHeader.PPPD, "$acmDevice file /sdcard/options")
+                assertTrue("PPP setup failed for $acmDevice: $setupResult", setupResult is ApiResult.Success)
+                Log.i(tag, "PPP setup successful for $acmDevice")
+
+                // 4. Wait for interface to be available and test ppp0 interface
+                Log.i(tag, "Waiting for ppp0 interface to become available...")
+                Thread.sleep(5000)
+
+                try {
+                    assertTrue("Interface ppp0 was not found for $acmDevice", isPpp0InterfaceUp())
+                    Log.i(tag, "ppp0 interface is up for $acmDevice")
+                } catch (e: Exception) {
+                    Log.e(tag, "ppp0 interface check failed for $acmDevice: ${e.message}", e)
+                    assertTrue("ppp0 interface error for $acmDevice: ${e.message}", false)
+                }
+
+                // 5. Stop the PPP daemon
+                Log.i(tag, "Stopping PPPD for $acmDevice")
+                Thread.sleep(1000)
+                val stopUseCase = StopPppdUseCase()
+                val stopResult = stopUseCase.invoke()
+                delay(1000)
+
+                assertTrue("Knox API stopPPPD() was not successful for $acmDevice: $stopResult",
+                    stopResult is ApiResult.Success)
+                assertFalse("stopPPPD Api did not stop service for $acmDevice. Interface PPP0 is still available!",
+                    isPpp0InterfaceUp())
+                Log.i(tag, "PPPD successfully stopped for $acmDevice")
+
+                Log.i(tag, "All tests passed for $acmDevice")
+
+            } catch (e: Exception) {
+                Log.e(tag, "Test failed for $acmDevice: ${e.message}", e)
+                throw AssertionError("Test suite failed for $acmDevice: ${e.message}", e)
+            }
+
+            // Brief pause between ACM device tests
+            delay(2000)
+        }
+
+        Log.i(tag, "All ttyACM devices (0-4) tested successfully!")
     }
 
     private fun copyFileFromRawToSDCard(
