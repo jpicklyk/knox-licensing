@@ -38,6 +38,7 @@ import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState
 import net.sfelabs.knox_tactical.domain.policy.nr_mode.NrModePolicy
 import net.sfelabs.knox_tactical.domain.policy.nr_mode.NrModeState
 import net.sfelabs.knox_tactical.domain.policy.pogo.DisablePogoKeyboardConnectionPolicy
+import net.sfelabs.knox_tactical.domain.policy.radio.AlwaysRadioOnEnabledPolicy
 import net.sfelabs.knox_tactical.generated.policy.PolicyType
 import net.sfelabs.knoxmoduleshowcase.features.policy.event.PolicyEvent
 import javax.inject.Inject
@@ -129,6 +130,7 @@ class PoliciesViewModel @Inject constructor(
             PolicyType.NrModePolicy -> NrModePolicy()
             PolicyType.TacticalDeviceModePolicy -> TacticalDeviceModePolicy()
             PolicyType.DisablePogoKeyboardConnectionPolicy -> DisablePogoKeyboardConnectionPolicy()
+            PolicyType.AlwaysRadioOnEnabledPolicy -> AlwaysRadioOnEnabledPolicy()
         }.fromUiState(uiState.isEnabled, uiState.currentOptions())
     }
 
@@ -206,7 +208,8 @@ class PoliciesViewModel @Inject constructor(
             PolicyType.EnableExtraBrightnessPolicy,
             PolicyType.LcdBacklightPolicy,
             PolicyType.TacticalDeviceModePolicy,
-            PolicyType.DisablePogoKeyboardConnectionPolicy -> emptyList()
+            PolicyType.DisablePogoKeyboardConnectionPolicy,
+            PolicyType.AlwaysRadioOnEnabledPolicy -> emptyList()
         }
     }
 
