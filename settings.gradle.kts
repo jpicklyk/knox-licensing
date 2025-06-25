@@ -22,7 +22,6 @@ include( ":app")
 include(":core:common")
 include(":core:designsystem")
 include(":core:testing")
-//include(":android-log-wrapper")
 include(":knox-core:android")
 include(":knox-core:common")
 include(":knox-core:feature")
@@ -34,6 +33,7 @@ include(":knox-core:usecase-executor")
 include(":knox-enterprise")
 include(":knox-tactical")
 include(":feature:ethernet")
+include(":benchmark")
 
 
 

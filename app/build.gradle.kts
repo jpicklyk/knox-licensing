@@ -38,9 +38,28 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
+    // Enable baseline profile generation
+    experimentalProperties["android.experimental.enableBaselineProfileGeneration"] = true
+
+    signingConfigs {
+        create("release") {
+            // Use debug signing for baseline profiles
+            storeFile = signingConfigs.getByName("debug").storeFile
+            storePassword = signingConfigs.getByName("debug").storePassword
+            keyAlias = signingConfigs.getByName("debug").keyAlias
+            keyPassword = signingConfigs.getByName("debug").keyPassword
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -96,6 +115,7 @@ dependencies {
     implementation(libs.google.ar)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.jackson.module)
+    implementation(libs.androidx.profileinstaller)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 
