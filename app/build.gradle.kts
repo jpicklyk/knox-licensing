@@ -2,7 +2,6 @@ plugins {
     id("sfelabs.android.application")
     id("sfelabs.android.application.compose")
     id("sfelabs.android.hilt")
-    alias(libs.plugins.android.junit5)
 
 
     //id("com.android.application")
@@ -16,7 +15,6 @@ android {
 
     defaultConfig {
 
-        testInstrumentationRunnerArguments += mapOf("runnerBuilder" to "de.mannodermaus.junit5.AndroidJUnit5Builder")
         applicationId = "net.sfelabs.knoxmoduleshowcase"
 
         versionCode = 1
@@ -24,7 +22,6 @@ android {
 
         //testInstrumentationRunner = "net.sfelabs.knox_tactical.TacticalJUnitRunner"
         testInstrumentationRunner = "net.sfelabs.knoxmoduleshowcase.di.HiltTestRunner"
-        // Use JUnit 5 for local unit tests
 
         vectorDrawables {
             useSupportLibrary = true
@@ -93,16 +90,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)
-    testImplementation(libs.junit.jupiter.api)
-    testRuntimeOnly(libs.junit.jupiter.engine)
 
     androidTestImplementation(project(":knox-core:testing"))
     androidTestImplementation(project(":knox-core:usecase-executor"))
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.junit.jupiter.api)
-    androidTestRuntimeOnly(libs.junit.jupiter.engine)
-    androidTestRuntimeOnly(libs.junit.extensions)
-    androidTestImplementation(libs.junit.platform.suite)
-    androidTestImplementation(libs.junit.platform.runner)
 }

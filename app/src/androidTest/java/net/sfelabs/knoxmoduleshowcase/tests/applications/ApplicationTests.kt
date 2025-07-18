@@ -1,12 +1,15 @@
 package net.sfelabs.knoxmoduleshowcase.tests.applications
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import net.sfelabs.knox.core.common.domain.isPackageInstalled
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertFalse
+import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 @SmallTest
 class ApplicationTests {
     private val pm = InstrumentationRegistry.getInstrumentation().targetContext.packageManager
@@ -15,12 +18,12 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun checkThatKidsModeHasBeenRemoved() {
         assertFalse(
+            "com.sec.android.app.kidshome is still installed but should be removed",
             isPackageInstalled("com.sec.android.app.kidshome", pm),
-            "com.sec.android.app.kidshome is still installed but should be removed"
         )
         assertFalse(
-            isPackageInstalled("com.sec.android.app.kidsinstaller", pm),
-            "com.sec.android.app.kidsinstaller is still installed but should be removed"
+            "com.sec.android.app.kidsinstaller is still installed but should be removed",
+            isPackageInstalled("com.sec.android.app.kidsinstaller", pm)
         )
     }
 
@@ -28,16 +31,16 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 130)
     fun checkThatGameLauncherHasBeenRemoved() {
         assertFalse(
-            isPackageInstalled("com.samsung.android.game.gamehome", pm),
-            "com.samsung.android.game.gamehome is still installed but should be removed"
+            "com.samsung.android.game.gamehome is still installed but should be removed",
+            isPackageInstalled("com.samsung.android.game.gamehome", pm)
         )
         assertFalse(
-            isPackageInstalled("com.samsung.android.game.gametools", pm),
-            "com.samsung.android.game.gametools is still installed but should be removed"
+            "com.samsung.android.game.gametools is still installed but should be removed",
+            isPackageInstalled("com.samsung.android.game.gametools", pm)
         )
         assertFalse(
-            isPackageInstalled("com.samsung.android.game.gos", pm),
-            "com.samsung.android.game.gos is still installed but should be removed"
+            "com.samsung.android.game.gos is still installed but should be removed",
+            isPackageInstalled("com.samsung.android.game.gos", pm)
         )
     }
 
@@ -45,25 +48,26 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun checkThatFacebookHasBeenRemoved() {
         assertFalse(
-            isPackageInstalled("com.facebook.android", pm),
-            "com.facebook.android is still installed but should be removed"
+            "com.facebook.android is still installed but should be removed",
+            isPackageInstalled("com.facebook.android", pm)
         )
         //preload
         assertFalse(
-            isPackageInstalled("com.facebook.katana", pm),
-            "com.facebook.katana is still installed but should be removed"
+            "com.facebook.katana is still installed but should be removed",
+            isPackageInstalled("com.facebook.katana", pm)
+
         )
         assertFalse(
-            isPackageInstalled("com.facebook.appmanager", pm),
-            "com.facebook.appmanager is still installed but should be removed"
+            "com.facebook.appmanager is still installed but should be removed",
+            isPackageInstalled("com.facebook.appmanager", pm)
         )
         assertFalse(
-            isPackageInstalled("com.facebook.system", pm),
-            "com.facebook.system is still installed but should be removed"
+            "com.facebook.system is still installed but should be removed",
+            isPackageInstalled("com.facebook.system", pm)
         )
         assertFalse(
-            isPackageInstalled("com.facebook.services", pm),
-            "com.facebook.services is still installed but should be removed"
+            "com.facebook.services is still installed but should be removed",
+            isPackageInstalled("com.facebook.services", pm)
         )
     }
 
@@ -71,8 +75,8 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun checkThatNetflixHasBeenRemoved() {
         assertFalse(
-            isPackageInstalled("com.netflix.mediaclient", pm),
-            "com.netflix.mediaclient is still installed but should be removed"
+            "com.netflix.mediaclient is still installed but should be removed",
+            isPackageInstalled("com.netflix.mediaclient", pm)
         )
     }
 
@@ -80,8 +84,8 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun checkThatSpotifyHasBeenRemoved() {
         assertFalse(
-            isPackageInstalled("com.spotify.music", pm),
-            "com.spotify.music is still installed but should be removed"
+            "com.spotify.music is still installed but should be removed",
+            isPackageInstalled("com.spotify.music", pm)
         )
     }
 
@@ -89,8 +93,8 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 130)
     fun checkThatLinkedInHasBeenRemoved() {
         assertFalse(
-            isPackageInstalled("com.linkedin.android", pm),
-            "com.linkedin.android is still installed but should be removed"
+            "com.linkedin.android is still installed but should be removed",
+            isPackageInstalled("com.linkedin.android", pm)
         )
     }
 
@@ -98,8 +102,8 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 130)
     fun checkThatBixbyDictationHasBeenRemoved() {
         assertFalse(
-            isPackageInstalled("com.samsung.android.bixby.service", pm),
-            "com.samsung.android.bixby.service is still installed but should be removed"
+            "com.samsung.android.bixby.service is still installed but should be removed",
+            isPackageInstalled("com.samsung.android.bixby.service", pm)
         )
     }
 
@@ -107,12 +111,12 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 130)
     fun checkThatBixbyVisionHasBeenRemoved() {
         assertFalse(
-            isPackageInstalled("com.samsung.android.visionintelligence", pm),
-            "com.samsung.android.visionintelligence is still installed but should be removed"
+            "com.samsung.android.visionintelligence is still installed but should be removed",
+            isPackageInstalled("com.samsung.android.visionintelligence", pm)
         )
         assertFalse(
-            isPackageInstalled("com.samsung.android.bixbyvision.framework", pm),
-            "com.samsung.android.bixbyvision.framework is still installed but should be removed"
+            "com.samsung.android.bixbyvision.framework is still installed but should be removed",
+            isPackageInstalled("com.samsung.android.bixbyvision.framework", pm)
         )
     }
 
@@ -120,8 +124,8 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 130)
     fun checkThatBixbyVoiceHasBeenRemoved() {
         assertFalse(
-            isPackageInstalled("com.samsung.android.bixby.agent", pm),
-            "com.samsung.android.bixby.agent is still installed but should be removed"
+            "com.samsung.android.bixby.agent is still installed but should be removed",
+            isPackageInstalled("com.samsung.android.bixby.agent", pm)
         )
     }
 
@@ -129,8 +133,8 @@ class ApplicationTests {
     @TacticalSdkSuppress(minReleaseVersion = 140)
     fun checkThatSamsungGlobalGoalsHasBeenRemoved() {
         assertFalse(
-            isPackageInstalled("com.samsung.sree", pm),
-            "com.samsung.sree is still installed but should be removed"
+            "com.samsung.sree is still installed but should be removed",
+            isPackageInstalled("com.samsung.sree", pm)
         )
     }
 

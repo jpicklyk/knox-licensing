@@ -1,16 +1,19 @@
 package net.sfelabs.knoxmoduleshowcase.tests.adb
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import org.junit.runner.RunWith
 
 
 /**
  * Tests require Device Administrator so must be run inside App module
  */
+@RunWith(AndroidJUnit4::class)
 @TacticalSdkSuppress(minReleaseVersion = 110)
 class ExecuteAdbCommandTest {
 
