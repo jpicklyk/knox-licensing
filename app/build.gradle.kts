@@ -13,6 +13,16 @@ plugins {
 android {
     namespace = "net.sfelabs.knoxmoduleshowcase"
 
+    sourceSets {
+        getByName("main") {
+            aidl.srcDirs("src/main/aidl")
+        }
+    }
+
+    buildFeatures {
+        aidl = true
+    }
+
     defaultConfig {
 
         applicationId = "net.sfelabs.knoxmoduleshowcase"

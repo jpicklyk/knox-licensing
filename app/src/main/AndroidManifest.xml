@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Allow visibility to external AIDL service for testing -->
+    <queries>
+        <package android:name="com.partech.samservices" />
+    </queries>
+
     <!-- Policy requirement for camera -->
     <uses-feature android:name="android.hardware.camera" />
     <!-- Policy requirement for camera -->
