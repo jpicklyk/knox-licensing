@@ -1,5 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.manual_tests
 
+import android.Manifest
+import androidx.annotation.RequiresPermission
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -7,6 +9,7 @@ import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetInterfaceNameForMacAddressUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -19,12 +22,13 @@ class ReadMacFromInterfaceTest {
      * to run test via paired wifi connection
      */
     @Test
+    @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
     fun readHardwareAddress_eth0() = runBlocking {
         val name = "eth0"
         val useCase1 = GetMacAddressForInterfaceUseCase()
         val useCase2 = GetEthernetInterfaceNameForMacAddressUseCase()
         val result = useCase1.invoke(name)
-        assert(result is ApiResult.Success)
+        assertTrue("Error: ${result.getErrorOrNull()}", result is ApiResult.Success)
         if(result is ApiResult.Success) {
             val res2 = useCase2.invoke(result.data)
             assert(res2 is ApiResult.Success && res2.data == "eth0")

@@ -14,6 +14,7 @@ import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
 import net.sfelabs.knox_tactical.domain.model.UsbConnectionType
 import net.sfelabs.knox_tactical.domain.use_cases.adb.ExecuteAdbCommandUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbConnectionTypeUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.SetUsbConnectionTypeUseCase
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -46,6 +47,17 @@ class RndisManualTests {
             "Setting USB Tethering (RNDIS) failed: ${result.getErrorOrNull()}",
             result is ApiResult.Success
         )
+    }
+
+    @Test
+    fun checkUsbConfiguration() = runTest {
+        val result = GetUsbConnectionTypeUseCase(systemManager).invoke()
+        println("USB Connection type is: ${result.getOrNull()?.value}")
+        assertTrue(
+            "Getting USB connection type failed: ${result.getErrorOrNull()}",
+            result is ApiResult.Success
+        )
+
     }
 
     @Test
@@ -155,5 +167,7 @@ class RndisManualTests {
             Thread.sleep(500)
         }
     }
+
+
 
 }

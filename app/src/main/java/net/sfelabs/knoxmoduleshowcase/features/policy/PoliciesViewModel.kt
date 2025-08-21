@@ -29,6 +29,7 @@ import net.sfelabs.knox_tactical.domain.policy.auto_record_policy.AutoRecordCall
 import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLocking5gPolicy
 import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingState
 import net.sfelabs.knox_tactical.domain.policy.band_locking.LteBandLockingPolicy
+import net.sfelabs.knox_tactical.domain.policy.charging.DisableFastChargingPolicy
 import net.sfelabs.knox_tactical.domain.policy.hdm.EnableHdmPolicy
 import net.sfelabs.knox_tactical.domain.policy.hdm.HdmState
 import net.sfelabs.knox_tactical.domain.policy.modem_ims.DisableImsPolicy
@@ -131,6 +132,7 @@ class PoliciesViewModel @Inject constructor(
             PolicyType.TacticalDeviceModePolicy -> TacticalDeviceModePolicy()
             PolicyType.DisablePogoKeyboardConnectionPolicy -> DisablePogoKeyboardConnectionPolicy()
             PolicyType.AlwaysRadioOnEnabledPolicy -> AlwaysRadioOnEnabledPolicy()
+            PolicyType.DisableFastChargingPolicy -> DisableFastChargingPolicy()
         }.fromUiState(uiState.isEnabled, uiState.currentOptions())
     }
 
@@ -209,7 +211,8 @@ class PoliciesViewModel @Inject constructor(
             PolicyType.LcdBacklightPolicy,
             PolicyType.TacticalDeviceModePolicy,
             PolicyType.DisablePogoKeyboardConnectionPolicy,
-            PolicyType.AlwaysRadioOnEnabledPolicy -> emptyList()
+            PolicyType.AlwaysRadioOnEnabledPolicy,
+            PolicyType.DisableFastChargingPolicy -> emptyList()
         }
     }
 

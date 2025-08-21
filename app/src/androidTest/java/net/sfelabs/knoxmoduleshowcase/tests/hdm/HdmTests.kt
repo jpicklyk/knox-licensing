@@ -9,6 +9,9 @@ import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetHdmPolicyUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetSupportedHdmPoliciesUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.hdm.IsHdmPolicySupportedUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.hdm.IsHdmCameraDisabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmBluetoothState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmCameraState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmExternalMemoryState
@@ -20,6 +23,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmPolicyUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmSpeakerState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmUsbState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmWiFiState
+import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponent
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -50,6 +54,40 @@ class HdmTests {
             }
         }
         AndroidApplicationContextProvider.init(testProvider)
+    }
+
+    @Test
+    fun getSupportedPolicies() = runTest {
+        val result = GetSupportedHdmPoliciesUseCase().invoke()
+        assert(result is ApiResult.Success)
+    }
+
+
+
+    @Test
+    fun testDisabledUseCase_ReturnsNotSupportedForUnsupportedPolicies() = runTest {
+        // This test verifies that disabled use cases properly handle unsupported policies
+        // We test with camera since it's commonly available
+        val supportResult = IsHdmPolicySupportedUseCase().invoke(HdmComponent.CAMERA)
+        val disabledResult = IsHdmCameraDisabledUseCase().invoke()
+        
+        when (supportResult) {
+            is ApiResult.Success -> {
+                if (supportResult.data) {
+                    // If camera HDM is supported, the disabled use case should return a proper result
+                    assert(disabledResult is ApiResult.Success || disabledResult is ApiResult.Error)
+                } else {
+                    // If camera HDM is not supported, the disabled use case should return NotSupported
+                    assert(disabledResult is ApiResult.NotSupported) {
+                        "Expected NotSupported for unsupported HDM policy, got: $disabledResult"
+                    }
+                }
+            }
+            else -> {
+                // If support check fails, the disabled use case should handle it gracefully
+                assert(disabledResult is ApiResult.NotSupported || disabledResult is ApiResult.Error)
+            }
+        }
     }
 
     @Test
