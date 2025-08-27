@@ -11,8 +11,6 @@ import net.sfelabs.knox_enterprise.api.ResourceProvider
 import net.sfelabs.knox_enterprise.license.domain.usecase.KnoxLicenseUseCase
 import javax.inject.Singleton
 import net.sfelabs.knox_tactical.generated.di.GeneratedModuleIndex
-import net.sfelabs.knox_tactical.domain.use_cases.ethernet.EthernetAidlUseCaseFactory
-import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressViaAidlUseCase
 
 @Module(includes = [GeneratedModuleIndex::class])
 @InstallIn(SingletonComponent::class)
@@ -30,13 +28,5 @@ object AppModule {
         @ApplicationContext context: Context
     ): ResourceProvider {
         return AppResourceProvider(context)
-    }
-    
-    @Provides
-    @Singleton
-    fun provideGetMacAddressViaAidlUseCase(
-        @ApplicationContext context: Context
-    ): GetMacAddressViaAidlUseCase {
-        return EthernetAidlUseCaseFactory.createGetMacAddressUseCase(context)
     }
 }

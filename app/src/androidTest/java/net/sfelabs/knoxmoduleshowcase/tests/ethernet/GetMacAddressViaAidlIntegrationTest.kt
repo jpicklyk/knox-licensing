@@ -1,40 +1,39 @@
 package net.sfelabs.knoxmoduleshowcase.tests.ethernet
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.runBlocking
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.EthernetAidlUseCaseFactory
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressViaAidlUseCase
 import org.junit.Assert.assertNotNull
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+import org.junit.runner.RunWith
 
-@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
 @LargeTest
 class GetMacAddressViaAidlIntegrationTest {
     
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-    
-    @Inject
-    lateinit var getMacAddressViaAidlUseCase: GetMacAddressViaAidlUseCase
+    private lateinit var getMacAddressViaAidlUseCase: GetMacAddressViaAidlUseCase
     
     @Before
     fun setUp() {
-        hiltRule.inject()
+        // Use factory pattern to create UseCase instance - no DI framework required
+        getMacAddressViaAidlUseCase = EthernetAidlUseCaseFactory.createGetMacAddressUseCase(
+            InstrumentationRegistry.getInstrumentation().targetContext
+        )
     }
     
     @Test
-    fun testUseCaseInjection() {
-        assertNotNull("UseCase should be injected successfully", getMacAddressViaAidlUseCase)
+    fun testUseCaseCreation() {
+        assertNotNull("UseCase should be created successfully via factory", getMacAddressViaAidlUseCase)
     }
     
     @Test
     fun testGetMacAddressForEth0() = runBlocking {
-        // This test will attempt to get the MAC address for eth0
+        // This test demonstrates using the AIDL-based UseCase without any DI framework
         // It might fail if the AIDL service is not available, but that's expected behavior
         val result = getMacAddressViaAidlUseCase.invoke("eth0")
         
