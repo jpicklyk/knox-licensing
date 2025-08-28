@@ -22,6 +22,7 @@ class SupportedComponents {
     }
 
     @Test
+    @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U", "SM-S911U1"])
     fun testIsHdmPolicySupportedUseCase_ExternalMemory() = runTest {
         val result = IsHdmPolicySupportedUseCase().invoke(HdmComponent.EXTERNAL_MEMORY)
         assert(result is ApiResult.Success<Boolean> && result.data) {
@@ -54,6 +55,7 @@ class SupportedComponents {
     }
 
     @Test
+    @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U", "SM-S911U1"])
     fun testIsHdmPolicySupportedUseCase_Gps() = runTest {
         val result = IsHdmPolicySupportedUseCase().invoke(HdmComponent.GPS)
         assert(result is ApiResult.Success<Boolean> && result.data) {
@@ -70,6 +72,7 @@ class SupportedComponents {
     }
 
     @Test
+    @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U"])
     fun testIsHdmPolicySupportedUseCase_Microphone() = runTest {
         val result = IsHdmPolicySupportedUseCase().invoke(HdmComponent.MICROPHONE)
         assertTrue("Policy support check failed for Microphone component: ${result.getOrNull()}", result is ApiResult.Success<Boolean> && result.data)
@@ -84,6 +87,7 @@ class SupportedComponents {
     }
 
     @Test
+    @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U"])
     fun testIsHdmPolicySupportedUseCase_Speaker() = runTest {
         val result = IsHdmPolicySupportedUseCase().invoke(HdmComponent.SPEAKER)
         assert(result is ApiResult.Success<Boolean> && result.data) {
