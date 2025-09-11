@@ -6,6 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import net.sfelabs.knox.core.common.domain.isPackageInstalled
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -13,6 +14,18 @@ import org.junit.runner.RunWith
 @SmallTest
 class ApplicationTests {
     private val pm = InstrumentationRegistry.getInstrumentation().targetContext.packageManager
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 130)
+    fun checkMyFilesNetworkStorageIsIncluded() {
+        assertTrue(
+            "MyFiles Network Manager is not installed!",
+            isPackageInstalled(
+                packageName = "com.samsung.android.app.networkstoragemanager",
+                packageManager = pm
+                )
+        )
+    }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
