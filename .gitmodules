@@ -4,3 +4,6 @@
 [submodule "knox-core"]
 	path = knox-core
 	url = https://github.com/jpicklyk/knox-core.git
+[submodule "knox-licensing"]
+	path = knox-licensing
+	url = https://github.com/jpicklyk/knox-licensing.git
