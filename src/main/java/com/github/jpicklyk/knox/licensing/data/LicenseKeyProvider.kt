@@ -23,14 +23,23 @@ internal class LicenseKeyProvider {
 
     private fun getAppropriateDefaultKey(): String {
         return try {
-            if (TacticalEditionReleases.isCurrentDeviceTe3()) {
-                // Use tactical license for TE3 devices if available, fallback to standard license
-                if (BuildConfig.KNOX_TACTICAL_LICENSE_KEY != "KNOX_TACTICAL_LICENSE_KEY_NOT_FOUND") {
-                    BuildConfig.KNOX_TACTICAL_LICENSE_KEY
+            val isTe3 = TacticalEditionReleases.isCurrentDeviceTe3()
+            Log.d(tag, "Device TE3 detection result: $isTe3")
+
+            if (isTe3) {
+                Log.d(tag, "TE3 device detected, checking for tactical license...")
+                val tacticalKey = BuildConfig.KNOX_TACTICAL_LICENSE_KEY
+                Log.d(tag, "Tactical license key from BuildConfig: ${tacticalKey.take(10)}...")
+
+                if (tacticalKey != "KNOX_TACTICAL_LICENSE_KEY_NOT_FOUND") {
+                    Log.d(tag, "Using tactical license for TE3 device")
+                    tacticalKey
                 } else {
+                    Log.w(tag, "No tactical license configured, falling back to standard license")
                     BuildConfig.KNOX_LICENSE_KEY
                 }
             } else {
+                Log.d(tag, "Non-TE3 device, using standard license")
                 BuildConfig.KNOX_LICENSE_KEY
             }
         } catch (e: Exception) {
