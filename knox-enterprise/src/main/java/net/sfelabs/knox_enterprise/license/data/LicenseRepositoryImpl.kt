@@ -15,11 +15,16 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@Deprecated("Use knox-licensing module instead", ReplaceWith("KnoxLicenseFactory.createFromBuildConfig(context)", "com.github.jpicklyk.knox.licensing.KnoxLicenseFactory"))
 internal class LicenseRepositoryImpl @Inject constructor(
     private val knoxLicenseUseCase: KnoxLicenseUseCase,
     private val getLicenseInfoUseCase: GetLicenseInfoUseCase
 ) : LicenseRepository {
     private val tag = "KnoxLicenseRepository"
+
+    // Placeholder license key since this module no longer has BuildConfig.KNOX_LICENSE_KEY
+    // This code should be replaced with knox-licensing module
+    private val placeholderLicenseKey = "PLACEHOLDER_LICENSE_KEY"
 
     private val _licenseState = MutableStateFlow<LicenseState>(LicenseState.Loading)
     override val licenseState: StateFlow<LicenseState> = _licenseState.asStateFlow()
@@ -37,14 +42,14 @@ internal class LicenseRepositoryImpl @Inject constructor(
     }
 
     override suspend fun activateLicense() {
-        Log.d(tag, "Activating license")
-        _licenseState.value = knoxLicenseUseCase()
+        Log.w(tag, "Using deprecated license activation - consider migrating to knox-licensing module")
+        _licenseState.value = knoxLicenseUseCase(licenseKey = placeholderLicenseKey)
         refreshLicenseState() // Refresh the state after activation
     }
 
     override suspend fun deactivateLicense() {
-        Log.d(tag, "Deactivating license")
-        _licenseState.value = knoxLicenseUseCase(activate = false)
+        Log.w(tag, "Using deprecated license deactivation - consider migrating to knox-licensing module")
+        _licenseState.value = knoxLicenseUseCase(activate = false, licenseKey = placeholderLicenseKey)
         refreshLicenseState() // Refresh the state after deactivation
     }
 }
