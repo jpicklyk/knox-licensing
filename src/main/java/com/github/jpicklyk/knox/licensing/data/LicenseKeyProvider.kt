@@ -3,12 +3,13 @@ package com.github.jpicklyk.knox.licensing.data
 import android.util.Log
 import com.github.jpicklyk.knox.licensing.BuildConfig
 import com.github.jpicklyk.knox.licensing.domain.LicenseConfiguration
+import net.sfelabs.knox_tactical.domain.model.TacticalEditionReleases
 internal class LicenseKeyProvider {
     private val tag = "LicenseKeyProvider"
 
     fun fromBuildConfig(): LicenseConfiguration {
         return try {
-            val defaultKey = BuildConfig.KNOX_LICENSE_KEY
+            val defaultKey = getAppropriateDefaultKey()
             val keysArray = BuildConfig.KNOX_LICENSE_KEYS
 
             val namedKeys = keysArray?.let { parseKeysArray(it) } ?: emptyMap()
@@ -17,6 +18,24 @@ internal class LicenseKeyProvider {
         } catch (e: Exception) {
             Log.e(tag, "Error parsing BuildConfig for license keys", e)
             LicenseConfiguration("KNOX_LICENSE_KEY_NOT_FOUND")
+        }
+    }
+
+    private fun getAppropriateDefaultKey(): String {
+        return try {
+            if (TacticalEditionReleases.isCurrentDeviceTe3()) {
+                // Use tactical license for TE3 devices if available, fallback to standard license
+                if (BuildConfig.KNOX_TACTICAL_LICENSE_KEY != "KNOX_TACTICAL_LICENSE_KEY_NOT_FOUND") {
+                    BuildConfig.KNOX_TACTICAL_LICENSE_KEY
+                } else {
+                    BuildConfig.KNOX_LICENSE_KEY
+                }
+            } else {
+                BuildConfig.KNOX_LICENSE_KEY
+            }
+        } catch (e: Exception) {
+            Log.w(tag, "Error determining appropriate license key, using default", e)
+            BuildConfig.KNOX_LICENSE_KEY
         }
     }
 

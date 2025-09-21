@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.convention.android.knox.license)
 }
 
 android {
@@ -14,7 +15,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
-        buildConfigField("String", "KNOX_LICENSE_KEY", "\"\"")
         buildConfigField("String[]", "KNOX_LICENSE_KEYS", "{}")
     }
 
@@ -43,8 +43,10 @@ android {
 }
 
 dependencies {
-    // Knox SDK
-    api(files("libs/knoxsdk_ver38.jar"))
+    // Knox modules
+    implementation(project(":knox-tactical"))
+    // Knox SDK - use the one from knox-enterprise to avoid duplicates
+    compileOnly(files("libs/knoxsdk_ver38.jar"))
 
     // Android Core
     implementation("androidx.core:core-ktx:1.12.0")

@@ -7,6 +7,8 @@ A reusable Android library for Samsung Knox Enterprise License Management that p
 - **Clean Architecture**: Separation of domain and data layers
 - **Coroutines Support**: Async/await license operations with Flow-based state monitoring
 - **Named License Keys**: Support for multiple named license configurations
+- **Automatic TE3 Detection**: Automatically detects Tactical Edition 3 devices and uses appropriate license
+- **Tactical License Support**: Seamless integration with Knox Tactical SDK for TE3 devices
 - **Comprehensive Error Handling**: Detailed Knox SDK error code mapping
 - **Framework Agnostic**: No dependency injection framework required
 - **Easy Integration**: Simple factory pattern for instantiation
@@ -137,6 +139,65 @@ if (knoxLicenseHandler.hasLicense("tactical")) {
 }
 ```
 
+### Startup Manager
+
+The library provides `KnoxStartupManager` for convenient initialization during app startup:
+
+```kotlin
+import com.github.jpicklyk.knox.licensing.domain.KnoxStartupManager
+import com.github.jpicklyk.knox.licensing.domain.LicenseStartupResult
+
+class MyApplication : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        // Initialize Knox licensing at startup
+        lifecycleScope.launch {
+            when (val result = KnoxStartupManager.initializeKnoxLicensing(this@MyApplication)) {
+                is LicenseStartupResult.AlreadyActivated -> {
+                    Log.d("Knox", "License was already activated")
+                }
+                is LicenseStartupResult.ActivatedNow -> {
+                    Log.d("Knox", "License activated successfully")
+                }
+                is LicenseStartupResult.ActivationFailed -> {
+                    Log.e("Knox", "License activation failed: ${result.reason}")
+                }
+                is LicenseStartupResult.InitializationError -> {
+                    Log.e("Knox", "Initialization error: ${result.reason}")
+                }
+                LicenseStartupResult.NotChecked -> {
+                    Log.w("Knox", "License status not checked")
+                }
+            }
+        }
+    }
+}
+```
+
+#### Startup Manager Features
+
+```kotlin
+// Check if Knox licensing is ready for use
+if (KnoxStartupManager.isKnoxLicenseReady()) {
+    // Proceed with Knox operations
+}
+
+// Get current license status
+val status = KnoxStartupManager.getLicenseStatus()
+
+// Reset startup manager (useful for testing)
+KnoxStartupManager.reset()
+```
+
+The startup manager automatically:
+- Detects TE3 devices and uses appropriate licenses
+- Checks if license is already activated before attempting activation
+- Provides detailed status reporting
+- Handles initialization errors gracefully
+- Uses singleton pattern to avoid duplicate initialization
+
 ## Configuration
 
 ### Using BuildConfig (Recommended)
@@ -174,9 +235,18 @@ Add to your `local.properties`:
 
 ```properties
 knox.license=KLM06-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-knox.license.tactical=KLM06-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY
+knox.license.tactical=KLM09-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY
 knox.license.enterprise=KLM06-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ
 ```
+
+## Automatic License Selection
+
+The library automatically detects Tactical Edition 3 (TE3) devices and selects the appropriate license:
+
+- **TE3 Devices**: Uses `knox.license.tactical` if configured, falls back to `knox.license`
+- **Non-TE3 Devices**: Uses `knox.license`
+
+This ensures that TE3 devices automatically use tactical licenses when available, while maintaining compatibility with standard Knox Enterprise devices.
 
 ### Manual Configuration
 
@@ -249,6 +319,7 @@ class MainActivity : AppCompatActivity() {
 - Android API 21+
 - Samsung Knox-enabled device
 - Knox Enterprise License Manager
+- Knox Tactical SDK (for TE3 device detection)
 - Device Owner or Admin privileges for license operations
 
 ## Error Handling
