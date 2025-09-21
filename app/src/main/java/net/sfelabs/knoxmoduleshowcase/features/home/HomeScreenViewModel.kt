@@ -15,9 +15,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import com.github.jpicklyk.knox.licensing.domain.KnoxLicenseHandler
+import com.github.jpicklyk.knox.licensing.domain.LicenseResult
+import com.github.jpicklyk.knox.licensing.domain.LicenseInfo
 import net.sfelabs.knox_enterprise.license.domain.usecase.GetLicenseActivationInfoUseCase
-import net.sfelabs.knox_enterprise.license.domain.usecase.GetLicenseInfoUseCase
-import net.sfelabs.knox_enterprise.license.domain.usecase.KnoxLicenseUseCase
 import net.sfelabs.knox_enterprise.license.presentation.LicenseState
 import java.util.Date
 import javax.inject.Inject
@@ -33,8 +34,7 @@ data class KnoxLicenseStatus(
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
-    private val knoxLicenseUseCase: KnoxLicenseUseCase,
-    private val getLicenseInfoUseCase: GetLicenseInfoUseCase
+    private val knoxLicenseHandler: KnoxLicenseHandler
 ): ViewModel(){
 
     private val getLicenseActivationInfoUseCase = GetLicenseActivationInfoUseCase()
@@ -52,16 +52,42 @@ class HomeScreenViewModel @Inject constructor(
     val knoxActivationState: State<KnoxLicenseStatus> = _knoxState
 
     init {
-
         viewModelScope.launch {
-            var licenseState = getLicenseInfoUseCase()
-            if(licenseState.isNotActivated()) {
-                licenseState = knoxLicenseUseCase(activate = true)
-                Log.d("HomeScreenViewModel", "activationResult: $licenseState")
-            }
+            try {
+                // Use new knox-licensing module with automatic TE3 detection
+                val licenseInfo = knoxLicenseHandler.getLicenseInfo()
+                var licenseState = convertToLegacyLicenseState(licenseInfo)
 
-            _permissionList.addAll(getPermissionStatus(applicationContext))
-            updateKnoxActivationInfo(licenseState)
+                if (!licenseInfo.isActivated) {
+                    Log.d("HomeScreenViewModel", "License not activated, attempting activation with automatic license selection...")
+                    val activationResult = knoxLicenseHandler.activate()
+                    licenseState = convertToLegacyLicenseState(activationResult, licenseInfo)
+                    Log.d("HomeScreenViewModel", "activationResult: $activationResult")
+                }
+
+                _permissionList.addAll(getPermissionStatus(applicationContext))
+                updateKnoxActivationInfo(licenseState)
+            } catch (e: Exception) {
+                Log.e("HomeScreenViewModel", "Error during license initialization", e)
+                val errorState = LicenseState.Error("License initialization failed: ${e.message}")
+                updateKnoxActivationInfo(errorState)
+            }
+        }
+    }
+
+    // Bridge function to convert new license types to legacy format for UI compatibility
+    private fun convertToLegacyLicenseState(licenseInfo: LicenseInfo): LicenseState {
+        return if (licenseInfo.isActivated) {
+            LicenseState.Activated("License is active")
+        } else {
+            LicenseState.NotActivated
+        }
+    }
+
+    private fun convertToLegacyLicenseState(result: LicenseResult, @Suppress("UNUSED_PARAMETER") licenseInfo: LicenseInfo): LicenseState {
+        return when (result) {
+            is LicenseResult.Success -> LicenseState.Activated(result.message)
+            is LicenseResult.Error -> LicenseState.Error(result.message)
         }
     }
 
