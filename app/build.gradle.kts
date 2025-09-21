@@ -99,6 +99,7 @@ dependencies {
     //implementation(project(":android-log-wrapper"))
     implementation(project(":knox-enterprise"))
     implementation(project(":knox-tactical"))
+    implementation(project(":knox-licensing"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)

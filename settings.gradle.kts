@@ -37,3 +37,4 @@ include(":benchmark")
 
 
 
+include(":knox-licensing")

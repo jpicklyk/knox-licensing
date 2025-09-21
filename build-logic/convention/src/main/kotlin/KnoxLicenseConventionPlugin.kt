@@ -40,6 +40,11 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
                     name = "KNOX_LICENSE_KEY",
                     value = "\"${getKnoxLicenseKey()}\""
                 )
+                buildConfigField(
+                    type = "String",
+                    name = "KNOX_TACTICAL_LICENSE_KEY",
+                    value = "\"${getKnoxTacticalLicenseKey()}\""
+                )
             }
         }
     }
@@ -48,6 +53,13 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
         return getPropertyFromLocalProperties(
             key = "knox.license",
             defaultValue = "KNOX_LICENSE_KEY_NOT_FOUND"
+        )
+    }
+
+    private fun Project.getKnoxTacticalLicenseKey(): String {
+        return getPropertyFromLocalProperties(
+            key = "knox.license.tactical",
+            defaultValue = "KNOX_TACTICAL_LICENSE_KEY_NOT_FOUND"
         )
     }
 

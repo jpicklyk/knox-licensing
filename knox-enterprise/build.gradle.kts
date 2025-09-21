@@ -1,7 +1,6 @@
 
 plugins {
     id("sfelabs.android.feature")
-    alias(libs.plugins.convention.android.knox.license)
 }
 
 android {
