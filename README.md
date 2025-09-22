@@ -58,12 +58,20 @@ class MainActivity : AppCompatActivity() {
         val customStrategy = MyLicenseSelectionStrategy()
         knoxLicenseHandler = KnoxLicenseFactory.create(this, customStrategy)
 
+        // Create with app's BuildConfig (when used in multi-module projects)
+        knoxLicenseHandler = KnoxLicenseFactory.create(
+            context = this,
+            licenseSelectionStrategy = customStrategy,
+            defaultKey = BuildConfig.KNOX_LICENSE_KEY,
+            namedKeysArray = BuildConfig.KNOX_LICENSE_KEYS
+        )
+
         // Or create with explicit keys
         knoxLicenseHandler = KnoxLicenseFactory.createWithKeys(
             context = this,
             defaultKey = "KLM06-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX",
             namedKeys = mapOf(
-                "tactical" to "KLM06-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY",
+                "production" to "KLM06-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY",
                 "enterprise" to "KLM06-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ"
             )
         )
@@ -81,15 +89,15 @@ import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
 class MyDeviceBasedStrategy : LicenseSelectionStrategy {
     override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
         return when {
-            isTE3Device() -> availableKeys["tactical"] ?: defaultKey
+            isProductionDevice() -> availableKeys["production"] ?: defaultKey
             isEnterpriseDevice() -> availableKeys["enterprise"] ?: defaultKey
             else -> defaultKey
         }
     }
 
-    private fun isTE3Device(): Boolean {
-        // Your device detection logic here
-        return Build.MODEL.contains("TE3") || Build.DISPLAY.contains("_B2BF")
+    private fun isProductionDevice(): Boolean {
+        // Your production device detection logic here
+        return Build.MODEL.contains("PROD") || isProductionBuild()
     }
 
     private fun isEnterpriseDevice(): Boolean {
@@ -127,7 +135,7 @@ lifecycleScope.launch {
 
 // Activate named license
 lifecycleScope.launch {
-    val result = knoxLicenseHandler.activate("tactical")
+    val result = knoxLicenseHandler.activate("production")
     // Handle result...
 }
 
@@ -178,8 +186,8 @@ availableLicenses.forEach { (name, key) ->
 }
 
 // Check if specific license exists
-if (knoxLicenseHandler.hasLicense("tactical")) {
-    // Tactical license is configured
+if (knoxLicenseHandler.hasLicense("production")) {
+    // Production license is configured
 }
 ```
 
@@ -208,6 +216,19 @@ class MyApplication : Application() {
         lifecycleScope.launch {
             val customStrategy = MyDeviceBasedStrategy()
             when (val result = KnoxStartupManager.initializeKnoxLicensing(this@MyApplication, customStrategy)) {
+                // Handle results...
+            }
+        }
+
+        // Or initialize with app's BuildConfig (for multi-module projects)
+        lifecycleScope.launch {
+            val customStrategy = MyDeviceBasedStrategy()
+            when (val result = KnoxStartupManager.initializeKnoxLicensing(
+                context = this@MyApplication,
+                licenseSelectionStrategy = customStrategy,
+                defaultKey = BuildConfig.KNOX_LICENSE_KEY,
+                namedKeysArray = BuildConfig.KNOX_LICENSE_KEYS
+            )) {
                 is LicenseStartupResult.AlreadyActivated -> {
                     Log.d("Knox", "License was already activated")
                 }
@@ -260,8 +281,8 @@ Create a gradle convention plugin or add directly to your `build.gradle.kts`:
 ```kotlin
 android {
     defaultConfig {
-        buildConfigField("String", "KNOX_LICENSE_KEY", "\"${project.findProperty("knox.license") ?: ""}\"")
-        buildConfigField("String[]", "KNOX_LICENSE_KEYS", "${getNamedLicenseKeys()}")
+        buildConfigField("String", "KNOX_LICENSE_KEY", getDefaultLicenseKey())
+        buildConfigField("String[]", "KNOX_LICENSE_KEYS", getNamedLicenseKeys())
     }
 
     buildFeatures {
@@ -269,18 +290,40 @@ android {
     }
 }
 
+fun getDefaultLicenseKey(): String {
+    // Manually load local.properties since project.findProperty() doesn't auto-load it
+    val localPropsFile = File(project.rootDir, "local.properties")
+    val localProps = Properties()
+    if (localPropsFile.exists()) {
+        localPropsFile.inputStream().use { localProps.load(it) }
+    }
+    val defaultKey = localProps.getProperty("knox.license") ?: ""
+    return "\"$defaultKey\""
+}
+
 fun getNamedLicenseKeys(): String {
+    // Manually load local.properties
+    val localPropsFile = File(project.rootDir, "local.properties")
+    val localProps = Properties()
+    if (localPropsFile.exists()) {
+        localPropsFile.inputStream().use { localProps.load(it) }
+    }
+
     val keys = mutableListOf<String>()
 
     // Add named keys from properties
-    project.findProperty("knox.license.tactical")?.let { key ->
-        keys.add("\"tactical:$key\"")
+    localProps.getProperty("knox.license.production")?.let { key ->
+        keys.add("\"production:$key\"")
     }
-    project.findProperty("knox.license.enterprise")?.let { key ->
+    localProps.getProperty("knox.license.enterprise")?.let { key ->
         keys.add("\"enterprise:$key\"")
     }
 
-    return if (keys.isEmpty()) "{}" else "{${keys.joinToString(", ")}}"
+    return if (keys.isEmpty()) {
+        "new String[]{}"
+    } else {
+        "new String[]{${keys.joinToString(", ")}}"
+    }
 }
 ```
 
@@ -288,9 +331,67 @@ Add to your `local.properties`:
 
 ```properties
 knox.license=KLM06-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-knox.license.tactical=KLM09-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY
+knox.license.production=KLM09-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY
 knox.license.enterprise=KLM06-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ
 ```
+
+**Important Note**: Due to how Gradle handles `project.findProperty()`, it doesn't automatically load `local.properties`. The functions above manually load the properties file to ensure BuildConfig generation works correctly.
+
+## Multi-Module Projects
+
+When using this library in multi-module Android projects, there are two configuration approaches:
+
+### Option 1: Knox-Licensing Module BuildConfig (Simple)
+
+The knox-licensing module reads from its own BuildConfig. Configure license keys in the knox-licensing module's build.gradle.kts:
+
+```kotlin
+// In knox-licensing/build.gradle.kts
+android {
+    defaultConfig {
+        buildConfigField("String", "KNOX_LICENSE_KEY", getDefaultLicenseKey())
+        buildConfigField("String[]", "KNOX_LICENSE_KEYS", getNamedLicenseKeys())
+    }
+}
+```
+
+Then use the standard factory methods:
+
+```kotlin
+val handler = KnoxLicenseFactory.create(context, customStrategy)
+```
+
+### Option 2: App Module BuildConfig (Recommended)
+
+The app module configures license keys and passes them to knox-licensing. This is the recommended approach for better separation of concerns:
+
+```kotlin
+// In app/build.gradle.kts
+android {
+    defaultConfig {
+        buildConfigField("String", "KNOX_LICENSE_KEY", getDefaultLicenseKey())
+        buildConfigField("String[]", "KNOX_LICENSE_KEYS", getNamedLicenseKeys())
+    }
+}
+
+// In your app code
+val handler = KnoxLicenseFactory.create(
+    context = context,
+    licenseSelectionStrategy = customStrategy,
+    defaultKey = BuildConfig.KNOX_LICENSE_KEY,
+    namedKeysArray = BuildConfig.KNOX_LICENSE_KEYS
+)
+
+// Or with KnoxStartupManager
+KnoxStartupManager.initializeKnoxLicensing(
+    context = context,
+    licenseSelectionStrategy = customStrategy,
+    defaultKey = BuildConfig.KNOX_LICENSE_KEY,
+    namedKeysArray = BuildConfig.KNOX_LICENSE_KEYS
+)
+```
+
+This approach ensures that license keys are managed centrally in the app module while the knox-licensing library remains configuration-agnostic.
 
 ## Custom License Selection
 
@@ -308,7 +409,7 @@ This allows applications to implement their own device detection and license sel
 val licenseConfiguration = LicenseConfiguration(
     defaultKey = "KLM06-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX",
     namedKeys = mapOf(
-        "tactical" to "KLM06-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY",
+        "production" to "KLM06-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY",
         "enterprise" to "KLM06-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ"
     )
 )
@@ -339,7 +440,16 @@ object KnoxLicenseModule {
         @ApplicationContext context: Context,
         licenseSelectionStrategy: LicenseSelectionStrategy
     ): KnoxLicenseHandler {
+        // Option 1: Use knox-licensing module's BuildConfig
         return KnoxLicenseFactory.create(context, licenseSelectionStrategy)
+
+        // Option 2: Use app's BuildConfig (recommended for multi-module projects)
+        // return KnoxLicenseFactory.create(
+        //     context = context,
+        //     licenseSelectionStrategy = licenseSelectionStrategy,
+        //     defaultKey = BuildConfig.KNOX_LICENSE_KEY,
+        //     namedKeysArray = BuildConfig.KNOX_LICENSE_KEYS
+        // )
     }
 }
 
@@ -384,35 +494,29 @@ class MainActivity : AppCompatActivity() {
 - Android API 21+
 - Samsung Knox-enabled device
 - Knox Enterprise License Manager
-- Device Owner or Admin privileges for license operations
+- **Device Administrator or Device Owner/Profile Owner privileges** (required for license operations)
+
+### Device Administrator Requirements
+
+Knox license activation requires elevated permissions. Your application must be registered as one of the following:
+
+1. **Device Administrator (DA)**: Application registered via Device Administration API
+   - Requires user consent to enable
+   - Suitable for enterprise applications with user interaction
+   - Can be disabled by users in Settings
+
+2. **Device Owner (DO)**: Application set as device owner via Device Policy Manager
+   - Requires device provisioning or ADB setup
+   - Full device management capabilities
+   - Cannot be disabled by users
+
+3. **Profile Owner (PO)**: Application set as profile owner for work profiles
+   - Manages work profile on personally owned devices
+   - Suitable for BYOD scenarios
+
+**Important**: Knox license activation will fail with error code 301 (ERROR_INTERNAL) if the application does not have proper Device Administrator privileges. See the troubleshooting section below for implementation guidance.
 
 **Note**: The library does not include dependencies on specific device detection libraries. Applications can implement their own device detection logic through the `LicenseSelectionStrategy` interface.
-
-### Migration from Automatic TE3 Detection
-
-If you were previously relying on automatic TE3 detection, you can implement equivalent functionality with a custom strategy:
-
-```kotlin
-class Te3LicenseSelectionStrategy : LicenseSelectionStrategy {
-    override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
-        return if (isCurrentDeviceTe3()) {
-            availableKeys["tactical"] ?: defaultKey
-        } else {
-            defaultKey
-        }
-    }
-
-    private fun isCurrentDeviceTe3(): Boolean {
-        val buildNumber = Build.DISPLAY
-        val modelName = Build.MODEL
-
-        val te3Patterns = listOf("_B2BF", "TE3", "S911U1", "G736U1")
-        return te3Patterns.any { pattern ->
-            buildNumber.contains(pattern) || modelName.contains(pattern)
-        }
-    }
-}
-```
 
 ## Error Handling
 
@@ -437,6 +541,71 @@ All errors are returned as `LicenseResult.Error` with descriptive messages and o
 4. **Keystore Integration**: For maximum security with hardware-backed storage
 
 **Never commit license keys to version control.** Always use `local.properties` or environment variables.
+
+## Troubleshooting
+
+### Knox License Activation Fails with "Internal Knox error" (Error Code 301)
+
+This error typically indicates missing Device Administrator privileges. To resolve:
+
+1. **Check if your app is a Device Administrator**:
+   ```kotlin
+   val devicePolicyManager = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+   val componentName = ComponentName(this, MyDeviceAdminReceiver::class.java)
+   val isAdmin = devicePolicyManager.isAdminActive(componentName)
+   Log.d("DeviceAdmin", "Is Device Administrator: $isAdmin")
+   ```
+
+2. **Implement Device Administrator registration**:
+   ```kotlin
+   // Create DeviceAdminReceiver
+   class MyDeviceAdminReceiver : DeviceAdminReceiver()
+
+   // Register in AndroidManifest.xml
+   <receiver android:name=".MyDeviceAdminReceiver"
+       android:permission="android.permission.BIND_DEVICE_ADMIN">
+       <meta-data android:name="android.app.device_admin"
+           android:resource="@xml/device_admin" />
+       <intent-filter>
+           <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+       </intent-filter>
+   </receiver>
+
+   // Request Device Administrator privileges
+   val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+   intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
+   intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+       "This app requires Device Administrator privileges for Knox license management")
+   startActivityForResult(intent, REQUEST_CODE_ENABLE_ADMIN)
+   ```
+
+3. **Create device_admin.xml**:
+   ```xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+       <uses-policies>
+           <limit-password />
+           <watch-login />
+           <reset-password />
+           <force-lock />
+           <wipe-data />
+       </uses-policies>
+   </device-admin>
+   ```
+
+### Common Error Codes
+
+- **301 (ERROR_INTERNAL)**: Missing Device Administrator privileges or Knox setup issues
+- **102 (ERROR_INVALID_LICENSE)**: Invalid license key format or expired license
+- **103 (ERROR_INVALID_PACKAGE_NAME)**: License not valid for this application package
+- **201 (ERROR_NETWORK_DISCONNECTED)**: Network connectivity required for license validation
+
+### Device Owner Setup (Advanced)
+
+For Device Owner setup via ADB (development/testing):
+```bash
+adb shell dpm set-device-owner com.yourpackage/.MyDeviceAdminReceiver
+```
 
 ## License
 

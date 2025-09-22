@@ -15,6 +15,15 @@ object KnoxStartupManager {
         context: Context,
         licenseSelectionStrategy: LicenseSelectionStrategy? = null
     ): LicenseStartupResult {
+        return initializeKnoxLicensing(context, licenseSelectionStrategy, null, null)
+    }
+
+    suspend fun initializeKnoxLicensing(
+        context: Context,
+        licenseSelectionStrategy: LicenseSelectionStrategy? = null,
+        defaultKey: String? = null,
+        namedKeysArray: Array<String>? = null
+    ): LicenseStartupResult {
         if (isInitialized) {
             Log.d(TAG, "Knox licensing already initialized: $licenseStatus")
             return licenseStatus
@@ -23,12 +32,19 @@ object KnoxStartupManager {
         licenseStatus = withContext(Dispatchers.IO) {
             try {
                 Log.d(TAG, "Initializing Knox licensing...")
-                val knoxLicenseHandler = if (licenseSelectionStrategy != null) {
-                    Log.d(TAG, "Using custom license selection strategy")
-                    KnoxLicenseFactory.create(context, licenseSelectionStrategy)
-                } else {
-                    Log.d(TAG, "Using default license configuration")
-                    KnoxLicenseFactory.createFromBuildConfig(context)
+                val knoxLicenseHandler = when {
+                    licenseSelectionStrategy != null && defaultKey != null -> {
+                        Log.d(TAG, "Using custom license selection strategy with app BuildConfig")
+                        KnoxLicenseFactory.create(context, licenseSelectionStrategy, defaultKey, namedKeysArray)
+                    }
+                    licenseSelectionStrategy != null -> {
+                        Log.d(TAG, "Using custom license selection strategy with knox-licensing BuildConfig")
+                        KnoxLicenseFactory.create(context, licenseSelectionStrategy)
+                    }
+                    else -> {
+                        Log.d(TAG, "Using default license configuration")
+                        KnoxLicenseFactory.createFromBuildConfig(context)
+                    }
                 }
 
                 // Check current status first

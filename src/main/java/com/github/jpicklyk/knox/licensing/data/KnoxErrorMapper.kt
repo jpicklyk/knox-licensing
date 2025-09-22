@@ -19,20 +19,20 @@ internal class KnoxErrorMapper {
     fun getKnoxErrorMessage(errorCode: Int): String {
         return when (errorCode) {
             ERROR_NONE -> "No error"
-            ERROR_NULL_PARAMS -> "Null parameters provided"
-            ERROR_UNKNOWN -> "Unknown error occurred"
-            ERROR_INVALID_LICENSE -> "Invalid license key"
-            ERROR_LICENSE_TERMINATED -> "License has been terminated"
-            ERROR_INVALID_PACKAGE_NAME -> "Invalid package name"
-            ERROR_NOT_CURRENT_DATE -> "Device date is not current"
-            ERROR_INVALID_BINDING -> "Invalid license binding"
-            ERROR_INTERNAL -> "Internal Knox error"
-            ERROR_NETWORK_DISCONNECTED -> "Network disconnected"
+            ERROR_NULL_PARAMS -> "Null parameters provided - check if license key is null or empty"
+            ERROR_UNKNOWN -> "Unknown error occurred - check Knox SDK logs for more details"
+            ERROR_INVALID_LICENSE -> "Invalid license key - verify the license key format and validity"
+            ERROR_LICENSE_TERMINATED -> "License has been terminated - contact Samsung for license status"
+            ERROR_INVALID_PACKAGE_NAME -> "Invalid package name - license not valid for this application package"
+            ERROR_NOT_CURRENT_DATE -> "Device date is not current - check device time and date settings"
+            ERROR_INVALID_BINDING -> "Invalid license binding - license may be bound to different device"
+            ERROR_INTERNAL -> "Internal Knox error (301) - typically indicates missing Device Administrator privileges. Your app must be registered as a Device Administrator, Device Owner, or Profile Owner to use Knox licensing."
+            ERROR_NETWORK_DISCONNECTED -> "Network disconnected - check internet connectivity for license validation"
             ERROR_LICENSE_DEACTIVATED -> "License has been deactivated"
-            ERROR_LICENSE_EXPIRED -> "License has expired"
-            else -> "Unknown error (code: $errorCode)"
+            ERROR_LICENSE_EXPIRED -> "License has expired - renew the license key"
+            else -> "Unknown Knox error (code: $errorCode) - check Samsung Knox documentation"
         }.also { message ->
-            Log.d(tag, "Knox error code $errorCode: $message")
+            Log.d(tag, "Knox error code $errorCode mapped to: $message")
         }
     }
 }

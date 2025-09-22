@@ -19,6 +19,15 @@ object KnoxLicenseFactory {
         return create(context, LicenseKeyProvider(licenseSelectionStrategy).fromBuildConfig())
     }
 
+    fun create(
+        context: Context,
+        licenseSelectionStrategy: LicenseSelectionStrategy?,
+        defaultKey: String,
+        namedKeysArray: Array<String>?
+    ): KnoxLicenseHandler {
+        return create(context, LicenseKeyProvider(licenseSelectionStrategy).fromAppBuildConfig(defaultKey, namedKeysArray))
+    }
+
     fun create(context: Context, licenseConfiguration: LicenseConfiguration): KnoxLicenseHandler {
         val knoxErrorMapper = KnoxErrorMapper()
         val knoxLicenseRepository = KnoxLicenseRepository(
