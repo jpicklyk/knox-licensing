@@ -7,8 +7,8 @@ A reusable Android library for Samsung Knox Enterprise License Management that p
 - **Clean Architecture**: Separation of domain and data layers
 - **Coroutines Support**: Async/await license operations with Flow-based state monitoring
 - **Named License Keys**: Support for multiple named license configurations
-- **Automatic TE3 Detection**: Automatically detects Tactical Edition 3 devices and uses appropriate license
-- **Tactical License Support**: Seamless integration with Knox Tactical SDK for TE3 devices
+- **Configurable License Selection**: Pluggable strategy pattern for custom license selection logic
+- **Device-Agnostic**: No hardcoded device detection dependencies
 - **Comprehensive Error Handling**: Detailed Knox SDK error code mapping
 - **Framework Agnostic**: No dependency injection framework required
 - **Easy Integration**: Simple factory pattern for instantiation
@@ -43,6 +43,7 @@ dependencies {
 import com.github.jpicklyk.knox.licensing.KnoxLicenseFactory
 import com.github.jpicklyk.knox.licensing.domain.LicenseResult
 import com.github.jpicklyk.knox.licensing.domain.LicenseState
+import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
 
 class MainActivity : AppCompatActivity() {
     private lateinit var knoxLicenseHandler: KnoxLicenseHandler
@@ -50,8 +51,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Create handler from BuildConfig (requires BuildConfig.KNOX_LICENSE_KEY)
+        // Create handler from BuildConfig (uses default license key)
         knoxLicenseHandler = KnoxLicenseFactory.createFromBuildConfig(this)
+
+        // Create with custom license selection strategy
+        val customStrategy = MyLicenseSelectionStrategy()
+        knoxLicenseHandler = KnoxLicenseFactory.create(this, customStrategy)
 
         // Or create with explicit keys
         knoxLicenseHandler = KnoxLicenseFactory.createWithKeys(
@@ -65,6 +70,45 @@ class MainActivity : AppCompatActivity() {
     }
 }
 ```
+
+### License Selection Strategy
+
+The library supports custom license selection logic through the `LicenseSelectionStrategy` interface. This allows applications to implement device-specific or context-specific license selection without creating dependencies.
+
+```kotlin
+import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
+
+class MyDeviceBasedStrategy : LicenseSelectionStrategy {
+    override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
+        return when {
+            isTE3Device() -> availableKeys["tactical"] ?: defaultKey
+            isEnterpriseDevice() -> availableKeys["enterprise"] ?: defaultKey
+            else -> defaultKey
+        }
+    }
+
+    private fun isTE3Device(): Boolean {
+        // Your device detection logic here
+        return Build.MODEL.contains("TE3") || Build.DISPLAY.contains("_B2BF")
+    }
+
+    private fun isEnterpriseDevice(): Boolean {
+        // Your enterprise device detection logic here
+        return hasEnterpriseFeatures()
+    }
+}
+
+// Use the strategy
+val strategy = MyDeviceBasedStrategy()
+val handler = KnoxLicenseFactory.create(context, strategy)
+```
+
+#### Strategy Benefits
+
+- **Flexibility**: Implement any device detection or selection logic
+- **Testability**: Easy to unit test different selection scenarios
+- **Independence**: No dependencies on specific device detection libraries
+- **Reusability**: Same strategy can be used across different apps
 
 ### License Operations
 
@@ -146,15 +190,24 @@ The library provides `KnoxStartupManager` for convenient initialization during a
 ```kotlin
 import com.github.jpicklyk.knox.licensing.domain.KnoxStartupManager
 import com.github.jpicklyk.knox.licensing.domain.LicenseStartupResult
+import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
 
 class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
-        // Initialize Knox licensing at startup
+        // Initialize Knox licensing at startup with default configuration
         lifecycleScope.launch {
             when (val result = KnoxStartupManager.initializeKnoxLicensing(this@MyApplication)) {
+                // Handle results...
+            }
+        }
+
+        // Or initialize with custom license selection strategy
+        lifecycleScope.launch {
+            val customStrategy = MyDeviceBasedStrategy()
+            when (val result = KnoxStartupManager.initializeKnoxLicensing(this@MyApplication, customStrategy)) {
                 is LicenseStartupResult.AlreadyActivated -> {
                     Log.d("Knox", "License was already activated")
                 }
@@ -192,7 +245,7 @@ KnoxStartupManager.reset()
 ```
 
 The startup manager automatically:
-- Detects TE3 devices and uses appropriate licenses
+- Uses custom license selection strategy if provided
 - Checks if license is already activated before attempting activation
 - Provides detailed status reporting
 - Handles initialization errors gracefully
@@ -239,14 +292,15 @@ knox.license.tactical=KLM09-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY
 knox.license.enterprise=KLM06-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ
 ```
 
-## Automatic License Selection
+## Custom License Selection
 
-The library automatically detects Tactical Edition 3 (TE3) devices and selects the appropriate license:
+The library supports custom license selection through the strategy pattern:
 
-- **TE3 Devices**: Uses `knox.license.tactical` if configured, falls back to `knox.license`
-- **Non-TE3 Devices**: Uses `knox.license`
+- **Default Behavior**: Uses `knox.license` from BuildConfig
+- **Custom Strategy**: Implement `LicenseSelectionStrategy` for device-specific logic
+- **Named Keys**: Access configured named keys through the strategy interface
 
-This ensures that TE3 devices automatically use tactical licenses when available, while maintaining compatibility with standard Knox Enterprise devices.
+This allows applications to implement their own device detection and license selection logic without creating dependencies on specific device libraries.
 
 ### Manual Configuration
 
@@ -275,8 +329,17 @@ object KnoxLicenseModule {
 
     @Provides
     @Singleton
-    fun provideKnoxLicenseHandler(@ApplicationContext context: Context): KnoxLicenseHandler {
-        return KnoxLicenseFactory.createFromBuildConfig(context)
+    fun provideLicenseSelectionStrategy(): LicenseSelectionStrategy {
+        return MyDeviceBasedStrategy()
+    }
+
+    @Provides
+    @Singleton
+    fun provideKnoxLicenseHandler(
+        @ApplicationContext context: Context,
+        licenseSelectionStrategy: LicenseSelectionStrategy
+    ): KnoxLicenseHandler {
+        return KnoxLicenseFactory.create(context, licenseSelectionStrategy)
     }
 }
 
@@ -295,8 +358,10 @@ class MainActivity : AppCompatActivity() {
 
 ```kotlin
 val knoxLicenseModule = module {
+    single<LicenseSelectionStrategy> { MyDeviceBasedStrategy() }
+
     single<KnoxLicenseHandler> {
-        KnoxLicenseFactory.createFromBuildConfig(androidContext())
+        KnoxLicenseFactory.create(androidContext(), get())
     }
 }
 
@@ -319,8 +384,35 @@ class MainActivity : AppCompatActivity() {
 - Android API 21+
 - Samsung Knox-enabled device
 - Knox Enterprise License Manager
-- Knox Tactical SDK (for TE3 device detection)
 - Device Owner or Admin privileges for license operations
+
+**Note**: The library does not include dependencies on specific device detection libraries. Applications can implement their own device detection logic through the `LicenseSelectionStrategy` interface.
+
+### Migration from Automatic TE3 Detection
+
+If you were previously relying on automatic TE3 detection, you can implement equivalent functionality with a custom strategy:
+
+```kotlin
+class Te3LicenseSelectionStrategy : LicenseSelectionStrategy {
+    override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
+        return if (isCurrentDeviceTe3()) {
+            availableKeys["tactical"] ?: defaultKey
+        } else {
+            defaultKey
+        }
+    }
+
+    private fun isCurrentDeviceTe3(): Boolean {
+        val buildNumber = Build.DISPLAY
+        val modelName = Build.MODEL
+
+        val te3Patterns = listOf("_B2BF", "TE3", "S911U1", "G736U1")
+        return te3Patterns.any { pattern ->
+            buildNumber.contains(pattern) || modelName.contains(pattern)
+        }
+    }
+}
+```
 
 ## Error Handling
 

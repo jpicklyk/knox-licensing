@@ -7,11 +7,16 @@ import com.github.jpicklyk.knox.licensing.data.KnoxLicenseRepository
 import com.github.jpicklyk.knox.licensing.data.LicenseKeyProvider
 import com.github.jpicklyk.knox.licensing.domain.KnoxLicenseHandler
 import com.github.jpicklyk.knox.licensing.domain.LicenseConfiguration
+import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
 
 object KnoxLicenseFactory {
 
     fun create(context: Context): KnoxLicenseHandler {
         return create(context, LicenseKeyProvider().fromBuildConfig())
+    }
+
+    fun create(context: Context, licenseSelectionStrategy: LicenseSelectionStrategy?): KnoxLicenseHandler {
+        return create(context, LicenseKeyProvider(licenseSelectionStrategy).fromBuildConfig())
     }
 
     fun create(context: Context, licenseConfiguration: LicenseConfiguration): KnoxLicenseHandler {

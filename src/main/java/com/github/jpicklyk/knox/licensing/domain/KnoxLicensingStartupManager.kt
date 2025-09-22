@@ -7,11 +7,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object KnoxStartupManager {
-    private const val TAG = "KnoxLicensingStartupManager"
+    private const val TAG = "KnoxStartupManager"
     private var isInitialized = false
     private var licenseStatus: LicenseStartupResult = LicenseStartupResult.NotChecked
 
-    suspend fun initializeKnoxLicensing(context: Context): LicenseStartupResult {
+    suspend fun initializeKnoxLicensing(
+        context: Context,
+        licenseSelectionStrategy: LicenseSelectionStrategy? = null
+    ): LicenseStartupResult {
         if (isInitialized) {
             Log.d(TAG, "Knox licensing already initialized: $licenseStatus")
             return licenseStatus
@@ -20,7 +23,13 @@ object KnoxStartupManager {
         licenseStatus = withContext(Dispatchers.IO) {
             try {
                 Log.d(TAG, "Initializing Knox licensing...")
-                val knoxLicenseHandler = KnoxLicenseFactory.createFromBuildConfig(context)
+                val knoxLicenseHandler = if (licenseSelectionStrategy != null) {
+                    Log.d(TAG, "Using custom license selection strategy")
+                    KnoxLicenseFactory.create(context, licenseSelectionStrategy)
+                } else {
+                    Log.d(TAG, "Using default license configuration")
+                    KnoxLicenseFactory.createFromBuildConfig(context)
+                }
 
                 // Check current status first
                 val licenseInfo = knoxLicenseHandler.getLicenseInfo()

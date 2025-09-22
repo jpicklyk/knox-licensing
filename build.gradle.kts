@@ -1,20 +1,19 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    alias(libs.plugins.convention.android.knox.license)
 }
 
 android {
     namespace = "com.github.jpicklyk.knox.licensing"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 35
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
+        buildConfigField("String", "KNOX_LICENSE_KEY", "\"KNOX_LICENSE_KEY_NOT_FOUND\"")
         buildConfigField("String[]", "KNOX_LICENSE_KEYS", "{}")
     }
 
@@ -43,22 +42,20 @@ android {
 }
 
 dependencies {
-    // Knox modules
-    implementation(project(":knox-tactical"))
-    // Knox SDK - use the one from knox-enterprise to avoid duplicates
-    compileOnly(files("libs/knoxsdk_ver38.jar"))
+    // Knox SDK - compileOnly so the app provides the actual implementation
+    implementation(files("libs/knoxsdk_ver38.jar"))
 
     // Android Core
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation(libs.androidx.core.ktx)
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation(libs.kotlinx.coroutines.android)
 
     // Testing
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk.core)
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
 }
