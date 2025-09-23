@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    // Knox SDK - compileOnly so the app provides the actual implementation
+    // Knox SDK - implementation so consumers automatically get transitive dependencies
     implementation(files("libs/knoxsdk_ver38.jar"))
 
     // Android Core
