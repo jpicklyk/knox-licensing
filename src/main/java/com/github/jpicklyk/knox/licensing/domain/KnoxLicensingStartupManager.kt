@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object KnoxStartupManager {
-    private const val TAG = "KnoxStartupManager"
+    private const val TAG = "KnoxLicenseStartup"
     private var isInitialized = false
     private var licenseStatus: LicenseStartupResult = LicenseStartupResult.NotChecked
 
