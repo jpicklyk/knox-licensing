@@ -8,7 +8,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 29
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -34,6 +34,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlin {
@@ -44,6 +45,8 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.android.desugarJdkLibs)
+
     // Knox SDK - compileOnly so the app provides the actual implementation
     implementation(files("libs/knoxsdk_ver38.jar"))
 
