@@ -16,15 +16,14 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class UsbDeviceAccessVidPidTests {
-    private val sm = CustomDeviceManager.getInstance().systemManager
 
     @Test
     fun setUsbDeviceAccessAllowedList() = runTest {
         val vidpid = "1234:4321"
-        val useCase = SetUsbDeviceAccessAllowedListUseCase(sm)
+        val useCase = SetUsbDeviceAccessAllowedListUseCase()
         val result = useCase.invoke(true, vidpid)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbDeviceAccessAllowedListUseCase(sm)
+        val getCase = GetUsbDeviceAccessAllowedListUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == vidpid)
     }
@@ -32,10 +31,10 @@ class UsbDeviceAccessVidPidTests {
     @Test
     fun usbDeviceAccessAllowedList_DisableAndClear() = runTest {
         val vidpid = "OFF"
-        val useCase = SetUsbDeviceAccessAllowedListUseCase(sm)
+        val useCase = SetUsbDeviceAccessAllowedListUseCase()
         val result = useCase.invoke(false, vidpid)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbDeviceAccessAllowedListUseCase(sm)
+        val getCase = GetUsbDeviceAccessAllowedListUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == vidpid)
     }
@@ -43,10 +42,10 @@ class UsbDeviceAccessVidPidTests {
     @Test
     fun usbDeviceAccessAllowedList_Disable() = runTest {
         val vidpid = "1234:4321"
-        val useCase = SetUsbDeviceAccessAllowedListUseCase(sm)
+        val useCase = SetUsbDeviceAccessAllowedListUseCase()
         val result = useCase.invoke(false, vidpid)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbDeviceAccessAllowedListUseCase(sm)
+        val getCase = GetUsbDeviceAccessAllowedListUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == "OFF")
     }

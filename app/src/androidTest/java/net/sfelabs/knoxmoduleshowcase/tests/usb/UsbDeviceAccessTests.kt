@@ -18,15 +18,14 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 130)
 class UsbDeviceAccessTests {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
     @Test
     fun setUsbAccessBySerial_SingleSerialNumber() = runTest {
         val serials = listOf("0504a2635")
-        val useCase = SetUsbAccessBySerialUseCase(systemManager)
+        val useCase = SetUsbAccessBySerialUseCase()
         val result = useCase.invoke(true, serials)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbAccessBySerialUseCase(systemManager)
+        val getCase = GetUsbAccessBySerialUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == "0504a2635")
     }
@@ -34,10 +33,10 @@ class UsbDeviceAccessTests {
     @Test
     fun setUsbAccessBySerial_MultipleSerialNumber() = runTest {
         val serials = listOf("123456789abc", "cba987654321")
-        val useCase = SetUsbAccessBySerialUseCase(systemManager)
+        val useCase = SetUsbAccessBySerialUseCase()
         val result = useCase.invoke(true, serials)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbAccessBySerialUseCase(systemManager)
+        val getCase = GetUsbAccessBySerialUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == "123456789abc:cba987654321")
     }
@@ -45,10 +44,10 @@ class UsbDeviceAccessTests {
     @Test
     fun setUsbAccessBySerial_Disable() = runTest {
         val serials = listOf("123456789abc", "cba987654321")
-        val useCase = SetUsbAccessBySerialUseCase(systemManager)
+        val useCase = SetUsbAccessBySerialUseCase()
         val result = useCase.invoke(false, serials)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbAccessBySerialUseCase(systemManager)
+        val getCase = GetUsbAccessBySerialUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == "OFF")
     }
@@ -56,10 +55,10 @@ class UsbDeviceAccessTests {
     @Test
     fun setUsbAccessBySerial_Off() = runTest {
         val serials = listOf("OFF")
-        val useCase = SetUsbAccessBySerialUseCase(systemManager)
+        val useCase = SetUsbAccessBySerialUseCase()
         val result = useCase.invoke(false, serials)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbAccessBySerialUseCase(systemManager)
+        val getCase = GetUsbAccessBySerialUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == "OFF")
     }
@@ -67,10 +66,10 @@ class UsbDeviceAccessTests {
     @Test
     fun setUsbDeviceAccessAllowedList() = runTest {
         val vidpid = "1234:4321"
-        val useCase = SetUsbDeviceAccessAllowedListUseCase(systemManager)
+        val useCase = SetUsbDeviceAccessAllowedListUseCase()
         val result = useCase.invoke(true, vidpid)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbDeviceAccessAllowedListUseCase(systemManager)
+        val getCase = GetUsbDeviceAccessAllowedListUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == vidpid)
     }
@@ -78,10 +77,10 @@ class UsbDeviceAccessTests {
     @Test
     fun usbDeviceAccessAllowedList_DisableAndClear() = runTest {
         val vidpid = "OFF"
-        val useCase = SetUsbDeviceAccessAllowedListUseCase(systemManager)
+        val useCase = SetUsbDeviceAccessAllowedListUseCase()
         val result = useCase.invoke(false, vidpid)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbDeviceAccessAllowedListUseCase(systemManager)
+        val getCase = GetUsbDeviceAccessAllowedListUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == vidpid)
     }
@@ -89,10 +88,10 @@ class UsbDeviceAccessTests {
     @Test
     fun usbDeviceAccessAllowedList_Disable() = runTest {
         val vidpid = "1234:4321"
-        val useCase = SetUsbDeviceAccessAllowedListUseCase(systemManager)
+        val useCase = SetUsbDeviceAccessAllowedListUseCase()
         val result = useCase.invoke(false, vidpid)
         assert(result is ApiResult.Success)
-        val getCase = GetUsbDeviceAccessAllowedListUseCase(systemManager)
+        val getCase = GetUsbDeviceAccessAllowedListUseCase()
         val res = getCase.invoke()
         assert(res is ApiResult.Success && res.data == "OFF")
     }
@@ -100,7 +99,7 @@ class UsbDeviceAccessTests {
     @After
     fun cleanup() = runTest {
         val vidpid = "1234:4321"
-        val useCase = SetUsbDeviceAccessAllowedListUseCase(systemManager)
+        val useCase = SetUsbDeviceAccessAllowedListUseCase()
         useCase.invoke(false, vidpid)
     }
 }
