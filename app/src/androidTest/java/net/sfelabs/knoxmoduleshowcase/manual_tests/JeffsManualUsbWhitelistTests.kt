@@ -29,12 +29,9 @@ class JeffsManualUsbWhitelistTests {
     val usbHubVidPid = "1D5C:5001:0BDA:8156"
     val usbHubSerial = "001500A96"
 
-
-    private val sm = CustomDeviceManager.getInstance().systemManager
-
     @Test
     fun whitelistHubAndEthernetByVidPid() = runTest {
-        val vidPidCase = SetUsbDeviceAccessAllowedListUseCase(sm)
+        val vidPidCase = SetUsbDeviceAccessAllowedListUseCase()
         val result2 = vidPidCase.invoke(true, usbHubVidPid)
         assert(result2 is ApiResult.Success)
     }
@@ -44,19 +41,19 @@ class JeffsManualUsbWhitelistTests {
         val serials = listOf(amazon_basics_ethernet_dongle_serial)
         val vidPid = usb_c_drive_vid_pid
 
-        val serialCase = SetUsbAccessBySerialUseCase(sm)
+        val serialCase = SetUsbAccessBySerialUseCase()
         val result = serialCase.invoke(true, serials)
         assert(result is ApiResult.Success)
 
-        val vidPidCase = SetUsbDeviceAccessAllowedListUseCase(sm)
+        val vidPidCase = SetUsbDeviceAccessAllowedListUseCase()
         val result2 = vidPidCase.invoke(true, vidPid)
         assert(result2 is ApiResult.Success)
 
-        val getSerialCase = GetUsbAccessBySerialUseCase(sm)
+        val getSerialCase = GetUsbAccessBySerialUseCase()
         val res = getSerialCase.invoke()
         assert(res is ApiResult.Success && res.data == amazon_basics_ethernet_dongle_serial)
 
-        val getVidPidCase = GetUsbDeviceAccessAllowedListUseCase(sm)
+        val getVidPidCase = GetUsbDeviceAccessAllowedListUseCase()
         val res2 = getVidPidCase.invoke()
         assert(res2 is ApiResult.Success && res2.data == usb_c_drive_vid_pid)
     }
@@ -64,14 +61,14 @@ class JeffsManualUsbWhitelistTests {
 
     @Test
     fun disableWhitelisting() = runTest {
-        val result = SetUsbAccessBySerialUseCase(sm).invoke(false, listOf("OFF"))
+        val result = SetUsbAccessBySerialUseCase().invoke(false, listOf("OFF"))
         assert(result is ApiResult.Success)
-        val res = GetUsbAccessBySerialUseCase(sm).invoke()
+        val res = GetUsbAccessBySerialUseCase().invoke()
         assert(res is ApiResult.Success && res.data == "OFF")
 
-        val result2 = SetUsbDeviceAccessAllowedListUseCase(sm).invoke(false, "OFF")
+        val result2 = SetUsbDeviceAccessAllowedListUseCase().invoke(false, "OFF")
         assert(result2 is ApiResult.Success)
-        val res2 = GetUsbDeviceAccessAllowedListUseCase(sm).invoke()
+        val res2 = GetUsbDeviceAccessAllowedListUseCase().invoke()
         assert(res2 is ApiResult.Success && res2.data == "OFF")
     }
 }
