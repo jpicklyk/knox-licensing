@@ -5,20 +5,21 @@ plugins {
 
 android {
     namespace = "net.sfelabs.knoxmoduleshowcase.benchmark"
-    compileSdk = 35
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+        }
     }
 
     defaultConfig {
         minSdk = 28
-        targetSdk = 35
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         

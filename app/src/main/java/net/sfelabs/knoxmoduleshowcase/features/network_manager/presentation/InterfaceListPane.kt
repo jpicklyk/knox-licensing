@@ -15,7 +15,9 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.Interface
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.InterfaceConfiguration
@@ -32,13 +34,14 @@ fun InterfaceListPane(
     onInterfaceClick: (InterfaceConfiguration) -> Unit,
     onFabClick: () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     onFabClick()
-                    navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, false)
+                    scope.launch { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, false) }
                 },
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
@@ -65,10 +68,12 @@ fun InterfaceListPane(
                     monitored = configuration.isInterfaceMonitored,
                     modifier = Modifier.clickable {
                         onInterfaceClick(configuration)
-                        navigator.navigateTo(
-                            pane = ListDetailPaneScaffoldRole.Detail,
-                            content = true
-                        )
+                        scope.launch {
+                            navigator.navigateTo(
+                                pane = ListDetailPaneScaffoldRole.Detail,
+                                contentKey = true
+                            )
+                        }
                     }
                 )
             }

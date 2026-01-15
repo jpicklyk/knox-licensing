@@ -13,7 +13,9 @@ import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneSca
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,6 +33,7 @@ fun NetworkManagerScreen(
     val viewModel: NetworkManagerListViewModel = hiltViewModel()
     val navigator = rememberListDetailPaneScaffoldNavigator<Any>()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     NavigableListDetailPaneScaffold(
         navigator = navigator,
@@ -43,7 +46,7 @@ fun NetworkManagerScreen(
                 onFabClick = viewModel::onNewNetworkClicked
             )},
         detailPane = {
-            val readOnly = navigator.currentDestination?.content as Boolean? ?: false
+            val readOnly = navigator.currentDestination?.contentKey as Boolean? ?: false
             val content = state.selectedInterfaceConfiguration
 
             Column(
@@ -69,14 +72,14 @@ fun NetworkManagerScreen(
                         onAddressSelected = viewModel::onInterfaceAddressConfigurationSelected,
                         onAddAddressClick = {
                             viewModel.onAddNewInterfaceAddressConfiguration()
-                            navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Extra)
+                            scope.launch { navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Extra) }
                         },
                         onModifyAddressClick = {
-                            navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Extra)
+                            scope.launch { navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Extra) }
                         },
                         onDeleteAddressClick = {
                             viewModel.onDeleteInterfaceAddressConfiguration()
-                            navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Detail)
+                            scope.launch { navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Detail) }
                         }
                     )
                     Row(
@@ -86,7 +89,7 @@ fun NetworkManagerScreen(
                         FilledTonalButton(
                             onClick = {
                                 viewModel.onSaveInterfaceConfiguration(content)
-                                navigator.navigateTo(pane = ListDetailPaneScaffoldRole.List)
+                                scope.launch { navigator.navigateTo(pane = ListDetailPaneScaffoldRole.List) }
                             },
                             modifier = Modifier.widthIn(min = 100.dp)
                         ) {
@@ -94,7 +97,7 @@ fun NetworkManagerScreen(
                         }
                         FilledTonalButton(
                             onClick = {
-                                navigator.navigateTo(pane = ListDetailPaneScaffoldRole.List)
+                                scope.launch { navigator.navigateTo(pane = ListDetailPaneScaffoldRole.List) }
                             },
                             modifier = Modifier.widthIn(min = 100.dp)
                         ) {
@@ -126,10 +129,10 @@ fun NetworkManagerScreen(
                         onDnsListChanged = viewModel::onDnsListChanged,
                         onOkClicked = {
                             viewModel.onSaveInterfaceAddressConfigurationChanges()
-                            navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Detail)
+                            scope.launch { navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Detail) }
                         },
                         onCancelClicked = {
-                            navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Detail)
+                            scope.launch { navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Detail) }
                         }
                     )
                 }
@@ -147,7 +150,7 @@ fun NetworkManagerScreen(
                     }
                     FilledTonalButton(
                         onClick = {
-                            navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Detail)
+                            scope.launch { navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Detail) }
                         },
                         modifier = Modifier.widthIn(min = 100.dp)
                     ) {
