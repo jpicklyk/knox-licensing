@@ -3,6 +3,7 @@ package net.sfelabs.knoxmoduleshowcase.di
 import android.content.Context
 import com.github.jpicklyk.knox.licensing.KnoxLicenseFactory
 import com.github.jpicklyk.knox.licensing.domain.KnoxLicenseHandler
+import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +17,16 @@ object KnoxLicensingModule {
 
     @Provides
     @Singleton
-    fun provideKnoxLicenseHandler(@ApplicationContext context: Context): KnoxLicenseHandler {
-        return KnoxLicenseFactory.createFromBuildConfig(context)
+    fun provideLicenseSelectionStrategy(): LicenseSelectionStrategy {
+        return TacticalDeviceLicenseSelectionStrategy()
+    }
+
+    @Provides
+    @Singleton
+    fun provideKnoxLicenseHandler(
+        @ApplicationContext context: Context,
+        licenseSelectionStrategy: LicenseSelectionStrategy
+    ): KnoxLicenseHandler {
+        return KnoxLicenseFactory.create(context, licenseSelectionStrategy)
     }
 }

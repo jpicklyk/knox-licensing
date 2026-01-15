@@ -35,6 +35,7 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
                 buildConfig = true
             }
             defaultConfig {
+                val tacticalKey = getKnoxTacticalLicenseKey()
                 buildConfigField(
                     type = "String",
                     name = "KNOX_LICENSE_KEY",
@@ -43,7 +44,12 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
                 buildConfigField(
                     type = "String",
                     name = "KNOX_TACTICAL_LICENSE_KEY",
-                    value = "\"${getKnoxTacticalLicenseKey()}\""
+                    value = "\"${tacticalKey}\""
+                )
+                buildConfigField(
+                    type = "String[]",
+                    name = "KNOX_LICENSE_KEYS",
+                    value = "{\"tactical:${tacticalKey}\"}"
                 )
             }
         }

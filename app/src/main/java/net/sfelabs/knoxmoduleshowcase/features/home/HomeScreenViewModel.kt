@@ -92,22 +92,34 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private suspend fun updateKnoxActivationInfo(licenseState: LicenseState) {
+        // Always get the configured license key for display, even if activation fails
+        val configuredKey = knoxLicenseHandler.getAvailableLicenses()["default"]
+        val maskedConfiguredKey = configuredKey?.let { maskLicenseKey(it) }
 
         val result = getLicenseActivationInfoUseCase()
         if(result is ApiResult.Success) {
             val info = result.data
             _knoxState.value = _knoxState.value.copy(
-                maskedKey = info.maskedLicenseKey,
+                maskedKey = info.maskedLicenseKey ?: maskedConfiguredKey,
                 state = licenseState,
                 activationDate = info.activationDate
             )
         } else {
             _knoxState.value = _knoxState.value.copy(
-                maskedKey = null,
+                maskedKey = maskedConfiguredKey,
                 state = licenseState,
                 activationDate = null,
                 error = licenseState.getErrorOrNull()
             )
+        }
+    }
+
+    private fun maskLicenseKey(key: String): String {
+        // Show first 10 chars then mask the rest (e.g., "KLM09-XXXX...XXX")
+        return if (key.length > 10) {
+            "${key.take(10)}...${key.takeLast(3)}"
+        } else {
+            key
         }
     }
     private fun getPermissionStatus(context: Context): List<PermissionStatus> {
