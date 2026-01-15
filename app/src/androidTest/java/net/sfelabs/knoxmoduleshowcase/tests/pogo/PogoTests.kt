@@ -11,7 +11,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @SmallTest
-@TacticalSdkSuppress(includeModels = ["SM-X308U"])
+@TacticalSdkSuppress(includeModels = ["SM-X308U", "SM-X300"])
 class PogoTests {
 
     @Test
