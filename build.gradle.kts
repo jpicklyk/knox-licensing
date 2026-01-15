@@ -48,7 +48,7 @@ dependencies {
     coreLibraryDesugaring(libs.android.desugarJdkLibs)
 
     // Knox SDK - compileOnly so the app provides the actual implementation
-    implementation(files("libs/knoxsdk_ver38.jar"))
+    compileOnly(files("libs/knoxsdk_ver38.jar"))
 
     // Android Core
     implementation(libs.androidx.core.ktx)
