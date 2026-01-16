@@ -1,6 +1,5 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
-import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -12,12 +11,12 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
             when {
                 plugins.hasPlugin("com.android.application") -> {
                     extensions.configure<ApplicationExtension> {
-                        configureBuildConfig(this)
+                        configureApplicationBuildConfig(this)
                     }
                 }
                 plugins.hasPlugin("com.android.library") -> {
                     extensions.configure<LibraryExtension> {
-                        configureBuildConfig(this)
+                        configureLibraryBuildConfig(this)
                     }
                 }
                 else -> {
@@ -27,9 +26,33 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.configureBuildConfig(
-        extension: CommonExtension<*, *, *, *, *, *>
-    ) {
+    private fun Project.configureApplicationBuildConfig(extension: ApplicationExtension) {
+        extension.apply {
+            buildFeatures {
+                buildConfig = true
+            }
+            defaultConfig {
+                val tacticalKey = getKnoxTacticalLicenseKey()
+                buildConfigField(
+                    type = "String",
+                    name = "KNOX_LICENSE_KEY",
+                    value = "\"${getKnoxLicenseKey()}\""
+                )
+                buildConfigField(
+                    type = "String",
+                    name = "KNOX_TACTICAL_LICENSE_KEY",
+                    value = "\"${tacticalKey}\""
+                )
+                buildConfigField(
+                    type = "String[]",
+                    name = "KNOX_LICENSE_KEYS",
+                    value = "{\"tactical:${tacticalKey}\"}"
+                )
+            }
+        }
+    }
+
+    private fun Project.configureLibraryBuildConfig(extension: LibraryExtension) {
         extension.apply {
             buildFeatures {
                 buildConfig = true

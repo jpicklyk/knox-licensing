@@ -16,7 +16,9 @@
 
 package net.sfelabs.knoxmoduleshowcase.internals
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
@@ -25,22 +27,21 @@ import org.gradle.kotlin.dsl.dependencies
  * Configure Compose-specific options
  */
 internal fun Project.configureAndroidCompose(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
+    commonExtension: CommonExtension,
 ) {
     pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
-    commonExtension.apply {
-        buildFeatures {
-            compose = true
-        }
+    when (commonExtension) {
+        is ApplicationExtension -> commonExtension.buildFeatures { compose = true }
+        is LibraryExtension -> commonExtension.buildFeatures { compose = true }
+    }
 
-        dependencies {
-            val bom = libs.findLibrary("androidx-compose-bom").get()
-            add("implementation", platform(bom))
-            add("androidTestImplementation", platform(bom))
-            add("debugImplementation", libs.findLibrary("androidx-compose-ui-tooling").get())
-            add("implementation", libs.findLibrary("androidx-compose-ui-tooling-preview").get())
-        }
+    dependencies {
+        val bom = libs.findLibrary("androidx-compose-bom").get()
+        add("implementation", platform(bom))
+        add("androidTestImplementation", platform(bom))
+        add("debugImplementation", libs.findLibrary("androidx-compose-ui-tooling").get())
+        add("implementation", libs.findLibrary("androidx-compose-ui-tooling-preview").get())
     }
 }
 

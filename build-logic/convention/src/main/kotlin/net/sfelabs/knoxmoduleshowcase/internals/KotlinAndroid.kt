@@ -16,7 +16,10 @@
 
 package net.sfelabs.knoxmoduleshowcase.internals
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.TestExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -30,29 +33,66 @@ import org.gradle.kotlin.dsl.dependencies
  * Configure base Kotlin with Android options
  */
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
+    commonExtension: CommonExtension,
 ) {
-    commonExtension.apply {
-        compileSdk = 36
-
-        defaultConfig {
-            // Need to leave this at 29 for Android 10 on S20TE
-            minSdk = 29
-        }
-
-        compileOptions {
-            // Up to Java 11 APIs are available through desugaring
-            // https://developer.android.com/studio/write/java11-minimal-support-table
-            sourceCompatibility = JavaVersion.VERSION_21
-            targetCompatibility = JavaVersion.VERSION_21
-            isCoreLibraryDesugaringEnabled = true
-        }
+    when (commonExtension) {
+        is ApplicationExtension -> configureApplicationKotlinAndroid(commonExtension)
+        is LibraryExtension -> configureLibraryKotlinAndroid(commonExtension)
+        is TestExtension -> configureTestKotlinAndroid(commonExtension)
     }
 
     configureKotlin()
 
     dependencies {
         add("coreLibraryDesugaring", libs.findLibrary("android.desugarJdkLibs").get())
+    }
+}
+
+private fun configureApplicationKotlinAndroid(extension: ApplicationExtension) {
+    extension.apply {
+        compileSdk = 36
+
+        defaultConfig {
+            minSdk = 29
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
+            isCoreLibraryDesugaringEnabled = true
+        }
+    }
+}
+
+private fun configureLibraryKotlinAndroid(extension: LibraryExtension) {
+    extension.apply {
+        compileSdk = 36
+
+        defaultConfig {
+            minSdk = 29
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
+            isCoreLibraryDesugaringEnabled = true
+        }
+    }
+}
+
+private fun configureTestKotlinAndroid(extension: TestExtension) {
+    extension.apply {
+        compileSdk = 36
+
+        defaultConfig {
+            minSdk = 29
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
+            isCoreLibraryDesugaringEnabled = true
+        }
     }
 }
 
