@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
 import net.sfelabs.knox.core.common.domain.repository.PreferencesRepository
 import com.github.jpicklyk.knox.licensing.domain.KnoxStartupManager
+import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
 import com.github.jpicklyk.knox.licensing.domain.LicenseStartupResult
 import javax.inject.Inject
 
@@ -17,6 +18,9 @@ import javax.inject.Inject
 class RootApplication: Application() {
     @Inject
     lateinit var applicationContextProvider: AndroidApplicationContextProvider
+
+    @Inject
+    lateinit var licenseSelectionStrategy: LicenseSelectionStrategy
 
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -32,7 +36,10 @@ class RootApplication: Application() {
     private fun initializeKnoxLicensing() {
         applicationScope.launch {
             try {
-                val result = KnoxStartupManager.initializeKnoxLicensing(this@RootApplication)
+                val result = KnoxStartupManager.initializeKnoxLicensing(
+                    this@RootApplication,
+                    licenseSelectionStrategy
+                )
                 handleLicenseResult(result)
             } catch (e: Exception) {
                 Log.e("RootApplication", "Error during Knox license initialization", e)
