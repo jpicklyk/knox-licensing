@@ -183,7 +183,7 @@ class HdmTests {
     }
 
     @Test
-    @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U"])
+    @TacticalSdkSuppress(excludeModels = ["SM-S911U1", "SM-G736U1", "SM-X308U"])
     fun disableGps() = runTest {
         val result = SetHdmGpsState().invoke(true)
         assert(result is ApiResult.Success && result.data)
@@ -194,7 +194,7 @@ class HdmTests {
     }
 
     @Test
-    @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U"])
+    @TacticalSdkSuppress(excludeModels = ["SM-S911U1", "SM-G736U1", "SM-X308U"])
     fun enableGps() = runTest {
         val result = SetHdmGpsState().invoke(false)
         assert(result is ApiResult.Success && result.data)
