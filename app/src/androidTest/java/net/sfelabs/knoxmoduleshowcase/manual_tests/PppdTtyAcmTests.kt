@@ -1,6 +1,11 @@
 package net.sfelabs.knoxmoduleshowcase.manual_tests
 
+import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -37,6 +42,8 @@ import java.net.NetworkInterface
 //@TacticalSdkSuppress(minReleaseVersion = 110)
 class PppdTtyAcmTests {
     private val tag = "TTYACMTEST"
+    private val optionsFileName = "options"
+    private val downloadDirectoryPath = "/sdcard/Download"
     private lateinit var context: Context
     private lateinit var optionsFileLocation: File
 //
@@ -47,10 +54,8 @@ class PppdTtyAcmTests {
     @Before
     fun setup() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
-        val targetDirectory = context.getExternalFilesDir(null)!!
-        optionsFileLocation = copyFileFromRawToSDCard(
-            context, R.raw.options, targetDirectory, "options"
-        )
+        // Use MediaStore API for Android 14+ compatibility
+        optionsFileLocation = copyFileToDownloadsViaMediaStore(context, R.raw.options, optionsFileName)
     }
 
     @Test
@@ -99,11 +104,11 @@ class PppdTtyAcmTests {
     @Test
     fun setupPpp() = runBlocking<Unit> {
         val useCase = ExecuteAdbCommandUseCase()
-        val optionsFile = File("/sdcard/options")
-        assertTrue("Options file was not copied to /sdcard/options!",optionsFile.exists())
+        val optionsFile = File("$downloadDirectoryPath/$optionsFileName")
+        assertTrue("Options file was not copied to $downloadDirectoryPath/$optionsFileName!",optionsFile.exists())
         //KnoxCustomManagerService: executeAdbCommand - java.lang.IllegalArgumentException: value of system property 'knoxsdk.tac.body' is longer than 91 bytes: /dev/ttyUSB0 file /storage/emulated/0/Android/data/net.sfelabs.knoxmoduleshowcase/files/options
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyACM0 file $optionsFileLocation")
-        val result = useCase.invoke(AdbHeader.PPPD, "/dev/ttyACM0 file /sdcard/options")
+        val result = useCase.invoke(AdbHeader.PPPD, "/dev/ttyACM0 file $downloadDirectoryPath/$optionsFileName")
         //val result = useCase.invoke(net.sfelabs.knox_tactical.domain.model.AdbHeader.PPPD, "/dev/ttyUSB0 file /sdcard/options")
         assert(result is ApiResult.Success)
     }
@@ -159,11 +164,11 @@ class PppdTtyAcmTests {
 
                 // 3. Setup PPP connection
                 val setupUseCase = ExecuteAdbCommandUseCase()
-                val optionsFile = File("/sdcard/options")
-                assertTrue("Options file was not copied to /sdcard/options!", optionsFile.exists())
+                val optionsFile = File("$downloadDirectoryPath/$optionsFileName")
+                assertTrue("Options file was not copied to $downloadDirectoryPath/$optionsFileName!", optionsFile.exists())
 
                 Log.i(tag, "Setting up PPP connection on $acmDevice")
-                val setupResult = setupUseCase.invoke(AdbHeader.PPPD, "$acmDevice file /sdcard/options")
+                val setupResult = setupUseCase.invoke(AdbHeader.PPPD, "$acmDevice file $downloadDirectoryPath/$optionsFileName")
                 assertTrue("PPP setup failed for $acmDevice: $setupResult", setupResult is ApiResult.Success)
                 Log.i(tag, "PPP setup successful for $acmDevice")
 
@@ -206,6 +211,75 @@ class PppdTtyAcmTests {
         Log.i(tag, "All ttyACM devices (0-4) tested successfully!")
     }
 
+    /**
+     * Copies file from raw resources to Downloads directory via MediaStore API.
+     * Returns a File object pointing to /sdcard/Download/[filename] for use with Knox SDK.
+     * This approach is compatible with Android 14+ scoped storage while keeping path short.
+     * Only creates the file if it doesn't already exist.
+     */
+    private fun copyFileToDownloadsViaMediaStore(
+        context: Context,
+        rawResourceId: Int,
+        targetFileName: String
+    ): File {
+        val targetFile = File("$downloadDirectoryPath/$targetFileName")
+
+        // Check if file already exists
+        if (targetFile.exists()) {
+            Log.d(tag, "File already exists at $targetFile, skipping copy")
+            return targetFile
+        }
+
+        // Query to check if MediaStore entry exists
+        val projection = arrayOf(MediaStore.MediaColumns._ID)
+        val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND " +
+                "${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
+        val selectionArgs = arrayOf(
+            targetFileName,
+            "${Environment.DIRECTORY_DOWNLOADS}/"
+        )
+
+        var existingUri: Uri? = null
+        context.contentResolver.query(
+            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val id = cursor.getLong(0)
+                existingUri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
+            }
+        }
+
+        // If MediaStore entry exists but file doesn't, use existing entry
+        val uri = existingUri ?: run {
+            // Create new MediaStore entry - use application/octet-stream to prevent extension
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, targetFileName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "application/octet-stream")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+            }
+
+            context.contentResolver.insert(
+                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                contentValues
+            ) ?: throw IllegalStateException("Failed to create MediaStore URI for $targetFileName")
+        }
+
+        // Write file content
+        context.contentResolver.openOutputStream(uri).use { outputStream ->
+            context.resources.openRawResource(rawResourceId).use { inputStream ->
+                inputStream.copyTo(outputStream!!)
+            }
+        }
+
+        Log.d(tag, "File created at $targetFile")
+        return targetFile
+    }
+
+    @Deprecated("Use copyFileToDownloadsViaMediaStore for Android 14+ compatibility")
     private fun copyFileFromRawToSDCard(
         context: Context,
         rawResourceId: Int,
