@@ -21,9 +21,12 @@ class ExecuteAdbCommandTest {
     fun testIpCommand() = runTest {
         val useCase = ExecuteAdbCommandUseCase()
 
-        val result = useCase(AdbHeader.IP, "rule flush")
+        val result = useCase(AdbHeader.IP, "link add dummy0 type dummy")
         assert(result is ApiResult.Success)
+        val result2 = useCase(AdbHeader.IP, "link delete dummy0")
+        assert(result2 is ApiResult.Success)
     }
+
     @Test
     fun testIpRouting() = runTest {
         val useCase = ExecuteAdbCommandUseCase()
