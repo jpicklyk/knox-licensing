@@ -26,6 +26,7 @@ import org.junit.Test
 import org.junit.runner.OrderWith
 import org.junit.runner.RunWith
 import org.junit.runner.manipulation.Alphanumeric
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
@@ -120,16 +121,72 @@ class TcpDumpTests {
     }
 
     @Test
-    fun test7_disableTcpDump() = runTest {
-        val disableUseCase = DisableTcpDumpUseCase()
-        val result = disableUseCase.invoke()
-        assert(result is ApiResult.Success)
-        //Can delete the pcap file here
-        context.contentResolver.delete(captureUri, null, null)
+    fun test7_checkCaptureFileExistsAndNonZero() = runTest {
+        withContext(Dispatchers.Default) {
+            delay(2000) // Give tcpdump time to write data
+
+            // Re-query MediaStore by filename to get fresh metadata
+            // (tcpdump writes directly to file system, so MediaStore cache may be stale)
+            val projection = arrayOf(
+                MediaStore.MediaColumns._ID,
+                MediaStore.MediaColumns.SIZE,
+                MediaStore.MediaColumns.DISPLAY_NAME
+            )
+            val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND " +
+                    "${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
+            val selectionArgs = arrayOf(
+                filename,
+                "${Environment.DIRECTORY_DOWNLOADS}/"
+            )
+
+            context.contentResolver.query(
+                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                null
+            )?.use { cursor ->
+                assertTrue(
+                    "Capture file query returned no results for filename: $filename",
+                    cursor.moveToFirst()
+                )
+
+                val sizeIndex = cursor.getColumnIndex(MediaStore.MediaColumns.SIZE)
+                assertTrue("SIZE column not found", sizeIndex != -1)
+
+                val fileSize = cursor.getLong(sizeIndex)
+                val fileName = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME))
+
+                println("Capture file '$fileName' size: $fileSize bytes")
+
+                // If MediaStore still shows 0, check the actual file on disk
+                if (fileSize == 0L) {
+                    val actualFile = File("/sdcard/Download/$filename")
+                    val actualSize = actualFile.length()
+                    println("MediaStore shows 0 bytes, but actual file size: $actualSize bytes")
+                    assertTrue(
+                        "Capture file exists but has zero size (MediaStore: $fileSize, Actual: $actualSize). Expected non-zero size for active TCP dump.",
+                        actualSize > 0
+                    )
+                } else {
+                    assertTrue(
+                        "Capture file exists but has zero size. Expected non-zero size for active TCP dump.",
+                        fileSize > 0
+                    )
+                }
+            } ?: throw AssertionError("Failed to query capture file for filename: $filename")
+        }
     }
 
     @Test
-    fun test8_checkTcpDumpIsRunningReturnsFalse() = runTest {
+    fun test8_disableTcpDump() = runTest {
+        val disableUseCase = DisableTcpDumpUseCase()
+        val result = disableUseCase.invoke()
+        assert(result is ApiResult.Success)
+    }
+
+    @Test
+    fun test9_checkTcpDumpIsRunningReturnsFalse() = runTest {
         val checkUseCase = IsTcpDumpEnabled()
         val checkResult = checkUseCase.invoke()
         assert(checkResult is ApiResult.Success && !checkResult.data)
