@@ -24,6 +24,7 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 @SmallTest
+@EthernetRequired
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class AddIpAddressToInterfaceTests {
     @get: Rule
@@ -106,7 +107,6 @@ class AddIpAddressToInterfaceTests {
     }
 
     @Test
-    @EthernetRequired
     fun addIpAddress_withPrefix29_returnsSuccess() = runTest {
         val interfaceName = "eth0"
         val ipAddress = "192.168.2.221/29"
