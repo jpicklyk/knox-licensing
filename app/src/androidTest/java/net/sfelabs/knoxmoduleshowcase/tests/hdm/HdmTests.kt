@@ -7,6 +7,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.testing.rules.AdbUsbRequired
+import net.sfelabs.knox.core.testing.rules.AdbUsbRequiredRule
+import org.junit.Rule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetHdmPolicyUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetSupportedHdmPoliciesUseCase
@@ -33,6 +36,9 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class HdmTests {
+    @get:Rule
+    val adbUsbRule = AdbUsbRequiredRule()
+
     private lateinit var context: Context
     private val cameraBitmask = 1
     private val mmcBitmask = 2
@@ -147,6 +153,7 @@ class HdmTests {
     }
 
     @Test
+    @AdbUsbRequired
     fun disableWifi() = runTest {
         val result = SetHdmWiFiState().invoke(true)
         assert(result is ApiResult.Success && result.data)
@@ -156,6 +163,7 @@ class HdmTests {
     }
 
     @Test
+    @AdbUsbRequired
     fun enableWifi() = runTest {
         val result = SetHdmWiFiState().invoke(false)
         assert(result is ApiResult.Success && result.data)

@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.testing.rules.CarrierDataRequired
 import net.sfelabs.knox.core.testing.rules.SimMustBeRemovedRule
 import net.sfelabs.knox.core.testing.rules.SimRemoved
 import net.sfelabs.knox.core.testing.rules.SimRequired
