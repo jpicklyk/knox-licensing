@@ -31,8 +31,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.sfelabs.knox.core.feature.domain.model.old.KnoxFeature
-import net.sfelabs.knox.core.feature.domain.model.old.KnoxFeatureValueType
 
 
 @Composable
@@ -283,23 +281,17 @@ fun KnoxApiTextComponent(
     }
 }
 
-
-val knoxApi = KnoxFeature(
-    key = "TacticalDeviceMode",
-    title = "Tactical Device Mode",
-    description = "Tactical Device Mode disables all cellular communication including Emergency " +
-            "911 services.  The device user will not be able to turn off Airplane Mode and only" +
-            " wired communication will be allowed.",
-    enabled = false,
-    knoxFeatureValueType = KnoxFeatureValueType.NoValue
-)
+private const val PREVIEW_TITLE = "Tactical Device Mode"
+private const val PREVIEW_DESCRIPTION = "Tactical Device Mode disables all cellular communication including Emergency " +
+        "911 services.  The device user will not be able to turn off Airplane Mode and only" +
+        " wired communication will be allowed."
 
 @Preview
 @Composable
 fun PreviewSwitchComponent() {
     KnoxApiComponent(
-        title = knoxApi.title,
-        description = knoxApi.description,
+        title = PREVIEW_TITLE,
+        description = PREVIEW_DESCRIPTION,
         isFeatureSupported = true,
         expanded = false
     )
@@ -309,8 +301,8 @@ fun PreviewSwitchComponent() {
 @Composable
 fun PreviewSwitchComponentExpanded() {
     KnoxApiComponent(
-        title = knoxApi.title,
-        description = knoxApi.description,
+        title = PREVIEW_TITLE,
+        description = PREVIEW_DESCRIPTION,
         onEvent = { },
         isFeatureSupported = true,
         expanded = true,
