@@ -1,12 +1,10 @@
 package net.sfelabs.knoxmoduleshowcase.tests.radio
 
-import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.testing.context.AndroidContextProviderRule
 import net.sfelabs.knox.core.testing.rules.SimRequired
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.ims.IsImsEnabledUseCase
@@ -14,6 +12,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.ims.SetImsEnabled
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.properties.Delegates
@@ -22,20 +21,15 @@ import kotlin.properties.Delegates
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class ImsTests {
-    private val context = InstrumentationRegistry.getInstrumentation().targetContext
+    @get:Rule
+    val contextRule = AndroidContextProviderRule()
+
     private var imsEnabled by Delegates.notNull<Boolean>()
 
     @Before
     fun readCurrentState() = runTest {
-        val testProvider = object: AndroidApplicationContextProvider {
-            override fun getContext(): Context {
-                return context
-            }
-        }
-        AndroidApplicationContextProvider.init(testProvider)
-
         val result = IsImsEnabledUseCase().invoke(0)
-        if(result is ApiResult.Success) {
+        if (result is ApiResult.Success) {
             imsEnabled = result.data.enabled
         }
     }

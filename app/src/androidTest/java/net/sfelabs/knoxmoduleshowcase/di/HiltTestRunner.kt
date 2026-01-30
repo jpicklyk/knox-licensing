@@ -3,10 +3,9 @@ package net.sfelabs.knoxmoduleshowcase.di
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnitRunner
 import dagger.hilt.android.testing.HiltTestApplication
-import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
+import net.sfelabs.knox.core.testing.context.TestContextSetup
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 
 @Suppress("unused")
@@ -19,14 +18,9 @@ class HiltTestRunner : AndroidJUnitRunner() {
         )
 
         super.onCreate(bundle)
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val testProvider = object : AndroidApplicationContextProvider {
-            override fun getContext(): Context {
-                return appContext
-            }
-        }
-        AndroidApplicationContextProvider.init(testProvider)
+        TestContextSetup.initFromInstrumentation()
     }
+
     override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application {
         return super.newApplication(cl, HiltTestApplication::class.java.name, context)
     }

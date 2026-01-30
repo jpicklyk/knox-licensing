@@ -1,12 +1,10 @@
 package net.sfelabs.knoxmoduleshowcase.tests.hdm
 
-import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.testing.context.AndroidContextProviderRule
 import net.sfelabs.knox.core.testing.rules.AdbUsbRequired
 import net.sfelabs.knox.core.testing.rules.AdbUsbRequiredRule
 import org.junit.Rule
@@ -28,7 +26,6 @@ import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmUsbState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmWiFiState
 import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponent
 import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -36,10 +33,12 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class HdmTests {
-    @get:Rule
+    @get:Rule(order = 0)
+    val contextRule = AndroidContextProviderRule()
+
+    @get:Rule(order = 1)
     val adbUsbRule = AdbUsbRequiredRule()
 
-    private lateinit var context: Context
     private val cameraBitmask = 1
     private val mmcBitmask = 2
     private val usbBitmask = 4
@@ -50,17 +49,6 @@ class HdmTests {
     private val micBitmask = 128
     private val modemBitmask = 256
     private val speakerBitmask = 512
-
-    @Before
-    fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().targetContext
-        val testProvider = object: AndroidApplicationContextProvider {
-            override fun getContext(): Context {
-                return context
-            }
-        }
-        AndroidApplicationContextProvider.init(testProvider)
-    }
 
     @Test
     fun getSupportedPolicies() = runTest {
