@@ -24,6 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import net.sfelabs.knox.core.ui.component.KeyValueComposable
 import net.sfelabs.knox.core.ui.component.OutlinedCardContainer
 import net.sfelabs.knox_tactical.domain.model.TacticalEditionReleases
+import com.github.jpicklyk.knox.licensing.domain.LicenseState
 
 
 @Composable
@@ -75,7 +76,7 @@ internal fun HomeScreen(
             }
             KeyTextComposable(
                 key = "State:",
-                value = licenseStatus.state.getName(),
+                value = licenseStatus.state.toDisplayName(),
                 modifier = modifier
             )
             licenseStatus.error?.let {
@@ -216,6 +217,13 @@ private fun KeyTextComposable(
         }
 
     }
+}
+
+private fun LicenseState.toDisplayName(): String = when (this) {
+    is LicenseState.Loading -> "Loading"
+    is LicenseState.Activated -> "Activated"
+    is LicenseState.Deactivated -> "Not Activated"
+    is LicenseState.Error -> "Error"
 }
 
 @Preview
