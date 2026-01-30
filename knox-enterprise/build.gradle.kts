@@ -13,6 +13,7 @@ dependencies {
     implementation(libs.spongycastle.prov)
     implementation(libs.commons.lang)
     implementation(files("libs/v3blob-validator-library-1.2.jar"))
-    //The common Knox SDK and its APIs are available to other modules that depend on knox-enterprise
-    api(files("libs/knoxsdk_ver38.jar"))
+    // Knox SDK is compileOnly - consumers must provide their own SDK JAR
+    // This avoids conflicts when knox-tactical provides its Tactical SDK
+    compileOnly(files("libs/knoxsdk_ver38.jar"))
 }
