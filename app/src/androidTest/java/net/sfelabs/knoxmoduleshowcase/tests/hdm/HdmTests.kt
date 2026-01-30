@@ -7,6 +7,7 @@ import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox.core.testing.context.AndroidContextProviderRule
 import net.sfelabs.knox.core.testing.rules.AdbUsbRequired
 import net.sfelabs.knox.core.testing.rules.AdbUsbRequiredRule
+import net.sfelabs.knox.core.testing.rules.AdbWifiRequired
 import org.junit.Rule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetHdmPolicyUseCase
@@ -25,9 +26,10 @@ import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmSpeakerState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmUsbState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmWiFiState
 import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponent
-import org.junit.After
+import org.junit.AfterClass
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlinx.coroutines.runBlocking
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
@@ -122,7 +124,8 @@ class HdmTests {
         assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, mmcBitmask ))
     }
 
-    //@Test
+    @Test
+    @AdbWifiRequired
     fun disableUsb() = runTest {
         val result = SetHdmUsbState().invoke(true)
         assert(result is ApiResult.Success && result.data)
@@ -132,6 +135,7 @@ class HdmTests {
     }
 
     @Test
+    @AdbWifiRequired
     fun enableUsb() = runTest {
         val result = SetHdmUsbState().invoke(false)
         assert(result is ApiResult.Success && result.data)
@@ -287,12 +291,18 @@ class HdmTests {
         assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, speakerBitmask ))
     }
 
-    @After
-    fun resetHardware() = runTest {
-        //Ensure that nothing is blocked
-        SetHdmPolicyUseCase().invoke(0, false)
-    }
     private fun featureDisabled(input: Int, bitmask: Int): Boolean {
         return input and bitmask != 0
+    }
+
+    companion object {
+        @JvmStatic
+        @AfterClass
+        fun resetHardware() {
+            runBlocking {
+                // Ensure that nothing is blocked
+                SetHdmPolicyUseCase().invoke(0, false)
+            }
+        }
     }
 }
