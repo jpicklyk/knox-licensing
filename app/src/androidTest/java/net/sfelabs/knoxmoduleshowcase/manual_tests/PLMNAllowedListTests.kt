@@ -43,7 +43,7 @@ class PLMNAllowedListTests {
     @Test
     fun getPLMNAllowedList() = runTest {
         val useCase = GetPLMNAllowedListUseCase()
-        val result = useCase.invoke(simSlotId = 0)
+        val result = useCase.invoke(0)
         assert(result is ApiResult.Success) {
             "Expected Success but got: $result"
         }
