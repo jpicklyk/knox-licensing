@@ -9,4 +9,7 @@
 	url = https://github.com/jpicklyk/knox-licensing.git
 [submodule "knox-hilt"]
 	path = knox-hilt
-	url = ./knox-hilt
+	url = https://github.com/jpicklyk/knox-hilt.git
+[submodule "knox-enterprise"]
+	path = knox-enterprise
+	url = https://github.com/jpicklyk/knox-enterprise.git
