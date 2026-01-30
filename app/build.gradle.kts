@@ -94,7 +94,7 @@ dependencies {
     implementation(project(":knox-core:android"))
     implementation(project(":knox-core:usecase-executor"))
     implementation(project(":knox-core:feature"))
-    implementation(project(":knox-core:feature-hilt"))
+    implementation(project(":knox-hilt"))
     implementation(project(":knox-core:ui"))
     //implementation(project(":android-log-wrapper"))
     implementation(project(":knox-enterprise"))
