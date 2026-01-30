@@ -4,11 +4,9 @@ import android.content.Context
 import android.net.ConnectivityManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.knox.core.common.di.AndroidServiceModule
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
@@ -24,14 +22,13 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class RndisManualTests {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
     private lateinit var context: Context
     private lateinit var connectivityManager: ConnectivityManager
 
     @Before
     fun setup() {
         context = InstrumentationRegistry.getInstrumentation().context
-        connectivityManager = AndroidServiceModule.provideConnectivityManager(context)
+        connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 
     /**
@@ -40,7 +37,7 @@ class RndisManualTests {
      */
     @Test
     fun setupRndisUsbConfiguration() = runTest {
-        val result = SetUsbConnectionTypeUseCase(systemManager).invoke(
+        val result = SetUsbConnectionTypeUseCase().invoke(
             UsbConnectionType.Tethering
         )
         assertTrue(
@@ -51,7 +48,7 @@ class RndisManualTests {
 
     @Test
     fun checkUsbConfiguration() = runTest {
-        val result = GetUsbConnectionTypeUseCase(systemManager).invoke()
+        val result = GetUsbConnectionTypeUseCase().invoke()
         println("USB Connection type is: ${result.getOrNull()?.value}")
         assertTrue(
             "Getting USB connection type failed: ${result.getErrorOrNull()}",
@@ -62,7 +59,7 @@ class RndisManualTests {
 
     @Test
     fun setDefaultUsbConfiguration() = runTest {
-        val result = SetUsbConnectionTypeUseCase(systemManager).invoke(
+        val result = SetUsbConnectionTypeUseCase().invoke(
             UsbConnectionType.Default
         )
         assertTrue(

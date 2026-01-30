@@ -2,15 +2,14 @@ package net.sfelabs.knoxmoduleshowcase.tests.phone
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.data.dto.AutoCallPickupDto
 import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
+import net.sfelabs.knox_tactical.domain.use_cases.CheckSystemManagerMethodExistsUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoCallPickupStateUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupStateUseCase
-import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -20,18 +19,17 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 110)
 class AutoCallPickupTests {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
     @Test
     fun getAutoCallPickupState_Exists() = runTest {
-        val kClass = systemManager::class
-        assert(checkMethodExistence(kClass, "getAutoCallPickupState"))
+        val result = CheckSystemManagerMethodExistsUseCase().invoke("getAutoCallPickupState")
+        assertTrue(result is ApiResult.Success && result.data)
     }
 
     @Test
     fun setAutoCallPickupState_Exists() = runTest {
-        val kClass = systemManager::class
-        assert(checkMethodExistence(kClass, "setAutoCallPickupState"))
+        val result = CheckSystemManagerMethodExistsUseCase().invoke("setAutoCallPickupState")
+        assertTrue(result is ApiResult.Success && result.data)
     }
 
     @Test

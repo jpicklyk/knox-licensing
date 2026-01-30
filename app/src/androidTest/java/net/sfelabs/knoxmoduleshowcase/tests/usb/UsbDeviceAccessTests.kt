@@ -2,7 +2,6 @@ package net.sfelabs.knoxmoduleshowcase.tests.usb
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress

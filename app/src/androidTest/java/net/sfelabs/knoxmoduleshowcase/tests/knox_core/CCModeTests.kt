@@ -1,10 +1,10 @@
 package net.sfelabs.knoxmoduleshowcase.tests.knox_core
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.samsung.android.knox.restriction.AdvancedRestrictionPolicy
 import junit.framework.TestCase
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox_enterprise.domain.model.CCModeState
 import net.sfelabs.knox_enterprise.domain.use_cases.GetCCModeUseCase
 import net.sfelabs.knox_enterprise.domain.use_cases.SetCCModeUseCase
 import org.junit.Test
@@ -20,7 +20,7 @@ class CCModeTests {
         val result = getUseCase.invoke()
         if(result is ApiResult.Success) {
             println("CCMode state is set to: ${result.data}")
-            assert(result.data == AdvancedRestrictionPolicy.CCMODE_STATE_READY)
+            assert(result.data == CCModeState.READY)
         } else {
             assert(false)
         }
@@ -41,7 +41,7 @@ class CCModeTests {
 
         val getResult = getUseCase.invoke()
         if(getResult is ApiResult.Success) {
-            assert(getResult.data == AdvancedRestrictionPolicy.CCMODE_STATE_ENABLED)
+            assert(getResult.data == CCModeState.ENABLED)
         } else {
             TestCase.assertFalse("Retrieving CCMode state was not successful", true)
         }

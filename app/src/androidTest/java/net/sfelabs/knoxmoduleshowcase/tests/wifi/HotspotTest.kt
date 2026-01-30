@@ -6,7 +6,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.knox.core.common.di.AndroidServiceModule
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.hotspot.IsHotspot20EnabledUseCase
@@ -26,7 +25,7 @@ class HotspotTest {
     @Before
     fun setup() {
         context = InstrumentationRegistry.getInstrumentation().context
-        wifiManager = AndroidServiceModule.provideWifiManager(context)
+        wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
     }
 
     @Test

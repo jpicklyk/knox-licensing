@@ -2,14 +2,14 @@ package net.sfelabs.knoxmoduleshowcase.tests.phone
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
+import net.sfelabs.knox_tactical.domain.use_cases.CheckSystemManagerMethodExistsUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoRecordCallEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoRecordCallEnabledUseCase
-import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -17,18 +17,17 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 110)
 class AutoRecordCallTest {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
 
     @Test
     fun getAutoRecordCallEnabledState_Exists() = runTest {
-        val kClass = systemManager::class
-        assert(checkMethodExistence(kClass, "getAutomaticRecordCallEnabledState"))
+        val result = CheckSystemManagerMethodExistsUseCase().invoke("getAutomaticRecordCallEnabledState")
+        assertTrue(result is ApiResult.Success && result.data)
     }
 
     @Test
     fun setAutoRecordCallEnabledState_Exists() = runTest {
-        val kClass = systemManager::class
-        assert(checkMethodExistence(kClass, "setAutomaticRecordCallEnabledState"))
+        val result = CheckSystemManagerMethodExistsUseCase().invoke("setAutomaticRecordCallEnabledState")
+        assertTrue(result is ApiResult.Success && result.data)
     }
 
     @Test

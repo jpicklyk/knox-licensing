@@ -9,7 +9,6 @@ import android.provider.MediaStore
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.samsung.android.knox.custom.CustomDeviceManager
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -17,7 +16,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import net.sfelabs.knoxmoduleshowcase.app.checkMethodExistence
+import net.sfelabs.knox_tactical.domain.use_cases.CheckSystemManagerMethodExistsUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tcp.DisableTcpDumpUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tcp.EnableTcpDumpUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tcp.IsTcpDumpEnabled
@@ -33,7 +32,6 @@ import java.io.File
 @TacticalSdkSuppress(minReleaseVersion = 100)
 @OrderWith(Alphanumeric::class)
 class TcpDumpTests {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
     private val filename = "capture_test.pcap"
     lateinit var context: Context
     lateinit var captureUri: Uri
@@ -46,17 +44,20 @@ class TcpDumpTests {
 
     @Test
     fun isTcpDumpEnabled_Exists() = runTest {
-        assert(checkMethodExistence(systemManager::class,"isTcpDumpEnabled"))
+        val result = CheckSystemManagerMethodExistsUseCase().invoke("isTcpDumpEnabled")
+        assertTrue(result is ApiResult.Success && result.data)
     }
 
     @Test
     fun enableTcpDump_Exists() = runTest {
-        assert(checkMethodExistence(systemManager::class,"enableTcpDump"))
+        val result = CheckSystemManagerMethodExistsUseCase().invoke("enableTcpDump")
+        assertTrue(result is ApiResult.Success && result.data)
     }
 
     @Test
     fun disableTcpDump_Exists() = runTest {
-        assert(checkMethodExistence(systemManager::class,"disableTcpDump"))
+        val result = CheckSystemManagerMethodExistsUseCase().invoke("disableTcpDump")
+        assertTrue(result is ApiResult.Success && result.data)
     }
 
     @Test

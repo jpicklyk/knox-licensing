@@ -2,7 +2,6 @@ package net.sfelabs.knoxmoduleshowcase.manual_tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.FlakyTest
-import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.domain.model.UsbConnectionType
@@ -15,11 +14,11 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UsbConnectionTypeTests {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
     private lateinit var currentType: UsbConnectionType
+
     @Before
     fun setup() = runTest {
-        val result = GetUsbConnectionTypeUseCase(systemManager).invoke()
+        val result = GetUsbConnectionTypeUseCase().invoke()
         if(result is ApiResult.Success) {
             currentType = result.data
         }
@@ -31,11 +30,11 @@ class UsbConnectionTypeTests {
 
     @Test
     fun testMTP() = runTest {
-        val setUseCase = SetUsbConnectionTypeUseCase(systemManager)
+        val setUseCase = SetUsbConnectionTypeUseCase()
         val apiResult = setUseCase.invoke(UsbConnectionType.MTP)
         assert(apiResult is ApiCall.Success)
         Thread.sleep(1000)
-        val getUseCase = GetUsbConnectionTypeUseCase(systemManager)
+        val getUseCase = GetUsbConnectionTypeUseCase()
         val result = getUseCase.invoke()
         assert(result is ApiCall.Success && result.data == UsbConnectionType.MTP)
     }
@@ -44,17 +43,17 @@ class UsbConnectionTypeTests {
     @Test
     @FlakyTest
     fun testUsbConnectionType_RndisTethering() = runTest {
-        val setUseCase = SetUsbConnectionTypeUseCase(systemManager)
+        val setUseCase = SetUsbConnectionTypeUseCase()
         val apiResult = setUseCase.invoke(UsbConnectionType.Tethering)
         assert(apiResult is ApiResult.Success)
         Thread.sleep(1000)
-        val result = GetUsbConnectionTypeUseCase(systemManager).invoke()
+        val result = GetUsbConnectionTypeUseCase().invoke()
         assert(result is ApiResult.Success && result.data == UsbConnectionType.Tethering)
     }
 
     @After
     fun resetConnectionType() = runTest {
-        SetUsbConnectionTypeUseCase(systemManager).invoke(currentType)
+        SetUsbConnectionTypeUseCase().invoke(currentType)
     }
 
 }

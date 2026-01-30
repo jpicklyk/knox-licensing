@@ -2,7 +2,6 @@ package net.sfelabs.knoxmoduleshowcase.manual_tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.samsung.android.knox.custom.CustomDeviceManager
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbAccessBySerialUseCase

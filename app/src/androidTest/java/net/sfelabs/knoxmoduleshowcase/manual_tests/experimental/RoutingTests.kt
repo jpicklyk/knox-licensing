@@ -3,7 +3,6 @@ package net.sfelabs.knoxmoduleshowcase.manual_tests.experimental
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.knox.core.common.di.AndroidServiceModule
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AdbHeader
@@ -26,7 +25,7 @@ import org.junit.runner.RunWith
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class RoutingTests {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val packageManager = AndroidServiceModule.providePackageManager(context)
+    private val packageManager = context.packageManager
 
     /**
      * Test requires eth0 connection to function

@@ -1,13 +1,15 @@
 package net.sfelabs.knoxmoduleshowcase.manual_tests
 
-import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import com.samsung.android.knox.custom.CustomDeviceManager
-import com.samsung.android.knox.custom.SystemManager
 import kotlinx.coroutines.test.runTest
+import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
-import org.junit.Before
+import net.sfelabs.knox_tactical.data.dto.AutoCallPickupDto
+import net.sfelabs.knox_tactical.domain.model.AutoCallPickupMode
+import net.sfelabs.knox_tactical.domain.use_cases.calling.AddAutoCallNumberUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.calling.AnswerMode
+import net.sfelabs.knox_tactical.domain.use_cases.calling.GetAutoCallNumberListUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.calling.SetAutoCallPickupStateUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -15,25 +17,26 @@ import org.junit.runner.RunWith
 @TacticalSdkSuppress(minReleaseVersion = 110)
 class AutoCallTests {
 
-    private lateinit var context: Context
-    private lateinit var systemManager: SystemManager
-
-    @Before
-    fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().targetContext
-        systemManager = CustomDeviceManager.getInstance().systemManager
-    }
-
-
     @Test
-    fun checkActivationInfo() = runTest{
-        val result = systemManager.addAutoCallNumber("15192407948", 2, CustomDeviceManager.ANSWER_MODE_SPEAKER)
-        assert(result == CustomDeviceManager.SUCCESS)
+    fun checkActivationInfo() = runTest {
+        // Add auto-call number
+        val addResult = AddAutoCallNumberUseCase().invoke(
+            phoneNumber = "15192407948",
+            priority = 2,
+            answerMode = AnswerMode.SPEAKER
+        )
+        assert(addResult is ApiResult.Success) { "Failed to add auto-call number: ${addResult.getErrorOrNull()}" }
 
-        val list = systemManager.autoCallNumberList
-        assert(list.isNotEmpty())
+        // Get list and verify
+        val listResult = GetAutoCallNumberListUseCase().invoke()
+        assert(listResult is ApiResult.Success && listResult.data.isNotEmpty()) {
+            "Auto-call number list is empty or failed: ${listResult.getErrorOrNull()}"
+        }
 
-        val res = systemManager.setAutoCallPickupState(CustomDeviceManager.ENABLE)
-        assert(res == CustomDeviceManager.SUCCESS)
+        // Enable auto-call pickup
+        val setResult = SetAutoCallPickupStateUseCase().invoke(
+            AutoCallPickupDto(mode = AutoCallPickupMode.Enable)
+        )
+        assert(setResult is ApiResult.Success) { "Failed to set auto-call pickup state: ${setResult.getErrorOrNull()}" }
     }
 }

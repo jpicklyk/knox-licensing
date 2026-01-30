@@ -1,20 +1,16 @@
 package net.sfelabs.knoxmoduleshowcase.tests.wifi
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.samsung.android.knox.EnterpriseDeviceManager
-import com.samsung.android.knox.restriction.RestrictionPolicy
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox.core.testing.annotations.ApiExists
-import net.sfelabs.knox.core.testing.checkMethodExistence
+import net.sfelabs.knox_enterprise.domain.use_cases.CheckRestrictionPolicyMethodExistsUseCase
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.EnableRandomizedMacAddressUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.wifi.GetRandomizedMacAddressEnabledUseCase
 import org.junit.After
-import org.junit.Before
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -22,36 +18,19 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 130)
 class RandomizedMacAddressTests {
-    private lateinit var context: Context
-    private lateinit var edm: EnterpriseDeviceManager
-    private lateinit var restrictionPolicy: RestrictionPolicy
-    @Before
-    fun setup() {
-        context = ApplicationProvider.getApplicationContext()
-        edm = EnterpriseDeviceManager.getInstance(context)
-        restrictionPolicy = edm.restrictionPolicy
-    }
 
     @Test
     @ApiExists
     fun isRandomisedMacAddressEnabled_Exists() = runTest {
-        assert(
-            checkMethodExistence(
-                restrictionPolicy::class,
-                "isRandomisedMacAddressEnabled"
-            )
-        )
+        val result = CheckRestrictionPolicyMethodExistsUseCase().invoke("isRandomisedMacAddressEnabled")
+        assertTrue(result is ApiResult.Success && result.data)
     }
 
     @Test
     @ApiExists
     fun enableRandomisedMacAddress_Exists() = runTest {
-        assert(
-            checkMethodExistence(
-                restrictionPolicy::class,
-                "enableRandomisedMacAddress"
-            )
-        )
+        val result = CheckRestrictionPolicyMethodExistsUseCase().invoke("enableRandomisedMacAddress")
+        assertTrue(result is ApiResult.Success && result.data)
     }
 
     @Test

@@ -8,11 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.knox.core.common.di.AndroidServiceModule
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox_enterprise.di.KnoxModule
-import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurations
-import net.sfelabs.knox_tactical.KnoxTacticalExtensions.testSetEthernetConfigurationsMultiDns
 import net.sfelabs.knox_tactical.TestingVisibilityOnly
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.model.AutoConnectionState
@@ -21,6 +17,8 @@ import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.ConfigureEthernetInterfaceUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetAutoConnectionUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnectionUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.TestSetEthernetConfigurationsMultiDnsUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.TestSetEthernetConfigurationsUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -30,14 +28,13 @@ import org.junit.runner.RunWith
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class MultiEthernetConfigurationTest {
-    private val systemManager = KnoxModule.provideKnoxSystemManager()
     private lateinit var context: Context
     private lateinit var connectivityManager: ConnectivityManager
 
     @Before
     fun setup() {
         context = InstrumentationRegistry.getInstrumentation().context
-        connectivityManager = AndroidServiceModule.provideConnectivityManager(context)
+        connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 
     @Test
@@ -194,75 +191,67 @@ class MultiEthernetConfigurationTest {
     @OptIn(TestingVisibilityOnly::class)
     @Test
     fun testSetEthernetConfigurations_Nulls() = runTest {
-        try {
-            val result = systemManager.testSetEthernetConfigurations(
-                "eth0",
-                "192.168.2.244",
-                "255.255.255.0",
-                null,
-                null
-
-            )
-            assertTrue("Calling setEthernetConfigurations failed", result)
-        }catch (_: NullPointerException) {
-            assertTrue("Null pointer exception received!",false)
-        }
+        val result = TestSetEthernetConfigurationsUseCase().invoke(
+            interfaceName = "eth0",
+            ipAddress = "192.168.2.244",
+            netmask = "255.255.255.0",
+            dnsAddress = null,
+            defaultRouter = null
+        )
+        assertTrue(
+            "Calling setEthernetConfigurations failed: ${result.getErrorOrNull()}",
+            result is ApiResult.Success && result.data
+        )
     }
 
     @OptIn(TestingVisibilityOnly::class)
     @Test
     fun testSetEthernetConfigurations_EmptyStrings() = runTest {
-        try {
-            val result = systemManager.testSetEthernetConfigurations(
-                "eth0",
-                "192.168.2.244",
-                "255.255.255.0",
-                "",
-                ""
-
-            )
-            assertTrue("Calling setEthernetConfigurations failed", result)
-        }catch (_: NullPointerException) {
-            assertTrue("Null pointer exception received!",false)
-        }
+        val result = TestSetEthernetConfigurationsUseCase().invoke(
+            interfaceName = "eth0",
+            ipAddress = "192.168.2.244",
+            netmask = "255.255.255.0",
+            dnsAddress = "",
+            defaultRouter = ""
+        )
+        assertTrue(
+            "Calling setEthernetConfigurations failed: ${result.getErrorOrNull()}",
+            result is ApiResult.Success && result.data
+        )
     }
 
     @OptIn(TestingVisibilityOnly::class)
     @Test
     fun testSetEthernetConfigurationsMultiDns_Nulls() = runTest {
         disableEthernetAutoConfig()
-        try {
-            val result = systemManager.testSetEthernetConfigurationsMultiDns(
-                "eth0",
-                "192.168.2.244",
-                "255.255.255.0",
-                null,
-                null
-
-            )
-            enableEthernetAutoConfig()
-            assertTrue("Calling setEthernetConfigurationsMultiDns failed", result)
-        }catch (_: NullPointerException) {
-            assertTrue("Null pointer exception received!",false)
-        }
+        val result = TestSetEthernetConfigurationsMultiDnsUseCase().invoke(
+            interfaceName = "eth0",
+            ipAddress = "192.168.2.244",
+            netmask = "255.255.255.0",
+            dnsList = null,
+            defaultRouter = null
+        )
+        enableEthernetAutoConfig()
+        assertTrue(
+            "Calling setEthernetConfigurationsMultiDns failed: ${result.getErrorOrNull()}",
+            result is ApiResult.Success && result.data
+        )
     }
 
     @OptIn(TestingVisibilityOnly::class)
     @Test
     fun testSetEthernetConfigurationsMultiDns_EmptyStrings() = runTest {
-        try {
-            val result = systemManager.testSetEthernetConfigurationsMultiDns(
-                "eth0",
-                "192.168.2.244",
-                "255.255.255.0",
-                emptyList(),
-                ""
-
-            )
-            assertTrue("Calling setEthernetConfigurationsMultiDns failed", result)
-        }catch (_: NullPointerException) {
-            assertTrue("Null pointer exception received!",false)
-        }
+        val result = TestSetEthernetConfigurationsMultiDnsUseCase().invoke(
+            interfaceName = "eth0",
+            ipAddress = "192.168.2.244",
+            netmask = "255.255.255.0",
+            dnsList = emptyList(),
+            defaultRouter = ""
+        )
+        assertTrue(
+            "Calling setEthernetConfigurationsMultiDns failed: ${result.getErrorOrNull()}",
+            result is ApiResult.Success && result.data
+        )
     }
 
     private fun getNetworkCallback(): ConnectivityManager.NetworkCallback {

@@ -1,11 +1,12 @@
 package net.sfelabs.knoxmoduleshowcase.tests.screen
 
+import android.content.Context
+import android.os.PowerManager
 import android.provider.Settings
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
-import net.sfelabs.knox.core.common.di.AndroidServiceModule
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_enterprise.domain.use_cases.settings.GetBrightnessValueUseCase
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
@@ -20,7 +21,7 @@ import org.junit.runner.RunWith
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class LcdBacklightStateTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val powerManager = AndroidServiceModule.providePowerManager(context = context)
+    private val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
 
     @Test
     fun enableLcdBacklight() = runTest {

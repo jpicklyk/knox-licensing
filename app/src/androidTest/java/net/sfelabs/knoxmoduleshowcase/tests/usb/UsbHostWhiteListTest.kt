@@ -3,12 +3,12 @@ package net.sfelabs.knoxmoduleshowcase.tests.usb
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.samsung.android.knox.AppIdentity
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_enterprise.domain.use_cases.AllowUsbHostStorageUseCase
 import net.sfelabs.knox_enterprise.domain.use_cases.IsUsbHostStorageAllowedUseCase
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
+import net.sfelabs.knox_tactical.domain.model.AppIdentityData
 import net.sfelabs.knox_tactical.domain.use_cases.usb.AddPackageToUsbHostWhiteListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetPackagesFromUsbHostWhiteListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.usb.RemovePackageFromUsbHostWhiteListUseCase
@@ -56,7 +56,7 @@ class UsbHostWhiteListTest {
         val signatures = getApplicationSignatures(mtpPackage, appContext)
         val sig = signatures[0]
         println("Signature: $sig")
-        val appIdentity = AppIdentity(mtpPackage, sig)
+        val appIdentity = AppIdentityData(mtpPackage, sig)
         val result = useCase.invoke(true, appIdentity)
         assert(result is ApiResult.Success)
 
@@ -73,7 +73,7 @@ class UsbHostWhiteListTest {
         val signatures = getApplicationSignatures(mtpPackage, appContext)
         val sig = signatures[0]
         println("Signature: $sig")
-        val appIdentity = AppIdentity(mtpPackage, sig)
+        val appIdentity = AppIdentityData(mtpPackage, sig)
         val result = useCase.invoke(appIdentity)
         assert(result is ApiResult.Success)
 
