@@ -1,21 +1,49 @@
 package com.github.jpicklyk.knox.licensing.domain
 
 import android.content.Context
-import android.util.Log
-import com.github.jpicklyk.knox.licensing.KnoxLicenseFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
+/**
+ * Facade object for Knox license initialization that maintains backward compatibility.
+ *
+ * This object delegates to a [KnoxLicenseInitializer] instance internally.
+ *
+ * ## For new code
+ * Prefer injecting [KnoxLicenseInitializer] directly via Hilt for better testability.
+ *
+ * ## For existing code
+ * Continue using [KnoxStartupManager] - it will use the Hilt-provided instance if available.
+ */
 object KnoxStartupManager {
-    private const val TAG = "KnoxLicenseStartup"
-    private var isInitialized = false
-    private var licenseStatus: LicenseStartupResult = LicenseStartupResult.NotChecked
+    @Volatile
+    private var initializer: KnoxLicenseInitializer? = null
+
+    private fun getInitializer(): KnoxLicenseInitializer {
+        return initializer ?: KnoxLicenseInitializer().also { initializer = it }
+    }
+
+    /**
+     * Sets the initializer instance. Used by DI frameworks (like Hilt) to provide
+     * their managed instance.
+     *
+     * @param instance The [KnoxLicenseInitializer] instance to use
+     */
+    @Synchronized
+    fun setInstance(instance: KnoxLicenseInitializer) {
+        initializer = instance
+    }
+
+    /**
+     * Gets the initializer instance for direct access.
+     * Prefer using [KnoxLicenseInitializer] injection when possible.
+     */
+    @Synchronized
+    fun getInstance(): KnoxLicenseInitializer = getInitializer()
 
     suspend fun initializeKnoxLicensing(
         context: Context,
         licenseSelectionStrategy: LicenseSelectionStrategy? = null
     ): LicenseStartupResult {
-        return initializeKnoxLicensing(context, licenseSelectionStrategy, null, null)
+        return getInitializer().initialize(context, licenseSelectionStrategy)
     }
 
     suspend fun initializeKnoxLicensing(
@@ -24,69 +52,19 @@ object KnoxStartupManager {
         defaultKey: String? = null,
         namedKeysArray: Array<String>? = null
     ): LicenseStartupResult {
-        if (isInitialized) {
-            Log.d(TAG, "Knox licensing already initialized: $licenseStatus")
-            return licenseStatus
-        }
-
-        licenseStatus = withContext(Dispatchers.IO) {
-            try {
-                Log.d(TAG, "Initializing Knox licensing...")
-                val knoxLicenseHandler = when {
-                    licenseSelectionStrategy != null && defaultKey != null -> {
-                        Log.d(TAG, "Using custom license selection strategy with app BuildConfig")
-                        KnoxLicenseFactory.create(context, licenseSelectionStrategy, defaultKey, namedKeysArray)
-                    }
-                    licenseSelectionStrategy != null -> {
-                        Log.d(TAG, "Using custom license selection strategy with knox-licensing BuildConfig")
-                        KnoxLicenseFactory.create(context, licenseSelectionStrategy)
-                    }
-                    else -> {
-                        Log.d(TAG, "Using default license configuration")
-                        KnoxLicenseFactory.createFromBuildConfig(context)
-                    }
-                }
-
-                // Check current status first
-                val licenseInfo = knoxLicenseHandler.getLicenseInfo()
-                if (licenseInfo.isActivated) {
-                    Log.d(TAG, "Knox license already activated")
-                    LicenseStartupResult.AlreadyActivated
-                } else {
-                    // Attempt activation
-                    Log.d(TAG, "Attempting Knox license activation...")
-                    when (val result = knoxLicenseHandler.activate()) {
-                        is LicenseResult.Success -> {
-                            Log.d(TAG, "Knox license activated successfully: ${result.message}")
-                            LicenseStartupResult.ActivatedNow
-                        }
-                        is LicenseResult.Error -> {
-                            Log.e(TAG, "Knox license activation failed: ${result.message}")
-                            LicenseStartupResult.ActivationFailed(result.message)
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Knox license initialization error", e)
-                LicenseStartupResult.InitializationError(e.message ?: "Unknown error")
-            }
-        }
-
-        isInitialized = true
-        Log.d(TAG, "Knox licensing initialization complete: $licenseStatus")
-        return licenseStatus
+        return getInitializer().initialize(context, licenseSelectionStrategy, defaultKey, namedKeysArray)
     }
 
-    fun isKnoxLicenseReady(): Boolean {
-        return licenseStatus is LicenseStartupResult.AlreadyActivated ||
-               licenseStatus is LicenseStartupResult.ActivatedNow
-    }
+    fun isKnoxLicenseReady(): Boolean = getInitializer().isReady
 
-    fun getLicenseStatus(): LicenseStartupResult = licenseStatus
+    fun getLicenseStatus(): LicenseStartupResult = getInitializer().getStatus()
 
+    /**
+     * Resets the initialization state. For testing purposes only.
+     */
     fun reset() {
-        isInitialized = false
-        licenseStatus = LicenseStartupResult.NotChecked
+        initializer?.reset()
+        initializer = null
     }
 }
 

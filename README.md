@@ -233,7 +233,41 @@ if (knoxLicenseHandler.hasLicense("production")) {
 
 ### Startup Manager
 
-The library provides `KnoxStartupManager` for convenient initialization during app startup:
+The library provides two approaches for license initialization:
+
+#### KnoxLicenseInitializer (Recommended for Hilt/DI)
+
+`KnoxLicenseInitializer` is a class that can be injected via Hilt or other DI frameworks:
+
+```kotlin
+@HiltAndroidApp
+class MyApplication : Application() {
+    @Inject
+    lateinit var licenseInitializer: KnoxLicenseInitializer
+
+    override fun onCreate() {
+        super.onCreate()
+        lifecycleScope.launch {
+            val result = licenseInitializer.initialize(this@MyApplication)
+            // Handle result...
+        }
+    }
+}
+
+// In ViewModels, observe the reactive status
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val licenseInitializer: KnoxLicenseInitializer
+) : ViewModel() {
+    val licenseStatus: StateFlow<LicenseStartupResult> = licenseInitializer.licenseStatus
+}
+```
+
+> **Note:** If using knox-hilt, `KnoxLicenseInitializer` is automatically provided by `KnoxLicensingModule`.
+
+#### KnoxStartupManager (For non-DI usage)
+
+`KnoxStartupManager` provides static methods for convenient initialization without DI:
 
 ```kotlin
 import com.github.jpicklyk.knox.licensing.domain.KnoxStartupManager
@@ -463,6 +497,38 @@ The library is framework-agnostic and doesn't include any DI dependencies. You c
 
 ### Hilt Integration
 
+If using **knox-hilt**, `KnoxLicenseInitializer` is automatically provided. You only need to provide your `LicenseSelectionStrategy`:
+
+```kotlin
+@Module
+@InstallIn(SingletonComponent::class)
+object AppLicensingModule {
+
+    @Provides
+    @Singleton
+    fun provideLicenseSelectionStrategy(): LicenseSelectionStrategy {
+        return MyDeviceBasedStrategy()
+    }
+}
+
+// Usage in your components
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var licenseInitializer: KnoxLicenseInitializer
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            licenseInitializer.initialize(this@MainActivity)
+        }
+    }
+}
+```
+
+If **not** using knox-hilt, provide the full module yourself:
+
 ```kotlin
 @Module
 @InstallIn(SingletonComponent::class)
@@ -476,31 +542,21 @@ object KnoxLicenseModule {
 
     @Provides
     @Singleton
+    fun provideKnoxLicenseInitializer(): KnoxLicenseInitializer {
+        return KnoxLicenseInitializer().also {
+            // Register for backward compatibility with KnoxStartupManager
+            KnoxStartupManager.setInstance(it)
+        }
+    }
+
+    @Provides
+    @Singleton
     fun provideKnoxLicenseHandler(
         @ApplicationContext context: Context,
         licenseSelectionStrategy: LicenseSelectionStrategy
     ): KnoxLicenseHandler {
-        // Option 1: Use knox-licensing module's BuildConfig
         return KnoxLicenseFactory.create(context, licenseSelectionStrategy)
-
-        // Option 2: Use app's BuildConfig (recommended for multi-module projects)
-        // return KnoxLicenseFactory.create(
-        //     context = context,
-        //     licenseSelectionStrategy = licenseSelectionStrategy,
-        //     defaultKey = BuildConfig.KNOX_LICENSE_KEY,
-        //     namedKeysArray = BuildConfig.KNOX_LICENSE_KEYS
-        // )
     }
-}
-
-// Usage in your components
-@AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-
-    @Inject
-    lateinit var knoxLicenseHandler: KnoxLicenseHandler
-
-    // Use knoxLicenseHandler...
 }
 ```
 
