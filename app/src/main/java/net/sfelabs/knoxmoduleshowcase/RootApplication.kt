@@ -8,8 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
-import net.sfelabs.knox.core.common.domain.repository.PreferencesRepository
-import com.github.jpicklyk.knox.licensing.domain.KnoxStartupManager
+import com.github.jpicklyk.knox.licensing.domain.KnoxLicenseInitializer
 import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
 import com.github.jpicklyk.knox.licensing.domain.LicenseStartupResult
 import javax.inject.Inject
@@ -22,12 +21,16 @@ class RootApplication: Application() {
     @Inject
     lateinit var licenseSelectionStrategy: LicenseSelectionStrategy
 
+    @Inject
+    lateinit var knoxLicenseInitializer: KnoxLicenseInitializer
+
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     override fun onCreate() {
         super.onCreate()
         AndroidApplicationContextProvider.init(applicationContextProvider)
-        PreferencesRepository.getInstance(this)
+        // PreferencesRepository and DataStoreSource are provided by Hilt via DataStoreModule
+        // and registered with companion objects for backward compatibility
 
         // Initialize Knox licensing on startup
         initializeKnoxLicensing()
@@ -36,7 +39,7 @@ class RootApplication: Application() {
     private fun initializeKnoxLicensing() {
         applicationScope.launch {
             try {
-                val result = KnoxStartupManager.initializeKnoxLicensing(
+                val result = knoxLicenseInitializer.initialize(
                     this@RootApplication,
                     licenseSelectionStrategy
                 )
