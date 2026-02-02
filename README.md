@@ -23,11 +23,11 @@ A reusable Android library for Samsung Knox Enterprise License Management that p
   - [Koin Integration](#koin-integration)
 - [API Reference](#api-reference)
 - [Requirements](#requirements)
+  - [Dependencies](#dependencies)
   - [Device Administrator Requirements](#device-administrator-requirements)
 - [Error Handling](#error-handling)
 - [Security Considerations](#security-considerations)
 - [Performance Considerations](#performance-considerations)
-- [Real-World Examples](#real-world-examples)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
 
@@ -935,589 +935,6 @@ class MainActivity : AppCompatActivity() {
 }
 ```
 
-## Real-World Implementation Examples
-
-### Example 1: Build Variant-Based License Selection
-
-Realistic implementation that selects between development and production licenses based on build variant:
-
-```kotlin
-// 1. Build Variant-Based License Selection Strategy
-class BuildVariantLicenseStrategy : LicenseSelectionStrategy {
-    override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
-        return when {
-            BuildConfig.DEBUG -> {
-                // Development builds use development license
-                availableKeys["development"]
-                    ?: availableKeys["dev"]
-                    ?: defaultKey
-            }
-            BuildConfig.BUILD_TYPE == "release" -> {
-                // Production builds use production license
-                availableKeys["production"]
-                    ?: availableKeys["prod"]
-                    ?: defaultKey
-            }
-            BuildConfig.BUILD_TYPE == "staging" -> {
-                // Staging builds use staging license or fallback to development
-                availableKeys["staging"]
-                    ?: availableKeys["development"]
-                    ?: defaultKey
-            }
-            else -> {
-                // Unknown build type, use default
-                Log.w("LicenseStrategy", "Unknown build type: ${BuildConfig.BUILD_TYPE}, using default license")
-                defaultKey
-            }
-        }
-    }
-}
-
-// Alternative: Environment-Aware Strategy with Device Type Support
-class EnvironmentAwareLicenseStrategy : LicenseSelectionStrategy {
-    override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
-        // First determine environment
-        val environment = when {
-            BuildConfig.DEBUG -> "development"
-            BuildConfig.BUILD_TYPE == "release" -> "production"
-            BuildConfig.BUILD_TYPE == "staging" -> "staging"
-            else -> "unknown"
-        }
-
-        // Then consider device characteristics for production deployments
-        val deviceSuffix = if (environment == "production") {
-            when {
-                isTabletDevice() -> "_tablet"
-                isRuggedDevice() -> "_rugged"
-                else -> ""
-            }
-        } else {
-            "" // Dev/staging use standard keys without device differentiation
-        }
-
-        val preferredKey = "$environment$deviceSuffix"
-
-        return availableKeys[preferredKey]
-            ?: availableKeys[environment]
-            ?: defaultKey.also {
-                Log.w("LicenseStrategy", "No license found for $preferredKey or $environment, using default")
-            }
-    }
-
-    private fun isTabletDevice(): Boolean {
-        val metrics = Resources.getSystem().displayMetrics
-        val widthDp = metrics.widthPixels / metrics.density
-        return widthDp >= 600
-    }
-
-    private fun isRuggedDevice(): Boolean {
-        val model = Build.MODEL.lowercase()
-        return model.contains("xcover") || model.contains("galaxy tab active")
-    }
-}
-
-// 2. Application Class with Build Variant License Strategy
-@HiltAndroidApp
-class MyApplication : Application() {
-
-    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-
-    override fun onCreate() {
-        super.onCreate()
-
-        // Check Device Administrator status first
-        val deviceAdminManager = DeviceAdminManager(this)
-
-        if (!deviceAdminManager.hasElevatedPrivileges()) {
-            Log.w(TAG, "Knox licensing requires Device Administrator privileges")
-            // Continue with app startup but show admin requirement in UI
-        }
-
-        // Initialize Knox licensing asynchronously with build variant strategy
-        applicationScope.launch(Dispatchers.IO) {
-            try {
-                val strategy = BuildVariantLicenseStrategy()
-                val result = KnoxStartupManager.initializeKnoxLicensing(
-                    this@MyApplication,
-                    strategy,
-                    BuildConfig.KNOX_LICENSE_KEY,
-                    BuildConfig.KNOX_LICENSE_KEYS
-                )
-
-                when (result) {
-                    is LicenseStartupResult.ActivatedNow -> {
-                        val environment = if (BuildConfig.DEBUG) "development" else "production"
-                        Log.i(TAG, "Knox license activated for $environment environment")
-                        enableKnoxFeatures()
-                    }
-                    is LicenseStartupResult.AlreadyActivated -> {
-                        Log.d(TAG, "Knox license already active")
-                        enableKnoxFeatures()
-                    }
-                    is LicenseStartupResult.ActivationFailed -> {
-                        Log.e(TAG, "Knox license activation failed: ${result.reason}")
-                        if (BuildConfig.DEBUG) {
-                            Log.w(TAG, "Development build - Knox features will be limited")
-                        }
-                        enableLimitedMode()
-                    }
-                    else -> {
-                        Log.w(TAG, "Knox license status unknown")
-                        enableLimitedMode()
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Exception during Knox initialization", e)
-                enableLimitedMode()
-            }
-        }
-    }
-
-    private fun enableKnoxFeatures() {
-        // Enable Knox-dependent features
-        PreferenceManager.getDefaultSharedPreferences(this)
-            .edit()
-            .putBoolean("knox_features_enabled", true)
-            .apply()
-    }
-
-    private fun enableLimitedMode() {
-        // Disable Knox-dependent features, app runs with basic functionality
-        PreferenceManager.getDefaultSharedPreferences(this)
-            .edit()
-            .putBoolean("knox_features_enabled", false)
-            .apply()
-    }
-
-    companion object {
-        private const val TAG = "MyApplication"
-    }
-}
-
-// 3. Supporting Build Configuration
-// In your app/build.gradle.kts, ensure you have proper license key configuration:
-
-/*
-android {
-    defaultConfig {
-        buildConfigField("String", "KNOX_LICENSE_KEY", getDefaultLicenseKey())
-        buildConfigField("String[]", "KNOX_LICENSE_KEYS", getNamedLicenseKeys())
-    }
-}
-
-fun getNamedLicenseKeys(): String {
-    val localPropsFile = File(project.rootDir, "local.properties")
-    val localProps = Properties()
-    if (localPropsFile.exists()) {
-        localPropsFile.inputStream().use { localProps.load(it) }
-    }
-
-    val keys = mutableListOf<String>()
-
-    // Add development license
-    localProps.getProperty("knox.license.development")?.let { key ->
-        keys.add("development:$key")
-    }
-
-    // Add production license
-    localProps.getProperty("knox.license.production")?.let { key ->
-        keys.add("production:$key")
-    }
-
-    // Add staging license if available
-    localProps.getProperty("knox.license.staging")?.let { key ->
-        keys.add("staging:$key")
-    }
-
-    return "new String[]{${keys.joinToString(", ") { "\"$it\"" }}}"
-}
-*/
-
-// 4. Example local.properties file:
-/*
-# Knox License Keys for Different Environments
-knox.license=KNOX000000000000000000000000000000000000000000000000000000000000  # Default/fallback
-knox.license.development=KNOX111111111111111111111111111111111111111111111111111111111111
-knox.license.production=KNOX222222222222222222222222222222222222222222222222222222222222
-knox.license.staging=KNOX333333333333333333333333333333333333333333333333333333333333
-
-# Optional: Device-specific production licenses
-knox.license.production_tablet=KNOX444444444444444444444444444444444444444444444444444444444444
-knox.license.production_rugged=KNOX555555555555555555555555555555555555555555555555555555555555
-*/
-
-// 5. Device Administrator Setup
-class MyDeviceAdminReceiver : DeviceAdminReceiver() {
-    override fun onEnabled(context: Context, intent: Intent) {
-        super.onEnabled(context, intent)
-        Log.i(TAG, "Device Administrator enabled")
-
-        // Trigger Knox license initialization now that we have DA privileges
-        CoroutineScope(Dispatchers.IO).launch {
-            KnoxStartupManager.reset()
-            val strategy = BuildVariantLicenseStrategy()
-            KnoxStartupManager.initializeKnoxLicensing(
-                context,
-                strategy,
-                BuildConfig.KNOX_LICENSE_KEY,
-                BuildConfig.KNOX_LICENSE_KEYS
-            )
-        }
-    }
-
-    override fun onDisabled(context: Context, intent: Intent) {
-        super.onDisabled(context, intent)
-        Log.w(TAG, "Device Administrator disabled - Knox features will be limited")
-    }
-
-    companion object {
-        private const val TAG = "MyDeviceAdminReceiver"
-    }
-}
-
-// 6. UI Integration with Build Variant Awareness
-@Composable
-fun MainScreen(
-    deviceAdminManager: DeviceAdminManager = hiltViewModel()
-) {
-    var licenseStatus by remember { mutableStateOf<LicenseInfo?>(null) }
-    var knoxFeaturesEnabled by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        // Check Knox features availability
-        knoxFeaturesEnabled = PreferenceManager.getDefaultSharedPreferences(context)
-            .getBoolean("knox_features_enabled", false)
-
-        // Get license status if available
-        if (KnoxStartupManager.isKnoxLicenseReady()) {
-            try {
-                val handler = KnoxLicenseFactory.create(context, BuildVariantLicenseStrategy())
-                licenseStatus = handler.getLicenseInfo()
-            } catch (e: Exception) {
-                Log.e("MainScreen", "Error getting license info", e)
-            }
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Build Environment Indicator
-        BuildEnvironmentCard()
-
-        // Device Administrator Status
-        AdminStatusCard(deviceAdminManager = deviceAdminManager)
-
-        // Knox License Status
-        LicenseStatusCard(licenseStatus = licenseStatus)
-
-        // Knox Features
-        if (knoxFeaturesEnabled) {
-            KnoxFeaturesList()
-        } else {
-            LimitedModeCard()
-        }
-    }
-}
-
-@Composable
-fun BuildEnvironmentCard() {
-    val environment = if (BuildConfig.DEBUG) "Development" else "Production"
-    val buildType = BuildConfig.BUILD_TYPE
-
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = if (BuildConfig.DEBUG)
-                MaterialTheme.colorScheme.secondaryContainer
-            else
-                MaterialTheme.colorScheme.primaryContainer
-        )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Build Environment",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(text = "Environment: $environment")
-            Text(text = "Build Type: $buildType")
-            if (BuildConfig.DEBUG) {
-                Text(
-                    text = "⚠ Development build - using development Knox license",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AdminStatusCard(deviceAdminManager: DeviceAdminManager) {
-    val hasPrivileges = deviceAdminManager.hasElevatedPrivileges()
-
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = if (hasPrivileges)
-                MaterialTheme.colorScheme.primaryContainer
-            else
-                MaterialTheme.colorScheme.errorContainer
-        )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Device Administration Status",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = if (hasPrivileges)
-                    "✓ Device Administrator enabled"
-                else
-                    "⚠ Knox licensing requires Device Administrator"
-            )
-        }
-    }
-}
-```
-
-### Example 2: Manufacturing Device Provisioning
-
-Implementation for a manufacturing environment where devices are provisioned with Knox licenses:
-
-```kotlin
-// Manufacturing License Provisioning Strategy
-class ManufacturingProvisioningStrategy : LicenseSelectionStrategy {
-    override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
-        // Read device-specific license from secure storage or server
-        val deviceSerial = Build.getSerial()
-        val provisioningKey = getProvisioningKey(deviceSerial)
-
-        return when {
-            provisioningKey != null -> provisioningKey
-            availableKeys.containsKey("manufacturing") -> availableKeys["manufacturing"]!!
-            else -> defaultKey
-        }
-    }
-
-    private fun getProvisioningKey(serial: String): String? {
-        // In real implementation, this would query a secure provisioning server
-        // or read from encrypted local storage set during manufacturing
-        return ProvisioningStorage.getLicenseForSerial(serial)
-    }
-}
-
-// Provisioning Service for Manufacturing
-class DeviceProvisioningService @Inject constructor(
-    private val context: Context,
-    private val deviceAdminManager: DeviceAdminManager
-) {
-
-    suspend fun provisionDevice(
-        deviceSerial: String,
-        licenseKey: String,
-        configurationProfile: DeviceConfiguration
-    ): ProvisioningResult {
-        return try {
-            // Step 1: Ensure Device Administrator privileges
-            if (!deviceAdminManager.hasElevatedPrivileges()) {
-                return ProvisioningResult.Error("Device Administrator privileges required")
-            }
-
-            // Step 2: Store license key securely
-            ProvisioningStorage.storeLicenseKey(deviceSerial, licenseKey)
-
-            // Step 3: Initialize Knox with manufacturing strategy
-            val strategy = ManufacturingProvisioningStrategy()
-            val result = KnoxStartupManager.initializeKnoxLicensing(
-                context,
-                strategy,
-                licenseKey,
-                arrayOf("manufacturing:$licenseKey")
-            )
-
-            // Step 4: Apply device configuration
-            when (result) {
-                is LicenseStartupResult.ActivatedNow,
-                is LicenseStartupResult.AlreadyActivated -> {
-                    applyDeviceConfiguration(configurationProfile)
-                    ProvisioningResult.Success(deviceSerial)
-                }
-                else -> {
-                    ProvisioningResult.Error("Knox license activation failed: $result")
-                }
-            }
-        } catch (e: Exception) {
-            ProvisioningResult.Error("Provisioning failed: ${e.message}")
-        }
-    }
-
-    private suspend fun applyDeviceConfiguration(config: DeviceConfiguration) {
-        // Apply enterprise policies, network settings, etc.
-        // This would use Knox APIs to configure the device
-    }
-}
-
-sealed class ProvisioningResult {
-    data class Success(val deviceSerial: String) : ProvisioningResult()
-    data class Error(val message: String) : ProvisioningResult()
-}
-```
-
-### Example 3: Multi-Tenant SaaS Application
-
-Implementation for a SaaS application that serves multiple enterprise customers:
-
-```kotlin
-// Multi-tenant License Strategy
-class MultiTenantLicenseStrategy(
-    private val tenantManager: TenantManager
-) : LicenseSelectionStrategy {
-
-    override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
-        val currentTenant = tenantManager.getCurrentTenant()
-
-        return when {
-            currentTenant != null -> {
-                // Use tenant-specific license if available
-                availableKeys["tenant_${currentTenant.id}"]
-                    ?: availableKeys["tenant_default"]
-                    ?: defaultKey
-            }
-            else -> defaultKey
-        }
-    }
-}
-
-// Tenant Management
-@Singleton
-class TenantManager @Inject constructor(
-    private val context: Context
-) {
-    private var currentTenant: Tenant? = null
-
-    suspend fun switchTenant(tenantId: String): Result<Unit> {
-        return try {
-            // Deactivate current license if any
-            if (currentTenant != null) {
-                val handler = KnoxLicenseFactory.create(context, MultiTenantLicenseStrategy(this))
-                handler.deactivate()
-            }
-
-            // Load new tenant configuration
-            currentTenant = loadTenantConfiguration(tenantId)
-
-            // Initialize Knox for new tenant
-            val strategy = MultiTenantLicenseStrategy(this)
-            val result = KnoxStartupManager.initializeKnoxLicensing(
-                context,
-                strategy,
-                BuildConfig.KNOX_LICENSE_KEY,
-                BuildConfig.KNOX_LICENSE_KEYS
-            )
-
-            when (result) {
-                is LicenseStartupResult.ActivatedNow,
-                is LicenseStartupResult.AlreadyActivated -> {
-                    Result.success(Unit)
-                }
-                else -> {
-                    Result.failure(Exception("Failed to activate license for tenant $tenantId"))
-                }
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    fun getCurrentTenant(): Tenant? = currentTenant
-
-    private suspend fun loadTenantConfiguration(tenantId: String): Tenant {
-        // Load tenant configuration from secure storage or server
-        return TenantStorage.getTenant(tenantId)
-    }
-}
-
-// SaaS Application with Tenant Switching
-@Composable
-fun SaaSMainScreen(
-    tenantManager: TenantManager = hiltViewModel()
-) {
-    var currentTenant by remember { mutableStateOf(tenantManager.getCurrentTenant()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(Unit) {
-        currentTenant = tenantManager.getCurrentTenant()
-    }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Tenant Selector
-        TenantSelector(
-            currentTenant = currentTenant,
-            onTenantChange = { newTenantId ->
-                isLoading = true
-                error = null
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    tenantManager.switchTenant(newTenantId)
-                        .onSuccess {
-                            currentTenant = tenantManager.getCurrentTenant()
-                            isLoading = false
-                        }
-                        .onFailure { e ->
-                            error = e.message
-                            isLoading = false
-                        }
-                }
-            }
-        )
-
-        // Loading indicator
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            // Main content based on current tenant
-            currentTenant?.let { tenant ->
-                TenantSpecificContent(tenant = tenant)
-            } ?: run {
-                Text("No tenant selected")
-            }
-        }
-
-        // Error display
-        error?.let { errorMessage ->
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
-                ),
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Error: $errorMessage",
-                    modifier = Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.onErrorContainer
-                )
-            }
-        }
-    }
-}
-```
-
-These examples demonstrate:
-
-1. **Enterprise Device Management**: Complete Knox integration with Device Administrator setup
-2. **Manufacturing Provisioning**: Device-specific license provisioning in manufacturing environments
-3. **Multi-Tenant SaaS**: Dynamic license switching for multi-tenant applications
-
-Each example includes proper error handling, UI integration, and follows Android development best practices while leveraging the Knox licensing library effectively.
-
 ## API Reference
 
 ### Core Interfaces
@@ -1685,6 +1102,59 @@ object KnoxStartupManager {
 - Samsung Knox-enabled device
 - Knox Enterprise License Manager
 - **Device Administrator or Device Owner/Profile Owner privileges** (required for license operations)
+
+### Dependencies
+
+The module requires the following dependencies. If you're creating your own `libs.versions.toml`, use these naming conventions:
+
+#### Version Catalog (`libs.versions.toml`)
+
+```toml
+[versions]
+androidx-core = "1.15.0"           # Or latest stable
+kotlinx-coroutines = "1.10.2"     # Or latest stable
+junit4 = "4.13.2"
+mockk-version = "1.14.7"
+testing-androidx-junit = "1.2.1"
+testing-androidx-espresso = "3.6.1"
+
+[libraries]
+# Required runtime dependencies
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+
+# Testing dependencies (optional)
+junit = { group = "junit", name = "junit", version.ref = "junit4" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+mockk-core = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
+androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "testing-androidx-junit" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "testing-androidx-espresso" }
+```
+
+#### Knox SDK JAR
+
+The module expects a Knox Enterprise SDK JAR file at `libs/knoxsdk_ver38.jar`. This is included as `compileOnly` to avoid conflicts when other modules provide their own SDK variant.
+
+```kotlin
+// In knox-licensing/build.gradle.kts
+dependencies {
+    // Knox SDK - compileOnly so consumers provide their own SDK JAR
+    compileOnly(files("libs/knoxsdk_ver38.jar"))
+
+    // Runtime dependencies
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk.core)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+}
+```
+
+**Note**: The consuming application must provide the Knox SDK JAR either directly or through another module that includes it.
 
 ### Device Administrator Requirements
 
