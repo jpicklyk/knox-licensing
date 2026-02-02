@@ -4,6 +4,7 @@ plugins {
     id("sfelabs.android.application")
     id("sfelabs.android.application.compose")
     id("sfelabs.android.hilt")
+    id("convention.android.knox.license")
 }
 
 extensions.configure<ApplicationExtension> {
