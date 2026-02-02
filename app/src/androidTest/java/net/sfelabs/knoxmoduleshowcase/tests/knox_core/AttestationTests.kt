@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_enterprise.domain.use_cases.attestation.GetAttestationBlobUseCase
 import net.sfelabs.knox_enterprise.domain.use_cases.attestation.IsAttestationSupportedUseCase
-import net.sfelabs.knox_enterprise.domain.use_cases.attestation.ValidateAttestationUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.attestation.ValidateAttestationUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.UUID
