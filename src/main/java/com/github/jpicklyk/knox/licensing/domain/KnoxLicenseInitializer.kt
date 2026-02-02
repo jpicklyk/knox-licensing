@@ -57,33 +57,19 @@ class KnoxLicenseInitializer {
     fun getStatus(): LicenseStartupResult = _licenseStatus.value
 
     /**
-     * Initializes Knox licensing.
+     * Initializes Knox licensing with license keys from the app's BuildConfig.
      *
      * @param context Application context
+     * @param defaultKey Default license key from app's BuildConfig.KNOX_LICENSE_KEY
+     * @param namedKeysArray Array of named license keys from app's BuildConfig.KNOX_LICENSE_KEYS
      * @param licenseSelectionStrategy Optional strategy for selecting which license to use
      * @return The result of the initialization attempt
      */
     suspend fun initialize(
         context: Context,
+        defaultKey: String,
+        namedKeysArray: Array<String>? = null,
         licenseSelectionStrategy: LicenseSelectionStrategy? = null
-    ): LicenseStartupResult {
-        return initialize(context, licenseSelectionStrategy, null, null)
-    }
-
-    /**
-     * Initializes Knox licensing with custom license keys.
-     *
-     * @param context Application context
-     * @param licenseSelectionStrategy Optional strategy for selecting which license to use
-     * @param defaultKey Default license key from app's BuildConfig
-     * @param namedKeysArray Array of named license keys
-     * @return The result of the initialization attempt
-     */
-    suspend fun initialize(
-        context: Context,
-        licenseSelectionStrategy: LicenseSelectionStrategy? = null,
-        defaultKey: String? = null,
-        namedKeysArray: Array<String>? = null
     ): LicenseStartupResult {
         // Skip if already initialized successfully
         if (isInitialized && isReady) {
@@ -94,20 +80,12 @@ class KnoxLicenseInitializer {
         val result = withContext(Dispatchers.IO) {
             try {
                 Log.d(TAG, "Initializing Knox licensing...")
-                val knoxLicenseHandler = when {
-                    licenseSelectionStrategy != null && defaultKey != null -> {
-                        Log.d(TAG, "Using custom license selection strategy with app BuildConfig")
-                        KnoxLicenseFactory.create(context, licenseSelectionStrategy, defaultKey, namedKeysArray)
-                    }
-                    licenseSelectionStrategy != null -> {
-                        Log.d(TAG, "Using custom license selection strategy with knox-licensing BuildConfig")
-                        KnoxLicenseFactory.create(context, licenseSelectionStrategy)
-                    }
-                    else -> {
-                        Log.d(TAG, "Using default license configuration")
-                        KnoxLicenseFactory.createFromBuildConfig(context)
-                    }
-                }
+                val knoxLicenseHandler = KnoxLicenseFactory.create(
+                    context,
+                    licenseSelectionStrategy,
+                    defaultKey,
+                    namedKeysArray
+                )
 
                 // Check current status first
                 val licenseInfo = knoxLicenseHandler.getLicenseInfo()

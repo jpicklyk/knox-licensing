@@ -11,14 +11,14 @@ import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
 
 object KnoxLicenseFactory {
 
-    fun create(context: Context): KnoxLicenseHandler {
-        return create(context, LicenseKeyProvider().fromBuildConfig())
-    }
-
-    fun create(context: Context, licenseSelectionStrategy: LicenseSelectionStrategy?): KnoxLicenseHandler {
-        return create(context, LicenseKeyProvider(licenseSelectionStrategy).fromBuildConfig())
-    }
-
+    /**
+     * Creates a KnoxLicenseHandler with license keys from the app's BuildConfig.
+     *
+     * @param context Application context
+     * @param licenseSelectionStrategy Optional strategy for selecting which license key to use
+     * @param defaultKey The default license key from app's BuildConfig.KNOX_LICENSE_KEY
+     * @param namedKeysArray Array of named keys from app's BuildConfig.KNOX_LICENSE_KEYS
+     */
     fun create(
         context: Context,
         licenseSelectionStrategy: LicenseSelectionStrategy?,
@@ -28,6 +28,12 @@ object KnoxLicenseFactory {
         return create(context, LicenseKeyProvider(licenseSelectionStrategy).fromAppBuildConfig(defaultKey, namedKeysArray))
     }
 
+    /**
+     * Creates a KnoxLicenseHandler with an explicit license configuration.
+     *
+     * @param context Application context
+     * @param licenseConfiguration The license configuration containing keys
+     */
     fun create(context: Context, licenseConfiguration: LicenseConfiguration): KnoxLicenseHandler {
         val knoxErrorMapper = KnoxErrorMapper()
         val knoxLicenseRepository = KnoxLicenseRepository(
@@ -42,10 +48,13 @@ object KnoxLicenseFactory {
         )
     }
 
-    fun createFromBuildConfig(context: Context): KnoxLicenseHandler {
-        return create(context)
-    }
-
+    /**
+     * Creates a KnoxLicenseHandler with explicitly provided license keys.
+     *
+     * @param context Application context
+     * @param defaultKey The default/primary license key
+     * @param namedKeys Optional map of named license keys for multi-license scenarios
+     */
     fun createWithKeys(
         context: Context,
         defaultKey: String,

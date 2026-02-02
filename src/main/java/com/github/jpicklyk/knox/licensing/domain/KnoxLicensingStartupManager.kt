@@ -39,20 +39,22 @@ object KnoxStartupManager {
     @Synchronized
     fun getInstance(): KnoxLicenseInitializer = getInitializer()
 
+    /**
+     * Initializes Knox licensing with license keys from the app's BuildConfig.
+     *
+     * @param context Application context
+     * @param defaultKey Default license key from app's BuildConfig.KNOX_LICENSE_KEY
+     * @param namedKeysArray Array of named license keys from app's BuildConfig.KNOX_LICENSE_KEYS
+     * @param licenseSelectionStrategy Optional strategy for selecting which license to use
+     * @return The result of the initialization attempt
+     */
     suspend fun initializeKnoxLicensing(
         context: Context,
+        defaultKey: String,
+        namedKeysArray: Array<String>? = null,
         licenseSelectionStrategy: LicenseSelectionStrategy? = null
     ): LicenseStartupResult {
-        return getInitializer().initialize(context, licenseSelectionStrategy)
-    }
-
-    suspend fun initializeKnoxLicensing(
-        context: Context,
-        licenseSelectionStrategy: LicenseSelectionStrategy? = null,
-        defaultKey: String? = null,
-        namedKeysArray: Array<String>? = null
-    ): LicenseStartupResult {
-        return getInitializer().initialize(context, licenseSelectionStrategy, defaultKey, namedKeysArray)
+        return getInitializer().initialize(context, defaultKey, namedKeysArray, licenseSelectionStrategy)
     }
 
     fun isKnoxLicenseReady(): Boolean = getInitializer().isReady
