@@ -1,16 +1,12 @@
+import com.android.build.api.dsl.ApplicationExtension
+
 plugins {
     id("sfelabs.android.application")
     id("sfelabs.android.application.compose")
     id("sfelabs.android.hilt")
-
-
-    //id("com.android.application")
-    //id("org.jetbrains.kotlin.android")
-    //id("kotlin-kapt")
-    //id("dagger.hilt.android.plugin")
 }
 
-android {
+extensions.configure<ApplicationExtension> {
     namespace = "net.sfelabs.knoxmoduleshowcase"
 
     sourceSets {
@@ -21,25 +17,20 @@ android {
 
     buildFeatures {
         aidl = true
+        buildConfig = true
     }
 
     defaultConfig {
-
         applicationId = "net.sfelabs.knoxmoduleshowcase"
 
         versionCode = 1
         versionName = "0.0.1"
 
-        //testInstrumentationRunner = "net.sfelabs.knox_tactical.TacticalJUnitRunner"
         testInstrumentationRunner = "net.sfelabs.knoxmoduleshowcase.di.HiltTestRunner"
 
         vectorDrawables {
             useSupportLibrary = true
         }
-    }
-
-    buildFeatures {
-        buildConfig = true
     }
 
     // Enable baseline profile generation
@@ -66,6 +57,7 @@ android {
             )
         }
     }
+
     packaging {
         resources {
             excludes += arrayOf(
@@ -80,13 +72,10 @@ android {
     }
 
     testOptions {
-
         unitTests {
-
             isIncludeAndroidResources = true
         }
     }
-
 }
 dependencies {
     implementation(project(":core:designsystem"))
