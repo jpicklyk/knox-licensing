@@ -2,6 +2,7 @@ import com.android.build.api.dsl.LibraryExtension
 
 plugins {
     alias(libs.plugins.convention.android.library)
+    id("convention.android.knox.license")
 }
 
 extensions.configure<LibraryExtension> {
@@ -10,9 +11,6 @@ extensions.configure<LibraryExtension> {
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-
-        buildConfigField("String", "KNOX_LICENSE_KEY", "\"KNOX_LICENSE_KEY_NOT_FOUND\"")
-        buildConfigField("String[]", "KNOX_LICENSE_KEYS", "{}")
     }
 
     buildTypes {
@@ -23,10 +21,6 @@ extensions.configure<LibraryExtension> {
                 "proguard-rules.pro"
             )
         }
-    }
-
-    buildFeatures {
-        buildConfig = true
     }
 }
 
