@@ -548,6 +548,156 @@ This approach ensures license keys are:
 - Available for license selection strategies
 - Never committed to version control
 
+### Product Flavors for Customer-Specific Licensing
+
+When deploying to multiple customers who each require their own Knox license, use Android product flavors to manage customer-specific configurations.
+
+#### Step 1: Define Product Flavors
+
+In your app's `build.gradle.kts`:
+
+```kotlin
+android {
+    flavorDimensions += "customer"
+
+    productFlavors {
+        create("customerA") {
+            dimension = "customer"
+            applicationIdSuffix = ".customera"
+        }
+        create("customerB") {
+            dimension = "customer"
+            applicationIdSuffix = ".customerb"
+        }
+        create("internal") {
+            dimension = "customer"
+            // Internal/development builds
+        }
+    }
+}
+```
+
+#### Step 2: Configure Customer-Specific License Keys
+
+In your `local.properties`:
+
+```properties
+# Default/fallback license (used if flavor-specific key not found)
+knox.license=KLM06-DEFAULT-XXXXX-XXXXX-XXXXX-XXXXX
+
+# Customer-specific license keys
+knox.license.customerA=KLM06-CUSTA-XXXXX-XXXXX-XXXXX-XXXXX
+knox.license.customerB=KLM06-CUSTB-XXXXX-XXXXX-XXXXX-XXXXX
+knox.license.internal=KLM06-INTERNAL-XXXXX-XXXXX-XXXXX
+
+# Customer + device-specific keys (for custom SDK devices per customer)
+knox.license.customerA.custom-sdk=KLM09-CUSTA-CUSTOM-XXXXX-XXXXX
+knox.license.customerB.custom-sdk=KLM09-CUSTB-CUSTOM-XXXXX-XXXXX
+```
+
+#### Step 3: Enhance Convention Plugin for Flavors
+
+Extend your convention plugin to configure flavor-specific BuildConfig fields:
+
+```kotlin
+private fun Project.configureApplicationBuildConfig(extension: ApplicationExtension) {
+    extension.apply {
+        buildFeatures { buildConfig = true }
+
+        // Default configuration (fallback)
+        defaultConfig {
+            val defaultKey = getKnoxLicenseKey("knox.license")
+            buildConfigField("String", "KNOX_LICENSE_KEY", "\"$defaultKey\"")
+            buildConfigField("String[]", "KNOX_LICENSE_KEYS", getNamedLicenseKeys().toArrayLiteral())
+        }
+
+        // Configure each product flavor with its specific license
+        productFlavors.configureEach {
+            val flavorName = this.name
+            val flavorKey = getKnoxLicenseKey("knox.license.$flavorName")
+            val flavorNamedKeys = getNamedLicenseKeysForFlavor(flavorName)
+
+            if (flavorKey != "KNOX_LICENSE_KEY_NOT_FOUND") {
+                buildConfigField("String", "KNOX_LICENSE_KEY", "\"$flavorKey\"")
+            }
+            if (flavorNamedKeys.isNotEmpty()) {
+                buildConfigField("String[]", "KNOX_LICENSE_KEYS", flavorNamedKeys.toArrayLiteral())
+            }
+        }
+    }
+}
+
+/**
+ * Gets named keys for a specific flavor.
+ * Looks for: knox.license.<flavorName>.<keyName>=VALUE
+ */
+private fun Project.getNamedLicenseKeysForFlavor(flavorName: String): List<String> {
+    val prefix = "knox.license.$flavorName."
+    return loadLocalProperties().entries
+        .filter { (key, _) -> key.toString().startsWith(prefix) }
+        .map { (key, value) ->
+            val keyName = key.toString().removePrefix(prefix)
+            "$keyName:$value"
+        }
+}
+```
+
+#### Step 4: Implement Customer-Aware License Selection
+
+Create a strategy that considers both customer (flavor) and device type:
+
+```kotlin
+class CustomerAwareLicenseStrategy : LicenseSelectionStrategy {
+
+    override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
+        // The defaultKey is already customer-specific (set by flavor's BuildConfig)
+        // availableKeys contains customer-specific named keys (e.g., "custom-sdk")
+
+        return when {
+            isCustomSdkDevice() -> availableKeys["custom-sdk"] ?: defaultKey
+            else -> defaultKey
+        }
+    }
+
+    private fun isCustomSdkDevice(): Boolean {
+        // Device-specific detection logic
+        return Build.MODEL.contains("CUSTOM")
+    }
+}
+```
+
+#### Build Variant Matrix
+
+With this setup, your build variants would be:
+
+| Variant | License Source | Use Case |
+|---------|---------------|----------|
+| `customerADebug` | `knox.license.customerA` | Customer A development |
+| `customerARelease` | `knox.license.customerA` | Customer A production |
+| `customerBDebug` | `knox.license.customerB` | Customer B development |
+| `customerBRelease` | `knox.license.customerB` | Customer B production |
+| `internalDebug` | `knox.license.internal` | Internal testing |
+
+#### CI/CD Integration
+
+For CI/CD pipelines, inject customer-specific keys via environment variables:
+
+```bash
+# In CI pipeline
+echo "knox.license.customerA=$CUSTOMER_A_LICENSE" >> local.properties
+echo "knox.license.customerB=$CUSTOMER_B_LICENSE" >> local.properties
+
+# Build specific customer variant
+./gradlew assembleCustomerARelease
+```
+
+#### Security Considerations for Multi-Customer Deployments
+
+1. **Isolate customer keys**: Each customer's license should only be in their specific build variant
+2. **CI/CD secrets**: Store customer keys as separate CI/CD secrets, injected only for their builds
+3. **Code signing**: Use different signing keys per customer to prevent APK tampering
+4. **License auditing**: Log license activation (without the key) for compliance tracking
+
 ### Using BuildConfig Directly
 
 Alternatively, add BuildConfig fields directly to your `build.gradle.kts`:
