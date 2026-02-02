@@ -439,25 +439,19 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
                     extensions.configure<ApplicationExtension> {
                         buildFeatures { buildConfig = true }
                         defaultConfig {
-                            val commercialKey = getKnoxLicenseKey()
-                            val customSdkKey = getKnoxCustomSdkLicenseKey()
-                            buildConfigField("String", "KNOX_LICENSE_KEY", "\"$commercialKey\"")
-                            buildConfigField("String", "KNOX_CUSTOM_SDK_LICENSE_KEY", "\"$customSdkKey\"")
-                            buildConfigField("String[]", "KNOX_LICENSE_KEYS", "{\"custom-sdk:$customSdkKey\"}")
+                            val defaultKey = getKnoxLicenseKey()
+                            val namedKeys = getNamedLicenseKeys()
+
+                            // Default/commercial license key
+                            buildConfigField("String", "KNOX_LICENSE_KEY", "\"$defaultKey\"")
+
+                            // Array of named keys in "name:key" format for LicenseKeyProvider
+                            buildConfigField("String[]", "KNOX_LICENSE_KEYS", namedKeys.toArrayLiteral())
                         }
                     }
                 }
                 plugins.hasPlugin("com.android.library") -> {
-                    extensions.configure<LibraryExtension> {
-                        buildFeatures { buildConfig = true }
-                        defaultConfig {
-                            val commercialKey = getKnoxLicenseKey()
-                            val customSdkKey = getKnoxCustomSdkLicenseKey()
-                            buildConfigField("String", "KNOX_LICENSE_KEY", "\"$commercialKey\"")
-                            buildConfigField("String", "KNOX_CUSTOM_SDK_LICENSE_KEY", "\"$customSdkKey\"")
-                            buildConfigField("String[]", "KNOX_LICENSE_KEYS", "{\"custom-sdk:$customSdkKey\"}")
-                        }
-                    }
+                    // Similar configuration for library modules
                 }
             }
         }
@@ -467,8 +461,30 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
         return getPropertyFromLocalProperties("knox.license", "KNOX_LICENSE_KEY_NOT_FOUND")
     }
 
-    private fun Project.getKnoxCustomSdkLicenseKey(): String {
-        return getPropertyFromLocalProperties("knox.license.custom-sdk", "KNOX_CUSTOM_SDK_LICENSE_KEY_NOT_FOUND")
+    /**
+     * Reads all knox.license.* properties and returns them as name:key pairs.
+     * Example: knox.license.custom-sdk=KEY123 -> "custom-sdk:KEY123"
+     */
+    private fun Project.getNamedLicenseKeys(): List<String> {
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
+        }
+
+        return localProperties.entries
+            .filter { (key, _) ->
+                key.toString().startsWith("knox.license.") &&
+                key.toString() != "knox.license"
+            }
+            .map { (key, value) ->
+                val name = key.toString().removePrefix("knox.license.")
+                "$name:$value"
+            }
+    }
+
+    private fun List<String>.toArrayLiteral(): String {
+        return if (isEmpty()) "{}" else joinToString(prefix = "{", postfix = "}") { "\"$it\"" }
     }
 
     private fun Project.getPropertyFromLocalProperties(key: String, defaultValue: String): String {
@@ -513,9 +529,18 @@ plugins {
 Add to your `local.properties` (never commit to version control):
 
 ```properties
+# Default/commercial license key
 knox.license=KLM06-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+
+# Named license keys (any knox.license.* property is automatically picked up)
 knox.license.custom-sdk=KLM09-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+knox.license.enterprise=KLM06-YYYYY-YYYYY-YYYYY-YYYYY-YYYYY
+knox.license.development=KLM06-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ
 ```
+
+The plugin automatically discovers all `knox.license.*` properties and generates the `KNOX_LICENSE_KEYS` array in the format expected by `LicenseKeyProvider`:
+- `knox.license.custom-sdk` → `"custom-sdk:KLM09-..."`
+- `knox.license.enterprise` → `"enterprise:KLM06-..."`
 
 This approach ensures license keys are:
 - Centrally managed in `local.properties`
