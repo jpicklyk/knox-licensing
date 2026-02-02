@@ -2,7 +2,6 @@ import com.android.build.api.dsl.LibraryExtension
 
 plugins {
     alias(libs.plugins.convention.android.library)
-    id("convention.android.knox.license")
 }
 
 extensions.configure<LibraryExtension> {
