@@ -158,6 +158,73 @@ val handler = KnoxLicenseFactory.create(context, strategy)
 - **Independence**: No dependencies on specific device detection libraries
 - **Reusability**: Same strategy can be used across different apps
 
+#### Example: Custom SDK Module License Selection
+
+When your project uses a custom Knox SDK module (e.g., `knox-custom-sdk-module`) that requires a different license than the standard commercial license, implement a device-aware strategy:
+
+```kotlin
+/**
+ * License selection strategy that chooses between commercial and custom SDK licenses
+ * based on device characteristics.
+ */
+class CustomSdkLicenseSelectionStrategy : LicenseSelectionStrategy {
+
+    override fun selectLicenseKey(availableKeys: Map<String, String>, defaultKey: String): String {
+        return if (isCustomSdkDevice()) {
+            // Use custom SDK license for specialized devices
+            availableKeys["custom-sdk"] ?: defaultKey
+        } else {
+            // Use standard commercial license for regular devices
+            defaultKey
+        }
+    }
+
+    /**
+     * Detect if device requires custom SDK license.
+     * Implement your device-specific detection logic here.
+     */
+    private fun isCustomSdkDevice(): Boolean {
+        // Example: Check for specific device models or configurations
+        val model = Build.MODEL.uppercase()
+        return model.contains("CUSTOM") ||
+               model.contains("SPECIALIZED") ||
+               hasCustomSdkFeature()
+    }
+
+    private fun hasCustomSdkFeature(): Boolean {
+        // Check for device-specific features that indicate custom SDK requirement
+        return try {
+            // Example: Check system property or feature flag
+            val prop = System.getProperty("ro.custom.sdk.enabled", "false")
+            prop.equals("true", ignoreCase = true)
+        } catch (e: Exception) {
+            false
+        }
+    }
+}
+
+// Provide via Hilt DI
+@Module
+@InstallIn(SingletonComponent::class)
+object AppLicensingModule {
+    @Provides
+    @Singleton
+    fun provideLicenseSelectionStrategy(): LicenseSelectionStrategy {
+        return CustomSdkLicenseSelectionStrategy()
+    }
+}
+```
+
+With the corresponding `local.properties` configuration:
+
+```properties
+# Standard commercial Knox license
+knox.license=KLM06-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+
+# Custom SDK license for specialized devices
+knox.license.custom-sdk=KLM09-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+```
+
 ### License Operations
 
 ```kotlin
@@ -348,9 +415,117 @@ The startup manager automatically:
 
 ## Configuration
 
-### Using BuildConfig (Recommended)
+### Using a Gradle Convention Plugin (Recommended for Multi-Module Projects)
 
-Create a gradle convention plugin or add directly to your `build.gradle.kts`:
+For multi-module Android projects, creating a Gradle convention plugin is the cleanest approach. This plugin reads license keys from `local.properties` and injects them into your app's BuildConfig.
+
+#### Step 1: Create the Convention Plugin
+
+Create `KnoxLicenseConventionPlugin.kt` in your `build-logic/convention/src/main/kotlin/`:
+
+```kotlin
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
+import java.util.Properties
+
+class KnoxLicenseConventionPlugin : Plugin<Project> {
+    override fun apply(target: Project) {
+        with(target) {
+            when {
+                plugins.hasPlugin("com.android.application") -> {
+                    extensions.configure<ApplicationExtension> {
+                        buildFeatures { buildConfig = true }
+                        defaultConfig {
+                            val commercialKey = getKnoxLicenseKey()
+                            val customSdkKey = getKnoxCustomSdkLicenseKey()
+                            buildConfigField("String", "KNOX_LICENSE_KEY", "\"$commercialKey\"")
+                            buildConfigField("String", "KNOX_CUSTOM_SDK_LICENSE_KEY", "\"$customSdkKey\"")
+                            buildConfigField("String[]", "KNOX_LICENSE_KEYS", "{\"custom-sdk:$customSdkKey\"}")
+                        }
+                    }
+                }
+                plugins.hasPlugin("com.android.library") -> {
+                    extensions.configure<LibraryExtension> {
+                        buildFeatures { buildConfig = true }
+                        defaultConfig {
+                            val commercialKey = getKnoxLicenseKey()
+                            val customSdkKey = getKnoxCustomSdkLicenseKey()
+                            buildConfigField("String", "KNOX_LICENSE_KEY", "\"$commercialKey\"")
+                            buildConfigField("String", "KNOX_CUSTOM_SDK_LICENSE_KEY", "\"$customSdkKey\"")
+                            buildConfigField("String[]", "KNOX_LICENSE_KEYS", "{\"custom-sdk:$customSdkKey\"}")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun Project.getKnoxLicenseKey(): String {
+        return getPropertyFromLocalProperties("knox.license", "KNOX_LICENSE_KEY_NOT_FOUND")
+    }
+
+    private fun Project.getKnoxCustomSdkLicenseKey(): String {
+        return getPropertyFromLocalProperties("knox.license.custom-sdk", "KNOX_CUSTOM_SDK_LICENSE_KEY_NOT_FOUND")
+    }
+
+    private fun Project.getPropertyFromLocalProperties(key: String, defaultValue: String): String {
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
+        }
+        return localProperties.getProperty(key, defaultValue)
+    }
+}
+```
+
+#### Step 2: Register the Plugin
+
+In your `build-logic/convention/build.gradle.kts`:
+
+```kotlin
+gradlePlugin {
+    plugins {
+        register("knoxLicense") {
+            id = "convention.android.knox.license"
+            implementationClass = "KnoxLicenseConventionPlugin"
+        }
+    }
+}
+```
+
+#### Step 3: Apply the Plugin
+
+In your app module's `build.gradle.kts`:
+
+```kotlin
+plugins {
+    id("com.android.application")
+    id("convention.android.knox.license")  // Apply the Knox license plugin
+}
+```
+
+#### Step 4: Configure License Keys
+
+Add to your `local.properties` (never commit to version control):
+
+```properties
+knox.license=KLM06-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+knox.license.custom-sdk=KLM09-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+```
+
+This approach ensures license keys are:
+- Centrally managed in `local.properties`
+- Automatically injected into BuildConfig
+- Available for license selection strategies
+- Never committed to version control
+
+### Using BuildConfig Directly
+
+Alternatively, add BuildConfig fields directly to your `build.gradle.kts`:
 
 ```kotlin
 android {
