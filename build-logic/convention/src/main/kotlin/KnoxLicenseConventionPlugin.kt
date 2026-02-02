@@ -32,21 +32,21 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
                 buildConfig = true
             }
             defaultConfig {
-                val tacticalKey = getKnoxTacticalLicenseKey()
+                val defaultKey = getKnoxLicenseKey()
+                val namedKeys = getNamedLicenseKeys()
+
+                // Default/commercial license key
                 buildConfigField(
                     type = "String",
                     name = "KNOX_LICENSE_KEY",
-                    value = "\"${getKnoxLicenseKey()}\""
+                    value = "\"${defaultKey}\""
                 )
-                buildConfigField(
-                    type = "String",
-                    name = "KNOX_TACTICAL_LICENSE_KEY",
-                    value = "\"${tacticalKey}\""
-                )
+
+                // Array of named keys in "name:key" format for LicenseKeyProvider
                 buildConfigField(
                     type = "String[]",
                     name = "KNOX_LICENSE_KEYS",
-                    value = "{\"tactical:${tacticalKey}\"}"
+                    value = namedKeys.toArrayLiteral()
                 )
             }
         }
@@ -58,21 +58,21 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
                 buildConfig = true
             }
             defaultConfig {
-                val tacticalKey = getKnoxTacticalLicenseKey()
+                val defaultKey = getKnoxLicenseKey()
+                val namedKeys = getNamedLicenseKeys()
+
+                // Default/commercial license key
                 buildConfigField(
                     type = "String",
                     name = "KNOX_LICENSE_KEY",
-                    value = "\"${getKnoxLicenseKey()}\""
+                    value = "\"${defaultKey}\""
                 )
-                buildConfigField(
-                    type = "String",
-                    name = "KNOX_TACTICAL_LICENSE_KEY",
-                    value = "\"${tacticalKey}\""
-                )
+
+                // Array of named keys in "name:key" format for LicenseKeyProvider
                 buildConfigField(
                     type = "String[]",
                     name = "KNOX_LICENSE_KEYS",
-                    value = "{\"tactical:${tacticalKey}\"}"
+                    value = namedKeys.toArrayLiteral()
                 )
             }
         }
@@ -85,11 +85,36 @@ class KnoxLicenseConventionPlugin : Plugin<Project> {
         )
     }
 
-    private fun Project.getKnoxTacticalLicenseKey(): String {
-        return getPropertyFromLocalProperties(
-            key = "knox.license.tactical",
-            defaultValue = "KNOX_TACTICAL_LICENSE_KEY_NOT_FOUND"
-        )
+    /**
+     * Reads all knox.license.* properties and returns them as name:key pairs.
+     * Example: knox.license.tactical=KEY123 -> "tactical:KEY123"
+     */
+    private fun Project.getNamedLicenseKeys(): List<String> {
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { stream ->
+                localProperties.load(stream)
+            }
+        }
+
+        return localProperties.entries
+            .filter { (key, _) ->
+                key.toString().startsWith("knox.license.") &&
+                key.toString() != "knox.license"
+            }
+            .map { (key, value) ->
+                val name = key.toString().removePrefix("knox.license.")
+                "$name:$value"
+            }
+    }
+
+    private fun List<String>.toArrayLiteral(): String {
+        return if (isEmpty()) {
+            "{}"
+        } else {
+            joinToString(prefix = "{", postfix = "}") { "\"$it\"" }
+        }
     }
 
     private fun Project.getPropertyFromLocalProperties(key: String, defaultValue: String = ""): String {
