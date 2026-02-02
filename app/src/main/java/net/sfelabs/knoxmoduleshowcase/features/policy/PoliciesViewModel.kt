@@ -6,51 +6,31 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-import net.sfelabs.knox.core.feature.ui.model.ConfigurationOption
-import net.sfelabs.knox.core.feature.ui.model.PolicyUiState.ConfigurableToggle
-import net.sfelabs.knox.core.feature.api.*
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
+import net.sfelabs.knox.core.feature.api.BooleanPolicyState
+import net.sfelabs.knox.core.feature.api.PolicyComponent
+import net.sfelabs.knox.core.feature.api.PolicyGroupingStrategy
+import net.sfelabs.knox.core.feature.api.PolicyState
 import net.sfelabs.knox.core.feature.api.PolicyStateWrapper
 import net.sfelabs.knox.core.feature.domain.model.Policy
 import net.sfelabs.knox.core.feature.domain.registry.PolicyRegistry
+import net.sfelabs.knox.core.feature.ui.model.ConfigurationOption
 import net.sfelabs.knox.core.feature.ui.model.PolicyUiState
-import net.sfelabs.knox_tactical.domain.policy.AutoTouchSensitivityPolicy
-import net.sfelabs.knox_tactical.domain.policy.Disable2GConnectivityPolicy
-import net.sfelabs.knox_tactical.domain.policy.DisableElectronicSimPolicy
-import net.sfelabs.knox_tactical.domain.policy.DisableHotspot20Policy
-import net.sfelabs.knox_tactical.domain.policy.DisableRamPlusPolicy
-import net.sfelabs.knox_tactical.domain.policy.EnableExtraBrightnessPolicy
-import net.sfelabs.knox_tactical.domain.policy.LcdBacklightPolicy
-import net.sfelabs.knox_tactical.domain.policy.TacticalDeviceModePolicy
-import net.sfelabs.knox_tactical.domain.policy.auto_call_pickup.AutoCallPickupPolicy
-import net.sfelabs.knox_tactical.domain.policy.auto_call_pickup.AutoCallPickupState
-import net.sfelabs.knox_tactical.domain.policy.auto_record_policy.AutoRecordCallPolicy
-import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLocking5gPolicy
-import net.sfelabs.knox_tactical.domain.policy.band_locking.BandLockingState
-import net.sfelabs.knox_tactical.domain.policy.band_locking.LteBandLockingPolicy
-import net.sfelabs.knox_tactical.domain.policy.charging.DisableFastChargingPolicy
-import net.sfelabs.knox_tactical.domain.policy.charging.DisableWirelessChargingPolicy
-import net.sfelabs.knox_tactical.domain.policy.hdm.EnableHdmPolicy
-import net.sfelabs.knox_tactical.domain.policy.hdm.HdmState
-import net.sfelabs.knox_tactical.domain.policy.modem_ims.DisableImsPolicy
-import net.sfelabs.knox_tactical.domain.policy.modem_ims.ImsState
-import net.sfelabs.knox_tactical.domain.policy.night_vision.EnableNightVisionModePolicy
-import net.sfelabs.knox_tactical.domain.policy.night_vision.NightVisionState
-import net.sfelabs.knox_tactical.domain.policy.nr_mode.NrModePolicy
-import net.sfelabs.knox_tactical.domain.policy.nr_mode.NrModeState
-import net.sfelabs.knox_tactical.domain.policy.pogo.DisablePogoKeyboardConnectionPolicy
-import net.sfelabs.knox_tactical.domain.policy.radio.AlwaysRadioOnEnabledPolicy
-import net.sfelabs.knox_tactical.generated.policy.PolicyType
+import net.sfelabs.knox.core.feature.ui.model.PolicyUiState.ConfigurableToggle
 import net.sfelabs.knoxmoduleshowcase.features.policy.event.PolicyEvent
+import net.sfelabs.knoxmoduleshowcase.features.policy.model.PolicyGroupUiState
 import javax.inject.Inject
 
 @HiltViewModel
 class PoliciesViewModel @Inject constructor(
-    private val featureRegistry: PolicyRegistry
+    private val featureRegistry: PolicyRegistry,
+    private val groupingStrategy: PolicyGroupingStrategy
 ) : ViewModel() {
     private val _policies = MutableStateFlow<List<PolicyUiState>>(emptyList())
     val policies = _policies.asStateFlow()
+
+    private val _groupedPolicies = MutableStateFlow<List<PolicyGroupUiState>>(emptyList())
+    val groupedPolicies = _groupedPolicies.asStateFlow()
 
     init {
         loadPolicies()
@@ -58,8 +38,25 @@ class PoliciesViewModel @Inject constructor(
 
     private fun loadPolicies() {
         viewModelScope.launch {
-            _policies.value = featureRegistry.getAllPolicies()
-                .mapNotNull { createPolicyUiState(it) }
+            // Load all policies for flat list (backward compatibility)
+            val allPolicies = featureRegistry.getAllPolicies()
+            _policies.value = allPolicies.mapNotNull { createPolicyUiState(it) }
+
+            // Load grouped policies using the grouping strategy
+            val resolvedGroups = groupingStrategy.resolveAllGroups(featureRegistry)
+            _groupedPolicies.value = resolvedGroups.map { resolvedGroup ->
+                val groupPolicies = resolvedGroup.policies.mapNotNull { component ->
+                    // Find the matching policy state
+                    allPolicies.find { it.key.policyName == component.policyName }
+                        ?.let { createPolicyUiState(it) }
+                }
+                PolicyGroupUiState(
+                    groupId = resolvedGroup.group.id,
+                    groupName = resolvedGroup.group.displayName,
+                    groupDescription = resolvedGroup.group.description,
+                    policies = groupPolicies
+                )
+            }.filter { it.policies.isNotEmpty() }
         }
     }
 
@@ -113,29 +110,21 @@ class PoliciesViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Convert UI state to domain state using polymorphic dispatch through uiConverter.
+     *
+     * This replaces the previous manual when() dispatch that required instantiating
+     * each policy type explicitly.
+     */
+    @Suppress("UNCHECKED_CAST")
     private fun updatePolicyState(policy: Policy<*>, uiState: PolicyUiState): PolicyState {
-        return when (PolicyType.fromPolicy(policy)) {
-            PolicyType.EnableHdmPolicy -> EnableHdmPolicy()
-            PolicyType.AutoCallPickupPolicy -> AutoCallPickupPolicy()
-            PolicyType.BandLocking5gPolicy -> BandLocking5gPolicy()
-            PolicyType.AutoRecordCallPolicy -> AutoRecordCallPolicy()
-            PolicyType.AutoTouchSensitivityPolicy -> AutoTouchSensitivityPolicy()
-            PolicyType.Disable2GConnectivityPolicy -> Disable2GConnectivityPolicy()
-            PolicyType.DisableElectronicSimPolicy -> DisableElectronicSimPolicy()
-            PolicyType.DisableHotspot20Policy -> DisableHotspot20Policy()
-            PolicyType.DisableImsPolicy -> DisableImsPolicy()
-            PolicyType.DisableRamPlusPolicy -> DisableRamPlusPolicy()
-            PolicyType.EnableExtraBrightnessPolicy -> EnableExtraBrightnessPolicy()
-            PolicyType.EnableNightVisionModePolicy -> EnableNightVisionModePolicy()
-            PolicyType.LcdBacklightPolicy -> LcdBacklightPolicy()
-            PolicyType.LteBandLockingPolicy -> LteBandLockingPolicy()
-            PolicyType.NrModePolicy -> NrModePolicy()
-            PolicyType.TacticalDeviceModePolicy -> TacticalDeviceModePolicy()
-            PolicyType.DisablePogoKeyboardConnectionPolicy -> DisablePogoKeyboardConnectionPolicy()
-            PolicyType.AlwaysRadioOnEnabledPolicy -> AlwaysRadioOnEnabledPolicy()
-            PolicyType.DisableFastChargingPolicy -> DisableFastChargingPolicy()
-            PolicyType.DisableWirelessChargingPolicy -> DisableWirelessChargingPolicy()
-        }.fromUiState(uiState.isEnabled, uiState.currentOptions())
+        val component = featureRegistry.getComponent(policy.key)
+            ?: error("Component not found for policy: ${policy.key.policyName}")
+
+        // Use polymorphic dispatch through uiConverter
+        return (component as PolicyComponent<PolicyState>)
+            .uiConverter
+            .fromUiState(uiState.isEnabled, uiState.currentOptions())
     }
 
     private fun createPolicyUiState(policy: Policy<*>): PolicyUiState? {
@@ -165,63 +154,35 @@ class PoliciesViewModel @Inject constructor(
         }
     }
 
-    private fun createConfigurationOptions(feature: Policy<PolicyState>): List<ConfigurationOption> {
-        val type = PolicyType.fromPolicy(feature)
-        return when (type) {
-            PolicyType.AutoCallPickupPolicy -> {
-                val state = feature.state.value as AutoCallPickupState
-                val policy = AutoCallPickupPolicy()
-                policy.getConfigurationOptions(state)
-            }
-            PolicyType.BandLocking5gPolicy -> {
-                val state = feature.state.value as BandLockingState
-                val policy = BandLocking5gPolicy()
-                policy.getConfigurationOptions(state)
-            }
-            PolicyType.DisableImsPolicy -> {
-                val state = feature.state.value as ImsState
-                val policy = DisableImsPolicy()
-                policy.getConfigurationOptions(state)
-            }
-            PolicyType.EnableHdmPolicy -> {
-                val state = feature.state.value as HdmState
-                val policy = EnableHdmPolicy()
-                policy.getConfigurationOptions(state)
-            }
-            PolicyType.EnableNightVisionModePolicy -> {
-                val state = feature.state.value as NightVisionState
-                val policy = EnableNightVisionModePolicy()
-                policy.getConfigurationOptions(state)
-            }
-            PolicyType.LteBandLockingPolicy -> {
-                val state = feature.state.value as BandLockingState
-                val policy = LteBandLockingPolicy()
-                policy.getConfigurationOptions(state)
-            }
-            PolicyType.NrModePolicy -> {
-                val state = feature.state.value as NrModeState
-                val policy = NrModePolicy()
-                policy.getConfigurationOptions(state)
-            }
-            PolicyType.AutoRecordCallPolicy,
-            PolicyType.AutoTouchSensitivityPolicy,
-            PolicyType.Disable2GConnectivityPolicy,
-            PolicyType.DisableElectronicSimPolicy,
-            PolicyType.DisableHotspot20Policy,
-            PolicyType.DisableRamPlusPolicy,
-            PolicyType.EnableExtraBrightnessPolicy,
-            PolicyType.LcdBacklightPolicy,
-            PolicyType.TacticalDeviceModePolicy,
-            PolicyType.DisablePogoKeyboardConnectionPolicy,
-            PolicyType.AlwaysRadioOnEnabledPolicy,
-            PolicyType.DisableFastChargingPolicy,
-            PolicyType.DisableWirelessChargingPolicy -> emptyList()
-        }
+    /**
+     * Get configuration options using polymorphic dispatch through uiConverter.
+     *
+     * This replaces the previous manual when() dispatch that required instantiating
+     * each policy type explicitly and casting to specific state types.
+     */
+    @Suppress("UNCHECKED_CAST")
+    private fun createConfigurationOptions(policy: Policy<*>): List<ConfigurationOption> {
+        val component = featureRegistry.getComponent(policy.key) ?: return emptyList()
+
+        // Use polymorphic dispatch through uiConverter
+        return (component as PolicyComponent<PolicyState>)
+            .uiConverter
+            .getConfigurationOptions(policy.state.value)
     }
 
     private fun updateUiState(featureName: String, uiState: PolicyUiState) {
+        // Update flat list
         _policies.value = _policies.value.map {
             if (it.policyName == featureName) uiState else it
+        }
+
+        // Update grouped list
+        _groupedPolicies.value = _groupedPolicies.value.map { group ->
+            group.copy(
+                policies = group.policies.map { policy ->
+                    if (policy.policyName == featureName) uiState else policy
+                }
+            )
         }
     }
 }
