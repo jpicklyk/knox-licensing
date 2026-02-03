@@ -8,10 +8,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import net.sfelabs.knox_enterprise.api.ResourceProvider
-import net.sfelabs.knox_tactical.generated.di.GeneratedModuleIndex
 import javax.inject.Singleton
 
-@Module(includes = [GeneratedModuleIndex::class])
+@Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
