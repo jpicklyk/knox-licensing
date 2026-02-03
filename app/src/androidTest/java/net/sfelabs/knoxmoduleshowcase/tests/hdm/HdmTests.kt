@@ -8,6 +8,7 @@ import net.sfelabs.knox.core.testing.context.AndroidContextProviderRule
 import net.sfelabs.knox.core.testing.rules.AdbUsbRequired
 import net.sfelabs.knox.core.testing.rules.AdbUsbRequiredRule
 import net.sfelabs.knox.core.testing.rules.AdbWifiRequired
+import net.sfelabs.knox.core.testing.rules.AdbWifiRequiredRule
 import org.junit.Rule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetHdmPolicyUseCase
@@ -40,6 +41,9 @@ class HdmTests {
 
     @get:Rule(order = 1)
     val adbUsbRule = AdbUsbRequiredRule()
+
+    @get:Rule(order = 2)
+    val adbWifiRule = AdbWifiRequiredRule()
 
     private val cameraBitmask = 1
     private val mmcBitmask = 2
