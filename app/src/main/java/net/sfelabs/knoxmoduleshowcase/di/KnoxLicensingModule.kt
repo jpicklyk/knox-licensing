@@ -9,6 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import net.sfelabs.knoxmoduleshowcase.BuildConfig
 import javax.inject.Singleton
 
 @Module
@@ -27,6 +28,11 @@ object KnoxLicensingModule {
         @ApplicationContext context: Context,
         licenseSelectionStrategy: LicenseSelectionStrategy
     ): KnoxLicenseHandler {
-        return KnoxLicenseFactory.create(context, licenseSelectionStrategy)
+        return KnoxLicenseFactory.create(
+            context,
+            licenseSelectionStrategy,
+            BuildConfig.KNOX_LICENSE_KEY,
+            BuildConfig.KNOX_LICENSE_KEYS
+        )
     }
 }

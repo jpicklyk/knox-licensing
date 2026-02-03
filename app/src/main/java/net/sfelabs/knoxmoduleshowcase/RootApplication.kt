@@ -11,6 +11,7 @@ import net.sfelabs.knox.core.android.AndroidApplicationContextProvider
 import com.github.jpicklyk.knox.licensing.domain.KnoxLicenseInitializer
 import com.github.jpicklyk.knox.licensing.domain.LicenseSelectionStrategy
 import com.github.jpicklyk.knox.licensing.domain.LicenseStartupResult
+import net.sfelabs.knoxmoduleshowcase.BuildConfig
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -40,8 +41,10 @@ class RootApplication: Application() {
         applicationScope.launch {
             try {
                 val result = knoxLicenseInitializer.initialize(
-                    this@RootApplication,
-                    licenseSelectionStrategy
+                    context = this@RootApplication,
+                    defaultKey = BuildConfig.KNOX_LICENSE_KEY,
+                    namedKeysArray = BuildConfig.KNOX_LICENSE_KEYS,
+                    licenseSelectionStrategy = licenseSelectionStrategy
                 )
                 handleLicenseResult(result)
             } catch (e: Exception) {
