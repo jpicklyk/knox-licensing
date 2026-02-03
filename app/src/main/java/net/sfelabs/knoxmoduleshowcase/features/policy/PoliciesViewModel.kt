@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox.core.feature.api.BooleanPolicyState
@@ -19,6 +20,8 @@ import net.sfelabs.knox.core.feature.ui.model.PolicyUiState
 import net.sfelabs.knox.core.feature.ui.model.PolicyUiState.ConfigurableToggle
 import net.sfelabs.knoxmoduleshowcase.features.policy.event.PolicyEvent
 import net.sfelabs.knoxmoduleshowcase.features.policy.model.PolicyGroupUiState
+import net.sfelabs.knoxmoduleshowcase.features.policy.model.PolicyScreenState
+import net.sfelabs.knoxmoduleshowcase.features.policy.model.SdkSource
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,36 +35,99 @@ class PoliciesViewModel @Inject constructor(
     private val _groupedPolicies = MutableStateFlow<List<PolicyGroupUiState>>(emptyList())
     val groupedPolicies = _groupedPolicies.asStateFlow()
 
+    private val _screenState = MutableStateFlow(PolicyScreenState(isLoading = true))
+    val screenState = _screenState.asStateFlow()
+
     init {
         loadPolicies()
     }
 
     private fun loadPolicies() {
         viewModelScope.launch {
-            // Load all policies for flat list (backward compatibility)
+            // Get all components and separate by SDK source
+            val allComponents = featureRegistry.getAllComponents()
+            val tacticalComponents = allComponents.filter {
+                SdkSource.fromComponent(it) == SdkSource.TACTICAL
+            }.toSet()
+            val enterpriseComponents = allComponents.filter {
+                SdkSource.fromComponent(it) == SdkSource.ENTERPRISE
+            }.toSet()
+
+            // Build capabilities map for search filtering
+            val capabilitiesMap = allComponents.associate { component ->
+                component.policyName to component.capabilities
+            }
+
+            // Load all policies
             val allPolicies = featureRegistry.getAllPolicies()
             _policies.value = allPolicies.mapNotNull { createPolicyUiState(it) }
 
-            // Load grouped policies using the grouping strategy
-            val resolvedGroups = groupingStrategy.resolveAllGroups(featureRegistry)
-            _groupedPolicies.value = resolvedGroups.map { resolvedGroup ->
-                val groupPolicies = resolvedGroup.policies.mapNotNull { component ->
-                    // Find the matching policy state
-                    allPolicies.find { it.key.policyName == component.policyName }
-                        ?.let { createPolicyUiState(it) }
-                }
-                PolicyGroupUiState(
-                    groupId = resolvedGroup.group.id,
-                    groupName = resolvedGroup.group.displayName,
-                    groupDescription = resolvedGroup.group.description,
-                    policies = groupPolicies
-                )
-            }.filter { it.policies.isNotEmpty() }
+            // Create grouped policies for each SDK
+            val tacticalGroups = createGroupedPolicies(tacticalComponents, allPolicies)
+            val enterpriseGroups = createGroupedPolicies(enterpriseComponents, allPolicies)
+
+            // All groups start collapsed (expandedGroupIds is empty)
+            _screenState.value = PolicyScreenState(
+                tacticalGroups = tacticalGroups,
+                enterpriseGroups = enterpriseGroups,
+                expandedGroupIds = emptySet(),
+                policyCapabilities = capabilitiesMap,
+                isLoading = false
+            )
+
+            // For backward compatibility
+            _groupedPolicies.value = tacticalGroups + enterpriseGroups
+        }
+    }
+
+    private fun createGroupedPolicies(
+        components: Set<PolicyComponent<out PolicyState>>,
+        allPolicies: List<Policy<PolicyState>>
+    ): List<PolicyGroupUiState> {
+        return groupingStrategy.getGroups().mapNotNull { group ->
+            val groupComponents = components.filter {
+                groupingStrategy.getGroupForPolicy(it)?.id == group.id
+            }
+            if (groupComponents.isEmpty()) return@mapNotNull null
+
+            val groupPolicies = groupComponents.mapNotNull { component ->
+                allPolicies.find { it.key.policyName == component.policyName }
+                    ?.let { createPolicyUiState(it) }
+            }
+
+            if (groupPolicies.isEmpty()) return@mapNotNull null
+
+            PolicyGroupUiState(
+                groupId = group.id,
+                groupName = group.displayName,
+                groupDescription = group.description,
+                policies = groupPolicies
+            )
         }
     }
 
     fun onEvent(event: PolicyEvent) {
         when (event) {
+            is PolicyEvent.SelectTab -> {
+                _screenState.update { it.copy(selectedTab = event.tab) }
+            }
+
+            is PolicyEvent.UpdateSearchQuery -> {
+                _screenState.update { it.copy(searchQuery = event.query) }
+            }
+
+            is PolicyEvent.ToggleGroupExpansion -> {
+                _screenState.update { state ->
+                    // Toggle: if expanded, remove from set (collapse); if collapsed, add to set (expand)
+                    val newExpanded = if (event.groupId in state.expandedGroupIds) {
+                        state.expandedGroupIds - event.groupId
+                    } else {
+                        state.expandedGroupIds + event.groupId
+                    }
+                    state.copy(expandedGroupIds = newExpanded)
+                }
+            }
+
             is PolicyEvent.UpdateConfiguration -> {
                 viewModelScope.launch {
                     val policy = featureRegistry.getPolicyState(event.featureName) ?: return@launch
@@ -176,11 +242,31 @@ class PoliciesViewModel @Inject constructor(
             if (it.policyName == featureName) uiState else it
         }
 
-        // Update grouped list
+        // Update grouped list (backward compatibility)
         _groupedPolicies.value = _groupedPolicies.value.map { group ->
             group.copy(
                 policies = group.policies.map { policy ->
                     if (policy.policyName == featureName) uiState else policy
+                }
+            )
+        }
+
+        // Update screen state groups
+        _screenState.update { state ->
+            state.copy(
+                tacticalGroups = state.tacticalGroups.map { group ->
+                    group.copy(
+                        policies = group.policies.map { policy ->
+                            if (policy.policyName == featureName) uiState else policy
+                        }
+                    )
+                },
+                enterpriseGroups = state.enterpriseGroups.map { group ->
+                    group.copy(
+                        policies = group.policies.map { policy ->
+                            if (policy.policyName == featureName) uiState else policy
+                        }
+                    )
                 }
             )
         }

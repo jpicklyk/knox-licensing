@@ -9,7 +9,8 @@ data class PolicyGroupUiState(
     val groupId: String,
     val groupName: String,
     val groupDescription: String = "",
-    val policies: List<PolicyUiState>
+    val policies: List<PolicyUiState>,
+    val isExpanded: Boolean = true
 ) {
     val isEmpty: Boolean get() = policies.isEmpty()
     val size: Int get() = policies.size
