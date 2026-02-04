@@ -4,6 +4,13 @@
 
 This document explains how to integrate and use the `IExecReceiverInterface.aidl` interface for communicating with the SAM Services component.
 
+## Service Details
+
+| Property | Value |
+|----------|-------|
+| Package | `com.partech.samservices` |
+| Service Class | `com.partech.samservices.SamService` |
+
 ## AIDL Interface Definition
 
 The complete AIDL interface:
@@ -82,11 +89,11 @@ private val serviceConnection = object : ServiceConnection {
     }
 }
 
-// Bind to the service
+// Bind to the service using explicit ComponentName (required for Android 5.0+)
 val intent = Intent().apply {
     component = ComponentName(
         "com.partech.samservices",
-        "com.partech.samservices.ExecReceiverService" // Adjust service name as needed
+        "com.partech.samservices.SamService"
     )
 }
 bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
@@ -111,12 +118,27 @@ val commandResult = execService?.execute("command", "arguments")
 val macAddress = execService?.getMacAddress("wlan0")
 ```
 
-### 3. Error Handling
+### 3. Checking Service Availability
+
+Before making AIDL calls, verify the service connection is alive:
+
+```kotlin
+fun isServiceAvailable(): Boolean {
+    return execService?.asBinder()?.isBinderAlive == true
+}
+```
+
+### 4. Error Handling
 
 AIDL calls can throw `RemoteException`. Always wrap calls in try-catch:
 
 ```kotlin
 try {
+    if (!isServiceAvailable()) {
+        Log.e(TAG, "Service not available")
+        return
+    }
+
     val macAddress = execService?.getMacAddress("eth0")
     if (macAddress.isNullOrEmpty()) {
         // No MAC address found
@@ -128,19 +150,138 @@ try {
 }
 ```
 
-### 4. Unbinding the Service
+### 5. Recommended Timeouts
 
-Clean up when done:
+When using coroutines, apply timeouts to avoid blocking indefinitely:
+
+```kotlin
+companion object {
+    const val SERVICE_CONNECTION_TIMEOUT = 3_000L // 3 seconds
+    const val AIDL_CALL_TIMEOUT = 2_000L          // 2 seconds
+}
+
+// Example with timeout
+val macAddress = withTimeout(AIDL_CALL_TIMEOUT) {
+    execService?.getMacAddress("eth0")
+}
+```
+
+### 6. Unbinding the Service
+
+Clean up when done. Handle the case where the service may already be unbound:
 
 ```kotlin
 override fun onDestroy() {
     super.onDestroy()
-    if (execService != null) {
+    try {
         unbindService(serviceConnection)
-        execService = null
+    } catch (e: IllegalArgumentException) {
+        // Service was already unbound
+    }
+    execService = null
+}
+```
+
+## Recommended Architecture
+
+For production use, consider wrapping the AIDL service with a **Repository** and **Use Case** pattern:
+
+### Repository
+
+Encapsulates connection lifecycle, thread safety, and timeouts:
+
+```kotlin
+interface EthernetAidlRepository {
+    suspend fun getMacAddress(interfaceName: String): String?
+    suspend fun isServiceAvailable(): Boolean
+}
+
+class EthernetAidlRepositoryImpl(
+    private val context: Context,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : EthernetAidlRepository {
+
+    private var serviceInterface: IExecReceiverInterface? = null
+    private val connectionMutex = Mutex()
+
+    override suspend fun getMacAddress(interfaceName: String): String? {
+        return withContext(ioDispatcher) {
+            try {
+                ensureServiceConnection()
+                ensureActive()
+                withTimeout(AIDL_CALL_TIMEOUT) {
+                    serviceInterface?.getMacAddress(interfaceName)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    override suspend fun isServiceAvailable(): Boolean {
+        return withContext(ioDispatcher) {
+            try {
+                ensureServiceConnection()
+                serviceInterface?.asBinder()?.isBinderAlive == true
+            } catch (e: Exception) {
+                false
+            }
+        }
+    }
+
+    private suspend fun ensureServiceConnection() {
+        connectionMutex.withLock {
+            if (serviceInterface?.asBinder()?.isBinderAlive != true) {
+                bindToService()
+            }
+        }
+    }
+
+    // ... binding logic from earlier sections
+}
+```
+
+The `ioDispatcher` parameter allows injecting a test dispatcher for unit testing.
+
+### Use Case
+
+Provides clean error handling using Kotlin's `Result<T>`:
+
+```kotlin
+class GetMacAddressUseCase(
+    private val repository: EthernetAidlRepository
+) {
+    suspend operator fun invoke(interfaceName: String): Result<String> {
+        if (!repository.isServiceAvailable()) {
+            return Result.failure(IllegalStateException("AIDL service not available"))
+        }
+
+        val macAddress = repository.getMacAddress(interfaceName)
+
+        return if (macAddress.isNullOrBlank()) {
+            Result.failure(IllegalArgumentException("Interface '$interfaceName' not found"))
+        } else {
+            Result.success(macAddress)
+        }
     }
 }
 ```
+
+### Usage
+
+```kotlin
+val repository = EthernetAidlRepositoryImpl(context)
+val getMacAddress = GetMacAddressUseCase(repository)
+
+// Call the use case
+getMacAddress("eth0")
+    .onSuccess { mac -> Log.d(TAG, "MAC: $mac") }
+    .onFailure { error -> Log.e(TAG, "Failed: ${error.message}") }
+```
+
+This pattern separates concerns: the repository handles low-level AIDL communication while the use case provides a clean API for consumers.
 
 ## Method Details
 
@@ -165,7 +306,9 @@ override fun onDestroy() {
 
 ## Notes
 
-- The service must be running and accessible (same app or exported service)
+- The service must be installed and accessible on the device
 - Some methods require elevated permissions or device owner privileges
-- All AIDL calls are synchronous and may block - consider calling from background thread
+- All AIDL calls are synchronous and block the calling thread - use coroutines with timeouts
 - Check return values: -1 typically indicates an error
+- Use `isBinderAlive` to verify the connection before making calls
+- Recommended timeouts: 3 seconds for connection, 2 seconds for individual calls
