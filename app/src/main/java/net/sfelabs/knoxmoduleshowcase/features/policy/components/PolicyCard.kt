@@ -64,6 +64,18 @@ fun PolicyCard(
         }
     }}
 
+    val updateTextInputOption = remember(policy) { { option: ConfigurationOption.TextInput, value: String ->
+        pendingOptions.value = pendingOptions.value.map {
+            if (it.key == option.key) option.copy(value = value) else it
+        }
+    }}
+
+    val updateTextListOption = remember(policy) { { option: ConfigurationOption.TextList, values: Set<String> ->
+        pendingOptions.value = pendingOptions.value.map {
+            if (it.key == option.key) option.copy(values = values) else it
+        }
+    }}
+
     // Debounced loading state
     var showLoading by remember { mutableStateOf(false) }
 
@@ -211,6 +223,22 @@ fun PolicyCard(
                                 range = option.range,
                                 onValueChange = { value ->
                                     updateNumberOption(option, value)
+                                }
+                            )
+                            is ConfigurationOption.TextInput -> ConfigurationTextInput(
+                                label = option.label,
+                                value = option.value,
+                                hint = option.hint,
+                                onValueChange = { value ->
+                                    updateTextInputOption(option, value)
+                                }
+                            )
+                            is ConfigurationOption.TextList -> ConfigurationTextList(
+                                label = option.label,
+                                values = option.values,
+                                hint = option.hint,
+                                onRemove = { item ->
+                                    updateTextListOption(option, option.values - item)
                                 }
                             )
                         }

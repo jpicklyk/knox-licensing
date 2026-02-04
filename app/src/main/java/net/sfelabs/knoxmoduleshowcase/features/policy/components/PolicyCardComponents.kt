@@ -115,3 +115,68 @@ fun ConfigurationNumber(
         )
     }
 }
+
+@Composable
+fun ConfigurationTextInput(
+    label: String,
+    value: String,
+    hint: String?,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = hint?.let { { Text(it) } },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+    }
+}
+
+@Composable
+fun ConfigurationTextList(
+    label: String,
+    values: Set<String>,
+    hint: String?,
+    onRemove: ((String) -> Unit)?,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        if (values.isEmpty()) {
+            Text(
+                text = hint ?: "No items",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            values.forEach { item ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = item,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (onRemove != null) {
+                        TextButton(onClick = { onRemove(item) }) {
+                            Text("Remove")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
