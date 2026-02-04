@@ -1,9 +1,9 @@
-package net.sfelabs.knoxmoduleshowcase.manual_tests
+package net.sfelabs.knoxmoduleshowcase.tests.radio
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox.core.testing.rules.CarrierDataRequired
 import net.sfelabs.knox_tactical.data.dto.PlmnId
 import net.sfelabs.knox_tactical.domain.use_cases.radio.AddPLMNAllowedListUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.radio.GetPLMNAllowedListUseCase
@@ -11,13 +11,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-@CarrierDataRequired
+@SmallTest
 class PLMNAllowedListTests {
 
     companion object {
         // Bell Canada: MCC 302, MNC 610
-        val BELL_CANADA = PlmnId("302610")
-        val TEST_PLMN = PlmnId("310260")
+        val BELL_CANADA = PlmnId.Companion("302610")
+        val TEST_PLMN = PlmnId.Companion("310260")
     }
 
     // diagnosePLMNMethods() removed - was a debugging test that required direct SDK access
