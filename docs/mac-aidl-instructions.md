@@ -11,6 +11,12 @@ This document explains how to integrate and use the `IExecReceiverInterface.aidl
 | Package | `com.partech.samservices` |
 | Service Class | `com.partech.samservices.SamService` |
 
+## Manifest requirement:
+```
+<queries>
+    <package android:name="com.partech.samservices" />
+</queries>
+```
 ## AIDL Interface Definition
 
 The complete AIDL interface:
