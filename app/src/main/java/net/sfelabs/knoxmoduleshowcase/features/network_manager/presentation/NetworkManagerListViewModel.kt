@@ -14,7 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.EthernetAidlUseCaseFactory
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressViaAidlUseCase
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.NetworkManagerState
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.Interface
 import net.sfelabs.knoxmoduleshowcase.features.network_manager.domain.model.InterfaceAddressConfiguration
@@ -38,12 +39,14 @@ class NetworkManagerListViewModel @Inject constructor(
     @ApplicationContext
     private val context: Context,
 ): ViewModel() {
+    private val tag = "NetworkManagerListVM"
     private val serviceScope = CoroutineScope(Dispatchers.Default)
     private val _state = MutableStateFlow(NetworkManagerState())
     val state: StateFlow<NetworkManagerState> get() = _state
 
     private val ethernetConfigurationManager = EthernetConfigurationManager()
-    private val getMacAddressForInterfaceUseCase = GetMacAddressForInterfaceUseCase()
+    private val getMacAddressViaAidlUseCase: GetMacAddressViaAidlUseCase =
+        EthernetAidlUseCaseFactory.createGetMacAddressUseCase(context)
 
     private val monitoredInterfaceDefaults: ArrayList<String> =
         arrayListOf("eth0", "eth1", "eth2", "wlan0", "usb0", "rndis0", "br0")
@@ -379,11 +382,16 @@ class NetworkManagerListViewModel @Inject constructor(
     }
 
     private suspend fun lookupMacAddress(interfaceName: String): String {
-        val result = getMacAddressForInterfaceUseCase(interfaceName)
-        return if (result is ApiResult.Success) {
-            result.data
-        } else {
-            ""
+        return when (val result = getMacAddressViaAidlUseCase(interfaceName)) {
+            is ApiResult.Success -> result.data
+            is ApiResult.Error -> {
+                Log.w(tag, "Failed to get MAC for $interfaceName: ${result.apiError.message}")
+                ""
+            }
+            is ApiResult.NotSupported -> {
+                Log.w(tag, "AIDL service not supported for MAC lookup: $interfaceName")
+                ""
+            }
         }
     }
 

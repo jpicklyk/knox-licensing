@@ -26,8 +26,9 @@ import net.sfelabs.knox_tactical.domain.model.EthernetConfiguration
 import net.sfelabs.knox_tactical.domain.model.EthernetInterfaceType
 import net.sfelabs.knox_tactical.domain.model.StaticConfiguration
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.ConfigureEthernetInterfaceUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.EthernetAidlUseCaseFactory
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetEthernetAutoConnectionUseCase
-import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressForInterfaceUseCase
+import net.sfelabs.knox_tactical.domain.use_cases.ethernet.GetMacAddressViaAidlUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.ethernet.SetEthernetAutoConnectionUseCase
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.EthernetInterface
 import net.sfelabs.knoxmoduleshowcase.features.multi_ethernet.domain.data.model.NetworkInterfaceState
@@ -47,7 +48,8 @@ class EthernetConfigurationViewModel @Inject constructor(
     private val tag = "EthernetConfigurationVM"
 
     private val getEthernetAutoConnection = GetEthernetAutoConnectionUseCase()
-    private val getEthernetMacAddressUseCase = GetMacAddressForInterfaceUseCase()
+    private val getEthernetMacAddressUseCase: GetMacAddressViaAidlUseCase =
+        EthernetAidlUseCaseFactory.createGetMacAddressUseCase(context)
     private val configureEthernetInterfaceUseCase = ConfigureEthernetInterfaceUseCase(connectivityManager)
     private val setEthernetAutoConnectionUseCase = SetEthernetAutoConnectionUseCase(connectivityManager)
 
@@ -330,15 +332,19 @@ class EthernetConfigurationViewModel @Inject constructor(
     }
 
     private suspend fun getEthernetMacAddress(name: String?): String? {
-        if(name == null)
-            return null
-        val result = getEthernetMacAddressUseCase.invoke(name)
-        return if(result is ApiResult.Success) {
-            result.data
-        } else {
-            "(Api Not Supported)"
-        }
+        if (name == null) return null
 
+        return when (val result = getEthernetMacAddressUseCase.invoke(name)) {
+            is ApiResult.Success -> result.data
+            is ApiResult.Error -> {
+                Log.w(tag, "Failed to get MAC for $name: ${result.apiError.message}")
+                null
+            }
+            is ApiResult.NotSupported -> {
+                Log.w(tag, "AIDL service not supported for MAC lookup: $name")
+                null
+            }
+        }
     }
 
     private fun getAssignedEthernetInterfaces(connectivityManager: ConnectivityManager): List<String> {
