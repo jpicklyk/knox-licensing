@@ -1,6 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.tests.radio
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
@@ -10,12 +11,12 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.properties.Delegates
 
 @RunWith(AndroidJUnit4::class)
 @TacticalSdkSuppress(minReleaseVersion = 100)
+@SmallTest
 class TacticalDeviceModeTest {
-    private var currentlyEnabled by Delegates.notNull<Boolean>()
+    private var currentlyEnabled: Boolean? = null
 
     @Before
     fun setup() = runTest {
@@ -42,6 +43,6 @@ class TacticalDeviceModeTest {
 
     @After
     fun cleanup() = runTest {
-        SetTacticalDeviceModeEnabledUseCase().invoke(currentlyEnabled)
+        currentlyEnabled?.let { SetTacticalDeviceModeEnabledUseCase().invoke(it) }
     }
 }
