@@ -12,7 +12,6 @@ import net.sfelabs.knox.core.feature.api.BooleanPolicyState
 import net.sfelabs.knox.core.feature.api.PolicyComponent
 import net.sfelabs.knox.core.feature.api.PolicyGroupingStrategy
 import net.sfelabs.knox.core.feature.api.PolicyState
-import net.sfelabs.knox.core.feature.api.PolicyStateWrapper
 import net.sfelabs.knox.core.feature.domain.model.Policy
 import net.sfelabs.knox.core.feature.domain.registry.PolicyRegistry
 import net.sfelabs.knox.core.feature.ui.model.ConfigurationOption
@@ -144,50 +143,24 @@ class PoliciesViewModel @Inject constructor(
 
                     val newState = updatePolicyState(policy, event.newUiState)
 
-                    try {
-                        when (val result = featureRegistry.setPolicyState(policy.key, newState)) {
-                            is ApiResult.Success -> {
-                                // IMPORTANT: Always refresh state from device after successful update.
-                                // The state from fromUiState() only contains fields derived from UI options
-                                // and loses non-UI state fields (e.g., HdmState.supportedMask).
-                                // Refreshing via getPolicyState() calls getState() which returns the
-                                // complete state including device-derived fields.
-                                // See: PolicyConfiguration.fromUiState() design limitation in knox-core.
-                                val refreshedPolicy = featureRegistry.getPolicyState(event.featureName)
-                                if (refreshedPolicy != null) {
-                                    createPolicyUiState(refreshedPolicy)?.let { updatedUiState ->
-                                        updateUiState(event.featureName, updatedUiState)
-                                    }
-                                } else {
-                                    // Fallback to local state if refresh fails
-                                    createPolicyUiState(
-                                        Policy(policy.key, PolicyStateWrapper(newState))
-                                    )?.let { updatedUiState ->
-                                        updateUiState(event.featureName, updatedUiState)
-                                    }
-                                }
-                            }
-                            is ApiResult.Error -> {
-                                // Revert to original state but show the error
-                                val errorState = originalUiState.copyWithError(
-                                    error = result.apiError.message
-                                )
-                                updateUiState(event.featureName, errorState)
-                            }
-                            ApiResult.NotSupported -> {
-                                // Revert to original state
-                                updateUiState(
-                                    event.featureName,
-                                    originalUiState.copyWithLoading(isLoading = false)
-                                )
+                    when (val result = featureRegistry.setAndRefreshPolicyState(policy.key, newState)) {
+                        is ApiResult.Success -> {
+                            createPolicyUiState(result.data)?.let { updatedUiState ->
+                                updateUiState(event.featureName, updatedUiState)
                             }
                         }
-                    } catch (e: Exception) {
-                        // Revert to original state but show the error
-                        val errorState = originalUiState.copyWithError(
-                            error = e.message ?: "Unknown error"
-                        )
-                        updateUiState(event.featureName, errorState)
+                        is ApiResult.Error -> {
+                            val errorState = originalUiState.copyWithError(
+                                error = result.apiError.message
+                            )
+                            updateUiState(event.featureName, errorState)
+                        }
+                        ApiResult.NotSupported -> {
+                            updateUiState(
+                                event.featureName,
+                                originalUiState.copyWithLoading(isLoading = false)
+                            )
+                        }
                     }
                 }
             }
