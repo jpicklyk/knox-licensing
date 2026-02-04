@@ -31,6 +31,7 @@ import org.junit.AfterClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlinx.coroutines.runBlocking
+import kotlin.test.DefaultAsserter.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
@@ -293,6 +294,22 @@ class HdmTests {
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
         assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, speakerBitmask ))
+    }
+
+    @Test
+    fun clearHdmPolicies() = runTest {
+        val result = SetHdmPolicyUseCase().invoke(0, false)
+        assertTrue("Clearing HDM policies failed: $result", result is ApiResult.Success)
+
+        val currentPolicy = GetHdmPolicyUseCase().invoke()
+        assert(currentPolicy is ApiResult.Success && currentPolicy.data == 0)
+    }
+
+
+    @Test
+    fun confirmNoPolicyInPlace() = runTest {
+        val currentPolicy = GetHdmPolicyUseCase().invoke()
+        assert(currentPolicy is ApiResult.Success && currentPolicy.data == 0)
     }
 
     private fun featureDisabled(input: Int, bitmask: Int): Boolean {

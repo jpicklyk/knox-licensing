@@ -147,13 +147,24 @@ class PoliciesViewModel @Inject constructor(
                     try {
                         when (val result = featureRegistry.setPolicyState(policy.key, newState)) {
                             is ApiResult.Success -> {
-                                createPolicyUiState(
-                                    Policy(policy.key, PolicyStateWrapper(newState))
-                                )?.let { updatedUiState ->
-                                    updateUiState(
-                                        event.featureName,
-                                        updatedUiState
-                                    )
+                                // IMPORTANT: Always refresh state from device after successful update.
+                                // The state from fromUiState() only contains fields derived from UI options
+                                // and loses non-UI state fields (e.g., HdmState.supportedMask).
+                                // Refreshing via getPolicyState() calls getState() which returns the
+                                // complete state including device-derived fields.
+                                // See: PolicyConfiguration.fromUiState() design limitation in knox-core.
+                                val refreshedPolicy = featureRegistry.getPolicyState(event.featureName)
+                                if (refreshedPolicy != null) {
+                                    createPolicyUiState(refreshedPolicy)?.let { updatedUiState ->
+                                        updateUiState(event.featureName, updatedUiState)
+                                    }
+                                } else {
+                                    // Fallback to local state if refresh fails
+                                    createPolicyUiState(
+                                        Policy(policy.key, PolicyStateWrapper(newState))
+                                    )?.let { updatedUiState ->
+                                        updateUiState(event.featureName, updatedUiState)
+                                    }
                                 }
                             }
                             is ApiResult.Error -> {
