@@ -12,13 +12,12 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.properties.Delegates
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 100)
 class Nr5GModeTests {
-    private var currentState by Delegates.notNull<Int>()
+    private var currentState: Int? = null
 
     @Before
     fun recordCurrentConfiguration() = runTest {
@@ -87,6 +86,6 @@ class Nr5GModeTests {
 
     @After
     fun cleanup() = runTest {
-        Set5gNrModeUseCase().invoke(LteNrMode(currentState))
+        currentState?.let { Set5gNrModeUseCase().invoke(LteNrMode(it)) }
     }
 }
