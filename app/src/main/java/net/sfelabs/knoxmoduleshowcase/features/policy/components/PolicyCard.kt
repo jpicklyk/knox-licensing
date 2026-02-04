@@ -207,7 +207,8 @@ fun PolicyCard(
                                 checked = option.isEnabled,
                                 onCheckedChange = { checked ->
                                     updateToggleOption(option, checked)
-                                }
+                                },
+                                enabled = option.isSupported
                             )
                             is ConfigurationOption.Choice -> ConfigurationDropdown(
                                 label = option.label,

@@ -132,6 +132,10 @@ class PoliciesViewModel @Inject constructor(
                 viewModelScope.launch {
                     val policy = featureRegistry.getPolicyState(event.featureName) ?: return@launch
 
+                    // Capture original UI state before optimistic update for rollback on error
+                    val originalUiState = _policies.value.find { it.policyName == event.featureName }
+                        ?: return@launch
+
                     // Immediately update UI with new state and loading indicator
                     updateUiState(
                         event.featureName,
@@ -153,20 +157,23 @@ class PoliciesViewModel @Inject constructor(
                                 }
                             }
                             is ApiResult.Error -> {
-                                val errorState = event.newUiState.copyWithError(
+                                // Revert to original state but show the error
+                                val errorState = originalUiState.copyWithError(
                                     error = result.apiError.message
                                 )
                                 updateUiState(event.featureName, errorState)
                             }
                             ApiResult.NotSupported -> {
+                                // Revert to original state
                                 updateUiState(
                                     event.featureName,
-                                    event.newUiState.copyWithLoading(isLoading = false)
+                                    originalUiState.copyWithLoading(isLoading = false)
                                 )
                             }
                         }
                     } catch (e: Exception) {
-                        val errorState = event.newUiState.copyWithError(
+                        // Revert to original state but show the error
+                        val errorState = originalUiState.copyWithError(
                             error = e.message ?: "Unknown error"
                         )
                         updateUiState(event.featureName, errorState)
