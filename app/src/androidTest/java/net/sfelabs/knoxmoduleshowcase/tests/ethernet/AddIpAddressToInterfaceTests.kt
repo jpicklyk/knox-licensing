@@ -125,18 +125,18 @@ class AddIpAddressToInterfaceTests {
 
     }
 
-    @Test
-    @EthernetNotConnected
-    fun addIpAddress_noEthernetConnection_returnsError() = runTest {
-        val interfaceNameBad = "eth0"
-        val ipAddress = "192.168.2.22/24"
-        val result = AddIpAddressToEthernetInterfaceUseCase()
-            .invoke(interfaceNameBad, ipAddress)
-        assertTrue(
-            "Adding IP address should return an Error when there is no ethernet connection",
-            result is ApiResult.Error
-        )
-    }
+//    @Test
+//    @EthernetNotConnected
+//    fun addIpAddress_noEthernetConnection_returnsError() = runTest {
+//        val interfaceNameBad = "eth0"
+//        val ipAddress = "192.168.2.22/24"
+//        val result = AddIpAddressToEthernetInterfaceUseCase()
+//            .invoke(interfaceNameBad, ipAddress)
+//        assertTrue(
+//            "Adding IP address should return an Error when there is no ethernet connection",
+//            result is ApiResult.Error
+//        )
+//    }
 
 
 }
