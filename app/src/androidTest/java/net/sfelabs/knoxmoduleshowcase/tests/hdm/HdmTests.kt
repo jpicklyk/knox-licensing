@@ -2,6 +2,8 @@ package net.sfelabs.knoxmoduleshowcase.tests.hdm
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox.core.testing.context.AndroidContextProviderRule
@@ -11,6 +13,7 @@ import net.sfelabs.knox.core.testing.rules.AdbWifiRequired
 import net.sfelabs.knox.core.testing.rules.AdbWifiRequiredRule
 import org.junit.Rule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
+import net.sfelabs.knox_tactical.domain.use_cases.adb.GuardAdbOverWlanUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetHdmPolicyUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.GetSupportedHdmPoliciesUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.IsHdmPolicySupportedUseCase
@@ -28,6 +31,7 @@ import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmUsbState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmWiFiState
 import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponent
 import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlinx.coroutines.runBlocking
@@ -317,6 +321,23 @@ class HdmTests {
     }
 
     companion object {
+        @JvmStatic
+        @BeforeClass
+        fun guardAdbOverWlan() {
+            val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+            val rules = uiDevice.executeShellCommand("ip rule show")
+            val wlanTableId = GuardAdbOverWlanUseCase.parseWlanTableId(rules)
+
+            if (wlanTableId != null) {
+                println("Guarding ADB traffic over wlan0 (table $wlanTableId)")
+                runBlocking {
+                    GuardAdbOverWlanUseCase()(wlanTableId)
+                }
+            } else {
+                println("Warning: wlan0 routing table not found - ADB guard not applied")
+            }
+        }
+
         @JvmStatic
         @AfterClass
         fun resetHardware() {
