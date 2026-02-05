@@ -1,7 +1,7 @@
-package net.sfelabs.knoxmoduleshowcase.manual_tests
+package net.sfelabs.knoxmoduleshowcase.tests.usb
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
+import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.domain.use_cases.usb.GetUsbAccessBySerialUseCase
@@ -12,7 +12,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-@LargeTest
+@SmallTest
 class LargeUsbWhitelistTests {
 
     /**
