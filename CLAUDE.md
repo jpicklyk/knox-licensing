@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## Module Overview
 
 Knox Licensing is a reusable Android library for Samsung Knox Enterprise License Management. It provides a clean, coroutine-based API for license activation, deactivation, and monitoring with Flow-based state observation.
 
