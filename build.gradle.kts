@@ -24,8 +24,7 @@ extensions.configure<LibraryExtension> {
 }
 
 dependencies {
-    // Knox SDK - compileOnly so consumers provide their own SDK JAR
-    // This avoids conflicts when knox-tactical provides its Tactical SDK
+    // Knox SDK - compileOnly so consumers provide their own SDK JAR at runtime
     compileOnly(files("libs/knoxsdk_ver38.jar"))
 
     // Android Core

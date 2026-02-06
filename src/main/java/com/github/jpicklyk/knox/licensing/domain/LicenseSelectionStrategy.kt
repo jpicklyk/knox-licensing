@@ -11,7 +11,7 @@ interface LicenseSelectionStrategy {
     /**
      * Selects the appropriate license key from available options.
      *
-     * @param availableKeys Map of named license keys (e.g., "tactical" -> "key123")
+     * @param availableKeys Map of named license keys (e.g., "enterprise" -> "key123")
      * @param defaultKey The default license key to use if no specific selection is made
      * @return The selected license key to use for Knox activation
      */
