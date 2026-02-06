@@ -6,6 +6,7 @@ A reusable Android library for Samsung Knox Enterprise License Management that p
 
 - [Features](#features)
 - [Installation](#installation)
+- [Knox License Setup](#knox-license-setup)
 - [Usage](#usage)
   - [Basic Usage](#basic-usage)
   - [License Selection Strategy](#license-selection-strategy)
@@ -63,6 +64,27 @@ dependencies {
     implementation(project(":knox-licensing"))
 }
 ```
+
+## Knox License Setup
+
+Before using Knox policies on a device, you need a Knox Platform for Enterprise (KPE) license:
+
+1. **Create a Samsung Knox Developer account** at [developer.samsungknox.com](https://developer.samsungknox.com/)
+
+2. **Obtain a KPE license key** — follow the [Knox Platform for Enterprise license guide](https://docs.samsungknox.com/admin/knox-platform-for-enterprise/before-you-begin/knox-platform-for-enterprise-licenses/) to generate your license key
+
+3. **Add the license to `local.properties`** in the project root:
+
+   ```properties
+   knox.license=KLM09-XXXX...XXX
+   ```
+
+4. **Set a unique package name** — your application's package name must be unique and match what is registered with your license. Use the rename scripts to update the package name across the codebase:
+
+   - **Windows**: `.\UpdatePackageName.ps1`
+   - **Mac/Linux**: `./update_package_name.sh`
+
+5. **Bind the application to your license** — the compiled application must be bound to your license key in the Knox console for the activation process to succeed. Register your app's package name and signing certificate in your [Knox developer portal](https://developer.samsungknox.com/).
 
 ## Usage
 
