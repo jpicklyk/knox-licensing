@@ -5,8 +5,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
-import net.sfelabs.knox.core.testing.rules.AdbUsbRequired
-import net.sfelabs.knox.core.testing.rules.AdbUsbRequiredRule
 import net.sfelabs.knox.core.testing.rules.EthernetRequired
 import net.sfelabs.knox.core.testing.rules.EthernetRequiredRule
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
@@ -28,13 +26,9 @@ import org.junit.runner.RunWith
  * - Tactical SDK release version 141+
  * - Ethernet adapter connected for tests annotated with [EthernetRequired]
  *
- * ## ADB Connection Warning
- * Several tests modify iptables rules or IP forwarding on wlan0, which **will disrupt
- * a WiFi ADB connection**. These tests are annotated with [AdbUsbRequired] and will be
- * automatically skipped when USB debugging is not detected.
- *
- * To run the full test suite, connect ADB via USB. Over WiFi ADB, only the eth0 and
- * input validation tests will execute.
+ * ## ADB Connection
+ * These tests require WiFi ADB since the USB port is needed for the ethernet adapter.
+ * The iptables rules and IP forwarding changes do not disrupt WiFi ADB connectivity.
  *
  * ## Cleanup
  * An [AfterClass] method runs after all tests to restore the device state:
@@ -46,9 +40,6 @@ import org.junit.runner.RunWith
 @TacticalSdkSuppress(minReleaseVersion = 141)
 @RunWith(AndroidJUnit4::class)
 class NatTests {
-
-    @get:Rule
-    val adbUsbRule = AdbUsbRequiredRule()
 
     @get:Rule
     val ethernetRule = EthernetRequiredRule()
@@ -83,7 +74,6 @@ class NatTests {
     // region ExecuteIptablesCommandUseCase - valid commands
 
     @Test
-    @AdbUsbRequired
     @EthernetRequired
     fun executePostRoutingMasquerade() = runTest {
         val cmd = "iptables -t nat -A POSTROUTING -o $IFACE_WLAN -j MASQUERADE"
@@ -92,7 +82,6 @@ class NatTests {
     }
 
     @Test
-    @AdbUsbRequired
     @EthernetRequired
     fun executeForwardAcceptEstablished() = runTest {
         val cmd = "iptables -A FORWARD -i $IFACE_WLAN -o $IFACE_ETH -m state --state RELATED,ESTABLISHED -j ACCEPT"
@@ -101,7 +90,6 @@ class NatTests {
     }
 
     @Test
-    @AdbUsbRequired
     @EthernetRequired
     fun executeForwardAccept() = runTest {
         val cmd = "iptables -A FORWARD -i $IFACE_ETH -o $IFACE_WLAN -j ACCEPT"
@@ -177,7 +165,6 @@ class NatTests {
     }
 
     @Test
-    @AdbUsbRequired
     @EthernetRequired
     fun enableIpForwardingOnWlan0() = runTest {
         val result = enableIpForwarding(IFACE_WLAN, enable = true)
@@ -185,7 +172,6 @@ class NatTests {
     }
 
     @Test
-    @AdbUsbRequired
     @EthernetRequired
     fun disableIpForwardingOnWlan0() = runTest {
         val result = enableIpForwarding(IFACE_WLAN, enable = false)

@@ -6,7 +6,6 @@ import net.sfelabs.knoxmoduleshowcase.tests.audit.AuditLoggingTests
 import net.sfelabs.knoxmoduleshowcase.tests.bridging.BridgeTests
 import net.sfelabs.knoxmoduleshowcase.tests.charging.ChargingTests
 import net.sfelabs.knoxmoduleshowcase.tests.charging.WirelessChargingTest
-import net.sfelabs.knoxmoduleshowcase.tests.ethernet.NatTests
 import net.sfelabs.knoxmoduleshowcase.tests.hdm.HdmTests
 import net.sfelabs.knoxmoduleshowcase.tests.hdm.SupportedComponents
 import net.sfelabs.knoxmoduleshowcase.tests.ipsec.IpsecXfrmCommandTest
@@ -59,7 +58,7 @@ import org.junit.runners.Suite
  * - **SIM card** inserted with active carrier data plan
  * - **Knox license** activated
  * - **Device owner** (DPC) enabled via `adb shell dpm set-device-owner`
- * - **Ethernet adapter** connected (for NatTests and ethernet-related tests)
+ * - **SIM card** inserted with active carrier data plan (for radio tests)
  *
  * ## Running
  * ```
@@ -73,7 +72,6 @@ import org.junit.runners.Suite
  * - **Audit**: Audit logging
  * - **Bridging**: Network bridge configuration
  * - **Charging**: Wired and wireless charging controls
- * - **Ethernet**: NAT/iptables
  * - **HDM**: Hardware Device Manager (camera, bluetooth, GPS, NFC, microphone, modem, speaker, MMC)
  * - **IPsec**: XFRM tunneling commands
  * - **Knox Core**: Attestation, CC Mode, firmware, OTA, permissions
@@ -114,9 +112,6 @@ import org.junit.runners.Suite
     // Charging
     ChargingTests::class,
     WirelessChargingTest::class,
-
-    // Ethernet
-    NatTests::class,
 
     // HDM (Hardware Device Manager)
     HdmTests::class,
