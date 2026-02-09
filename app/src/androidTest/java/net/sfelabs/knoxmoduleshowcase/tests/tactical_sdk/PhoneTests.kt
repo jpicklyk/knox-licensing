@@ -15,36 +15,36 @@ class PhoneTests {
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun getAutoCallPickupState_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "getAutoCallPickupState"))
+        assert(checkMethodExistence(SystemManager::class, "getAutoCallPickupState")) { "Expected method 'getAutoCallPickupState' to exist on SystemManager" }
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun setAutoCallPickupState_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "setAutoCallPickupState"))
+        assert(checkMethodExistence(SystemManager::class, "setAutoCallPickupState")) { "Expected method 'setAutoCallPickupState' to exist on SystemManager" }
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
-    fun getAutoRecordCallEnabledState_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "getAutomaticRecordCallEnabledState"))
+    fun getAutomaticRecordCallEnabledState_Exists() = runTest {
+        assert(checkMethodExistence(SystemManager::class, "getAutomaticRecordCallEnabledState")) { "Expected method 'getAutomaticRecordCallEnabledState' to exist on SystemManager" }
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
-    fun setAutoRecordCallEnabledState_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "setAutomaticRecordCallEnabledState"))
+    fun setAutomaticRecordCallEnabledState_Exists() = runTest {
+        assert(checkMethodExistence(SystemManager::class, "setAutomaticRecordCallEnabledState")) { "Expected method 'setAutomaticRecordCallEnabledState' to exist on SystemManager" }
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun addAutoCallNumber_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "addAutoCallNumber"))
+        assert(checkMethodExistence(SystemManager::class, "addAutoCallNumber")) { "Expected method 'addAutoCallNumber' to exist on SystemManager" }
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun getAutoCallNumberList_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "getAutoCallNumberList"))
+        assert(checkMethodExistence(SystemManager::class, "getAutoCallNumberList")) { "Expected method 'getAutoCallNumberList' to exist on SystemManager" }
     }
 }

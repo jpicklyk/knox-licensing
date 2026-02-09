@@ -14,8 +14,8 @@ import org.junit.Test
 class HdmTests {
 
     @Test
-    fun checkGetHdmPolicy_Exists() = runTest {
-        assert(checkMethodExistence(HdmManager::class, "getHdmPolicy"))
+    fun getHdmPolicy_Exists() = runTest {
+        assert(checkMethodExistence(HdmManager::class, "getHdmPolicy")) { "Expected method 'getHdmPolicy' to exist on HdmManager" }
     }
 
     /**
@@ -24,13 +24,13 @@ class HdmTests {
      */
     @Test
     @TacticalSdkSuppress(maxReleaseVersion = 130)
-    fun checkStealthHwCpControl_Exists() = runTest {
-        assert(checkMethodExistence(HdmManager::class, "stealthCpHwControl"))
+    fun stealthCpHwControl_Exists() = runTest {
+        assert(checkMethodExistence(HdmManager::class, "stealthCpHwControl")) { "Expected method 'stealthCpHwControl' to exist on HdmManager" }
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 131)
-    fun checkStealthHwControl_Exists() = runTest {
-        assert(checkMethodExistence(HdmManager::class, "stealthHwControl"))
+    fun stealthHwControl_Exists() = runTest {
+        assert(checkMethodExistence(HdmManager::class, "stealthHwControl")) { "Expected method 'stealthHwControl' to exist on HdmManager" }
     }
 }

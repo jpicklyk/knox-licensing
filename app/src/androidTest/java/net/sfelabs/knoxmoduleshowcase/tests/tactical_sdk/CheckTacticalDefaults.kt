@@ -28,6 +28,6 @@ class CheckTacticalDefaults {
     @TacticalSdkSuppress(minReleaseVersion = 130)
     fun airplaneMode_Enabled() = runTest {
         assert(Settings.Global.getInt(context.contentResolver,
-            Settings.Global.AIRPLANE_MODE_ON, 0) != 0)
+            Settings.Global.AIRPLANE_MODE_ON, 0) != 0) { "Expected airplane mode to be enabled by default" }
     }
 }

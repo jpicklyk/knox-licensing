@@ -15,11 +15,11 @@ import org.junit.Test
 class AdbTests {
     @Test
     fun executeAdbCommand_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"executeAdbCommand"))
+        assert(checkMethodExistence(SystemManager::class,"executeAdbCommand")) { "Expected method 'executeAdbCommand' to exist on SystemManager" }
     }
 
     @Test
     fun setUsbDebuggingEnabled_Exists() = runTest {
-        assert(checkMethodExistence(RestrictionPolicy::class,"setUsbDebuggingEnabled"))
+        assert(checkMethodExistence(RestrictionPolicy::class,"setUsbDebuggingEnabled")) { "Expected method 'setUsbDebuggingEnabled' to exist on RestrictionPolicy" }
     }
 }

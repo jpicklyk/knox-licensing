@@ -14,16 +14,16 @@ import org.junit.Test
 class TcpTests {
     @Test
     fun isTcpDumpEnabled_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"isTcpDumpEnabled"))
+        assert(checkMethodExistence(SystemManager::class,"isTcpDumpEnabled")) { "Expected method 'isTcpDumpEnabled' to exist on SystemManager" }
     }
 
     @Test
     fun enableTcpDump_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"enableTcpDump"))
+        assert(checkMethodExistence(SystemManager::class,"enableTcpDump")) { "Expected method 'enableTcpDump' to exist on SystemManager" }
     }
 
     @Test
     fun disableTcpDump_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"disableTcpDump"))
+        assert(checkMethodExistence(SystemManager::class,"disableTcpDump")) { "Expected method 'disableTcpDump' to exist on SystemManager" }
     }
 }

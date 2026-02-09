@@ -14,11 +14,11 @@ import org.junit.Test
 class PogoTests {
     @Test
     fun disablePOGOKeyboardConnection_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "disablePOGOKeyboardConnection"))
+        assert(checkMethodExistence(SystemManager::class, "disablePOGOKeyboardConnection")) { "Expected method 'disablePOGOKeyboardConnection' to exist on SystemManager" }
     }
 
     @Test
     fun isPOGOKeyboardConnectionDisabled_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "isPOGOKeyboardConnectionDisabled"))
+        assert(checkMethodExistence(SystemManager::class, "isPOGOKeyboardConnectionDisabled")) { "Expected method 'isPOGOKeyboardConnectionDisabled' to exist on SystemManager" }
     }
 }

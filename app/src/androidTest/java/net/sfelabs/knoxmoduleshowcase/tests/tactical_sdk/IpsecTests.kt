@@ -14,11 +14,11 @@ import org.junit.Test
 class IpsecTests {
     @Test
     fun executeAsyncIpsecXfrmCommand_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "executeAsyncIpsecXfrmCommand"))
+        assert(checkMethodExistence(SystemManager::class, "executeAsyncIpsecXfrmCommand")) { "Expected method 'executeAsyncIpsecXfrmCommand' to exist on SystemManager" }
     }
 
     @Test
     fun executeSyncIpsecXfrmCommand_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "executeSyncIpsecXfrmCommand"))
+        assert(checkMethodExistence(SystemManager::class, "executeSyncIpsecXfrmCommand")) { "Expected method 'executeSyncIpsecXfrmCommand' to exist on SystemManager" }
     }
 }

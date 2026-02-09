@@ -14,11 +14,11 @@ import org.junit.Test
 class NatTests {
     @Test
     fun executeIptablesCommand_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "executeIptablesCommand"))
+        assert(checkMethodExistence(SystemManager::class, "executeIptablesCommand")) { "Expected method 'executeIptablesCommand' to exist on SystemManager" }
     }
 
     @Test
     fun enableIpForwarding_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "enableIpForwarding"))
+        assert(checkMethodExistence(SystemManager::class, "enableIpForwarding")) { "Expected method 'enableIpForwarding' to exist on SystemManager" }
     }
 }

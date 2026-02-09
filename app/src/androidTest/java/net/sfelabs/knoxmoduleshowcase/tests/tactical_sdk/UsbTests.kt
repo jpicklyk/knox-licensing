@@ -16,54 +16,54 @@ import org.junit.Test
 class UsbTests {
     @Test
     fun getUsbConnectionType_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"getUsbConnectionType"))
+        assert(checkMethodExistence(SystemManager::class,"getUsbConnectionType")) { "Expected method 'getUsbConnectionType' to exist on SystemManager" }
     }
 
     @Test
     fun setUsbConnectionType_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"setUsbConnectionType"))
+        assert(checkMethodExistence(SystemManager::class,"setUsbConnectionType")) { "Expected method 'setUsbConnectionType' to exist on SystemManager" }
     }
 
     @Test
     fun getUsbDeviceAccessAllowedList_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"getUsbDeviceAccessAllowedList"))
+        assert(checkMethodExistence(SystemManager::class,"getUsbDeviceAccessAllowedList")) { "Expected method 'getUsbDeviceAccessAllowedList' to exist on SystemManager" }
     }
 
     @Test
     fun setUsbDeviceAccessAllowedList_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"setUsbDeviceAccessAllowedList"))
+        assert(checkMethodExistence(SystemManager::class,"setUsbDeviceAccessAllowedList")) { "Expected method 'setUsbDeviceAccessAllowedList' to exist on SystemManager" }
     }
 
     @Test
     fun allowUsbHostStorage_Exists() = runTest {
-        assert(checkMethodExistence(RestrictionPolicy::class,"allowUsbHostStorage"))
+        assert(checkMethodExistence(RestrictionPolicy::class,"allowUsbHostStorage")) { "Expected method 'allowUsbHostStorage' to exist on RestrictionPolicy" }
     }
 
     @Test
     fun addPackageToUsbHostWhiteList_Exists() = runTest {
-        assert(checkMethodExistence(ApplicationPolicy::class,"addPackageToUsbHostWhiteList"))
+        assert(checkMethodExistence(ApplicationPolicy::class,"addPackageToUsbHostWhiteList")) { "Expected method 'addPackageToUsbHostWhiteList' to exist on ApplicationPolicy" }
     }
 
     @Test
     fun removePackageFromUsbHostWhiteList_Exists() = runTest {
-        assert(checkMethodExistence(ApplicationPolicy::class,"removePackageFromUsbHostWhiteList"))
+        assert(checkMethodExistence(ApplicationPolicy::class,"removePackageFromUsbHostWhiteList")) { "Expected method 'removePackageFromUsbHostWhiteList' to exist on ApplicationPolicy" }
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun getMacAddressForEthernetInterface_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"getMacAddressForEthernetInterface"))
+        assert(checkMethodExistence(SystemManager::class,"getMacAddressForEthernetInterface")) { "Expected method 'getMacAddressForEthernetInterface' to exist on SystemManager" }
     }
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
     fun getEthernetInterfaceNameForMacAddress_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"getEthernetInterfaceNameForMacAddress"))
+        assert(checkMethodExistence(SystemManager::class,"getEthernetInterfaceNameForMacAddress")) { "Expected method 'getEthernetInterfaceNameForMacAddress' to exist on SystemManager" }
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 110)
-    fun stopPppd_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"stopPPPD"))
+    fun stopPPPD_Exists() = runTest {
+        assert(checkMethodExistence(SystemManager::class,"stopPPPD")) { "Expected method 'stopPPPD' to exist on SystemManager" }
     }
 
     @Test
@@ -73,7 +73,7 @@ class UsbTests {
                 SystemManager::class,
                 "setUsbDeviceAccessAllowedListSerialNumber"
             )
-        )
+        ) { "Expected method 'setUsbDeviceAccessAllowedListSerialNumber' to exist on SystemManager" }
     }
 
     @Test
@@ -83,11 +83,11 @@ class UsbTests {
             SystemManager::class,
                 "getUsbDeviceAccessAllowedListSerialNumber"
             )
-        )
+        ) { "Expected method 'getUsbDeviceAccessAllowedListSerialNumber' to exist on SystemManager" }
     }
 
     @Test
     fun getPackagesFromUsbHostWhiteList_Exists() = runTest {
-        assert(checkMethodExistence(ApplicationPolicy::class,"getPackagesFromUsbHostWhiteList"))
+        assert(checkMethodExistence(ApplicationPolicy::class,"getPackagesFromUsbHostWhiteList")) { "Expected method 'getPackagesFromUsbHostWhiteList' to exist on ApplicationPolicy" }
     }
 }

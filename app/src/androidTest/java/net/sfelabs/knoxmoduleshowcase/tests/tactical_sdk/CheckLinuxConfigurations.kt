@@ -168,7 +168,7 @@ class CheckLinuxConfigurations {
      * The XC6P already has this device supported however it is not on the S23TE Linux build.
      */
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 132, excludeModels = ["SM-X308U"])
+    @TacticalSdkSuppress(minReleaseVersion = 132)
     fun check_lan78xx_isConfigured() {
         //prerequisite for the USB driver
         val config = "CONFIG_USB_LAN78XX=y"
@@ -178,7 +178,7 @@ class CheckLinuxConfigurations {
         )
     }
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 140, includeModels = ["SM-X308U"])
+    @TacticalSdkSuppress(minReleaseVersion = 140, maxReleaseVersion = 140, includeModels = ["SM-X308U"])
     fun check_lan78xx_isConfigured_A14() {
         //prerequisite for the USB driver
         val config = "CONFIG_USB_LAN78XX=m"

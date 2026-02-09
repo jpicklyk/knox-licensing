@@ -16,19 +16,19 @@ import org.junit.Test
 class WiFiTests {
     @Test
     fun getKnoxWlanZeroMtu_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"getKnoxWlanZeroMtu"))
+        assert(checkMethodExistence(SystemManager::class,"getKnoxWlanZeroMtu")) { "Expected method 'getKnoxWlanZeroMtu' to exist on SystemManager" }
     }
     @Test
     fun setWlanZeroMtu_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class,"setWlanZeroMtu"))
+        assert(checkMethodExistence(SystemManager::class,"setWlanZeroMtu")) { "Expected method 'setWlanZeroMtu' to exist on SystemManager" }
     }
     @Test
     fun getHotspot20State_Exists() = runTest {
-        assert(checkMethodExistence(SettingsManager::class,"getHotspot20State"))
+        assert(checkMethodExistence(SettingsManager::class,"getHotspot20State")) { "Expected method 'getHotspot20State' to exist on SettingsManager" }
     }
     @Test
     fun setHotspot20State_Exists() = runTest {
-        assert(checkMethodExistence(SettingsManager::class,"setHotspot20State"))
+        assert(checkMethodExistence(SettingsManager::class,"setHotspot20State")) { "Expected method 'setHotspot20State' to exist on SettingsManager" }
     }
 
     @Test
@@ -37,7 +37,7 @@ class WiFiTests {
         assert(checkMethodExistence(
             RestrictionPolicy::class,
             "isRandomisedMacAddressEnabled"
-        ))
+        )) { "Expected method 'isRandomisedMacAddressEnabled' to exist on RestrictionPolicy" }
     }
 
     @Test
@@ -46,6 +46,6 @@ class WiFiTests {
         assert(checkMethodExistence(
             RestrictionPolicy::class,
             "enableRandomisedMacAddress"
-        ))
+        )) { "Expected method 'enableRandomisedMacAddress' to exist on RestrictionPolicy" }
     }
 }

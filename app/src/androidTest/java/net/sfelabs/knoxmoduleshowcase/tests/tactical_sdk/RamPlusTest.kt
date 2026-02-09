@@ -17,13 +17,13 @@ class RamPlusTest {
     @TacticalSdkSuppress(minReleaseVersion = 130, excludeModels = ["SM-X308U"])
     fun getRamPlusDisableState_Exists() = runTest {
         val kClass = systemManager::class
-        assert(checkMethodExistence(kClass, "getRamPlusDisableState"))
+        assert(checkMethodExistence(kClass, "getRamPlusDisableState")) { "Expected method 'getRamPlusDisableState' to exist on SystemManager" }
     }
 
     @Test
     @TacticalSdkSuppress(minReleaseVersion = 130, excludeModels = ["SM-X308U"])
     fun setRamPlusDisableState_Exists() = runTest {
         val kClass = systemManager::class
-        assert(checkMethodExistence(kClass, "setRamPlusDisableState"))
+        assert(checkMethodExistence(kClass, "setRamPlusDisableState")) { "Expected method 'setRamPlusDisableState' to exist on SystemManager" }
     }
 }
