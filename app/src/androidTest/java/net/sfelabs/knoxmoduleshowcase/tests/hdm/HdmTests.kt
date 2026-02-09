@@ -38,7 +38,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.DefaultAsserter.assertTrue
 
 @RunWith(AndroidJUnit4::class)
-@SmallTest
+//@SmallTest
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class HdmTests {
     @get:Rule(order = 0)

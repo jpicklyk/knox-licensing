@@ -1,0 +1,338 @@
+package net.sfelabs.knoxmoduleshowcase.tests.tactical_sdk
+
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import org.junit.runner.RunWith
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
+@RunWith(AndroidJUnit4::class)
+@SmallTest
+class CheckLinuxConfigurations {
+
+    @Test
+    fun checkConfiguration_CONFIG_PPP_BSDCOMP() {
+        val config = "CONFIG_PPP_BSDCOMP=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    fun checkConfiguration_CONFIG_PPP_DEFLATE() {
+        val config = "CONFIG_PPP_DEFLATE=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    fun checkConfiguration_CONFIG_PPP_FILTER() {
+        val config = "CONFIG_PPP_FILTER=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    fun checkConfiguration_CONFIG_PPP_MPPE() {
+        val config = "CONFIG_PPP_MPPE=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    fun checkConfiguration_CONFIG_PPP_MULTILINK() {
+        val config = "CONFIG_PPP_MULTILINK=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    fun checkConfiguration_CONFIG_PPPOE() {
+        val config = "CONFIG_PPPOE=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+    @Test
+    fun checkConfiguration_CONFIG_PPPOL2TP() {
+        val config = "CONFIG_PPPOL2TP=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    //Critical PPP driver
+    @Test
+    fun checkConfiguration_CONFIG_PPP_ASYNC() {
+        val config = "CONFIG_PPP_ASYNC=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+    //Critical PPP driver
+    @Test
+    fun checkConfiguration_CONFIG_USB_SERIAL_FTDI_SIO() {
+        val config = "CONFIG_USB_SERIAL_FTDI_SIO=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+    //Critical PPP driver
+    @Test
+    fun checkConfiguration_CONFIG_PPP_SYNC_TTY() {
+        val config = "CONFIG_PPP_SYNC_TTY=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    fun checkCDCECM_isConfigured() {
+        val config = "CONFIG_USB_CONFIGFS_ECM_SUBSET=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    fun checkCDCNCM_isConfigured() {
+        val config = "CONFIG_USB_NET_CDC_NCM=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    fun checkCDCEEM_isConfigured() {
+        val config = "CONFIG_USB_NET_CDC_EEM=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    fun checkASIX_A_isConfigured() {
+        var config = "CONFIG_USB_NET_AX8817X=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+
+        config = "CONFIG_USB_NET_AX88179_178A=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+
+        config = "CONFIG_USB_NET_AX88178=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 130)
+    fun checkASIX_B_isConfigured() {
+        //prerequisite for the USB driver
+        val config = "CONFIG_AX88796B_PHY=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    /**
+     * The XC6P already has this device supported however it is not on the S23TE Linux build.
+     */
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 132, excludeModels = ["SM-X308U"])
+    fun check_lan78xx_isConfigured() {
+        //prerequisite for the USB driver
+        val config = "CONFIG_USB_LAN78XX=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 140, includeModels = ["SM-X308U"])
+    fun check_lan78xx_isConfigured_A14() {
+        //prerequisite for the USB driver
+        val config = "CONFIG_USB_LAN78XX=m"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+    // XC6P cannot support this apparently but it isn't clear why.
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 132, excludeModels = ["SM-G736U1"])
+    fun check_rtl8153_ecm_isConfigured() {
+        //prerequisite for the USB driver
+        val config = "CONFIG_USB_RTL8153_ECM=y"
+        assertTrue(
+            "Linux configuration '$config' is not set!",
+            checkLinuxConfiguration(config)
+        )
+    }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 132, excludeModels = ["SM-X308U"])
+    fun check_usb_net_drivers_areConfigured() {
+        //prerequisite for the USB driver
+        val config1 = "CONFIG_USB_NET_SMSC75XX=y"
+        assertTrue(
+            "Linux configuration '$config1' is not set!",
+            checkLinuxConfiguration(config1)
+        )
+        val config2 = "CONFIG_USB_NET_SMSC95XX=y"
+        assertTrue(
+            "Linux configuration '$config2' is not set!",
+            checkLinuxConfiguration(config2)
+        )
+        val config3 = "CONFIG_USB_NET_AQC111=y"
+        assertTrue(
+            "Linux configuration '$config3' is not set!",
+            checkLinuxConfiguration(config3)
+        )
+    }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 140, includeModels = ["SM-X308U"])
+    fun check_usb_net_drivers_areConfigured_A14() {
+        //prerequisite for the USB driver
+        val config1 = "CONFIG_USB_NET_SMSC75XX=y"
+        assertTrue(
+            "Linux configuration '$config1' is not set!",
+            checkLinuxConfiguration(config1)
+        )
+        val config2 = "CONFIG_USB_NET_SMSC95XX=m"
+        assertTrue(
+            "Linux configuration '$config2' is not set!",
+            checkLinuxConfiguration(config2)
+        )
+        val config3 = "CONFIG_USB_NET_AQC111=y"
+        assertTrue(
+            "Linux configuration '$config3' is not set!",
+            checkLinuxConfiguration(config3)
+        )
+    }
+
+    @Test
+    fun ueventd_ttyAcm_wasAdded() {
+        val entryPattern = """^(/dev/ttyACM\*)\s+(0666)\s+(root)\s+(root)$"""
+        assertTrue(
+            "/dev/ttyACM* is not added in /system/etc/ueventd.rc!",
+                    checkForFileEntry(entryPattern.toRegex(), "/system/etc/ueventd.rc")
+        )
+    }
+
+    /**
+     * Currently the /dev/ttyUSB* permissions are being defined in /vendor/etc/ueventd.rc which
+     * we do not have access to for confirmation.  We should track this and move the permissions
+     * to the /system/etc/ueventd.rc file where the B2B ttyACM permissions are set.
+     */
+    @Test
+    fun ueventd_ttyUsb_wasAdded() {
+        val entryPattern = """^(/dev/ttyUSB\*)\s+(0667)\s+(root)\s+(root)$"""
+
+        assertTrue(
+            "/dev/ttyUSB* is not added in /system/etc/ueventd.rc!",
+            checkForFileEntry(entryPattern.toRegex(), "/system/etc/ueventd.rc")
+        )
+    }
+
+    @Suppress("RegExpRedundantEscape")
+    @Test
+    fun fileContexts_ttyAcm_wasAdded() {
+        val entry = """^(/dev/ttyACM\[0-9\]\*)\s+(u:object_r:usb_serial_device:s0)$"""
+        val file = "/system/etc/selinux/plat_file_contexts"
+        assertTrue(
+            "/dev/ttyACM[0-9]* is not added in /vendor/etc/selinux/plat_file_contexts!",
+            checkForFileEntry(entry.toRegex(), file)
+        )
+        assertTrue(
+            "/dev/ttyACM[0-9]* is not added in /system/etc/selinux/plat_file_contexts!",
+            checkForFileEntry(entry.toRegex(), file)
+        )
+    }
+
+    @Suppress("RegExpRedundantEscape")
+    @Test
+    fun fileContexts_ttyUsb_wasAdded() {
+        val entry = """^(/dev/ttyUSB\[0-9\]\*)\s+(u:object_r:usb_serial_device:s0)$"""
+        val file = "/system/etc/selinux/plat_file_contexts"
+        assertTrue(
+            "dev/ttyUSB[0-9]* is not added in /system/etc/selinux/plat_file_contexts!",
+            checkForFileEntry(entry.toRegex(), file)
+        )
+    }
+
+
+    private fun checkLinuxConfiguration(config: String) : Boolean {
+        val uiDevice: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        // Execute the adb shell command to print config.gz
+        val outputString = uiDevice.executeShellCommand("zcat /proc/config.gz")
+        // Read the output of the command
+        val reader = BufferedReader(InputStreamReader(outputString.byteInputStream()))
+        val output = StringBuilder()
+        var line: String?
+        var success = false
+        while (reader.readLine().also { line = it } != null) {
+            output.append(line).append("\n")
+
+            if(line?.contains(config) ==true) {
+                println("Linux config value: $line")
+                success = true
+            }
+        }
+        // Close the reader
+        reader.close()
+        return success
+    }
+
+    private fun checkForFileEntry(entry: Regex, file: String) : Boolean {
+        val uiDevice: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        // Execute the adb shell command to print config.gz
+        val outputString = uiDevice.executeShellCommand("cat $file")
+        // Read the output of the command
+        val reader = BufferedReader(InputStreamReader(outputString.byteInputStream()))
+        val output = StringBuilder()
+        var line: String?
+        var success = false
+        while (reader.readLine().also { line = it } != null) {
+            output.append(line).append("\n")
+
+            if(line?.matches(entry) ==true) {
+                println("ueventd entry value: $line")
+                success = true
+            }
+        }
+        // Close the reader
+        reader.close()
+        return success
+    }
+}

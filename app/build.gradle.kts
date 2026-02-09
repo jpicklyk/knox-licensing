@@ -114,6 +114,7 @@ dependencies {
 
     androidTestImplementation(project(":knox-core:testing"))
     androidTestImplementation(project(":knox-core:usecase-executor"))
+    androidTestImplementation(files("${rootProject.projectDir}/knox-tactical/libs/knoxsdk.jar"))
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.runner)
 }
