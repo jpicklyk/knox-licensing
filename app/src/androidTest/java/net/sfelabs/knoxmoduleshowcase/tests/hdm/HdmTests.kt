@@ -29,16 +29,20 @@ import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmPolicyUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmSpeakerState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmUsbState
 import net.sfelabs.knox_tactical.domain.use_cases.hdm.SetHdmWiFiState
+import net.sfelabs.knox_enterprise.domain.use_cases.connectivity.SetWifiStateUseCase
 import net.sfelabs.knox_tactical.domain.policy.hdm.HdmComponent
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 import kotlinx.coroutines.runBlocking
 import kotlin.test.DefaultAsserter.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 //@SmallTest
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @TacticalSdkSuppress(minReleaseVersion = 131)
 class HdmTests {
     @get:Rule(order = 0)
@@ -64,7 +68,9 @@ class HdmTests {
     @Test
     fun getSupportedPolicies() = runTest {
         val result = GetSupportedHdmPoliciesUseCase().invoke()
-        assert(result is ApiResult.Success)
+        assert(result is ApiResult.Success) {
+            "getSupportedHdmPolicies should return Success, got: $result"
+        }
     }
 
 
@@ -75,12 +81,14 @@ class HdmTests {
         // We test with camera since it's commonly available
         val supportResult = IsHdmPolicySupportedUseCase().invoke(HdmComponent.CAMERA)
         val disabledResult = IsHdmCameraDisabledUseCase().invoke()
-        
+
         when (supportResult) {
             is ApiResult.Success -> {
                 if (supportResult.data) {
                     // If camera HDM is supported, the disabled use case should return a proper result
-                    assert(disabledResult is ApiResult.Success || disabledResult is ApiResult.Error)
+                    assert(disabledResult is ApiResult.Success || disabledResult is ApiResult.Error) {
+                        "Expected Success or Error for supported HDM camera policy, got: $disabledResult"
+                    }
                 } else {
                     // If camera HDM is not supported, the disabled use case should return NotSupported
                     assert(disabledResult is ApiResult.NotSupported) {
@@ -90,7 +98,9 @@ class HdmTests {
             }
             else -> {
                 // If support check fails, the disabled use case should handle it gracefully
-                assert(disabledResult is ApiResult.NotSupported || disabledResult is ApiResult.Error)
+                assert(disabledResult is ApiResult.NotSupported || disabledResult is ApiResult.Error) {
+                    "Expected NotSupported or Error when support check failed, got: $disabledResult"
+                }
             }
         }
     }
@@ -98,136 +108,192 @@ class HdmTests {
     @Test
     fun disableCamera() = runTest {
         val result = SetHdmCameraState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable camera via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, cameraBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, cameraBitmask )) {
+            "HDM policy does not reflect camera as disabled: $currentPolicy"
+        }
     }
 
     @Test
     fun enableCamera() = runTest {
         val result = SetHdmCameraState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable camera via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, cameraBitmask))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, cameraBitmask)) {
+            "HDM policy does not reflect camera as enabled: $currentPolicy"
+        }
     }
 
     @Test
     @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U", "SM-S911U1"])
     fun disableMmc() = runTest {
         val result = SetHdmExternalMemoryState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable external memory via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, mmcBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, mmcBitmask )) {
+            "HDM policy does not reflect external memory as disabled: $currentPolicy"
+        }
     }
 
     @Test
     @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U", "SM-S911U1"])
     fun enableMmc() = runTest {
         val result = SetHdmExternalMemoryState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable external memory via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, mmcBitmask ))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, mmcBitmask )) {
+            "HDM policy does not reflect external memory as enabled: $currentPolicy"
+        }
     }
 
     @Test
     @AdbWifiRequired
     fun disableUsb() = runTest {
         val result = SetHdmUsbState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable USB via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, usbBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, usbBitmask )) {
+            "HDM policy does not reflect USB as disabled: $currentPolicy"
+        }
     }
 
     @Test
     @AdbWifiRequired
     fun enableUsb() = runTest {
         val result = SetHdmUsbState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable USB via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, usbBitmask ))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, usbBitmask )) {
+            "HDM policy does not reflect USB as enabled: $currentPolicy"
+        }
     }
 
     @Test
     @AdbUsbRequired
     fun disableWifi() = runTest {
         val result = SetHdmWiFiState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable WiFi via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, wifiBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, wifiBitmask )) {
+            "HDM policy does not reflect WiFi as disabled: $currentPolicy"
+        }
     }
 
     @Test
     @AdbUsbRequired
     fun enableWifi() = runTest {
         val result = SetHdmWiFiState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable WiFi via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, wifiBitmask ))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, wifiBitmask )) {
+            "HDM policy does not reflect WiFi as enabled: $currentPolicy"
+        }
     }
 
     @Test
     fun disableBluetooth() = runTest {
         val result = SetHdmBluetoothState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable Bluetooth via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, bluetoothBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, bluetoothBitmask )) {
+            "HDM policy does not reflect Bluetooth as disabled: $currentPolicy"
+        }
     }
 
     @Test
     fun enableBluetooth() = runTest {
         val result = SetHdmBluetoothState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable Bluetooth via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, bluetoothBitmask ))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, bluetoothBitmask )) {
+            "HDM policy does not reflect Bluetooth as enabled: $currentPolicy"
+        }
     }
 
     @Test
     @TacticalSdkSuppress(excludeModels = ["SM-S911U1", "SM-G736U1", "SM-X308U"])
     fun disableGps() = runTest {
         val result = SetHdmGpsState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable GPS via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
         println("HDM Policy: $currentPolicy")
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, gpsBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, gpsBitmask )) {
+            "HDM policy does not reflect GPS as disabled: $currentPolicy"
+        }
     }
 
     @Test
     @TacticalSdkSuppress(excludeModels = ["SM-S911U1", "SM-G736U1", "SM-X308U"])
     fun enableGps() = runTest {
         val result = SetHdmGpsState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable GPS via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, gpsBitmask ))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, gpsBitmask )) {
+            "HDM policy does not reflect GPS as enabled: $currentPolicy"
+        }
     }
 
     @Test
     fun disableNfc() = runTest {
         val result = SetHdmNfcState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable NFC via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, nfcBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, nfcBitmask )) {
+            "HDM policy does not reflect NFC as disabled: $currentPolicy"
+        }
     }
 
     @Test
     fun enableNfc() = runTest {
         val result = SetHdmNfcState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable NFC via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, nfcBitmask ))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, nfcBitmask )) {
+            "HDM policy does not reflect NFC as enabled: $currentPolicy"
+        }
     }
 
     /**
@@ -237,10 +303,14 @@ class HdmTests {
     @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U"])
     fun disableMicrophone() = runTest {
         val result = SetHdmMicrophoneState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable microphone via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, micBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, micBitmask )) {
+            "HDM policy does not reflect microphone as disabled: $currentPolicy"
+        }
     }
 
     /**
@@ -250,28 +320,40 @@ class HdmTests {
     @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U"])
     fun enableMicrophone() = runTest {
         val result = SetHdmMicrophoneState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable microphone via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, micBitmask ))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, micBitmask )) {
+            "HDM policy does not reflect microphone as enabled: $currentPolicy"
+        }
     }
 
     @Test
     fun disableModem() = runTest {
         val result = SetHdmModemState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable modem via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, modemBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, modemBitmask )) {
+            "HDM policy does not reflect modem as disabled: $currentPolicy"
+        }
     }
 
     @Test
     fun enableModem() = runTest {
         val result = SetHdmModemState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable modem via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, modemBitmask ))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, modemBitmask )) {
+            "HDM policy does not reflect modem as enabled: $currentPolicy"
+        }
     }
 
     /**
@@ -281,10 +363,14 @@ class HdmTests {
     @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U"])
     fun disableSpeaker() = runTest {
         val result = SetHdmSpeakerState().invoke(true)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to disable speaker via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, speakerBitmask ))
+        assert(currentPolicy is ApiResult.Success && featureDisabled(currentPolicy.data, speakerBitmask )) {
+            "HDM policy does not reflect speaker as disabled: $currentPolicy"
+        }
     }
 
     /**
@@ -294,10 +380,14 @@ class HdmTests {
     @TacticalSdkSuppress(excludeModels = ["SM-G736U1", "SM-X308U"])
     fun enableSpeaker() = runTest {
         val result = SetHdmSpeakerState().invoke(false)
-        assert(result is ApiResult.Success && result.data)
+        assert(result is ApiResult.Success && result.data) {
+            "Failed to enable speaker via HDM: $result"
+        }
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, speakerBitmask ))
+        assert(currentPolicy is ApiResult.Success && !featureDisabled(currentPolicy.data, speakerBitmask )) {
+            "HDM policy does not reflect speaker as enabled: $currentPolicy"
+        }
     }
 
     @Test
@@ -306,14 +396,18 @@ class HdmTests {
         assertTrue("Clearing HDM policies failed: $result", result is ApiResult.Success)
 
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && currentPolicy.data == 0)
+        assert(currentPolicy is ApiResult.Success && currentPolicy.data == 0) {
+            "HDM policy should be 0 after clearing, got: $currentPolicy"
+        }
     }
 
 
     @Test
-    fun confirmNoPolicyInPlace() = runTest {
+    fun aa_confirmNoPolicyInPlace() = runTest {
         val currentPolicy = GetHdmPolicyUseCase().invoke()
-        assert(currentPolicy is ApiResult.Success && currentPolicy.data == 0)
+        assert(currentPolicy is ApiResult.Success && currentPolicy.data == 0) {
+            "Expected no HDM policies in place (policy = 0), got: $currentPolicy"
+        }
     }
 
     private fun featureDisabled(input: Int, bitmask: Int): Boolean {
@@ -344,6 +438,8 @@ class HdmTests {
             runBlocking {
                 // Ensure that nothing is blocked
                 SetHdmPolicyUseCase().invoke(0, false)
+                // Re-enable WiFi in case it was disabled by HDM tests
+                SetWifiStateUseCase()(state = true)
             }
         }
     }
