@@ -1,11 +1,13 @@
 ---
 name: knox-policy-creation
-description: Create Knox policies wrapping Samsung Knox SDK APIs. Covers use cases, BooleanStatePolicy, ConfigurableStatePolicy, and state mapping (DIRECT/INVERTED).
+description: Create Knox policies using BooleanStatePolicy or ConfigurableStatePolicy patterns with proper state mapping (DIRECT/INVERTED). Use when creating new policy classes, choosing between policy types, configuring state mapping, setting up PolicyDefinition annotations, or building ConfigurableStatePolicy with PolicyState and PolicyConfiguration.
 ---
 
 # Knox Policy Creation
 
-Use this skill when creating new Knox policies that wrap Samsung Knox SDK APIs. This covers the full lifecycle: wrapping Knox SDK APIs in use cases, combining use cases into policy definitions, and properly configuring state mapping.
+Use this skill when creating new Knox policies that combine use cases into policy definitions with state mapping and UI configuration.
+
+**Prerequisites**: Use cases should be created first. See the `/knox-usecase-creation` skill for wrapping Knox SDK APIs in use case classes.
 
 ## Overview
 
@@ -15,7 +17,7 @@ Knox policies follow a layered architecture:
 Knox SDK API → Use Case → Policy → UI
 ```
 
-1. **Use Cases**: Wrap individual Knox SDK API calls
+1. **Use Cases**: Wrap individual Knox SDK API calls (see `/knox-usecase-creation`)
 2. **Policies**: Combine use cases and handle state mapping
 3. **PolicyState**: Represents the domain state for a policy
 4. **Configuration**: Transforms between API data and domain state
@@ -31,10 +33,7 @@ Use for **simple on/off toggles** with no additional configuration options.
 - No additional parameters beyond the toggle state
 - Single getter use case + single setter use case
 
-**Examples:**
-- Disable 2G Connectivity
-- Enable Extra Brightness
-- Disable Fast Charging
+**Examples:** Disable 2G Connectivity, Enable Extra Brightness, Disable Fast Charging
 
 ### ConfigurableStatePolicy
 
@@ -46,17 +45,13 @@ Use for **policies with additional configuration options** beyond just enabled/d
 - The feature has multiple toggle options (e.g., selecting which components to disable)
 - State needs custom transformation logic between API and domain
 
-**Examples:**
-- 5G NR Mode (has mode selection)
-- LTE Band Locking (has band number + SIM slot)
-- HDM Policy (has multiple component toggles)
-- Auto Call Pickup (has mode selection)
+**Examples:** 5G NR Mode (mode selection), LTE Band Locking (band number + SIM slot), HDM Policy (multiple component toggles)
 
 ---
 
 ## State Mapping: DIRECT vs INVERTED
 
-State mapping is **critical** for ensuring the UI displays correctly relative to the Knox API semantics.
+State mapping ensures the UI displays correctly relative to the Knox API semantics.
 
 ### StateMapping.DIRECT
 
@@ -83,7 +78,6 @@ Use when **policy name has opposite semantics to API semantics**.
 ```kotlin
 // API: is2gConnectivityEnabled() returns true when 2G is ON
 // Policy: "Disable 2G Connectivity" - UI shows enabled when 2G is OFF
-// Inversion: policy.isEnabled=true means API.is2gConnectivityEnabled=false
 class Disable2GConnectivityPolicy : BooleanStatePolicy(stateMapping = StateMapping.INVERTED)
 ```
 
@@ -106,16 +100,6 @@ private fun mapEnabled(enabled: Boolean): Boolean = when (stateMapping) {
     StateMapping.DIRECT -> enabled
     StateMapping.INVERTED -> !enabled
 }
-
-// Applied during getState():
-override suspend fun getState(): BooleanPolicyState {
-    val apiResult = getEnabled()  // From Knox API
-    return defaultValue.copy(isEnabled = mapEnabled(apiResult.data))
-}
-
-// Applied during setState():
-override suspend fun setState(state: BooleanPolicyState): ApiResult<Unit> =
-    setEnabled(mapEnabled(state.isEnabled))  // Mapped before calling Knox API
 ```
 
 **Key insight**: State mapping is applied in BOTH directions (get and set) to ensure consistency.
@@ -131,67 +115,39 @@ Policies are typically named in the **negative** (Block, Disable, Restrict) beca
 2. Policies **restrict** or **control** behavior
 3. Security-focused naming (what is being blocked/disabled)
 
-**Good naming:**
-- `Disable2GConnectivityPolicy`
-- `DisableFastChargingPolicy`
-- `BlockUsbDebuggingPolicy`
-- `RestrictCameraAccessPolicy`
-
-**Avoid:**
-- `Enable2GConnectivityPolicy` (unless there's a specific reason to enable a disabled default)
-
 ### Positive Naming Exceptions
 
-Use positive naming when:
-1. The feature is **opt-in** (disabled by default)
-2. The policy **enables** a special capability
-3. The API semantics naturally align with "enable"
-
-**Examples:**
-- `EnableExtraBrightnessPolicy` (extra brightness is off by default)
-- `EnableNightVisionModePolicy` (night vision is a special mode)
-- `EnableHdmPolicy` (HDM control is an opt-in feature)
-- `AlwaysRadioOnEnabledPolicy` (keeping radio on is a special mode)
+Use positive naming when the feature is **opt-in** (disabled by default) or the policy **enables** a special capability. Examples: `EnableExtraBrightnessPolicy`, `EnableHdmPolicy`, `AlwaysRadioOnEnabledPolicy`.
 
 ---
 
 ## Creating a BooleanStatePolicy
 
-### Step 1: Create Getter Use Case
+First create getter and setter use cases using `/knox-usecase-creation`, then create the policy:
 
 ```kotlin
-// File: Is[Feature]EnabledUseCase.kt or Get[Feature]UseCase.kt
-class Is2gConnectivityEnabledUseCase : SuspendingUseCase<Unit, Boolean>() {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
+@PolicyDefinition(
+    title = "[Title in Title Case]",
+    description = "[Human-readable description of what the policy does]",
+    category = PolicyCategory.Toggle,
+    capabilities = [
+        PolicyCapability.MODIFIES_[SUBSYSTEM],
+        PolicyCapability.REQUIRES_[HARDWARE],
+        PolicyCapability.AFFECTS_[AREA]
+    ]
+)
+class [PolicyName]Policy : BooleanStatePolicy(stateMapping = StateMapping.[DIRECT|INVERTED]) {
+    private val getUseCase = [GetterUseCase]()
+    private val setUseCase = [SetterUseCase]()
 
-    override suspend fun execute(params: Unit): ApiResult<Boolean> {
-        return ApiResult.Success(systemManager.get2GConnectivityState())
-    }
+    override suspend fun getEnabled(): ApiResult<Boolean> = getUseCase()
+    override suspend fun setEnabled(enabled: Boolean): ApiResult<Unit> = setUseCase(enabled)
 }
 ```
 
-### Step 2: Create Setter Use Case
+### Concrete Example
 
 ```kotlin
-// File: Set[Feature]EnabledUseCase.kt or Enable[Feature]UseCase.kt
-class Set2gConnectivityEnabled : SuspendingUseCase<Boolean, Unit>() {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
-
-    override suspend fun execute(params: Boolean): ApiResult<Unit> {
-        return when (systemManager.set2GConnectivityState(params)) {
-            CustomDeviceManager.SUCCESS -> ApiResult.Success(Unit)
-            else -> ApiResult.Error(
-                DefaultApiError.UnexpectedError("The operation failed for an unknown reason.")
-            )
-        }
-    }
-}
-```
-
-### Step 3: Create the Policy
-
-```kotlin
-// File: Disable2GConnectivityPolicy.kt
 @PolicyDefinition(
     title = "Disable 2G Connectivity",
     description = "Enable or disable 2G cellular network connectivity.",
@@ -212,31 +168,6 @@ class Disable2GConnectivityPolicy : BooleanStatePolicy(stateMapping = StateMappi
 }
 ```
 
-### Complete BooleanStatePolicy Template
-
-```kotlin
-@PolicyDefinition(
-    title = "[Title in Title Case]",
-    description = "[Human-readable description of what the policy does]",
-    category = PolicyCategory.Toggle,
-    capabilities = [
-        // Add relevant capabilities
-        PolicyCapability.MODIFIES_[SUBSYSTEM],
-        // Add requirements if needed
-        PolicyCapability.REQUIRES_[HARDWARE],
-        // Add impact indicators
-        PolicyCapability.AFFECTS_[AREA]
-    ]
-)
-class [PolicyName]Policy : BooleanStatePolicy(stateMapping = StateMapping.[DIRECT|INVERTED]) {
-    private val getUseCase = [GetterUseCase]()
-    private val setUseCase = [SetterUseCase]()
-
-    override suspend fun getEnabled(): ApiResult<Boolean> = getUseCase()
-    override suspend fun setEnabled(enabled: Boolean): ApiResult<Unit> = setUseCase(enabled)
-}
-```
-
 ---
 
 ## Creating a ConfigurableStatePolicy
@@ -244,13 +175,11 @@ class [PolicyName]Policy : BooleanStatePolicy(stateMapping = StateMapping.[DIREC
 ### Step 1: Create the PolicyState
 
 ```kotlin
-// File: [Feature]State.kt
 data class NrModeState(
     override val isEnabled: Boolean,
     override val isSupported: Boolean = true,
     override val error: ApiError? = null,
     override val exception: Throwable? = null,
-    // Policy-specific fields:
     val mode: LteNrMode,
     val simSlotId: Int? = null
 ) : PolicyState {
@@ -263,31 +192,26 @@ data class NrModeState(
 ### Step 2: Create the Configuration
 
 ```kotlin
-// File: [Feature]Configuration.kt
 data class NrModeConfiguration(
     override val stateMapping: StateMapping = StateMapping.DIRECT
 ) : PolicyConfiguration<NrModeState, LteNrModeDto> {
 
-    // Transform API data to domain state
     override fun fromApiData(apiData: LteNrModeDto): NrModeState {
         return NrModeState(
-            // Derive isEnabled from API data semantically
             isEnabled = (apiData.mode != LteNrMode.EnableBothSaAndNsa),
             mode = apiData.mode,
             simSlotId = apiData.simSlotId
         )
     }
 
-    // Transform domain state to API data
     override fun toApiData(state: NrModeState): LteNrModeDto {
         val dto = LteNrModeDto(state.simSlotId)
         return when (state.isEnabled) {
             true -> dto.copy(mode = state.mode)
-            false -> dto.copy(mode = LteNrMode.EnableBothSaAndNsa)  // Default when disabled
+            false -> dto.copy(mode = LteNrMode.EnableBothSaAndNsa)
         }
     }
 
-    // Convert UI state to domain state
     override fun fromUiState(uiEnabled: Boolean, options: List<ConfigurationOption>): NrModeState {
         val simSlotId = options.filterIsInstance<ConfigurationOption.NumberInput>()
             .find { it.key == "simSlotId" }?.value ?: 0
@@ -304,7 +228,6 @@ data class NrModeConfiguration(
         )
     }
 
-    // Generate UI configuration options from domain state
     override fun getConfigurationOptions(state: NrModeState): List<ConfigurationOption> = listOf(
         ConfigurationOption.NumberInput(
             key = "simSlotId",
@@ -322,45 +245,13 @@ data class NrModeConfiguration(
 }
 ```
 
-### Step 3: Create the Use Cases
+### Step 3: Create Use Cases
 
-```kotlin
-// Getter use case
-class Get5gNrModeUseCase : SuspendingUseCase<Int?, LteNrModeDto>() {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
-
-    override suspend fun execute(params: Int?): ApiResult<LteNrModeDto> {
-        val result = when (params) {
-            null -> systemManager.get5gNrModeState()
-            else -> systemManager.get5gNrModeStatePerSimSlot(params)
-        }
-        return if (result == CustomDeviceManager.ERROR_FAIL) {
-            ApiResult.Error(DefaultApiError.UnexpectedError("Getting 5gNrModeState error"))
-        } else {
-            ApiResult.Success(LteNrModeDto(params, LteNrMode(result)))
-        }
-    }
-}
-
-// Setter use case
-class Set5gNrModeUseCase : SuspendingUseCase<LteNrModeDto, Unit>() {
-    private val systemManager = CustomDeviceManager.getInstance().systemManager
-
-    override suspend fun execute(params: LteNrModeDto): ApiResult<Unit> {
-        val result = systemManager.set5gNrModeState(params.mode.value)
-        return if (result == CustomDeviceManager.SUCCESS) {
-            ApiResult.Success(Unit)
-        } else {
-            ApiResult.Error(DefaultApiError.UnexpectedError("Setting 5gNrModeState error"))
-        }
-    }
-}
-```
+Create getter and setter use cases using `/knox-usecase-creation`.
 
 ### Step 4: Create the Policy
 
 ```kotlin
-// File: NrModePolicy.kt
 @PolicyDefinition(
     title = "5G NR Mode",
     description = "Configure 5G NR (New Radio) mode settings to control SA and NSA capabilities.",
@@ -397,7 +288,6 @@ class NrModePolicy : ConfigurableStatePolicy<NrModeState, LteNrModeDto, NrModeCo
     }
 }
 
-// Optional: Custom parameters for the policy
 data class NrModeParameters(val simSlotId: Int? = null) : PolicyParameters
 ```
 
@@ -405,171 +295,73 @@ data class NrModeParameters(val simSlotId: Int? = null) : PolicyParameters
 
 ## Configuration Option Types
 
-Use the appropriate `ConfigurationOption` type for your policy's configuration:
-
 ### Toggle
-For boolean sub-options within the policy:
-
 ```kotlin
-ConfigurationOption.Toggle(
-    key = "useRedOverlay",
-    label = "Use red overlay?",
-    isEnabled = state.useRedOverlay
-)
+ConfigurationOption.Toggle(key = "useRedOverlay", label = "Use red overlay?", isEnabled = state.useRedOverlay)
 ```
 
 ### Choice
-For enum-like selections:
-
 ```kotlin
-ConfigurationOption.Choice(
-    key = "mode",
-    label = "Mode",
-    options = listOf("Option A", "Option B", "Option C"),
-    selected = state.selectedOption
-)
+ConfigurationOption.Choice(key = "mode", label = "Mode", options = listOf("Option A", "Option B"), selected = state.selectedOption)
 ```
 
 ### NumberInput
-For numeric parameters:
-
 ```kotlin
-ConfigurationOption.NumberInput(
-    key = "simSlotId",
-    label = "SIM Slot Id",
-    value = state.simSlotId ?: 0,
-    range = 0..2  // Optional range constraint
-)
+ConfigurationOption.NumberInput(key = "simSlotId", label = "SIM Slot Id", value = state.simSlotId ?: 0, range = 0..2)
 ```
 
 ### TextInput
-For string parameters:
-
 ```kotlin
-ConfigurationOption.TextInput(
-    key = "ssid",
-    label = "Network SSID",
-    value = state.ssid,
-    hint = "Enter network name",
-    maxLength = 32
-)
+ConfigurationOption.TextInput(key = "ssid", label = "Network SSID", value = state.ssid, hint = "Enter network name", maxLength = 32)
 ```
 
 ### TextList
-For multiple string values:
-
 ```kotlin
-ConfigurationOption.TextList(
-    key = "allowedDomains",
-    label = "Allowed Domains",
-    values = state.domains,
-    hint = "Add domain"
-)
+ConfigurationOption.TextList(key = "allowedDomains", label = "Allowed Domains", values = state.domains, hint = "Add domain")
 ```
 
 ---
 
 ## Policy Capabilities Reference
 
-Choose capabilities that accurately describe what your policy modifies and requires:
-
 ### What it Modifies
-- `MODIFIES_RADIO` - Cellular/radio settings
-- `MODIFIES_WIFI` - Wi-Fi settings
-- `MODIFIES_BLUETOOTH` - Bluetooth settings
-- `MODIFIES_DISPLAY` - Screen/display settings
-- `MODIFIES_AUDIO` - Sound settings
-- `MODIFIES_CHARGING` - Charging behavior
-- `MODIFIES_CALLING` - Telephony behavior
-- `MODIFIES_HARDWARE` - Hardware components
-- `MODIFIES_SECURITY` - Security settings
-- `MODIFIES_NETWORK` - Network settings
-- `MODIFIES_BROWSER` - Browser settings
+`MODIFIES_RADIO`, `MODIFIES_WIFI`, `MODIFIES_BLUETOOTH`, `MODIFIES_DISPLAY`, `MODIFIES_AUDIO`, `MODIFIES_CHARGING`, `MODIFIES_CALLING`, `MODIFIES_HARDWARE`, `MODIFIES_SECURITY`, `MODIFIES_NETWORK`, `MODIFIES_BROWSER`
 
 ### Device Requirements
-- `REQUIRES_SIM` - SIM card required
-- `REQUIRES_HDM` - Hardware Device Mode required
-- `REQUIRES_DUAL_SIM` - Dual SIM support required
+`REQUIRES_SIM`, `REQUIRES_HDM`, `REQUIRES_DUAL_SIM`
 
 ### Impact Characteristics
-- `SECURITY_SENSITIVE` - Affects security
-- `AFFECTS_CONNECTIVITY` - May affect network connectivity
-- `AFFECTS_BATTERY` - May affect battery life
-- `REQUIRES_REBOOT` - Needs reboot to take effect
-- `PERSISTENT_ACROSS_REBOOT` - Settings persist after reboot
+`SECURITY_SENSITIVE`, `AFFECTS_CONNECTIVITY`, `AFFECTS_BATTERY`, `REQUIRES_REBOOT`, `PERSISTENT_ACROSS_REBOOT`
 
 ### Compliance
-- `STIG` - Relevant to STIG compliance
+`STIG`
 
 ---
 
-## Use Case Patterns
+## Common Pitfalls
 
-### No Parameters
+### 1. Wrong State Mapping
+**Problem:** UI toggle state is opposite of expected.
+**Solution:** Review whether policy name semantics match or oppose API semantics. Use INVERTED when they oppose.
 
-```kotlin
-class GetBrightnessUseCase : SuspendingUseCase<Unit, Int>() {
-    override suspend fun execute(params: Unit): ApiResult<Int> {
-        return ApiResult.Success(displayManager.brightness)
-    }
-}
-// Usage: getBrightnessUseCase()
-```
+### 2. Missing mapEnabled in Configuration
+**Problem:** State mapping not applied in ConfigurableStatePolicy.
+**Solution:** Call `mapEnabled()` in `fromApiData()` and `toApiData()` when needed.
 
-### Single Primitive Parameter
+### 3. fromUiState Applying State Mapping
+**Problem:** State mapping applied twice (once in UI, once in fromUiState).
+**Solution:** `fromUiState` should NOT apply state mapping - the UI state is already in the correct domain form.
 
-```kotlin
-class SetBrightnessUseCase : SuspendingUseCase<Int, Unit>() {
-    override suspend fun execute(params: Int): ApiResult<Unit> {
-        displayManager.setBrightness(params)
-        return ApiResult.Success(Unit)
-    }
-}
-// Usage: setBrightnessUseCase(50)
-```
-
-### Single DTO Parameter
+### 4. Semantic isEnabled Derivation
+**Problem:** `isEnabled` doesn't reflect meaningful state for ConfigurableStatePolicy.
+**Solution:** Derive `isEnabled` from the actual semantic meaning:
 
 ```kotlin
-class SetNrModeUseCase : SuspendingUseCase<LteNrModeDto, Unit>() {
-    override suspend fun execute(params: LteNrModeDto): ApiResult<Unit> {
-        systemManager.set5gNrModeState(params.mode.value)
-        return ApiResult.Success(Unit)
-    }
-}
-// Usage: setNrModeUseCase(LteNrModeDto(mode = LteNrMode.DisableSa))
-```
+// Good: isEnabled derived from mode
+isEnabled = (apiData.mode != AutoCallPickupMode.Disable)
 
-### Multiple Parameters (Nested Params Class)
-
-```kotlin
-class SetHdmPolicyUseCase : SuspendingUseCase<SetHdmPolicyUseCase.Params, Unit>() {
-    data class Params(val policyMask: Int, val persist: Boolean)
-
-    override suspend fun execute(params: Params): ApiResult<Unit> {
-        hdmManager.setHdmPolicy(params.policyMask, params.persist)
-        return ApiResult.Success(Unit)
-    }
-}
-// Usage: setHdmPolicyUseCase(Params(policyMask = 0xFF, persist = true))
-```
-
-### Convenience Overload Pattern
-
-Add an operator invoke overload for cleaner API:
-
-```kotlin
-class Set2gConnectivityEnabled : SuspendingUseCase<Set2gConnectivityEnabled.Params, Unit>() {
-    class Params(val enabled: Boolean)
-
-    // Convenience overload
-    suspend operator fun invoke(enabled: Boolean): ApiResult<Unit> = invoke(Params(enabled))
-
-    override suspend fun execute(params: Params): ApiResult<Unit> {
-        // Implementation
-    }
-}
-// Usage: set2gConnectivityEnabled(true)  // Cleaner than set2gConnectivityEnabled(Params(true))
+// Bad: Always true/false regardless of actual state
+isEnabled = true
 ```
 
 ---
@@ -582,84 +374,17 @@ knox-[module]/
     ├── policy/
     │   ├── [feature_group]/
     │   │   ├── [Feature]Policy.kt           # The policy class
-    │   │   ├── [Feature]State.kt            # PolicyState implementation (ConfigurableStatePolicy only)
+    │   │   ├── [Feature]State.kt            # PolicyState (ConfigurableStatePolicy only)
     │   │   └── [Feature]Configuration.kt    # PolicyConfiguration (ConfigurableStatePolicy only)
     │   └── [SimpleFeature]Policy.kt         # BooleanStatePolicy (can be single file)
-    ├── use_cases/
-    │   └── [feature_group]/
-    │       ├── Get[Feature]UseCase.kt       # or Is[Feature]EnabledUseCase.kt
-    │       └── Set[Feature]UseCase.kt       # or Enable[Feature]UseCase.kt
-    └── model/
-        └── [Feature]Dto.kt                  # DTO for API data transfer
+    └── use_cases/                           # See /knox-usecase-creation
 ```
 
----
-
-## Common Pitfalls
-
-### 1. Wrong State Mapping
-
-**Problem:** UI toggle state is opposite of expected.
-
-**Solution:** Review whether policy name semantics match or oppose API semantics. Use INVERTED when they oppose.
-
-### 2. Missing mapEnabled in Configuration
-
-**Problem:** State mapping not applied in ConfigurableStatePolicy.
-
-**Solution:** Call `mapEnabled()` in `fromApiData()` and `toApiData()` when needed:
-
-```kotlin
-override fun fromApiData(apiData: SomeDto): SomeState {
-    return SomeState(
-        isEnabled = mapEnabled(apiData.rawEnabled),  // Apply mapping
-        // ...
-    )
-}
-```
-
-### 3. fromUiState Applying State Mapping
-
-**Problem:** State mapping applied twice (once in UI, once in fromUiState).
-
-**Solution:** `fromUiState` should NOT apply state mapping - the UI state is already in the correct domain form. Only apply mapping when converting to/from API data.
-
-### 4. Incorrect Parameter Naming
-
-**Problem:** Kotlin warning about named argument mismatch.
-
-**Solution:** Always name the parameter `params` in `execute()`:
-
-```kotlin
-override suspend fun execute(params: Boolean): ApiResult<Unit>  // Correct
-override suspend fun execute(enabled: Boolean): ApiResult<Unit> // Wrong - causes warning
-```
-
-### 5. Semantic isEnabled Derivation
-
-**Problem:** `isEnabled` doesn't reflect meaningful state for ConfigurableStatePolicy.
-
-**Solution:** Derive `isEnabled` from the actual semantic meaning:
-
-```kotlin
-// Good: isEnabled derived from mode
-isEnabled = (apiData.mode != AutoCallPickupMode.Disable)
-
-// Good: isEnabled derived from non-zero value
-isEnabled = (apiData.policyMask != 0)
-
-// Bad: Always true/false regardless of actual state
-isEnabled = true
-```
-
----
-
-## Checklist for New Policies
+## Checklist
 
 - [ ] Determine policy type (BooleanStatePolicy vs ConfigurableStatePolicy)
 - [ ] Determine state mapping (DIRECT vs INVERTED) based on naming semantics
-- [ ] Create getter use case
-- [ ] Create setter use case (may need enable + disable use cases for some APIs)
+- [ ] Create use cases (see `/knox-usecase-creation`)
 - [ ] For ConfigurableStatePolicy: Create PolicyState data class
 - [ ] For ConfigurableStatePolicy: Create PolicyConfiguration class
 - [ ] Create policy class with @PolicyDefinition annotation
