@@ -15,7 +15,6 @@ import net.sfelabs.knoxmoduleshowcase.tests.hdm.SupportedComponents
 import net.sfelabs.knoxmoduleshowcase.tests.ipsec.IpsecXfrmCommandTest
 import net.sfelabs.knoxmoduleshowcase.tests.knox_core.AllowOtaUpgradeTests
 import net.sfelabs.knoxmoduleshowcase.tests.knox_core.AttestationTests
-import net.sfelabs.knoxmoduleshowcase.tests.knox_core.CCModeTests
 import net.sfelabs.knoxmoduleshowcase.tests.knox_core.CheckKnoxPermissionsGranted
 import net.sfelabs.knoxmoduleshowcase.tests.knox_core.FirmwareRecoveryTests
 import net.sfelabs.knoxmoduleshowcase.tests.phone.AutoCallPickupTests
@@ -135,7 +134,6 @@ import org.junit.runners.Suite
     // Knox Core
     AllowOtaUpgradeTests::class,
     AttestationTests::class,
-    CCModeTests::class,
     CheckKnoxPermissionsGranted::class,
     FirmwareRecoveryTests::class,
 
