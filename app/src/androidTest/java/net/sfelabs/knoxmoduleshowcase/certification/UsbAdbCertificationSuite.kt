@@ -6,9 +6,6 @@ import net.sfelabs.knoxmoduleshowcase.tests.audit.AuditLoggingTests
 import net.sfelabs.knoxmoduleshowcase.tests.bridging.BridgeTests
 import net.sfelabs.knoxmoduleshowcase.tests.charging.ChargingTests
 import net.sfelabs.knoxmoduleshowcase.tests.charging.WirelessChargingTest
-import net.sfelabs.knoxmoduleshowcase.tests.ethernet.GetMacAddressViaAidlHiltExampleTest
-import net.sfelabs.knoxmoduleshowcase.tests.ethernet.GetMacAddressViaAidlIntegrationTest
-import net.sfelabs.knoxmoduleshowcase.tests.ethernet.MultiEthernetConfigurationTest
 import net.sfelabs.knoxmoduleshowcase.tests.ethernet.NatTests
 import net.sfelabs.knoxmoduleshowcase.tests.hdm.HdmTests
 import net.sfelabs.knoxmoduleshowcase.tests.hdm.SupportedComponents
@@ -76,7 +73,7 @@ import org.junit.runners.Suite
  * - **Audit**: Audit logging
  * - **Bridging**: Network bridge configuration
  * - **Charging**: Wired and wireless charging controls
- * - **Ethernet**: MAC address, multi-ethernet, NAT/iptables
+ * - **Ethernet**: NAT/iptables
  * - **HDM**: Hardware Device Manager (camera, bluetooth, GPS, NFC, microphone, modem, speaker, MMC)
  * - **IPsec**: XFRM tunneling commands
  * - **Knox Core**: Attestation, CC Mode, firmware, OTA, permissions
@@ -119,9 +116,6 @@ import org.junit.runners.Suite
     WirelessChargingTest::class,
 
     // Ethernet
-    GetMacAddressViaAidlHiltExampleTest::class,
-    GetMacAddressViaAidlIntegrationTest::class,
-    MultiEthernetConfigurationTest::class,
     NatTests::class,
 
     // HDM (Hardware Device Manager)

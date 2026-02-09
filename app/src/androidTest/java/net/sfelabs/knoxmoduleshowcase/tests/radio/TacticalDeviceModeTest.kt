@@ -2,13 +2,15 @@ package net.sfelabs.knoxmoduleshowcase.tests.radio
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.GetTacticalDeviceModeEnabledUseCase
 import net.sfelabs.knox_tactical.domain.use_cases.tdm.SetTacticalDeviceModeEnabledUseCase
-import org.junit.After
-import org.junit.Before
+import org.junit.AfterClass
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -16,33 +18,46 @@ import org.junit.runner.RunWith
 @TacticalSdkSuppress(minReleaseVersion = 100)
 @SmallTest
 class TacticalDeviceModeTest {
-    private var currentlyEnabled: Boolean? = null
 
-    @Before
-    fun setup() = runTest {
-        val result = GetTacticalDeviceModeEnabledUseCase().invoke()
-        if(result is ApiResult.Success) {
-            currentlyEnabled = result.data
-        }
-    }
     @Test
     fun enableTacticalDeviceMode() = runTest {
-        val res1 = SetTacticalDeviceModeEnabledUseCase().invoke(true)
-        assert(res1 is ApiResult.Success)
-        val res2 = GetTacticalDeviceModeEnabledUseCase().invoke()
-        assert(res2 is ApiResult.Success && res2.data)
+        val setResult = SetTacticalDeviceModeEnabledUseCase().invoke(true)
+        assert(setResult is ApiResult.Success) {
+            "Failed to enable tactical device mode: $setResult"
+        }
+
+        val getResult = GetTacticalDeviceModeEnabledUseCase().invoke()
+        assert(getResult is ApiResult.Success && getResult.data) {
+            "Tactical device mode should be enabled after setting, got: $getResult"
+        }
     }
 
     @Test
     fun disableTacticalDeviceMode() = runTest {
-        val res1 = SetTacticalDeviceModeEnabledUseCase().invoke(false)
-        assert(res1 is ApiResult.Success)
-        val res2 = GetTacticalDeviceModeEnabledUseCase().invoke()
-        assert(res2 is ApiResult.Success && !res2.data)
+        val setResult = SetTacticalDeviceModeEnabledUseCase().invoke(false)
+        assert(setResult is ApiResult.Success) {
+            "Failed to disable tactical device mode: $setResult"
+        }
+
+        val getResult = GetTacticalDeviceModeEnabledUseCase().invoke()
+        assert(getResult is ApiResult.Success && !getResult.data) {
+            "Tactical device mode should be disabled after setting, got: $getResult"
+        }
     }
 
-    @After
-    fun cleanup() = runTest {
-        currentlyEnabled?.let { SetTacticalDeviceModeEnabledUseCase().invoke(it) }
+    companion object {
+        @JvmStatic
+        @AfterClass
+        fun resetDeviceState() {
+            runBlocking {
+                //SetTacticalDeviceModeEnabledUseCase().invoke(false)
+            }
+            // Allow the system to finish internal state changes after disabling tactical device mode
+            //Doesn't seem to work for some reason.
+//            Thread.sleep(5_000)
+//            val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+//            uiDevice.executeShellCommand("settings put global airplane_mode_on 0")
+//            uiDevice.executeShellCommand("am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false")
+        }
     }
 }

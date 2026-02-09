@@ -1,7 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.certification
 
 import net.sfelabs.knoxmoduleshowcase.tests.tactical_sdk.AdbTests
-import net.sfelabs.knoxmoduleshowcase.tests.tactical_sdk.ChargingTests
+import net.sfelabs.knoxmoduleshowcase.tests.tactical_sdk.ChargingApiExistenceTests
 import net.sfelabs.knoxmoduleshowcase.tests.tactical_sdk.CheckLinuxConfigurations
 import net.sfelabs.knoxmoduleshowcase.tests.tactical_sdk.CheckSpecialFileAccess
 import net.sfelabs.knoxmoduleshowcase.tests.tactical_sdk.CheckTacticalDefaults
@@ -41,7 +41,7 @@ import org.junit.runners.Suite
 @Suite.SuiteClasses(
     // API existence checks
     AdbTests::class,
-    ChargingTests::class,
+    ChargingApiExistenceTests::class,
     EthernetTests::class,
     HdmTests::class,
     IpsecTests::class,
