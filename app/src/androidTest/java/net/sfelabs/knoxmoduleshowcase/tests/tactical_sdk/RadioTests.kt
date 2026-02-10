@@ -114,14 +114,28 @@ class RadioTests {
     }
 
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 131)
+    @TacticalSdkSuppress(minReleaseVersion = 141)
     fun getPLMNAllowedList_Exists() = runTest {
         assert(checkMethodExistence(SystemManager::class,"getPLMNAllowedList")) { "Expected method 'getPLMNAllowedList' to exist on SystemManager" }
     }
 
     @Test
-    @TacticalSdkSuppress(minReleaseVersion = 131)
+    @TacticalSdkSuppress(minReleaseVersion = 141)
     fun addPLMNAllowedList_Exists() = runTest {
         assert(checkMethodExistence(SystemManager::class,"addPLMNAllowedList")) { "Expected method 'addPLMNAllowedList' to exist on SystemManager" }
     }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 141)
+    fun disableE911OverPrivateNetworks_Exists() = runTest {
+        assert(checkMethodExistence(RestrictionPolicy::class,"disableE911OverPrivateNetworks")) { "Expected method 'disableE911OverPrivateNetworks' to exist on RestrictionPolicy" }
+    }
+
+    @Test
+    @TacticalSdkSuppress(minReleaseVersion = 141)
+    fun isE911DisabledOverPrivateNetworks_Exists() = runTest {
+        assert(checkMethodExistence(RestrictionPolicy::class,"isE911DisabledOverPrivateNetworks")) { "Expected method 'isE911DisabledOverPrivateNetworks' to exist on RestrictionPolicy" }
+    }
+
+
 }

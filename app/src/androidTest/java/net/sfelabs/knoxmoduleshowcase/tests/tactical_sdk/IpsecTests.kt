@@ -10,7 +10,7 @@ import org.junit.Test
 
 @SmallTest
 @ApiExists
-@TacticalSdkSuppress(minReleaseVersion = 131)
+@TacticalSdkSuppress(minReleaseVersion = 141)
 class IpsecTests {
     @Test
     fun executeAsyncIpsecXfrmCommand_Exists() = runTest {
