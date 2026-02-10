@@ -18,6 +18,7 @@ import net.sfelabs.knoxmoduleshowcase.tests.phone.AutoRecordCallTest
 import net.sfelabs.knoxmoduleshowcase.tests.pogo.PogoTests
 import net.sfelabs.knoxmoduleshowcase.tests.radio.AlwaysRadioOnTests
 import net.sfelabs.knoxmoduleshowcase.tests.radio.BandLocking5gTests
+import net.sfelabs.knoxmoduleshowcase.tests.radio.E911Tests
 import net.sfelabs.knoxmoduleshowcase.tests.radio.BandLockingLteTests
 import net.sfelabs.knoxmoduleshowcase.tests.radio.ElectronicSimTests
 import net.sfelabs.knoxmoduleshowcase.tests.radio.ImsTests
@@ -137,6 +138,7 @@ import org.junit.runners.Suite
     AlwaysRadioOnTests::class,
     BandLocking5gTests::class,
     BandLockingLteTests::class,
+    E911Tests::class,
     ElectronicSimTests::class,
     ImsTests::class,
     Nr5GModeTests::class,
