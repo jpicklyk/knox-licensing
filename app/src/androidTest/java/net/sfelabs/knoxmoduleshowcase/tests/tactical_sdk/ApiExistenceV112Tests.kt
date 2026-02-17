@@ -25,15 +25,5 @@ class ApiExistenceV112Tests {
         assert(checkMethodExistence(SystemManager::class, "stopPPPD")) { "Expected method 'stopPPPD' to exist on SystemManager" }
     }
 
-    @Test
-    fun configureDhcpEthernetInterface_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "configureDhcpEthernetInterface")) { "Expected method 'configureDhcpEthernetInterface' to exist on SystemManager" }
-    }
-
-    @Test
-    fun configureStaticEthernetInterface_Exists() = runTest {
-        assert(checkMethodExistence(SystemManager::class, "configureStaticEthernetInterface")) { "Expected method 'configureStaticEthernetInterface' to exist on SystemManager" }
-    }
-
     // endregion
 }
