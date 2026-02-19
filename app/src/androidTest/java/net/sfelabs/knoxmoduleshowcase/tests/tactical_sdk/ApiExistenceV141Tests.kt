@@ -68,6 +68,11 @@ class ApiExistenceV141Tests {
         assert(checkMethodExistence(SystemManager::class, "executeSyncIpsecXfrmCommand")) { "Expected method 'executeSyncIpsecXfrmCommand' to exist on SystemManager" }
     }
 
+    @Test
+    fun getRedirectedAdbCommand_Exists() = runTest {
+        assert(checkMethodExistence(SystemManager::class, "getRedirectedAdbCommand")) { "Expected method 'getRedirectedAdbCommand' to exist on SystemManager" }
+    }
+
     // endregion
 
     // region RestrictionPolicy
