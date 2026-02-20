@@ -1,6 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.certification
 
 import net.sfelabs.knoxmoduleshowcase.tests.adb.ExecuteAdbCommandTest
+import net.sfelabs.knoxmoduleshowcase.tests.adb.ExecuteAndGetAdbCommandTest
 import net.sfelabs.knoxmoduleshowcase.tests.applications.ApplicationTests
 import net.sfelabs.knoxmoduleshowcase.tests.audit.AuditLoggingTests
 import net.sfelabs.knoxmoduleshowcase.tests.bridging.BridgeTests
@@ -98,6 +99,7 @@ import org.junit.runners.Suite
 
     // ADB
     ExecuteAdbCommandTest::class,
+    ExecuteAndGetAdbCommandTest::class,
 
     // Android / KeyStore
 

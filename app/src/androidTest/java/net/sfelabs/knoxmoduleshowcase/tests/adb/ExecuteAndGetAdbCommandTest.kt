@@ -1,6 +1,7 @@
 package net.sfelabs.knoxmoduleshowcase.tests.adb
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import kotlinx.coroutines.test.runTest
 import net.sfelabs.knox.core.domain.usecase.model.ApiResult
 import net.sfelabs.knox_tactical.annotations.TacticalSdkSuppress
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 @TacticalSdkSuppress(minReleaseVersion = 141)
+@SmallTest
 class ExecuteAndGetAdbCommandTest {
 
     private val useCase = ExecuteAndGetAdbCommandUseCase()
