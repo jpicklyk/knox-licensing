@@ -15,9 +15,11 @@ A reusable Android library for Samsung Knox Enterprise License Management that p
   - [Available License Management](#available-license-management)
   - [Startup Manager](#startup-manager)
 - [Configuration](#configuration)
-  - [Using BuildConfig (Recommended)](#using-buildconfig-recommended)
-  - [Multi-Module Projects](#multi-module-projects)
-  - [Custom License Selection](#custom-license-selection)
+  - [Using a Gradle Convention Plugin (Recommended for Multi-Module Projects)](#using-a-gradle-convention-plugin-recommended-for-multi-module-projects)
+  - [Product Flavors for Customer-Specific Licensing](#product-flavors-for-customer-specific-licensing)
+  - [Using BuildConfig Directly](#using-buildconfig-directly)
+- [Multi-Module Projects](#multi-module-projects)
+- [Custom License Selection](#custom-license-selection)
   - [Manual Configuration](#manual-configuration)
 - [Dependency Injection Integration](#dependency-injection-integration)
   - [Hilt Integration](#hilt-integration)
@@ -79,10 +81,7 @@ Before using Knox policies on a device, you need a Knox Platform for Enterprise 
    knox.license=KLM09-XXXX...XXX
    ```
 
-4. **Set a unique package name** — your application's package name must be unique and match what is registered with your license. Use the rename scripts to update the package name across the codebase:
-
-   - **Windows**: `.\UpdatePackageName.ps1`
-   - **Mac/Linux**: `./update_package_name.sh`
+4. **Set a unique package name** — your consuming application's package name (`applicationId`) must be unique and match what is registered with your license.
 
 5. **Bind the application to your license** — the compiled application must be bound to your license key in the Knox console for the activation process to succeed. Register your app's package name and signing certificate in your [Knox developer portal](https://developer.samsungknox.com/).
 
@@ -103,14 +102,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Create handler from BuildConfig (uses default license key)
-        knoxLicenseHandler = KnoxLicenseFactory.createFromBuildConfig(this)
+        // Create with app's BuildConfig (uses default license key, no custom strategy)
+        knoxLicenseHandler = KnoxLicenseFactory.create(
+            context = this,
+            licenseSelectionStrategy = null,
+            defaultKey = BuildConfig.KNOX_LICENSE_KEY,
+            namedKeysArray = BuildConfig.KNOX_LICENSE_KEYS
+        )
 
-        // Create with custom license selection strategy
+        // Create with custom license selection strategy and app's BuildConfig
         val customStrategy = MyLicenseSelectionStrategy()
-        knoxLicenseHandler = KnoxLicenseFactory.create(this, customStrategy)
-
-        // Create with app's BuildConfig (when used in multi-module projects)
         knoxLicenseHandler = KnoxLicenseFactory.create(
             context = this,
             licenseSelectionStrategy = customStrategy,
@@ -170,7 +171,7 @@ class MyDeviceBasedStrategy : LicenseSelectionStrategy {
 
 // Use the strategy
 val strategy = MyDeviceBasedStrategy()
-val handler = KnoxLicenseFactory.create(context, strategy)
+val handler = KnoxLicenseFactory.create(context, strategy, BuildConfig.KNOX_LICENSE_KEY, BuildConfig.KNOX_LICENSE_KEYS)
 ```
 
 #### Strategy Benefits
@@ -337,7 +338,7 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         lifecycleScope.launch {
-            val result = licenseInitializer.initialize(this@MyApplication)
+            val result = licenseInitializer.initialize(this@MyApplication, BuildConfig.KNOX_LICENSE_KEY)
             // Handle result...
         }
     }
@@ -368,9 +369,9 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Initialize Knox licensing at startup with default configuration
+        // Initialize Knox licensing at startup using the app's BuildConfig key
         lifecycleScope.launch {
-            when (val result = KnoxStartupManager.initializeKnoxLicensing(this@MyApplication)) {
+            when (val result = KnoxStartupManager.initializeKnoxLicensing(this@MyApplication, BuildConfig.KNOX_LICENSE_KEY)) {
                 // Handle results...
             }
         }
@@ -378,7 +379,11 @@ class MyApplication : Application() {
         // Or initialize with custom license selection strategy
         lifecycleScope.launch {
             val customStrategy = MyDeviceBasedStrategy()
-            when (val result = KnoxStartupManager.initializeKnoxLicensing(this@MyApplication, customStrategy)) {
+            when (val result = KnoxStartupManager.initializeKnoxLicensing(
+                context = this@MyApplication,
+                defaultKey = BuildConfig.KNOX_LICENSE_KEY,
+                licenseSelectionStrategy = customStrategy
+            )) {
                 // Handle results...
             }
         }
@@ -804,7 +809,7 @@ android {
 Then use the standard factory methods:
 
 ```kotlin
-val handler = KnoxLicenseFactory.create(context, customStrategy)
+val handler = KnoxLicenseFactory.create(context, customStrategy, BuildConfig.KNOX_LICENSE_KEY, BuildConfig.KNOX_LICENSE_KEYS)
 ```
 
 ### Option 2: App Module BuildConfig (Recommended)
@@ -893,7 +898,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
-            licenseInitializer.initialize(this@MainActivity)
+            licenseInitializer.initialize(this@MainActivity, BuildConfig.KNOX_LICENSE_KEY)
         }
     }
 }
@@ -927,7 +932,7 @@ object KnoxLicenseModule {
         @ApplicationContext context: Context,
         licenseSelectionStrategy: LicenseSelectionStrategy
     ): KnoxLicenseHandler {
-        return KnoxLicenseFactory.create(context, licenseSelectionStrategy)
+        return KnoxLicenseFactory.create(context, licenseSelectionStrategy, BuildConfig.KNOX_LICENSE_KEY, BuildConfig.KNOX_LICENSE_KEYS)
     }
 }
 ```
@@ -939,7 +944,7 @@ val knoxLicenseModule = module {
     single<LicenseSelectionStrategy> { MyDeviceBasedStrategy() }
 
     single<KnoxLicenseHandler> {
-        KnoxLicenseFactory.create(androidContext(), get())
+        KnoxLicenseFactory.create(androidContext(), get(), BuildConfig.KNOX_LICENSE_KEY, BuildConfig.KNOX_LICENSE_KEYS)
     }
 }
 
@@ -1006,7 +1011,7 @@ Sealed class representing the result of license operations.
 ```kotlin
 sealed class LicenseResult {
     data class Success(val message: String) : LicenseResult()
-    data class Error(val message: String, val errorCode: Int = -1) : LicenseResult()
+    data class Error(val message: String, val errorCode: Int? = null) : LicenseResult()
 }
 ```
 
@@ -1047,8 +1052,10 @@ data class LicenseConfiguration(
     val defaultKey: String,
     val namedKeys: Map<String, String> = emptyMap()
 ) {
-    fun getKey(licenseName: String): String
+    fun getKey(name: String = "default"): String
+    fun getAllKeys(): Map<String, String>
     fun getAllKeyNames(): Set<String>
+    fun hasKey(name: String): Boolean
 }
 ```
 
@@ -1060,13 +1067,7 @@ Factory class for creating KnoxLicenseHandler instances.
 
 ```kotlin
 object KnoxLicenseFactory {
-    // Create from BuildConfig
-    fun createFromBuildConfig(context: Context): KnoxLicenseHandler
-
-    // Create with license selection strategy
-    fun create(context: Context, licenseSelectionStrategy: LicenseSelectionStrategy?): KnoxLicenseHandler
-
-    // Create with app BuildConfig (multi-module)
+    // Create with app's BuildConfig keys (licenseSelectionStrategy may be null)
     fun create(
         context: Context,
         licenseSelectionStrategy: LicenseSelectionStrategy?,
@@ -1094,21 +1095,12 @@ Utility for managing Knox license initialization during app startup.
 
 ```kotlin
 object KnoxStartupManager {
-    // Initialize with default configuration
-    suspend fun initializeKnoxLicensing(context: Context): LicenseStartupResult
-
-    // Initialize with custom strategy
+    // Initialize with license keys from the app's BuildConfig
     suspend fun initializeKnoxLicensing(
         context: Context,
-        licenseSelectionStrategy: LicenseSelectionStrategy?
-    ): LicenseStartupResult
-
-    // Initialize with app BuildConfig
-    suspend fun initializeKnoxLicensing(
-        context: Context,
-        licenseSelectionStrategy: LicenseSelectionStrategy?,
         defaultKey: String,
-        namedKeysArray: Array<String>?
+        namedKeysArray: Array<String>? = null,
+        licenseSelectionStrategy: LicenseSelectionStrategy? = null
     ): LicenseStartupResult
 
     // Status checking
@@ -1364,7 +1356,7 @@ Knox license activation involves network communication and cryptographic operati
 
            // Launch on IO thread to avoid blocking main thread
            lifecycleScope.launch(Dispatchers.IO) {
-               KnoxStartupManager.initializeKnoxLicensing(this@MyApplication)
+               KnoxStartupManager.initializeKnoxLicensing(this@MyApplication, BuildConfig.KNOX_LICENSE_KEY)
            }
        }
    }
